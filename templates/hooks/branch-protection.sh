@@ -48,4 +48,11 @@ if echo "$COMMAND" | grep -qiE 'git\s+reset\s+--hard'; then
   exit 2
 fi
 
+# Check for git rebase onto main/master (rewrites history on protected branch)
+if echo "$COMMAND" | grep -qiE 'git\s+rebase\s+.*(main|master)'; then
+  echo "BLOCKED by JitNeuro branch protection: rebase onto main/master detected." >&2
+  echo "Rebasing rewrites history on a protected branch. Requires the project owner's explicit permission." >&2
+  exit 2
+fi
+
 exit 0

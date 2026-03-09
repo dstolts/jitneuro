@@ -37,6 +37,7 @@ Intercepts every Bash command and blocks RED zone git operations:
 - `git push --force` -- blocked (destructive)
 - `git branch -D` -- blocked (force delete)
 - `git reset --hard` -- blocked (discards uncommitted work)
+- `git rebase ... main/master` -- blocked (rewrites history on protected branch)
 
 Exit code 2 blocks the command and sends the reason back to Claude.
 Claude will inform the user and ask for permission before retrying.
