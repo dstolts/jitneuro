@@ -72,7 +72,7 @@ Context is gone. Claude knows nothing about what you were doing.
 
 ### Step 5: Resume
 ```
-/resume jitneuro-test
+/load jitneuro-test
 ```
 Expected:
 - Claude reads session-state/jitneuro-test.md
@@ -116,7 +116,7 @@ Expected: Both sessions listed, no collision, each has its own state.
 
 Then resume one:
 ```
-/resume aibm-pricing-review
+/load aibm-pricing-review
 ```
 Expected: Loads AIBM context, not blog context.
 
@@ -161,7 +161,7 @@ Expected: Session file lists BOTH repos under "Repos Involved."
 | Claude doesn't load a bundle | Check routing weights in MEMORY.md -- does the trigger word match? |
 | Save too short (<20 lines) | Claude may not have enough context yet -- work more before saveing |
 | Save too long (>80 lines) | Skill says 30-60 lines target -- Claude should summarize, not replay |
-| /resume loads wrong bundles | Check the session file -- are the right bundles listed? |
+| /load loads wrong bundles | Check the session file -- are the right bundles listed? |
 | /sessions shows nothing | No saves created yet -- run /save first |
 | Skills not recognized | Verify .claude/skills/ directory has the .md files |
 

@@ -1,4 +1,4 @@
-# Resume
+# Load
 
 Restore working state after a context reset (/clear).
 This reloads short-term memory saved by the /save skill.
@@ -10,7 +10,7 @@ This reloads short-term memory saved by the /save skill.
 
 ## Instructions
 
-When invoked as `/resume <session-name>`:
+When invoked as `/load <session-name>`:
 
 1. **Determine which session to resume:**
    - If user provided a name: read `.claude/session-state/<session-name>.md`
@@ -32,7 +32,7 @@ When invoked as `/resume <session-name>`:
 
 5. **Report to user:**
    ```
-   Resumed: <session-name> (checkpointed [date])
+   Loaded: <session-name> (checkpointed [date])
    Task: [current task]
    Repos: [list of repos involved]
    Loaded bundles: [list]
@@ -46,7 +46,7 @@ When invoked as `/resume <session-name>`:
 
 ## Listing Sessions
 
-When invoked as `/resume` with no name, show:
+When invoked as `/load` with no name, show:
 
 ```
 Active sessions:

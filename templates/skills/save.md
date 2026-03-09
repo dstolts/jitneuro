@@ -1,7 +1,7 @@
 # Save
 
 Save current working state before a context reset (/clear or /compact).
-This preserves short-term memory so it can be restored by the /resume skill.
+This preserves short-term memory so it can be restored by the /load skill.
 
 ## When to Use
 - Before `/clear` when switching tasks
@@ -12,14 +12,14 @@ This preserves short-term memory so it can be restored by the /resume skill.
 
 ## How It Works
 Checkpoint writes to DISK (`.claude/session-state/<name>.md`), which survives
-both `/clear` and `/compact`. After `/clear`, use `/resume <name>` to reload.
+both `/clear` and `/compact`. After `/clear`, use `/load <name>` to reload.
 After `/compact`, the session file serves as a safety net -- if compaction
 dropped something important, the full state is still on disk.
 
 ```
 /save blog-comments-api    <-- saves to disk
 /clear                           <-- wipes context (disk untouched)
-/resume blog-comments-api        <-- reads from disk, reloads bundles
+/load blog-comments-api        <-- reads from disk, reloads bundles
 ```
 
 ## Instructions
@@ -81,7 +81,7 @@ When invoked as `/save <session-name>`:
 4. **Confirm to user:**
    - "Checkpoint saved to .claude/session-state/<session-name>.md"
    - List repos involved and current task
-   - "Safe to /clear. Use `/resume <session-name>` to reload."
+   - "Safe to /clear. Use `/load <session-name>` to reload."
 
 ## Size Guidance
 - Target: 30-60 lines. Enough to fully resume, not a session transcript.

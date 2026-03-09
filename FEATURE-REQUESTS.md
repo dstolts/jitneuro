@@ -20,7 +20,16 @@ Use cases:
 
 Architecture: minimal -- reads list, shells out to `claude` CLI with bundled context, captures output, updates list. No server, no API, no database.
 
-## FR-002: Blog Post -- "How to Get AI Coding Assistants to Actually Remember"
+## FR-002: Save Template Document
+**Priority:** Medium
+**Status:** Idea
+
+Provide a structured template that Claude fills in when running /save, rather than
+relying entirely on Claude's judgment. Ensures consistent format across saves and
+makes /load parsing reliable. Template would define required sections (task, repos,
+bundles, modified files, decisions, next steps) with placeholder prompts.
+
+## FR-003: Blog Post -- "How to Get AI Coding Assistants to Actually Remember"
 **Priority:** High (launch day)
 **Status:** Planned
 

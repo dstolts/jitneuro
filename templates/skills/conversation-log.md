@@ -88,7 +88,7 @@ other tool calls or work -- is to append the user's prompt to the log file.
 - If the session ends or logging is toggled off before a response is written,
   leave the entry as `(response pending -- session ended)`
 - If `/clear` is run, the log file persists (it's on disk, not in context).
-  After `/resume`, check the toggle state and continue logging if enabled.
+  After `/load`, check the toggle state and continue logging if enabled.
 - The `.logs/` directory should be added to `.gitignore` by default (logs may
   contain sensitive prompts). Users can remove from `.gitignore` if they want
   logs committed.
@@ -104,7 +104,7 @@ The `<session-name>` in the filename is configurable. Set it when enabling:
 If no session name is provided, use `session` as the default:
 `YYYYMMDD-HHMMSS-session.md`
 
-The session name persists in `session-state.md` so it survives `/clear` + `/resume`.
+The session name persists in `session-state.md` so it survives `/clear` + `/load`.
 
 ## Toggle Implementation
 
@@ -141,7 +141,7 @@ When `convlog status` is invoked:
 ## Important
 
 - Logging is per-session. It does not persist across sessions unless
-  session-state.md carries the toggle forward via /checkpoint + /resume.
+  session-state.md carries the toggle forward via /checkpoint + /load.
 - Log files are append-only. Never modify or delete previous entries.
 - The TRIGGER behavior (log prompt FIRST) is critical -- it ensures no
   prompt is lost even if the response fails or context is cleared.

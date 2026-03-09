@@ -21,7 +21,7 @@ Critical instructions get compressed away. You manually type reload commands aft
 JitNeuro adds a memory management layer using Claude Code's existing primitives:
 - **Context Bundles** -- modular knowledge files loaded on-demand (like neural network layers)
 - **Context Manifest** -- tracks what's available and what's active (like an attention mechanism)
-- **Session State** -- checkpoint/resume across `/clear` cycles (like working memory)
+- **Session State** -- checkpoint/load across `/clear` cycles (like working memory)
 - **Routing Weights** -- learned patterns for which bundles to co-activate (in MEMORY.md)
 - **Orchestrator** -- automated context routing via subagents (no manual typing)
 
@@ -131,7 +131,7 @@ your-project/
   |   |   |-- (your domain bundles)
   |   |-- skills/
   |   |   |-- save.md      <-- save state before /clear
-  |   |   |-- resume.md          <-- reload state after /clear
+  |   |   |-- load.md          <-- reload state after /clear
   |   |   |-- orchestrate.md     <-- auto-route tasks to agents
   |   |   |-- conversation-log.md <-- toggle-based session logging
   |   |-- context-manifest.md    <-- index of all available bundles
@@ -149,7 +149,7 @@ your-project/
 3. Create bundles for your domains in `.claude/bundles/`
 4. Update `.claude/context-manifest.md` with your bundles
 5. Add routing weights to your MEMORY.md
-6. Use `/save` before `/clear`, `/resume` after
+6. Use `/save` before `/clear`, `/load` after
 7. Or let the orchestrator handle it automatically via subagents
 
 ## Files
@@ -159,7 +159,7 @@ your-project/
 | `templates/context-manifest.md` | DONE | Bundle index + routing weights + session state |
 | `templates/bundles/example.md` | DONE | Example bundle template with guidelines |
 | `templates/skills/save.md` | DONE | Save state before /clear |
-| `templates/skills/resume.md` | DONE | Reload state after /clear |
+| `templates/skills/load.md` | DONE | Reload state after /clear |
 | `templates/skills/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
 | `templates/skills/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
 | `templates/CLAUDE-brainstem.md` | DONE | Minimal CLAUDE.md template (30-40 lines) |
@@ -222,7 +222,7 @@ This fires automatically when context fills -- no user action needed.
 | /memory | Verify loaded files |
 | Subagents | Isolated context windows with selective bundle loading |
 | .claude/rules/ | Path-scoped rules that only load when relevant |
-| Skills | On-demand workflow loading (/save, /resume, convlog) |
+| Skills | On-demand workflow loading (/save, /load, convlog) |
 | Hooks | Automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 
