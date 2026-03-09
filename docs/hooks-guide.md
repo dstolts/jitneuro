@@ -1,0 +1,255 @@
+# Hooks Guide
+
+## Why Hooks Matter
+
+Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 4 hooks that protect your work and enforce governance automatically.
+
+JitNeuro lets you talk to your AI with full context and understanding -- every session. Hooks are the safety net that ensures context is never silently lost. When compaction fires, your session state is preserved. When you accidentally try to push to main, the hook catches it. This is how one developer manages 16+ repos and stays 3x more productive than a 15-person team.
+
+## Installed Hooks
+
+### 1. PreCompact Save Prompt
+
+- **Event:** PreCompact
+- **Script:** pre-compact-save.sh
+- **Timeout:** 10s
+
+Prompts Claude to offer `/save` before context gets compressed. Claude will ask the user if they want to checkpoint their session state before compaction proceeds.
+
+**Configuration** (jitneuro-hooks.json):
+
+| Value | Behavior |
+|-------|----------|
+| `warn` (default) | Message injected into context. Claude asks about /save. Compaction proceeds. |
+| `block` | Compaction blocked (exit 2). User must respond before compaction can proceed. |
+
+**Why this matters:** Context compaction is the #1 cause of lost work. After compaction, Claude forgets active tasks, loaded bundles, file positions, and next steps. This hook catches it before it happens.
+
+### 2. Post-Compact Context Recovery
+
+- **Event:** SessionStart (matcher: `compact`)
+- **Script:** session-start-recovery.sh
+- **Timeout:** 10s
+
+After compaction, reads the most recent session state file from `.claude/session-state/` and re-injects it into Claude's context window. Restores awareness of: active task, loaded bundles, modified files, and next steps.
+
+stdout from this hook goes directly into Claude's context -- no user action needed.
+
+**Why this matters:** After compaction, Claude forgets what it was doing. This hook restores the last checkpoint automatically so you can pick up where you left off without manually re-explaining context.
+
+### 3. Branch Protection
+
+- **Event:** PreToolUse (matcher: `Bash`)
+- **Script:** branch-protection.sh
+- **Timeout:** 5s
+
+Intercepts every Bash command before execution and blocks RED zone git operations:
+
+| Command Pattern | Why Blocked |
+|-----------------|-------------|
+| `git push ... main/master` | Push to main requires explicit permission |
+| `git push --force` | Force push is destructive and irreversible |
+| `git branch -D` | Force-deletes a branch without merge check |
+| `git reset --hard` | Discards all uncommitted work |
+
+When a command is blocked, Claude receives the reason via stderr and will inform the user and ask for permission before retrying.
+
+**Why this matters:** Governance rules written in CLAUDE.md are "prose rules" -- Claude follows them most of the time, but can still slip. This hook enforces RED zone protections programmatically. The dangerous command never executes.
+
+### 4. Session End Auto-Save
+
+- **Event:** SessionEnd
+- **Script:** session-end-autosave.sh
+- **Timeout:** 10s
+
+Writes a minimal recovery breadcrumb when a session terminates. Captures: timestamp, exit reason, duration, working directory, and session ID. Written to `.claude/session-state/_autosave.md` (overwritten each time).
+
+This is NOT a full `/save` -- it only records that a session ended and where. If you forgot to `/save` before exiting, this file confirms a session was active.
+
+**Why this matters:** If you close your terminal, lose connection, or just forget to checkpoint, this hook ensures there is always a trace of what was happening.
+
+## Configuration
+
+### settings.local.json hooks block
+
+Add the following to `.claude/settings.local.json` in your project or workspace root:
+
+```json
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/pre-compact-save.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/session-start-recovery.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/branch-protection.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/session-end-autosave.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Replace `/path/to/` with your actual workspace or project path (e.g., `D:/Code/.claude/hooks/`).
+
+### jitneuro-hooks.json
+
+Located alongside the hook scripts in `.claude/hooks/`. Controls hook behavior without editing settings.local.json.
+
+```json
+{
+  "preCompactBehavior": "warn",
+  "_options": {
+    "warn": "Message injected into context, compaction proceeds. Claude asks user about /save.",
+    "block": "Compaction blocked (exit 2). User must respond before compaction can proceed."
+  },
+  "_doc": "Config for JitNeuro hooks. Edit behavior values to change how hooks respond."
+}
+```
+
+Currently only `preCompactBehavior` is configurable. Future hooks will add settings here as needed.
+
+## How Hooks Work
+
+Claude Code hooks are bash scripts that fire on specific lifecycle events. The flow:
+
+1. An event occurs (e.g., compaction starts, a Bash command is about to run).
+2. Claude Code checks `settings.local.json` for hooks registered to that event.
+3. If a **matcher** is defined, only events matching that pattern trigger the hook. An empty matcher (`""`) matches all events of that type.
+4. Claude Code pipes a JSON payload to the hook's stdin with event details (event type, tool input, session info, etc.).
+5. The hook script runs and communicates back via exit codes and output:
+
+| Exit Code | Meaning | Output Handling |
+|-----------|---------|-----------------|
+| 0 (proceed) | Allow the action | stdout is injected into Claude's context window |
+| 2 (block) | Block the action | stderr is sent to Claude as feedback |
+
+This means hooks can both inform Claude (exit 0 with stdout) and prevent actions (exit 2 with stderr).
+
+## Adding Custom Hooks
+
+Step-by-step for adding a new hook:
+
+**1. Create a bash script in .claude/hooks/**
+
+```bash
+#!/bin/bash
+# My custom hook
+# Read event data from stdin
+INPUT=$(cat)
+
+# Parse fields with grep (no jq dependency)
+FIELD=$(echo "$INPUT" | grep -o '"field_name"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')
+
+# Your logic here
+echo "Message for Claude's context"
+exit 0
+```
+
+**2. Add the event + matcher + command to settings.local.json**
+
+```json
+{
+  "hooks": {
+    "EventName": [
+      {
+        "matcher": "optional-filter",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/my-hook.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Available events: `PreCompact`, `SessionStart`, `SessionEnd`, `PreToolUse`, `PostToolUse`, `SubagentStart`.
+
+**3. Test manually**
+
+```bash
+echo '{"event":"PreToolUse","tool_input":{"command":"git status"}}' | bash /path/to/.claude/hooks/my-hook.sh
+echo "Exit code: $?"
+```
+
+Check that exit codes and output match your expectations before relying on the hook in production.
+
+## Troubleshooting
+
+**Windows path issues:**
+Use forward slashes in all hook paths (`D:/Code/.claude/hooks/`, not `D:\Code\.claude\hooks\`). Bash must be available in PATH -- Git for Windows includes bash at `C:/Program Files/Git/bin/bash.exe`.
+
+**Script not firing:**
+Check the matcher pattern in settings.local.json. An empty string (`""`) matches all events of that type. Run `/hooks` in Claude Code to verify registered hooks. Confirm the script path is correct and the file has execute permissions.
+
+**JSON parsing issues:**
+JitNeuro hooks use grep patterns instead of jq to avoid external dependencies. If you need complex JSON parsing, install jq and use `echo "$INPUT" | jq -r '.field'` instead of the grep approach.
+
+**Timeout errors:**
+Default timeout is 10 seconds (5s for branch-protection). If a hook needs more time, increase the `timeout` value in settings.local.json. Keep timeouts short -- hooks block Claude's execution while running.
+
+**Hook blocks unexpectedly:**
+If branch-protection blocks a command you have permission to run, the user must explicitly tell Claude to proceed. The hook itself cannot be bypassed -- this is by design. The user confirms, and Claude can then run the command without the hook intercepting (or the hook must be temporarily removed).
+
+## Future Hooks (Planned)
+
+**Tier 2 -- Medium Value:**
+
+| Hook | Event | Purpose |
+|------|-------|---------|
+| Subagent bundle injection | SubagentStart | Auto-inject domain bundles into subagents based on task context |
+| Quality gate on Stop | PostToolUse | Run tsc/tests after Claude finishes a task, before declaring done |
+| Async audit trail | PostToolUse (async) | Log all tool calls to .logs/ for compliance and debugging |
+
+**Tier 3 -- Future:**
+
+| Hook | Event | Purpose |
+|------|-------|---------|
+| Prompt router | UserPromptSubmit | Auto-detect bundle needs from prompt keywords and pre-load context |
+| Config guard | ConfigChange | Block unauthorized changes to settings or CLAUDE.md files |
+| Modified tool input | PreToolUse | Rewrite tool arguments before execution (e.g., inject defaults) |
+
+See FEATURE-REQUESTS.md for full details (FR-014 through FR-016).

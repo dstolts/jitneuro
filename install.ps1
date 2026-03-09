@@ -41,7 +41,7 @@ switch ($Mode) {
 Write-Host ""
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "rules")
+$dirs = @("commands", "bundles", "engrams", "session-state", "rules", "hooks")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -51,7 +51,7 @@ foreach ($dir in $dirs) {
 
 # Copy commands
 Write-Host "Installing commands..." -ForegroundColor Green
-$commands = @("save", "load", "learn", "sessions", "orchestrate", "conversation-log")
+$commands = @("save", "load", "learn", "sessions", "orchestrate", "conversation-log", "health", "enterprise", "status", "dashboard", "gitstatus", "diff", "audit", "bundle", "onboard")
 foreach ($cmd in $commands) {
     $src = Join-Path $Templates "commands\$cmd.md"
     if (Test-Path $src) {
@@ -104,6 +104,18 @@ if ((Get-ChildItem $rulesDir -File).Count -eq 0) {
     Write-Host "Skipped rules\ (already has files)" -ForegroundColor Yellow
 }
 
+# Copy hooks
+Write-Host "Installing hooks..." -ForegroundColor Green
+$hooks = @("pre-compact-save.sh", "session-start-recovery.sh", "branch-protection.sh", "session-end-autosave.sh", "jitneuro-hooks.json")
+$hooksDir = Join-Path $Target "hooks"
+foreach ($hook in $hooks) {
+    $src = Join-Path $Templates "hooks\$hook"
+    if (Test-Path $src) {
+        Copy-Item $src (Join-Path $hooksDir $hook) -Force
+        Write-Host "  hooks\$hook"
+    }
+}
+
 # Summary
 Write-Host ""
 Write-Host "---" -ForegroundColor DarkGray
@@ -115,8 +127,26 @@ Write-Host "  2. Create bundles for your domains in $Target\bundles\"
 Write-Host "  3. Create engrams for your projects in $Target\engrams\"
 Write-Host "  4. Update $Target\context-manifest.md with your bundles"
 Write-Host "  5. Add routing weights to your MEMORY.md"
-Write-Host "  6. Start a new Claude Code session (commands load at session start)"
+Write-Host "  6. CLOSE AND REOPEN Claude Code (commands are only discovered at session start)" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "*** You MUST restart Claude Code for slash commands to take effect. ***" -ForegroundColor Red
 Write-Host ""
 Write-Host "Commands available after restart: /save /load /learn /sessions /orchestrate" -ForegroundColor Cyan
+Write-Host "New commands: /health /enterprise /status /dashboard /gitstatus /diff /audit /bundle /onboard" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "IMPORTANT: Hooks were installed to $Target\hooks\ but you must" -ForegroundColor Yellow
+Write-Host "manually configure them in your settings.local.json file." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Add the following to your ~\.claude\settings.local.json (or merge"
+Write-Host "with existing hooks config):"
+Write-Host ""
+Write-Host '  "hooks": {' -ForegroundColor White
+Write-Host "    `"PreCompact`": [{ `"matcher`": `"`", `"hooks`": [{ `"type`": `"command`", `"command`": `"bash $Target\hooks\pre-compact-save.sh`" }] }]," -ForegroundColor White
+Write-Host "    `"SessionStart`": [{ `"matcher`": `"`", `"hooks`": [{ `"type`": `"command`", `"command`": `"bash $Target\hooks\session-start-recovery.sh`" }] }]," -ForegroundColor White
+Write-Host "    `"PrePush`": [{ `"matcher`": `"`", `"hooks`": [{ `"type`": `"command`", `"command`": `"bash $Target\hooks\branch-protection.sh`" }] }]," -ForegroundColor White
+Write-Host "    `"SessionEnd`": [{ `"matcher`": `"`", `"hooks`": [{ `"type`": `"command`", `"command`": `"bash $Target\hooks\session-end-autosave.sh`" }] }]" -ForegroundColor White
+Write-Host '  }' -ForegroundColor White
+Write-Host ""
+Write-Host "See $Target\hooks\jitneuro-hooks.json for the full hooks configuration."
 Write-Host ""
 Write-Host "Docs: $ScriptDir\docs\setup-guide.md"

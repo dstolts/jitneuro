@@ -53,10 +53,11 @@ mkdir -p "$TARGET/bundles"
 mkdir -p "$TARGET/engrams"
 mkdir -p "$TARGET/session-state"
 mkdir -p "$TARGET/rules"
+mkdir -p "$TARGET/hooks"
 
 # Copy commands (slash commands)
 echo "Installing commands..."
-for cmd in save load learn sessions orchestrate conversation-log; do
+for cmd in save load learn sessions orchestrate conversation-log health enterprise status dashboard gitstatus diff audit bundle onboard; do
   if [ -f "$TEMPLATES/commands/$cmd.md" ]; then
     cp "$TEMPLATES/commands/$cmd.md" "$TARGET/commands/$cmd.md"
     echo "  /$cmd"
@@ -102,6 +103,15 @@ else
   echo "Skipped rules/ (already has files)"
 fi
 
+# Copy hooks
+echo "Installing hooks..."
+for hook in pre-compact-save.sh session-start-recovery.sh branch-protection.sh session-end-autosave.sh jitneuro-hooks.json; do
+  if [ -f "$TEMPLATES/hooks/$hook" ]; then
+    cp "$TEMPLATES/hooks/$hook" "$TARGET/hooks/$hook"
+    echo "  hooks/$hook"
+  fi
+done
+
 # Show brainstem template hint
 echo ""
 echo "---"
@@ -113,8 +123,26 @@ echo "  2. Create bundles for your domains in $TARGET/bundles/"
 echo "  3. Create engrams for your projects in $TARGET/engrams/"
 echo "  4. Update $TARGET/context-manifest.md with your bundles"
 echo "  5. Add routing weights to your MEMORY.md"
-echo "  6. Start a new Claude Code session (commands load at session start)"
+echo "  6. CLOSE AND REOPEN Claude Code (commands are only discovered at session start)"
+echo ""
+echo "*** You MUST restart Claude Code for slash commands to take effect. ***"
 echo ""
 echo "Commands available after restart: /save /load /learn /sessions /orchestrate"
+echo "New commands: /health /enterprise /status /dashboard /gitstatus /diff /audit /bundle /onboard"
+echo ""
+echo "IMPORTANT: Hooks were installed to $TARGET/hooks/ but you must"
+echo "manually configure them in your settings.local.json file."
+echo ""
+echo "Add the following to your ~/.claude/settings.local.json (or merge"
+echo "with existing hooks config):"
+echo ""
+echo '  "hooks": {'
+echo '    "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/pre-compact-save.sh" }] }],'
+echo '    "SessionStart": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/session-start-recovery.sh" }] }],'
+echo '    "PrePush": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/branch-protection.sh" }] }],'
+echo '    "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/session-end-autosave.sh" }] }]'
+echo '  }'
+echo ""
+echo "See $TARGET/hooks/jitneuro-hooks.json for the full hooks configuration."
 echo ""
 echo "Docs: $SCRIPT_DIR/docs/setup-guide.md"

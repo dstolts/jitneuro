@@ -1,0 +1,22 @@
+# Environment
+.env*
+
+# Dependencies
+node_modules/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Conversation logs (may contain sensitive prompts)
+.logs/
+
+# Session state (ephemeral, per-machine)
+.claude/session-state/
+
+# Ralph runtime files
+.ralph-tui/iterations/
+.ralph-tui/reports/
+.ralph-tui/progress.md
+.ralph-tui/session.json
+.ralph-tui/session-meta.json
+.ralph-tui/ralph.lock

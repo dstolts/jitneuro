@@ -1,11 +1,17 @@
 # JitNeuro: Endless Auto-Recall Memory for Claude Code
 
-**Status: v0.1.0 -- Core framework complete, ready for testing**
-**Website:** [jitneuro.ai](https://jitneuro.ai)
+> We are stronger together. Every developer who shares a pattern, files an issue,
+> or contributes a template makes the entire community more productive. With an
+> army of developers helping each other, we can do amazing things TOGETHER.
+> This project exists because one developer hit a wall and refused to accept it.
+> If it helps you, pay it forward -- share what you learn.
 
-A framework for managing short-term and long-term memory in Claude Code sessions,
-inspired by neural network architecture. Stop losing context. Stop reloading everything.
-Load only what you need, when you need it.
+**Status: v0.1.1 -- Core framework complete, all tests passing**
+**GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
+
+**JIT = Just In Time.** A framework for managing short-term and long-term memory
+in Claude Code sessions, inspired by neural network architecture. Stop losing context.
+Stop reloading everything. Load only what you need, when you need it -- just in time.
 
 ## The Problem
 
@@ -138,6 +144,15 @@ workspace-root/                  <-- MULTI-REPO (recommended for shared workflow
   |   |   |-- save.md
   |   |   |-- load.md
   |   |   |-- learn.md
+  |   |   |-- health.md
+  |   |   |-- enterprise.md
+  |   |   |-- status.md
+  |   |   |-- dashboard.md
+  |   |   |-- gitstatus.md
+  |   |   |-- diff.md
+  |   |   |-- audit.md
+  |   |   |-- bundle.md
+  |   |   |-- onboard.md
   |   |   |-- sessions.md
   |   |   |-- orchestrate.md
   |   |   |-- conversation-log.md
@@ -177,6 +192,13 @@ cd jitneuro
 .\install.ps1 -Mode workspace
 ```
 
+**IMPORTANT: Close and reopen Claude Code after installing.** Slash commands
+are only discovered at session start. An existing session will not see new commands.
+
+**Note:** On Windows, some hooks and scripts require bash (Git Bash, WSL, or
+Windows Subsystem for Linux). For full functionality at scale, WSL is recommended.
+Core commands work on any platform. Hooks require a bash-compatible shell.
+
 Then:
 1. Slim your CLAUDE.md to brainstem using `templates/CLAUDE-brainstem.md`
 2. Create bundles for your domains in `.claude/bundles/`
@@ -199,10 +221,24 @@ See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 | `templates/commands/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
 | `templates/commands/sessions.md` | DONE | Session management (list, show, clean) |
 | `templates/commands/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
+| `templates/commands/health.md` | DONE | Standalone memory system diagnostic |
+| `templates/commands/enterprise.md` | DONE | Consolidated governance rules quick-reference |
+| `templates/commands/status.md` | DONE | Quick "where am I" snapshot across repos |
+| `templates/commands/dashboard.md` | DONE | Aggregate NEEDS DAN items into one triage view |
+| `templates/commands/gitstatus.md` | DONE | Cross-repo git comparison (local vs uat vs main) |
+| `templates/commands/diff.md` | DONE | Show changes since last push or main divergence |
+| `templates/commands/audit.md` | DONE | Repo hygiene scan (security, git, DOE compliance) |
+| `templates/commands/bundle.md` | DONE | On-demand context bundle loading |
+| `templates/commands/onboard.md` | DONE | Bootstrap new repo into DOE/JitNeuro framework |
 | `templates/engrams/example.md` | DONE | Per-project deep context template |
 | `templates/CLAUDE-brainstem.md` | DONE | Minimal CLAUDE.md template (30-40 lines) |
 | `templates/session-state.md` | DONE | Session checkpoint template |
 | `templates/rules/scoped-rule-example.md` | DONE | Path-scoped rule with frontmatter |
+| `templates/rules/schema.md` | DONE | Database/migration rules (schema/**, *.sql) |
+| `templates/rules/tests.md` | DONE | Testing conventions (tests/**, *.test.*) |
+| `templates/rules/test-coverage.md` | DONE | Layered coverage thresholds (global + project override) |
+| `templates/rules/deployment.md` | DONE | Deploy safety rules (Dockerfile, workflows, deploy/) |
+| `templates/rules/components.md` | DONE | UI component standards (src/components/**) |
 | `examples/multi-repo-sprint.md` | DONE | Multi-repo sprint with context switching |
 | `examples/solo-developer.md` | DONE | Solo dev managing 3 projects in one session |
 | `templates/gitignore-additions.txt` | DONE | .gitignore entries for logs + session state |
@@ -213,6 +249,14 @@ See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 | `docs/ralph-integration.md` | DONE | Ralph autonomous execution + JitNeuro memory |
 | `docs/holistic-review.md` | DONE | 4-persona pre/post execution review gates |
 | `docs/enterprise-isolation.md` | DONE | Single-repo isolation mode for enterprise/compliance |
+| `docs/commands-reference.md` | DONE | All 15 commands with examples, grouped by category |
+| `docs/hooks-guide.md` | DONE | Hook setup, config, troubleshooting, custom hooks |
+| `templates/hooks/pre-compact-save.sh` | DONE | PreCompact hook -- prompt /save before compaction |
+| `templates/hooks/session-start-recovery.sh` | DONE | Re-inject context after compaction |
+| `templates/hooks/branch-protection.sh` | DONE | Block RED zone git operations (push main, force push, reset --hard) |
+| `templates/hooks/session-end-autosave.sh` | DONE | Safety net breadcrumb on session exit |
+| `templates/hooks/jitneuro-hooks.json` | DONE | Hook behavior config (warn vs block) |
+| `templates/hooks/README.md` | DONE | Hook documentation and installation guide |
 | `install.sh` | DONE | Bash installer (workspace/project/user) |
 | `install.ps1` | DONE | PowerShell installer (workspace/project/user) |
 
@@ -271,6 +315,49 @@ When compacting, always preserve:
 ```
 This fires automatically when context fills -- no user action needed.
 
+### Rule of Lowest Context
+
+The most important design principle in JitNeuro: **store context at the lowest level possible.**
+
+Don't put everything in CLAUDE.md. A 500-line CLAUDE.md loads every session, wastes tokens on irrelevant rules, and gets compressed away. Instead, push rules down to where they apply:
+
+```
+CLAUDE.md (brainstem, 30-40 lines)    -- universal rules only
+  .claude/rules/schema.md              -- loads only for schema/**
+  .claude/rules/api.md                 -- loads only for src/api/**
+  .claude/rules/tests.md               -- loads only for tests/**
+  .claude/rules/deployment.md          -- loads only for deploy/**, Dockerfile, .github/workflows/**
+  .claude/bundles/deploy.md            -- loads on demand by orchestrator
+  .claude/engrams/repo.md              -- loads on demand per project
+  MEMORY.md                            -- routing weights (first 200 lines)
+```
+
+Each level only loads when relevant:
+- **Rules** load automatically when Claude touches matching file paths (zero cost when not needed)
+- **Bundles** load on demand when routing weights match the task
+- **Engrams** load on demand when working on a specific project
+- **CLAUDE.md** loads every session (keep it minimal)
+
+This is why one developer can manage 16+ repos without context bloat. Each repo has a 30-line brainstem. The deep knowledge lives in scoped rules, bundles, and engrams -- loaded just in time, not all the time.
+
+**Example: Layered Test Coverage**
+
+Rules can layer -- a global default in CLAUDE.md, overridden per project:
+
+```
+Global CLAUDE.md:        "Tests required. Minimum 60% line coverage."
+Payment API rules/:      80% min, 90% target, 95% for auth/payment paths
+Marketing site rules/:   40% min, 60% target, branch coverage not required
+Scripts repo:            (no override -- uses global 60% default)
+```
+
+The payment API gets strict rules that load only when touching test files.
+The marketing site gets relaxed rules. Scripts inherit the global default.
+No project pays the token cost for another project's coverage rules.
+
+See `templates/rules/test-coverage.md` for a ready-to-use template with
+configurable thresholds per project.
+
 ## Context Budget
 
 JitNeuro is designed to be lightweight. Here's what it actually costs:
@@ -327,8 +414,8 @@ The `/learn` command monitors these limits and flags violations before they caus
 | /memory | Verify loaded files |
 | Subagents | Isolated context windows with selective bundle loading |
 | .claude/rules/ | Path-scoped rules that only load when relevant |
-| Custom Commands | On-demand workflow loading (/save, /load, /learn, /sessions, convlog) |
-| Hooks | Automatic triggers (pre-compact, session start) |
+| Custom Commands | 15 commands: memory (/save, /load, /learn, /health), governance (/enterprise, /audit), git (/gitstatus, /diff), context (/bundle, /orchestrate, /status, /dashboard), setup (/onboard, /sessions, convlog) |
+| Hooks | PreCompact save prompt, automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 
 ## Lineage
@@ -349,8 +436,8 @@ concurrent sessions every day.
 ## Roadmap
 
 ### v0.1.0 (Current) -- Memory Layer
-Bundles, engrams, routing weights, /save, /load, /learn, orchestrator,
-session management, enterprise isolation, install scripts.
+Bundles, engrams, routing weights, /save, /load, /learn, /health, /enterprise,
+orchestrator, session management, enterprise isolation, install scripts.
 
 ### Phase 2 -- Cognitive Layer
 Phase 1 solves memory (what to know). Phase 2 solves cognition (how to think).
@@ -366,6 +453,8 @@ cognitive modeling -- hard-coded decision boundaries. Phase 2 extends this into:
   weights, with severity levels and context scoping
 - **Persona Weights** -- which expert voice for which task type, with tunable
   decision bias and vocabulary
+- **Governance Rules Engine** -- externalize branching policies, trust zones,
+  merge rules, and deployment gates into structured config (FR-013)
 
 Phase 2 extends /learn to capture cognitive patterns: overridden recommendations
 become decision model updates, repeated sequences become prediction rules,
@@ -389,4 +478,4 @@ MIT -- see [LICENSE](LICENSE).
 
 ## Author
 
-Dan Stolts - [jitai.co](https://jitai.co) | [jitneuro.ai](https://jitneuro.ai)
+Dan Stolts - [jitai.co](https://jitai.co) | [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)

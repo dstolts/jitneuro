@@ -14,10 +14,20 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [x] LICENSE (MIT)
 - [x] Disclaimer (not affiliated with Anthropic)
 - [x] Deployed to D:\Code\ as pilot (workspace + user level)
+- [x] /health command created
+- [x] /enterprise command created
+- [x] Hooks created (PreCompact, SessionStart recovery, branch protection, SessionEnd auto-save)
+- [x] All slash commands created (status, dashboard, gitstatus, diff, audit, bundle, onboard)
+- [x] FEATURE-REQUESTS.md updated with FR-006 through FR-020
+- [x] README updated with new files, commands, hooks
 - [ ] Final README review -- read top to bottom, fix any gaps
 - [ ] Test /learn in a real session (run it, verify health check output)
 - [ ] Test /save -> /clear -> /load cycle one more time
 - [ ] Clean up any test session-state files
+- [ ] Update install scripts to copy hooks + new commands
+- [ ] Test hooks on Windows (bash path compatibility)
+- [ ] Test /gitstatus across all repos
+- [ ] Test /health diagnostic
 
 ## Landing Page (jitneuro.ai)
 

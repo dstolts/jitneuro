@@ -63,6 +63,249 @@ expanding into new repos when JitNeuro is already running at workspace or user l
 Build with Lovable. Hero, problem/solution, architecture diagram, context budget,
 enterprise features, get started CTA to GitHub. Deploy to Vercel. See LAUNCH-TODO.md.
 
+## FR-006: /health Command (Standalone Diagnostic)
+**Priority:** High
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\health.md
+
+Standalone memory system diagnostic extracted from /learn. Checks MEMORY.md line count,
+bundle sizes, engram coverage, stale sessions, routing integrity, manifest sync.
+Read-only by default, fixes only with approval. Faster than /learn when you just
+want a quick system check without evaluating session learnings.
+
+## FR-007: /enterprise Command (Governance Quick-Reference)
+**Priority:** High
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\enterprise.md
+
+Consolidated view of all DOE governance rules: trust zones, approval workflow,
+quality gates (pre/post execution), cross-repo protocol, branch rules, file versioning.
+Read-only overlay with optional deep-dive into holistic review docs. Useful before
+sprints, during onboarding, or when planning cross-repo changes.
+
+## FR-008: /status Command (Where Am I)
+**Priority:** High
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\status.md
+
+Quick context snapshot: current branch per repo, dirty files, active sprint,
+last commit, what bundle is loaded. Answers "where was I" in 5 seconds.
+
+## FR-009: /dashboard Command (NEEDS DAN Aggregator)
+**Priority:** Medium
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\dashboard.md
+
+Aggregate all NEEDS DAN items from active-work bundle, hub.md files across repos,
+and pending approvals. Single prioritized list so Dan can triage in one view.
+
+## FR-010: /audit Command (Repo Hygiene)
+**Priority:** Medium
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\audit.md
+
+Scan repos for .env leaks, stale branches, uncommitted work, broken .gitignore,
+missing CLAUDE.md, missing engrams. Security + hygiene in one pass.
+
+## FR-011: /bundle Command (On-Demand Context Loading)
+**Priority:** Low
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\bundle.md
+
+Explicit bundle loading: `/bundle blog` loads blog.md into context. Useful when
+routing weights don't auto-trigger and user knows what they need.
+
+## FR-012: /onboard Command (New Repo Bootstrap)
+**Priority:** Medium
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\onboard.md
+
+Generate CLAUDE.md + engram + brainstem for a new repo from its codebase.
+Analyzes package.json, folder structure, git history to auto-populate identity,
+tech stack, key files, and integration points.
+
+## FR-019: /gitstatus Command (Cross-Repo Git Comparison)
+**Priority:** High
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\gitstatus.md
+
+Cross-repo git status showing local vs uat vs main for every active repo.
+One table showing: current branch, dirty files, commits ahead/behind between
+branches, last commit message. Flags issues (dirty on main, diverged branches).
+Supports filters: `/gitstatus dirty`, `/gitstatus behind`.
+
+## FR-020: /diff Command (Repo Change Summary)
+**Priority:** Medium
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\diff.md
+
+Show what changed in a repo since last push or since diverging from main.
+Formatted for quick review before push or PR. Shows commit log, stat summary,
+uncommitted changes.
+
+## FR-014: PreCompact Save Hook
+**Priority:** High
+**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\hooks\pre-compact-save.sh
+
+Claude Code hook that fires before context compaction. Prompts Claude to offer
+/save so session state is checkpointed before context gets compressed.
+
+Configurable behavior via jitneuro-hooks.json:
+- `warn` (default): message injected, compaction proceeds, Claude asks about /save
+- `block`: compaction blocked until user responds
+
+Limitation: hooks cannot read context % directly. PreCompact fires when Claude
+Code decides to compact (effectively "context is full"). The hook IS the threshold.
+
+Future: if Claude Code exposes context % in hook input JSON, add configurable
+threshold (e.g., fire at 90% instead of waiting for compaction trigger).
+
+## FR-015: Tier 1 Hooks (SessionStart Recovery, Branch Protection, Auto-Save)
+**Priority:** High
+**Status:** Done (v0.1.1)
+
+Three additional hooks deployed alongside FR-014:
+
+1. **Post-Compact Context Recovery** (SessionStart, matcher: "compact")
+   Re-injects most recent session state into Claude's context after compaction.
+   Restores: active task, loaded bundles, modified files, next steps.
+
+2. **Branch Protection** (PreToolUse, matcher: "Bash")
+   Blocks RED zone git operations programmatically:
+   - git push to main/master
+   - git push --force (any branch)
+   - git branch -D (force delete)
+   - git reset --hard
+   Exit code 2 blocks the command and tells Claude why.
+
+3. **Session End Auto-Save** (SessionEnd)
+   Safety net breadcrumb when session terminates. Writes timestamp, exit reason,
+   duration, working directory to _autosave.md. Not a full /save -- just confirms
+   a session was active if user forgot to checkpoint.
+
+## FR-017: Tier 2 Hooks (Subagent Injection, Quality Gate, Audit Trail)
+**Priority:** Medium
+**Status:** Planned
+
+1. **Subagent Bundle Injection** (SubagentStart)
+   Auto-inject relevant bundle content into subagent context via additionalContext.
+   Subagents currently start blind -- this gives them domain knowledge automatically.
+   Could use routing weights to determine which bundles match the subagent's task.
+
+2. **Quality Gate on Stop** (Stop, agent type hook)
+   After Claude finishes responding, spawn an agent to verify:
+   - tsc --noEmit passes (TypeScript repos)
+   - Tests pass (if test suite exists)
+   - No console.logs left in production code
+   Returns ok: false with reason if anything fails, causing Claude to fix issues.
+   Must check stop_hook_active to prevent infinite loops.
+
+3. **Async Audit Trail** (PostToolUse, async)
+   Log every tool call to .logs/audit-YYYYMMDD.log. Async so zero latency impact.
+   Captures: timestamp, tool name, input summary, success/failure.
+   Useful for debugging "what happened in that session" after the fact.
+
+## FR-018: Tier 3 Hooks (Prompt Router, Config Guard, Input Modifier)
+**Priority:** Low
+**Status:** Planned
+
+1. **Prompt Router** (UserPromptSubmit)
+   Read prompt keywords, inject routing hints for bundle loading. Could replace
+   manual routing weights with automatic detection. Concern: adds latency to
+   every single prompt. May be better as a prompt-type hook using Haiku.
+
+2. **Config Guard** (ConfigChange)
+   Block unauthorized settings changes. Log all config modifications to audit trail.
+   Enterprise use case -- overkill for solo developer.
+
+3. **Modified Tool Input** (PreToolUse)
+   Rewrite tool arguments before execution. Examples: force --no-cache on builds,
+   inject environment variables, redirect file paths. Powerful but dangerous --
+   very specific use cases only.
+
+## FR-016: Context % Threshold Alert (Depends on Claude Code API)
+**Priority:** Medium
+**Status:** Blocked -- waiting for Claude Code to expose context metrics in hook input
+
+The ideal version of FR-014: fire a hook at a configurable % threshold (e.g., 90%)
+BEFORE compaction is triggered. This would give the user time to /save, /clear,
+or switch tasks proactively instead of reactively.
+
+Requires Claude Code to include context usage data in hook input JSON:
+```json
+{
+  "context_used_pct": 92,
+  "context_tokens_used": 184000,
+  "context_tokens_max": 200000
+}
+```
+
+Until then, PreCompact (FR-014) is the best available signal.
+
+## FR-013: Branching and Governance Rules Engine
+**Priority:** High
+**Status:** Phase 2 Design
+
+Externalize branching rules, trust zones, and approval workflows into structured
+config files that Claude reads and enforces programmatically.
+
+### Problem
+Currently, branching rules and governance are prose in CLAUDE.md files. This works
+but has limitations:
+- Rules are scattered across global, workspace, and project CLAUDE.md files
+- No single source of truth for "can I push to this branch?"
+- Adding a new repo means copying prose rules manually
+- No way to have per-repo branch policies (some repos may allow main pushes)
+- Validation is honor-system -- Claude interprets prose, not structured rules
+
+### Proposed Design
+New directory: `.claude/governance/`
+
+**Branch policies** (`.claude/governance/branches.md` or `.yaml`):
+```
+| Repo | Branch | Policy | Approver |
+|------|--------|--------|----------|
+| * | main | RED (ask Dan) | Dan |
+| * | uat | GREEN (push freely) | auto |
+| * | sprint-* | GREEN (push freely) | auto |
+| * | hotfix-* | YELLOW (push, report) | auto |
+| jitai | prod | RED (ask Dan) | Dan |
+```
+
+**Merge policies**:
+- Which branches can merge into main (only uat? only sprint-* after review?)
+- Required checks before merge (tsc, tests, /enterprise review)
+- Auto-delete branch after merge?
+
+**Commit policies**:
+- Max files per commit (prevent mega-commits)
+- Required commit message format
+- Pre-commit validation hooks
+
+**Deployment gates**:
+- Which branches trigger which environments
+- Required approvals per environment
+- Rollback rules
+
+### Integration with /enterprise
+The /enterprise command would read these structured rules instead of parsing
+prose from multiple CLAUDE.md files. Single source of truth.
+
+### Integration with /audit
+The /audit command validates repos comply with governance rules:
+- Correct branch protection settings
+- No stale feature branches
+- All repos have required CLAUDE.md sections
+
+### Migration Path
+1. Define governance config format
+2. Extract current prose rules into config
+3. Update /enterprise to read config
+4. Update /audit to validate against config
+5. Keep prose in CLAUDE.md as human-readable summary, config as machine-readable source
+
+---
+
+# Possible Integrations
+
+Future optional integrations -- not planned, just noted for consideration:
+
+- GitHub Issues/Projects for task routing (replacing HUB.md pattern). /dashboard could read from GitHub instead of scanning .HUB/ files across repos.
+- Investigate WSL requirement on Windows: do hooks work with Git Bash alone, or is WSL truly required for full functionality at scale? Test: stat command (GNU vs BSD), jq availability, async hooks, path resolution. Goal: document minimum requirements and ideally make hooks portable without WSL.
+- beads-rust (br CLI) for sprint task management alongside ralph-tui.
+- MCP server for exposing JitNeuro memory to external tools.
+
 ---
 
 # Phase 2: Cognitive Layer
