@@ -226,6 +226,21 @@ This fires automatically when context fills -- no user action needed.
 | Hooks | Automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 
+## Lineage
+
+JitNeuro didn't appear overnight. It's the result of a year of iteration on AI memory management:
+
+| When | What | Limitation |
+|------|------|------------|
+| Mid-2025 | `/SaveAI` + `/LoadAI` in TaskManager | Single session, single repo, everything loaded at once |
+| Late 2025 | DOE Framework v01-v03 | Rules, workflows, inference -- but flat MEMORY.md hit 200-line ceiling |
+| Early 2026 | DOE v04 (Knowledge Hierarchy) | 5-layer architecture designed but implemented as one file |
+| March 2026 | **JitNeuro** | Bundles, routing weights, /save + /load, multi-session, cross-repo, orchestrator |
+
+Each version solved a real problem. Each hit a new wall. JitNeuro is what happens
+when you stop theorizing about AI memory and start managing 16 repos across 6
+concurrent sessions every day.
+
 ## License
 
 MIT
