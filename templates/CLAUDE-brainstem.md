@@ -5,7 +5,7 @@
 
   This is a minimal CLAUDE.md template designed for JitNeuro.
   Target: 30-40 lines. Only include what Claude MUST know at all times.
-  Everything else goes in bundles, rules, or skills.
+  Everything else goes in bundles, rules, or commands.
 
   Replace bracketed content with your project specifics.
 -->
@@ -39,7 +39,7 @@ When conversation_log is "on" in session-state.md:
 - FIRST action on every user message: append their prompt to the log file
 - If previous entry has no Response line, write that response FIRST
 - After completing work, append response summary to current entry
-- See `.claude/skills/conversation-log.md` for full protocol
+- See `.claude/commands/conversation-log.md` for full protocol
 - Toggle: `convlog on <session-name>` / `convlog off` / `convlog status`
 
 ## Key Paths

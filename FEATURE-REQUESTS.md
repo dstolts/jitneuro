@@ -40,7 +40,7 @@ Outline:
 - The journey: months of iteration since Claude Code and Cursor first launched
 - What doesn't work: giant CLAUDE.md files, manual reload, hoping for the best
 - The framework: neural network metaphor (weights, layers, attention, checkpoints)
-- The solution: JitNeuro -- bundles, routing weights, checkpoint/resume, sessions
+- The solution: JitNeuro -- bundles, routing weights, save/load, sessions
 - Live example: managing 16 repos, 6 concurrent sessions
 - Link to GitHub repo at the end
 

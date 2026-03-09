@@ -141,7 +141,7 @@ When `convlog status` is invoked:
 ## Important
 
 - Logging is per-session. It does not persist across sessions unless
-  session-state.md carries the toggle forward via /checkpoint + /load.
+  session-state.md carries the toggle forward via /save + /load.
 - Log files are append-only. Never modify or delete previous entries.
 - The TRIGGER behavior (log prompt FIRST) is critical -- it ensures no
   prompt is lost even if the response fails or context is cleared.

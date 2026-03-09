@@ -1,8 +1,8 @@
 # Session State
 
 <!--
-  This file is written by /checkpoint and read by /resume.
-  It is overwritten each checkpoint -- not versioned.
+  This file is written by /save and read by /load.
+  It is overwritten each save -- not versioned.
   Keep it concise. This is SHORT-TERM memory only.
 -->
 

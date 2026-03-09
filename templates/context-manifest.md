@@ -41,7 +41,7 @@ Update these as you learn which bundles co-activate:
 
 ## Session State
 
-Updated by /checkpoint skill. Read by /resume skill after /clear.
+Updated by /save command. Read by /load command after /clear.
 
 ```
 active_bundles: []

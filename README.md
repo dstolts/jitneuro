@@ -118,29 +118,40 @@ Log files are one-per-day, append-only, stored in `.logs/` (gitignored by defaul
 .logs/20260309-143022-FirstMover.md
 ```
 
-See [conversation-log.md](templates/skills/conversation-log.md) for full spec.
+See [conversation-log.md](templates/commands/conversation-log.md) for full spec.
 
 ## File Structure
 
+Commands can be installed at three levels. Choose the one that fits your setup:
+
 ```
-your-project/
+~/.claude/commands/              <-- USER-LEVEL: available everywhere on this machine
+
+workspace-root/                  <-- MULTI-REPO (recommended for shared workflows)
+  |-- .claude/
+  |   |-- commands/              <-- available to all repos launched from this directory
+  |   |   |-- save.md
+  |   |   |-- load.md
+  |   |   |-- sessions.md
+  |   |   |-- orchestrate.md
+  |   |   |-- conversation-log.md
+  |   |-- bundles/               <-- shared context bundles
+  |   |-- context-manifest.md    <-- bundle index + routing
+  |   |-- session-state/         <-- session checkpoints
+  |-- repo-a/
+  |-- repo-b/
+
+your-project/                    <-- PROJECT-LEVEL: single repo only
   |-- .claude/
   |   |-- CLAUDE.md              <-- minimal brainstem (30-40 lines)
-  |   |-- bundles/               <-- modular context files
-  |   |   |-- example.md
-  |   |   |-- (your domain bundles)
-  |   |-- skills/
-  |   |   |-- save.md      <-- save state before /clear
-  |   |   |-- load.md          <-- reload state after /clear
-  |   |   |-- orchestrate.md     <-- auto-route tasks to agents
-  |   |   |-- conversation-log.md <-- toggle-based session logging
-  |   |-- context-manifest.md    <-- index of all available bundles
-  |   |-- session-state.md       <-- current session checkpoint
+  |   |-- commands/              <-- project-specific commands (override workspace)
+  |   |-- bundles/               <-- project-specific context bundles
   |   |-- rules/                 <-- path-scoped rules (optional)
-  |       |-- (scoped rules)
   |-- .logs/                     <-- conversation logs (gitignored)
   |-- MEMORY.md routing weights  <-- in your memory directory
 ```
+
+Claude Code merges commands from all three levels. More specific scopes take priority.
 
 ## Quick Start
 
@@ -158,10 +169,11 @@ your-project/
 |------|--------|-------------|
 | `templates/context-manifest.md` | DONE | Bundle index + routing weights + session state |
 | `templates/bundles/example.md` | DONE | Example bundle template with guidelines |
-| `templates/skills/save.md` | DONE | Save state before /clear |
-| `templates/skills/load.md` | DONE | Reload state after /clear |
-| `templates/skills/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
-| `templates/skills/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
+| `templates/commands/save.md` | DONE | Save state before /clear |
+| `templates/commands/load.md` | DONE | Reload state after /clear |
+| `templates/commands/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
+| `templates/commands/sessions.md` | DONE | Session management (list, show, clean) |
+| `templates/commands/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
 | `templates/CLAUDE-brainstem.md` | DONE | Minimal CLAUDE.md template (30-40 lines) |
 | `templates/session-state.md` | DONE | Session checkpoint template |
 | `templates/rules/scoped-rule-example.md` | DONE | Path-scoped rule with frontmatter |
@@ -222,7 +234,7 @@ This fires automatically when context fills -- no user action needed.
 | /memory | Verify loaded files |
 | Subagents | Isolated context windows with selective bundle loading |
 | .claude/rules/ | Path-scoped rules that only load when relevant |
-| Skills | On-demand workflow loading (/save, /load, convlog) |
+| Custom Commands | On-demand workflow loading (/save, /load, /sessions, convlog) |
 | Hooks | Automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 

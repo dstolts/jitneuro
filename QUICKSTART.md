@@ -10,7 +10,7 @@ Your workspace (D:\Code\) already has JitNeuro installed:
 ```
 D:\Code\.claude\
   bundles\           5 bundles (active-work, aibm, blog, infrastructure, integrations)
-  skills\            5 skills (save, resume, orchestrate, sessions, conversation-log)
+  commands\          5 slash commands (save, load, orchestrate, sessions, conversation-log)
   context-manifest.md   routing weights + bundle index
   session-state\        empty, ready for saves
 ```
@@ -163,7 +163,7 @@ Expected: Session file lists BOTH repos under "Repos Involved."
 | Save too long (>80 lines) | Skill says 30-60 lines target -- Claude should summarize, not replay |
 | /load loads wrong bundles | Check the session file -- are the right bundles listed? |
 | /sessions shows nothing | No saves created yet -- run /save first |
-| Skills not recognized | Verify .claude/skills/ directory has the .md files |
+| Commands not recognized | Verify .claude/commands/ directory has the .md files (not .claude/skills/). Restart session. |
 
 ---
 
