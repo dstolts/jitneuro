@@ -1,0 +1,8 @@
+# Neuro-Context -- add these lines to your project's .gitignore
+
+# Conversation logs (may contain sensitive prompts)
+# Remove this line if you want logs committed to the repo
+.logs/
+
+# Session state (ephemeral, per-machine)
+.claude/session-state.md

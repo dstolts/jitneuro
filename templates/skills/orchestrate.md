@@ -1,0 +1,80 @@
+# Orchestrate
+
+Automatically route tasks to subagents with the right context bundles.
+This is the core automation -- no manual /clear or reload needed.
+
+## When to Use
+- Any task that can be delegated to a subagent
+- When working on multiple domains in one session
+- When context is getting heavy and you want to keep the main conversation thin
+- When parallel execution would be faster
+
+## Instructions
+
+When a task is received:
+
+1. **Classify the task** -- determine which domain(s) it touches:
+   - Read `.claude/context-manifest.md` for available bundles
+   - Check routing weights in the manifest (or MEMORY.md) for known patterns
+   - If no routing weight exists, infer from the task description
+
+2. **Decide execution strategy:**
+
+   a. **Single agent** -- task touches one domain:
+      - Launch agent with prompt:
+        "Read [bundle path(s)]. Then: [task description]"
+      - Agent works in isolated context with only relevant bundles
+
+   b. **Parallel agents** -- task touches independent domains:
+      - Launch multiple agents simultaneously
+      - Each gets its own bundle(s)
+      - Results merge back into main context as summaries
+
+   c. **Sequential agents** -- task has dependencies:
+      - Launch agent 1, get result
+      - Feed result into agent 2's prompt with its own bundles
+      - Chain continues until complete
+
+   d. **Main context** -- task is simple or needs conversation history:
+      - Load bundle directly into main context (only if small and essential)
+      - Use for tasks that need back-and-forth with the user
+
+3. **Launch agent(s)** with this prompt pattern:
+   ```
+   Read the following context files:
+   - [path/to/bundle1.md]
+   - [path/to/bundle2.md]
+   - [any additional context files needed]
+
+   Task: [clear task description]
+
+   Return: [what the main context needs back -- keep it concise]
+   ```
+
+4. **Process results:**
+   - Receive agent summary (automatically compressed)
+   - Update session-state.md with results
+   - If new routing patterns discovered, note for MEMORY.md update
+   - Report to user: what was done, what's next
+
+5. **Update routing weights** if a new pattern emerged:
+   - "Task type X needed bundles [A, B] -- adding to routing weights"
+   - Update context-manifest.md or MEMORY.md at session end
+
+## Routing Decision Table
+
+| Signal | Strategy |
+|--------|----------|
+| Task mentions specific files/domain | Load that domain's bundle |
+| Task is exploratory/research | Agent with broad context, return summary |
+| Task is implementation | Agent with specific bundle + file paths |
+| Task needs user input mid-way | Main context with minimal bundle |
+| Task is multi-repo | Parallel agents, one per repo |
+| Unknown domain | Read manifest, infer, launch agent |
+
+## Important
+- Main context should stay THIN -- summaries only
+- Never load all bundles into main context "just in case"
+- When in doubt, use an agent (isolated context is always safer)
+- Failed agent? Retry with additional bundles, not more main context
+- Update routing weights after discovering new co-activation patterns
