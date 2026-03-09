@@ -1,4 +1,4 @@
-# JitNeuro: Endless Memory for Claude Code
+# JitNeuro: Endless Auto-Recall Memory for Claude Code
 
 **Status: v0.1.0 -- Core framework complete, ready for testing**
 **Website:** [jitneuro.ai](https://jitneuro.ai)
@@ -20,10 +20,13 @@ Critical instructions get compressed away. You manually type reload commands aft
 
 JitNeuro adds a memory management layer using Claude Code's existing primitives:
 - **Context Bundles** -- modular knowledge files loaded on-demand (like neural network layers)
+- **Engrams** -- per-project deep context, strengthened over time by /learn (like long-term potentiation)
 - **Context Manifest** -- tracks what's available and what's active (like an attention mechanism)
-- **Session State** -- checkpoint/load across `/clear` cycles (like working memory)
+- **Session State** -- save/load across `/clear` cycles (like working memory)
 - **Routing Weights** -- learned patterns for which bundles to co-activate (in MEMORY.md)
 - **Orchestrator** -- automated context routing via subagents (no manual typing)
+- **/learn** -- backpropagation: evaluate sessions and persist learnings to long-term memory
+- **Holistic Review** -- 4-persona pre/post execution gates for enterprise-grade code quality
 
 ## Architecture
 
@@ -31,7 +34,7 @@ JitNeuro adds a memory management layer using Claude Code's existing primitives:
 LONG-TERM MEMORY (disk -- survives all sessions)
   |-- MEMORY.md            learned patterns + routing weights
   |-- bundles/             domain knowledge, loaded on-demand
-  |-- context files        project/repo deep context
+  |-- engrams/             per-project deep context (updated by /learn)
   |-- specs + decisions    procedural + episodic memory
 
 WORKING MEMORY (context window -- limited capacity)
@@ -55,10 +58,11 @@ SHORT-TERM MEMORY (checkpoint files -- survives /clear)
 | Working memory      | Context window (limited, actively managed)          |
 | Long-term memory    | Disk files (specs, context, decisions)              |
 | Activation function | Manifest routing (which bundles to load)            |
-| Backpropagation     | User corrections -> MEMORY.md updates               |
+| Long-term potentiation | Engrams (project context, strengthened by /learn)  |
+| Backpropagation     | /learn (session evaluation -> memory updates)        |
 | Dropout             | /clear (intentional forgetting)                     |
 | Checkpointing       | session-state.md (save/restore)                     |
-| Transfer learning   | Cross-project context files                         |
+| Transfer learning   | Cross-project engrams                               |
 
 ## How It Works
 
@@ -81,9 +85,10 @@ SESSION START
   |   |-- /clear: flush working memory
   |   |-- Resume: reload only what's needed for next task
   |
-  |-- END OF SESSION
-      |-- Update MEMORY.md with new routing patterns
-      |-- Update session-state.md with status
+  |-- END OF SESSION (or before /save)
+      |-- /learn: evaluate session for long-term knowledge
+      |-- Update MEMORY.md, bundles, engrams (with approval)
+      |-- /save: checkpoint short-term state
       |-- Next session picks up cleanly
 ```
 
@@ -132,10 +137,12 @@ workspace-root/                  <-- MULTI-REPO (recommended for shared workflow
   |   |-- commands/              <-- available to all repos launched from this directory
   |   |   |-- save.md
   |   |   |-- load.md
+  |   |   |-- learn.md
   |   |   |-- sessions.md
   |   |   |-- orchestrate.md
   |   |   |-- conversation-log.md
   |   |-- bundles/               <-- shared context bundles
+  |   |-- engrams/               <-- per-project deep context (updated by /learn)
   |   |-- context-manifest.md    <-- bundle index + routing
   |   |-- session-state/         <-- session checkpoints
   |-- repo-a/
@@ -146,6 +153,7 @@ your-project/                    <-- PROJECT-LEVEL: single repo only
   |   |-- CLAUDE.md              <-- minimal brainstem (30-40 lines)
   |   |-- commands/              <-- project-specific commands (override workspace)
   |   |-- bundles/               <-- project-specific context bundles
+  |   |-- engrams/               <-- project-specific deep context
   |   |-- rules/                 <-- path-scoped rules (optional)
   |-- .logs/                     <-- conversation logs (gitignored)
   |-- MEMORY.md routing weights  <-- in your memory directory
@@ -158,10 +166,12 @@ Claude Code merges commands from all three levels. More specific scopes take pri
 1. Copy the template files into your project (see [Setup Guide](docs/setup-guide.md))
 2. Slim your CLAUDE.md to brainstem using `templates/CLAUDE-brainstem.md`
 3. Create bundles for your domains in `.claude/bundles/`
-4. Update `.claude/context-manifest.md` with your bundles
-5. Add routing weights to your MEMORY.md
-6. Use `/save` before `/clear`, `/load` after
-7. Or let the orchestrator handle it automatically via subagents
+4. Create engrams for your projects in `.claude/engrams/`
+5. Update `.claude/context-manifest.md` with your bundles
+6. Add routing weights to your MEMORY.md
+7. Use `/save` before `/clear`, `/load` after
+8. Run `/learn` periodically to persist session knowledge
+9. Or let the orchestrator handle it automatically via subagents
 
 ## Files
 
@@ -171,16 +181,23 @@ Claude Code merges commands from all three levels. More specific scopes take pri
 | `templates/bundles/example.md` | DONE | Example bundle template with guidelines |
 | `templates/commands/save.md` | DONE | Save state before /clear |
 | `templates/commands/load.md` | DONE | Reload state after /clear |
+| `templates/commands/learn.md` | DONE | Backpropagation -- persist session learnings |
 | `templates/commands/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
 | `templates/commands/sessions.md` | DONE | Session management (list, show, clean) |
 | `templates/commands/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
+| `templates/engrams/example.md` | DONE | Per-project deep context template |
 | `templates/CLAUDE-brainstem.md` | DONE | Minimal CLAUDE.md template (30-40 lines) |
 | `templates/session-state.md` | DONE | Session checkpoint template |
 | `templates/rules/scoped-rule-example.md` | DONE | Path-scoped rule with frontmatter |
 | `examples/multi-repo-sprint.md` | DONE | Multi-repo sprint with context switching |
 | `examples/solo-developer.md` | DONE | Solo dev managing 3 projects in one session |
 | `templates/gitignore-additions.txt` | DONE | .gitignore entries for logs + session state |
+| `templates/commands/learn.md` | DONE | Backpropagation + memory health monitoring |
+| `templates/engrams/example.md` | DONE | Per-project deep context template |
 | `docs/setup-guide.md` | DONE | Step-by-step setup with troubleshooting |
+| `docs/master-session.md` | DONE | Multi-repo orchestration from one session |
+| `docs/ralph-integration.md` | DONE | Ralph autonomous execution + JitNeuro memory |
+| `docs/holistic-review.md` | DONE | 4-persona pre/post execution review gates |
 
 ## Key Concepts
 
@@ -192,6 +209,21 @@ Self-contained knowledge files (50-80 lines max) covering one domain. Examples:
 
 Bundles live in `.claude/bundles/` and are loaded **only when needed** by the
 orchestrator or manually via "Read .claude/bundles/X.md".
+
+### Engrams
+Per-project deep context files. One file per project or repository.
+
+In neuroscience, an engram is the physical trace a memory leaves in the brain --
+the compressed representation of an experience. Each project's engram is exactly
+that: not the codebase itself, but the compressed knowledge about it.
+
+Engrams live in `.claude/engrams/` and are updated by `/learn`:
+- `aifs-api.md` -- tech stack, key files, architecture, integrations, gotchas
+- `jitai.md` -- Next.js setup, blog workflow, Vercel config, known issues
+
+Bundles and engrams are orthogonal:
+- **Bundles** cut across projects by domain ("how to deploy")
+- **Engrams** cut across domains by project ("everything about this repo")
 
 ### Routing Weights
 Patterns in MEMORY.md that map task types to bundle combinations:
@@ -222,6 +254,50 @@ When compacting, always preserve:
 ```
 This fires automatically when context fills -- no user action needed.
 
+## Context Budget
+
+JitNeuro is designed to be lightweight. Here's what it actually costs:
+
+### Always Loaded (every session)
+
+| File | Lines | Est. Tokens | Purpose |
+|------|-------|-------------|---------|
+| CLAUDE.md (global) | ~50-140 | ~400-1,100 | Core rules, trust zones |
+| CLAUDE.md (project) | ~30-50 | ~250-400 | Project identity, key paths |
+| MEMORY.md | ~90-200 | ~700-1,600 | Routing weights, project index |
+| **Total brainstem** | **~170-390** | **~1,350-3,100** | |
+
+That's roughly **1-2% of a 200K context window**. The rest is your conversation and code.
+
+### On-Demand (loaded only when needed)
+
+| Category | Typical Load | Lines | Est. Tokens |
+|----------|-------------|-------|-------------|
+| 1 command (/save, /load, etc.) | Per invocation | ~65-185 | ~500-1,500 |
+| 1-2 bundles | Per task routing | ~30-80 each | ~250-650 each |
+| 1 engram | Per project | ~50-150 | ~400-1,200 |
+
+A typical working session adds **~1-2%** more for on-demand context.
+
+### Total: ~3-4% of context for full JitNeuro infrastructure
+
+Compare this to the alternative: a monolithic CLAUDE.md that grows to 500+ lines,
+loads everything every session, can't be selectively unloaded, and still misses
+project-specific context. That approach easily consumes 5-10%+ and scales worse
+as projects grow.
+
+### Size Limits (enforced by /learn)
+
+| Component | Limit | Why |
+|-----------|-------|-----|
+| MEMORY.md | 200 lines (hard) | Claude Code truncates beyond 200 -- content silently lost |
+| Bundles | 80 lines each | Longer bundles get skimmed or partially read |
+| Engrams | 150 lines each | Diminishing returns -- trim stale content |
+| CLAUDE.md | 30-40 lines | Loaded every session -- keep minimal |
+| Session state | 30-60 lines | Checkpoint, not transcript |
+
+The `/learn` command monitors these limits and flags violations before they cause problems.
+
 ## Claude Code Primitives Used
 
 | Primitive | How JitNeuro Uses It |
@@ -234,7 +310,7 @@ This fires automatically when context fills -- no user action needed.
 | /memory | Verify loaded files |
 | Subagents | Isolated context windows with selective bundle loading |
 | .claude/rules/ | Path-scoped rules that only load when relevant |
-| Custom Commands | On-demand workflow loading (/save, /load, /sessions, convlog) |
+| Custom Commands | On-demand workflow loading (/save, /load, /learn, /sessions, convlog) |
 | Hooks | Automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 
@@ -253,9 +329,19 @@ Each version solved a real problem. Each hit a new wall. JitNeuro is what happen
 when you stop theorizing about AI memory and start managing 16 repos across 6
 concurrent sessions every day.
 
+## Disclaimer
+
+JitNeuro is an independent open-source project. It is not affiliated with, endorsed by,
+or officially connected to Anthropic, Claude, or Claude Code. "Claude Code" is a product
+of Anthropic, PBC. JitNeuro uses Claude Code's publicly documented features (CLAUDE.md,
+MEMORY.md, custom commands, subagents) and does not modify or extend the Claude Code
+application itself.
+
+This software is provided as-is, without warranty. See [LICENSE](LICENSE) for details.
+
 ## License
 
-MIT
+MIT -- see [LICENSE](LICENSE).
 
 ## Author
 

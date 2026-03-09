@@ -90,7 +90,8 @@ When invoked as `/save <session-name>`:
 - Claude decides what matters based on the actual session. No rigid rules.
 
 ## Important
-- Do NOT update MEMORY.md during checkpoint (that's long-term memory, updated at session end)
+- Do NOT update MEMORY.md, bundles, or engrams during save (that's /learn's job)
 - Do NOT modify any code files
 - If the session file already exists, UPDATE it (preserve history of previous checkpoints as context)
 - Session names are cross-repo by design -- one task may touch multiple repos
+- After saving, suggest: "Run `/learn` first if you want to persist any learnings from this session."
