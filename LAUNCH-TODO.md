@@ -36,7 +36,7 @@ Target: publish GitHub + blog + LinkedIn same day.
 
 ## GitHub
 
-- [ ] Initialize git remote (github.com/dstolts/jitneuro)
+- [x] Initialize git remote (github.com/dstolts/jitneuro)
 - [ ] Push to main (RED -- needs Dan's explicit approval)
 - [ ] Verify README renders correctly on GitHub
 - [ ] Add topics: claude-code, ai-memory, context-management, developer-tools

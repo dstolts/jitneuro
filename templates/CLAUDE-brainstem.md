@@ -19,8 +19,33 @@
 - [Rule 2: e.g., run tests before committing]
 - [Rule 3: e.g., ASCII only in all output]
 
+## JitNeuro Mode
+<!-- Choose ONE mode. Delete the other. -->
+
+<!-- OPTION A: SINGLE-REPO MODE (enterprise / isolated)
+     All JitNeuro files stay inside this repo. No cross-repo access.
+     Install with: ./install.sh project -->
+JitNeuro is scoped to THIS REPO only.
+- Read/write: `.claude/` within this repo
+- Read/write: MEMORY.md auto-memory
+- DO NOT read or write files outside this repository
+- DO NOT access parent workspace .claude/ directories
+
+<!-- OPTION B: MULTI-REPO MODE (solo dev / small team)
+     Shared JitNeuro at workspace level. Cross-repo visibility.
+     Install with: ./install.sh workspace -->
+<!--
+From any repo, Claude has full read/write access to:
+- `[workspace]/.claude/bundles/` -- shared domain knowledge
+- `[workspace]/.claude/engrams/` -- shared project context
+- `[workspace]/.claude/session-state/` -- shared session checkpoints
+- `[workspace]/.claude/context-manifest.md` -- bundle index and routing
+- MEMORY.md auto-memory (routing weights, project index)
+-->
+
 ## Context Loading
 - Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
+- Engrams: `.claude/engrams/` (per-project context, loaded per task)
 - Manifest: `.claude/context-manifest.md` (bundle index + routing)
 - Session state: `.claude/session-state/` (one file per named session)
 - Memory: Check MEMORY.md routing weights for task-to-bundle mapping
@@ -48,5 +73,6 @@ When conversation_log is "on" in session-state.md:
 |------|---------|
 | `.claude/context-manifest.md` | Bundle index and routing |
 | `.claude/session-state/` | Session checkpoints (one per task) |
-| `.claude/bundles/` | Context bundles directory |
+| `.claude/bundles/` | Domain knowledge bundles |
+| `.claude/engrams/` | Per-project deep context |
 | `.logs/` | Conversation logs (when enabled) |

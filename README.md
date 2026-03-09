@@ -212,6 +212,7 @@ See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 | `docs/master-session.md` | DONE | Multi-repo orchestration from one session |
 | `docs/ralph-integration.md` | DONE | Ralph autonomous execution + JitNeuro memory |
 | `docs/holistic-review.md` | DONE | 4-persona pre/post execution review gates |
+| `docs/enterprise-isolation.md` | DONE | Single-repo isolation mode for enterprise/compliance |
 | `install.sh` | DONE | Bash installer (workspace/project/user) |
 | `install.ps1` | DONE | PowerShell installer (workspace/project/user) |
 
@@ -344,6 +345,33 @@ JitNeuro didn't appear overnight. It's the result of a year of iteration on AI m
 Each version solved a real problem. Each hit a new wall. JitNeuro is what happens
 when you stop theorizing about AI memory and start managing 16 repos across 6
 concurrent sessions every day.
+
+## Roadmap
+
+### v0.1.0 (Current) -- Memory Layer
+Bundles, engrams, routing weights, /save, /load, /learn, orchestrator,
+session management, enterprise isolation, install scripts.
+
+### Phase 2 -- Cognitive Layer
+Phase 1 solves memory (what to know). Phase 2 solves cognition (how to think).
+
+Current guardrails (trust zones, approval workflows) are the simplest form of
+cognitive modeling -- hard-coded decision boundaries. Phase 2 extends this into:
+
+- **Decision Models** -- structured frameworks Claude applies at decision points
+  (not "what to do" but "how to decide what to do")
+- **Prediction Rules** -- anticipate what the user wants next based on observed
+  sequences across sessions
+- **Anti-Patterns** -- learned constraints from corrections, stronger than routing
+  weights, with severity levels and context scoping
+- **Persona Weights** -- which expert voice for which task type, with tunable
+  decision bias and vocabulary
+
+Phase 2 extends /learn to capture cognitive patterns: overridden recommendations
+become decision model updates, repeated sequences become prediction rules,
+corrections become anti-patterns.
+
+See [FEATURE-REQUESTS.md](FEATURE-REQUESTS.md) for detailed Phase 2 design (FR-100 through FR-104).
 
 ## Disclaimer
 
