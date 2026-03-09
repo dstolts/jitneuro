@@ -3,7 +3,7 @@
 <!--
   BRAINSTEM TEMPLATE
 
-  This is a minimal CLAUDE.md template designed for Neuro-Context.
+  This is a minimal CLAUDE.md template designed for JitNeuro.
   Target: 30-40 lines. Only include what Claude MUST know at all times.
   Everything else goes in bundles, rules, or skills.
 
@@ -22,7 +22,7 @@
 ## Context Loading
 - Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
 - Manifest: `.claude/context-manifest.md` (bundle index + routing)
-- Session state: `.claude/session-state.md` (checkpoint/resume)
+- Session state: `.claude/session-state/` (one file per named session)
 - Memory: Check MEMORY.md routing weights for task-to-bundle mapping
 
 ## Compact Instructions
@@ -47,6 +47,6 @@ When conversation_log is "on" in session-state.md:
 | Path | Purpose |
 |------|---------|
 | `.claude/context-manifest.md` | Bundle index and routing |
-| `.claude/session-state.md` | Current session checkpoint |
+| `.claude/session-state/` | Session checkpoints (one per task) |
 | `.claude/bundles/` | Context bundles directory |
 | `.logs/` | Conversation logs (when enabled) |

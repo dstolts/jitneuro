@@ -28,7 +28,7 @@ Sessions (5 active):
   Name                          Age    Task                              Repos
   firstmover-stripe-checkout    2h     Sprint-FirstMover-Checkout US-003 AIFS-API, jitai
   blog-comments-api             1d     Sprint-BlogComments-001 testing   AIFS-API
-  neuro-context-deploy          1d     Deploy neuro-context to D:\Code   neuro-context
+  jitneuro-deploy          1d     Deploy jitneuro to D:\Code   jitneuro
   aibm-dealer-research          3d     Dealer script Phase 2 research    Automation
   seo-automation-planning       5d     Sprint-SEO-Automation-001 spec    SEO
 ```

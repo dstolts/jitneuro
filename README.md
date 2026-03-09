@@ -1,6 +1,7 @@
-# Neuro-Context: Memory Management for Claude Code
+# JitNeuro: Just-In-Time Memory Management for Claude Code
 
 **Status: v0.1.0 -- Core framework complete, ready for testing**
+**Website:** [jitneuro.com](https://jitneuro.com)
 
 A framework for managing short-term and long-term memory in Claude Code sessions,
 inspired by neural network architecture. Stop losing context. Stop reloading everything.
@@ -17,7 +18,7 @@ Critical instructions get compressed away. You manually type reload commands aft
 
 ## The Solution
 
-Neuro-Context adds a memory management layer using Claude Code's existing primitives:
+JitNeuro adds a memory management layer using Claude Code's existing primitives:
 - **Context Bundles** -- modular knowledge files loaded on-demand (like neural network layers)
 - **Context Manifest** -- tracks what's available and what's active (like an attention mechanism)
 - **Session State** -- checkpoint/resume across `/clear` cycles (like working memory)
@@ -46,7 +47,7 @@ SHORT-TERM MEMORY (checkpoint files -- survives /clear)
 
 ### Neural Network Mapping
 
-| Neural Network      | Neuro-Context Equivalent                           |
+| Neural Network      | JitNeuro Equivalent                           |
 |---------------------|-----------------------------------------------------|
 | Weights             | MEMORY.md (learned routing patterns)                |
 | Layers              | Context bundles (domain-specific knowledge)         |
@@ -211,7 +212,7 @@ This fires automatically when context fills -- no user action needed.
 
 ## Claude Code Primitives Used
 
-| Primitive | How Neuro-Context Uses It |
+| Primitive | How JitNeuro Uses It |
 |-----------|---------------------------|
 | CLAUDE.md | Minimal brainstem + compact instructions |
 | MEMORY.md | Routing weights + learned patterns |
@@ -231,4 +232,4 @@ MIT
 
 ## Author
 
-Dan Stolts - [jitai.co](https://jitai.co)
+Dan Stolts - [jitai.co](https://jitai.co) | [jitneuro.com](https://jitneuro.com)

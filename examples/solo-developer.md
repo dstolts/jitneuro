@@ -1,6 +1,6 @@
 # Example: Solo Developer with Multiple Projects
 
-This example shows a solo developer using Neuro-Context to manage context
+This example shows a solo developer using JitNeuro to manage context
 across 3 different projects in one session without manual /clear or reload.
 
 ## Setup
@@ -72,6 +72,6 @@ Three projects, three different domains, zero context bleed between them.
 Main context used: ~10 lines of summaries. Each agent had exactly the
 context it needed and nothing more.
 
-Without Neuro-Context: developer would have loaded all 3 project contexts
+Without JitNeuro: developer would have loaded all 3 project contexts
 at session start, filled context window by task 2, needed manual /clear,
 lost task 1 results, reloaded manually for task 3.

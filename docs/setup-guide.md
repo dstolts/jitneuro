@@ -1,6 +1,6 @@
 # Setup Guide
 
-Get Neuro-Context running in your project in 10 minutes.
+Get JitNeuro running in your project in 10 minutes.
 
 ## Prerequisites
 - Claude Code installed and working
@@ -17,7 +17,7 @@ mkdir -p .claude/bundles .claude/skills .claude/rules
 
 # Copy templates (adjust source path)
 cp templates/context-manifest.md .claude/context-manifest.md
-cp templates/session-state.md .claude/session-state.md
+mkdir -p .claude/session-state
 cp templates/skills/checkpoint.md .claude/skills/checkpoint.md
 cp templates/skills/resume.md .claude/skills/resume.md
 cp templates/skills/orchestrate.md .claude/skills/orchestrate.md
@@ -60,7 +60,7 @@ Edit `.claude/context-manifest.md`:
 In your MEMORY.md (auto-memory), add a routing section:
 
 ```markdown
-## Neuro-Context Routing Weights
+## JitNeuro Routing Weights
 - Deploy tasks -> bundles: [deploy]
 - API work -> bundles: [api, testing]
 - Sprint execution -> bundles: [sprint]
@@ -140,5 +140,5 @@ Claude: [reads manifest]
 | Claude ignores bundle content | Bundle too long (over 80 lines) or conflicting with CLAUDE.md |
 | Wrong bundles loaded | Update routing weights in manifest/MEMORY.md |
 | Context still fills up | Use agents more aggressively, checkpoint/clear more often |
-| /resume loads stale state | Check session-state.md date, delete if outdated |
+| /resume loads stale state | Check session date, run `sessions stale` to review |
 | Skills not recognized | Verify .claude/skills/ directory exists and files are .md |

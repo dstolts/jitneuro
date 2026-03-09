@@ -1,6 +1,6 @@
 # Example: Multi-Repo Sprint with Context Switching
 
-This example shows Neuro-Context managing a sprint that touches an API repo
+This example shows JitNeuro managing a sprint that touches an API repo
 and a frontend repo, with task switching mid-session.
 
 ## Setup
@@ -86,7 +86,7 @@ Claude (orchestrator):
 ### End State
 
 Main context consumed: ~20 lines of summaries across 4 agent calls.
-Without Neuro-Context: would have loaded all bundle content into main context,
+Without JitNeuro: would have loaded all bundle content into main context,
 filled up, needed manual /clear, lost sprint state, reloaded manually.
 
 ## Key Takeaways
