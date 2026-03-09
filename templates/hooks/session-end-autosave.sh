@@ -7,7 +7,8 @@
 #
 # The file is overwritten each time (it's a "last known state" marker, not a log).
 
-SESSION_DIR="D:/Code/.claude/session-state"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SESSION_DIR="$(dirname "$SCRIPT_DIR")/session-state"
 AUTOSAVE_FILE="$SESSION_DIR/_autosave.md"
 
 # Read hook input

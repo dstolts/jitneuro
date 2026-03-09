@@ -98,7 +98,7 @@ other tool calls or work -- is to append the user's prompt to the log file.
 The `<session-name>` in the filename is configurable. Set it when enabling:
 
 ```
-/conversation-log on FirstMover
+/conversation-log on my-project
 ```
 
 If no session name is provided, use `session` as the default:

@@ -1,12 +1,9 @@
-# JitNeuro: Endless Auto-Recall Memory for Claude Code
+# JitNeuro: JIT Memory Management for Claude Code
 
-> We are stronger together. Every developer who shares a pattern, files an issue,
-> or contributes a template makes the entire community more productive. With an
-> army of developers helping each other, we can do amazing things TOGETHER.
-> This project exists because one developer hit a wall and refused to accept it.
-> If it helps you, pay it forward -- share what you learn.
+> This started because reloading context after every /clear got old.
+> If it helps you, share what you learn.
 
-**Status: v0.1.1 -- Core framework complete, all tests passing**
+**Status: v0.1.1 -- 15 commands, 4 hooks, install scripts**
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
 **JIT = Just In Time.** A framework for managing short-term and long-term memory
@@ -100,12 +97,15 @@ SESSION START
 
 ### Automated (No Manual Typing)
 
-The key insight: **subagents ARE automated clear/reload.** Each agent launch:
-- Gets a fresh context window (automatic /clear)
+The core mechanism: **subagents ARE automated clear/reload.** Subagents run inside
+your current Claude Code session (via the Agent tool) -- not separate sessions.
+Each agent launch:
+- Gets its own isolated context window (automatic /clear)
 - Receives only the bundles it needs (selective reload)
 - Returns a compressed summary (automatic /compact)
 
 The main conversation becomes a thin orchestrator that never fills up.
+You just open Claude Code and work. The framework handles memory behind the scenes.
 
 ### Conversation Logging (Optional)
 
@@ -114,7 +114,7 @@ to a daily log file in `.logs/`. Useful for audit trails, session handoffs, and
 reviewing what happened in long sessions.
 
 ```
-convlog on FirstMover    <-- enable with session name
+convlog on my-project    <-- enable with session name
 convlog off                        <-- disable
 convlog status                     <-- check current state
 ```
@@ -126,7 +126,7 @@ the session crashes mid-task.
 
 Log files are one-per-day, append-only, stored in `.logs/` (gitignored by default):
 ```
-.logs/20260309-143022-FirstMover.md
+.logs/20260309-143022-my-project.md
 ```
 
 See [conversation-log.md](templates/commands/conversation-log.md) for full spec.
@@ -209,56 +209,15 @@ Then:
 
 See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 
-## Files
+## What's Included
 
-| File | Status | Description |
-|------|--------|-------------|
-| `templates/context-manifest.md` | DONE | Bundle index + routing weights + session state |
-| `templates/bundles/example.md` | DONE | Example bundle template with guidelines |
-| `templates/commands/save.md` | DONE | Save state before /clear |
-| `templates/commands/load.md` | DONE | Reload state after /clear |
-| `templates/commands/learn.md` | DONE | Backpropagation -- persist session learnings |
-| `templates/commands/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
-| `templates/commands/sessions.md` | DONE | Session management (list, show, clean) |
-| `templates/commands/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
-| `templates/commands/health.md` | DONE | Standalone memory system diagnostic |
-| `templates/commands/enterprise.md` | DONE | Consolidated governance rules quick-reference |
-| `templates/commands/status.md` | DONE | Quick "where am I" snapshot across repos |
-| `templates/commands/dashboard.md` | DONE | Aggregate NEEDS DAN items into one triage view |
-| `templates/commands/gitstatus.md` | DONE | Cross-repo git comparison (local vs uat vs main) |
-| `templates/commands/diff.md` | DONE | Show changes since last push or main divergence |
-| `templates/commands/audit.md` | DONE | Repo hygiene scan (security, git, DOE compliance) |
-| `templates/commands/bundle.md` | DONE | On-demand context bundle loading |
-| `templates/commands/onboard.md` | DONE | Bootstrap new repo into DOE/JitNeuro framework |
-| `templates/engrams/example.md` | DONE | Per-project deep context template |
-| `templates/CLAUDE-brainstem.md` | DONE | Minimal CLAUDE.md template (30-40 lines) |
-| `templates/session-state.md` | DONE | Session checkpoint template |
-| `templates/rules/scoped-rule-example.md` | DONE | Path-scoped rule with frontmatter |
-| `templates/rules/schema.md` | DONE | Database/migration rules (schema/**, *.sql) |
-| `templates/rules/tests.md` | DONE | Testing conventions (tests/**, *.test.*) |
-| `templates/rules/test-coverage.md` | DONE | Layered coverage thresholds (global + project override) |
-| `templates/rules/deployment.md` | DONE | Deploy safety rules (Dockerfile, workflows, deploy/) |
-| `templates/rules/components.md` | DONE | UI component standards (src/components/**) |
-| `examples/multi-repo-sprint.md` | DONE | Multi-repo sprint with context switching |
-| `examples/solo-developer.md` | DONE | Solo dev managing 3 projects in one session |
-| `templates/gitignore-additions.txt` | DONE | .gitignore entries for logs + session state |
-| `templates/commands/learn.md` | DONE | Backpropagation + memory health monitoring |
-| `templates/engrams/example.md` | DONE | Per-project deep context template |
-| `docs/setup-guide.md` | DONE | Step-by-step setup with troubleshooting |
-| `docs/master-session.md` | DONE | Multi-repo orchestration from one session |
-| `docs/ralph-integration.md` | DONE | Ralph autonomous execution + JitNeuro memory |
-| `docs/holistic-review.md` | DONE | 4-persona pre/post execution review gates |
-| `docs/enterprise-isolation.md` | DONE | Single-repo isolation mode for enterprise/compliance |
-| `docs/commands-reference.md` | DONE | All 15 commands with examples, grouped by category |
-| `docs/hooks-guide.md` | DONE | Hook setup, config, troubleshooting, custom hooks |
-| `templates/hooks/pre-compact-save.sh` | DONE | PreCompact hook -- prompt /save before compaction |
-| `templates/hooks/session-start-recovery.sh` | DONE | Re-inject context after compaction |
-| `templates/hooks/branch-protection.sh` | DONE | Block RED zone git operations (push main, force push, reset --hard) |
-| `templates/hooks/session-end-autosave.sh` | DONE | Safety net breadcrumb on session exit |
-| `templates/hooks/jitneuro-hooks.json` | DONE | Hook behavior config (warn vs block) |
-| `templates/hooks/README.md` | DONE | Hook documentation and installation guide |
-| `install.sh` | DONE | Bash installer (workspace/project/user) |
-| `install.ps1` | DONE | PowerShell installer (workspace/project/user) |
+- **15 slash commands** in `templates/commands/` -- memory, governance, git, context, setup
+- **4 hooks** in `templates/hooks/` -- pre-compact save, session recovery, branch protection, auto-save
+- **5 rule templates** in `templates/rules/` -- schema, tests, coverage, deployment, components
+- **Templates** -- brainstem CLAUDE.md, bundle example, engram example, session-state, context manifest
+- **Examples** in `examples/` -- multi-repo sprint, solo developer workflow
+- **Docs** in `docs/` -- setup guide, commands reference, hooks guide, holistic review, enterprise isolation
+- **Install scripts** -- `install.sh` (bash) and `install.ps1` (PowerShell) for workspace/project/user modes
 
 ## Key Concepts
 
@@ -279,8 +238,8 @@ the compressed representation of an experience. Each project's engram is exactly
 that: not the codebase itself, but the compressed knowledge about it.
 
 Engrams live in `.claude/engrams/` and are updated by `/learn`:
-- `aifs-api.md` -- tech stack, key files, architecture, integrations, gotchas
-- `jitai.md` -- Next.js setup, blog workflow, Vercel config, known issues
+- `my-api.md` -- tech stack, key files, architecture, integrations, gotchas
+- `my-frontend.md` -- framework setup, build config, deploy pipeline, known issues
 
 Bundles and engrams are orthogonal:
 - **Bundles** cut across projects by domain ("how to deploy")
@@ -310,7 +269,7 @@ A section in CLAUDE.md that controls what auto-compaction preserves:
 When compacting, always preserve:
 - Active bundle list
 - Modified file paths
-- Current task and status
+- Full task list with status (all known tasks, not just current)
 - Pending decisions
 ```
 This fires automatically when context fills -- no user action needed.
@@ -338,7 +297,7 @@ Each level only loads when relevant:
 - **Engrams** load on demand when working on a specific project
 - **CLAUDE.md** loads every session (keep it minimal)
 
-This is why one developer can manage 16+ repos without context bloat. Each repo has a 30-line brainstem. The deep knowledge lives in scoped rules, bundles, and engrams -- loaded just in time, not all the time.
+This pattern scales across many repos without context bloat. Each repo has a 30-line brainstem. The deep knowledge lives in scoped rules, bundles, and engrams -- loaded just in time, not all the time.
 
 **Example: Layered Test Coverage**
 
@@ -420,30 +379,28 @@ The `/learn` command monitors these limits and flags violations before they caus
 
 ## Lineage
 
-JitNeuro didn't appear overnight. It's the result of a year of iteration on AI memory management:
+Here's how this evolved:
 
 | When | What | Limitation |
 |------|------|------------|
+| Early-Mid 2025 | Massive CLAUDE.md files + manual context saves | 500+ line CLAUDE.md loaded every session. Constant "save this to a .md file" then "read that .md file back." Context management was the job, not the work. |
 | Mid-2025 | `/SaveAI` + `/LoadAI` in TaskManager | Single session, single repo, everything loaded at once |
 | Late 2025 | DOE Framework v01-v03 | Rules, workflows, inference -- but flat MEMORY.md hit 200-line ceiling |
 | Early 2026 | DOE v04 (Knowledge Hierarchy) | 5-layer architecture designed but implemented as one file |
 | March 2026 | **JitNeuro** | Bundles, routing weights, /save + /load, multi-session, cross-repo, orchestrator |
 
-Each version solved a real problem. Each hit a new wall. JitNeuro is what happens
-when you stop theorizing about AI memory and start managing 16 repos across 6
-concurrent sessions every day.
+Each version solved a real problem and hit a new wall.
 
 ## Roadmap
 
-### v0.1.0 (Current) -- Memory Layer
+### v0.1.1 (Current) -- Memory Layer
 Bundles, engrams, routing weights, /save, /load, /learn, /health, /enterprise,
 orchestrator, session management, enterprise isolation, install scripts.
 
-### Phase 2 -- Cognitive Layer
-Phase 1 solves memory (what to know). Phase 2 solves cognition (how to think).
-
-Current guardrails (trust zones, approval workflows) are the simplest form of
-cognitive modeling -- hard-coded decision boundaries. Phase 2 extends this into:
+### Phase 2 -- Decision Frameworks
+Phase 1 solves memory (what to know). Phase 2 adds structured decision-making
+patterns -- teaching Claude not just your project context, but your preferences
+and workflows. Extends the current guardrails (trust zones, approval workflows) into:
 
 - **Decision Models** -- structured frameworks Claude applies at decision points
   (not "what to do" but "how to decide what to do")

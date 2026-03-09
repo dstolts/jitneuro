@@ -50,9 +50,9 @@ When invoked as `/load` with no name, show:
 
 ```
 Active sessions:
-  firstmover-stripe-checkout   (2h ago)  Sprint-FirstMover-Checkout, US-003
-  blog-comments-api            (1d ago)  Sprint-BlogComments-001, testing
-  aibm-dealer-research         (3d ago)  Dealer script Phase 2 research
+  auth-api-refactor            (2h ago)  Sprint-Auth-Refactor, US-003
+  checkout-bug-fix             (1d ago)  Sprint-Checkout-001, testing
+  dashboard-redesign           (3d ago)  Dashboard Phase 2 research
 Pick one, or start fresh.
 ```
 

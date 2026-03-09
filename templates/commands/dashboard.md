@@ -1,13 +1,13 @@
 # Dashboard
 
-Aggregate all NEEDS DAN items, pending approvals, and blockers into one
-prioritized view. Single triage list so Dan can make decisions in one pass.
+Aggregate all BLOCKED items, pending approvals, and blockers into one
+prioritized view. Single triage list so the project owner can make decisions in one pass.
 
 ## When to Use
 - Start of day to see what needs attention
 - When switching contexts to find the highest-priority item
 - Before a planning session to review open items
-- When Dan asks "what needs my attention"
+- When the user asks "what needs my attention"
 
 ## Instructions
 
@@ -17,14 +17,11 @@ When invoked as `/dashboard`:
 
 Read these files (in parallel where possible):
 
-1. `.claude/bundles/active-work.md` -- NEEDS DAN section + current sprints
+1. `.claude/bundles/active-work.md` -- BLOCKED section + current sprints
 2. `.claude/session-state/` -- all session files, check for stale/pending items
 3. Scan for `.HUB/Hub.md` or `.HUB/*.md` files in active repos:
-   - D:\Code\Automation\.HUB\
-   - D:\Code\AIFieldSupport-API\.HUB\
-   - D:\Code\jitai\.HUB\
-   - D:\Code\FirstMover\.HUB\ (if exists)
-   - Check any other repos listed in active-work that might have hub files
+   - Search the workspace root for subdirectories containing `.HUB/` folders
+   - Check any repos listed in active-work that might have hub files
 
 ### Step 2: Categorize Items
 
@@ -32,11 +29,11 @@ Group all found items into categories:
 
 | Category | Priority | Description |
 |----------|----------|-------------|
-| BLOCKED | Highest | Items that cannot proceed without Dan's input |
-| APPROVAL | High | Plans, PRs, pushes waiting for Dan's go-ahead |
-| DECISION | Medium | Choices Dan needs to make (architecture, priority, scope) |
-| REVIEW | Medium | Work completed that needs Dan's eyes |
-| INFO | Low | Status updates Dan should know about |
+| BLOCKED | Highest | Items that cannot proceed without the project owner's input |
+| APPROVAL | High | Plans, PRs, pushes waiting for the project owner's go-ahead |
+| DECISION | Medium | Choices the project owner needs to make (architecture, priority, scope) |
+| REVIEW | Medium | Work completed that needs the project owner's eyes |
+| INFO | Low | Status updates the project owner should know about |
 
 ### Step 3: Present Dashboard
 
@@ -70,13 +67,13 @@ Total items: [count]
 After presenting the dashboard:
 "Pick a number to focus on, or 'all' to work through the list."
 
-If Dan picks a number, load the relevant context (bundle, session, hub file)
+If the user picks a number, load the relevant context (bundle, session, hub file)
 and present the specific item with enough detail to make a decision.
 
 ## Important
 - This is READ-ONLY. Never modifies any files.
 - Present items in priority order (BLOCKED first).
-- Include source file paths so Dan can find the original context.
+- Include source file paths so the user can find the original context.
 - Keep descriptions to one line each -- detail on demand.
 - If no items found: "Dashboard clear. No items need your attention."
 - Hub files may not exist for all repos -- skip gracefully.

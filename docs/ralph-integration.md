@@ -69,7 +69,7 @@ Without the bundle, it can't check "does this follow our API patterns?"
 
 ```
 User runs in separate terminal:
-  cd D:\Code\AIFS-API; ralph-tui run
+  cd ~/Code/my-api; ralph-tui run
 
 Ralph:
   - Reads prd.json

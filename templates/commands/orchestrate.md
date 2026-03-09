@@ -1,7 +1,11 @@
 # Orchestrate
 
-Automatically route tasks to subagents with the right context bundles.
-This is the core automation -- no manual /clear or reload needed.
+Route tasks to subagents with the right context bundles. Subagents run inside
+your current Claude Code session (using the Agent tool) -- they are NOT separate
+sessions. Each subagent gets its own isolated context window, works with only the
+bundles it needs, and returns a compressed summary to your main conversation.
+
+No manual /clear or reload needed. No new sessions to open.
 
 ## When to Use
 - Any task that can be delegated to a subagent

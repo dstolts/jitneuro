@@ -2,9 +2,6 @@
 
 JitNeuro ships 15 slash commands organized into 5 categories. All commands are read-only unless explicitly noted.
 
-> **Why these commands exist:**
-> These commands exist because JitNeuro lets you talk to your AI with full context and understanding -- every session, every time. No more re-explaining. The framework manages what your AI knows and when it knows it. One developer managing 16+ repos is 3x more productive solo than a 15-person dev team -- because the AI never loses context.
-
 ---
 
 ## Memory Management
@@ -46,7 +43,7 @@ Example:
 ```
 /learn
 ```
-Analyzes the session, identifies new patterns or facts worth persisting, checks for stale or conflicting memory entries, and proposes updates for Dan's review.
+Analyzes the session, identifies new patterns or facts worth persisting, checks for stale or conflicting memory entries, and proposes updates for review.
 
 ---
 
@@ -85,9 +82,9 @@ Scan one or all repos for security issues, git hygiene, and DOE compliance. Chec
 
 Example:
 ```
-/audit AIFieldSupport-API
+/audit auth-api
 ```
-Scans AIFieldSupport-API for .env exposure, missing engrams, CLAUDE.md presence, git status, and DOE guardrail compliance. Returns a pass/fail table with remediation steps.
+Scans auth-api for .env exposure, missing engrams, CLAUDE.md presence, git status, and guardrail compliance. Returns a pass/fail table with remediation steps.
 
 ---
 
@@ -118,24 +115,24 @@ Show changes since last push or main divergence. Summarizes what has changed in 
 
 Example:
 ```
-/diff jitai
+/diff auth-api
 ```
-Shows a summary of all changed files in the jitai repo since the last push, with line counts and change descriptions.
+Shows a summary of all changed files in the auth-api repo since the last push, with line counts and change descriptions.
 
 ---
 
 ## Context Management
 
 ### /bundle <name>
-Load a specific context bundle on demand. Bundles are curated knowledge sets (e.g., blog workflow, infrastructure details, AIBM sales context) that give Claude deep domain knowledge for a task.
+Load a specific context bundle on demand. Bundles are curated knowledge sets (e.g., deploy pipeline, infrastructure details, API design patterns) that give Claude deep domain knowledge for a task.
 
-- **Arguments:** `name` (required) -- bundle identifier (e.g., `blog`, `infrastructure`, `aibm`, `integrations`, `active-work`, `ralph-workflow`)
+- **Arguments:** `name` (required) -- bundle identifier (e.g., `deploy`, `infrastructure`, `api-design`, `integrations`, `testing`)
 
 Example:
 ```
-/bundle blog
+/bundle deploy
 ```
-Loads the blog bundle from `D:\Code\.claude\bundles\blog.md`, giving Claude full awareness of the blog workflow, content state, and sync process.
+Loads the deploy bundle, giving Claude full awareness of the deployment pipeline, environment configs, and release process.
 
 ---
 
@@ -148,7 +145,7 @@ Example:
 ```
 /orchestrate
 ```
-Claude analyzes the pending task, selects relevant bundles (e.g., ralph-workflow + infrastructure for a cross-repo sprint), and loads them before proceeding.
+Claude analyzes the pending task, selects relevant bundles (e.g., deploy + infrastructure for a cross-repo task), and loads them before proceeding.
 
 ---
 
@@ -174,7 +171,7 @@ Example:
 ```
 /dashboard
 ```
-Returns a prioritized table of items requiring Dan's attention: approvals, blockers, decisions, and review requests across all active work.
+Returns a prioritized table of items requiring attention: approvals, blockers, decisions, and review requests across all active work.
 
 ---
 

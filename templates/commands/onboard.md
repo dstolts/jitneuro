@@ -4,7 +4,7 @@ Bootstrap a new repo into the DOE/JitNeuro framework. Generates CLAUDE.md,
 engram, and brainstem by analyzing the repo's actual codebase.
 
 ## When to Use
-- Adding a new repo to the D:\Code\ workspace
+- Adding a new repo to the workspace
 - Setting up DOE compliance for an existing project
 - After cloning a new project that needs JitNeuro integration
 - When /audit flags a repo as missing CLAUDE.md or engram
@@ -57,11 +57,11 @@ Read these files (in parallel where possible) to understand the project:
 ```
 
 **.claude/CLAUDE.md** (brainstem, ~30-40 lines):
-Use `D:\Code\jitneuro\templates\CLAUDE-brainstem.md` as the template.
+Use the JitNeuro `templates/CLAUDE-brainstem.md` as the template.
 Fill in project-specific values.
 
-**Engram** (D:\Code\.claude\engrams\[repo-name]-context.md, ~50-80 lines):
-Use `D:\Code\jitneuro\templates\engrams\example.md` as the template.
+**Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-80 lines):
+Use the JitNeuro `templates/engrams/example.md` as the template.
 Populate with discovered tech stack, key files, architecture, integrations.
 
 ### Step 3: Present for Approval
@@ -73,7 +73,7 @@ Generated 3 files:
 
 1. [repo]/CLAUDE.md (project identity, 25 lines)
 2. [repo]/.claude/CLAUDE.md (brainstem, 35 lines)
-3. D:\Code\.claude\engrams\[repo]-context.md (engram, 60 lines)
+3. .claude/engrams/[repo]-context.md (engram, 60 lines)
 
 Review and approve? (all / pick by number / edit first)
 ```

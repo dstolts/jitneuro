@@ -15,7 +15,7 @@ Files placed in `.claude/skills/` will not be recognized as slash commands.
 **Correct path:** `.claude/commands/<name>.md` -> invoked as `/<name>`
 **Three scopes:**
 - **Project commands:** `<repo-root>/.claude/commands/` -- available in that single repo
-- **Multi-repo commands:** `<workspace-root>/.claude/commands/` -- available to all repos under that workspace (e.g., `D:\Code\.claude\commands\` covers all 16 repos launched from D:\Code)
+- **Multi-repo commands:** `<workspace-root>/.claude/commands/` -- available to all repos under that workspace (e.g., `~/Code/.claude/commands/` covers all repos launched from ~/Code)
 - **User commands:** `~/.claude/commands/` -- available globally in all projects on the machine
 
 Claude Code walks up the directory tree looking for `.claude/commands/` directories.
@@ -408,7 +408,7 @@ Rule of Lowest Context:
 - **Bundles** load on demand via routing weights
 - **Engrams** load on demand per project
 
-This is how one developer manages 16+ repos without context bloat. The deep knowledge
+This is how you manage many repos without context bloat. The deep knowledge
 is always there -- it just loads just in time, not all the time.
 
 ### Anti-Pattern: Rule Duplication

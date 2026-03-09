@@ -98,7 +98,7 @@ Ralph Preview: Sprint-BlogComments-001
 | US-HER | Holistic review | -- | 15 min | Go |
 
 Prerequisites:
-- [ ] Database migration for comments table (Dan must run)
+- [ ] Database migration for comments table (project owner must run)
 - [ ] API deployed to uat (needed for FE testing)
 
 Blockers: None
@@ -125,7 +125,7 @@ Spec Deviations:
 - US-002: Returns 201 instead of spec'd 200 (minor, 201 is more correct)
 
 Recommendation: Fix US-004 admin check before push. US-002 rate limiting
-can be a follow-up story if Dan approves.
+can be a follow-up story if the project owner approves.
 ```
 
 ## How JitNeuro Context Improves Reviews

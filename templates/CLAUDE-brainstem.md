@@ -54,7 +54,7 @@ From any repo, Claude has full read/write access to:
 When compacting, always preserve:
 - Active bundle list from session-state.md
 - All modified file paths with line numbers
-- Current task name and status
+- Full task list with status (all known tasks, not just current)
 - Pending decisions awaiting user input
 - Critical rules from this file
 Drop: exploratory reads, verbose tool outputs, completed subtask details

@@ -17,9 +17,9 @@ After `/compact`, the session file serves as a safety net -- if compaction
 dropped something important, the full state is still on disk.
 
 ```
-/save blog-comments-api    <-- saves to disk
+/save checkout-bug-fix     <-- saves to disk
 /clear                           <-- wipes context (disk untouched)
-/load blog-comments-api        <-- reads from disk, reloads bundles
+/load checkout-bug-fix         <-- reads from disk, reloads bundles
 ```
 
 ## Instructions
@@ -30,8 +30,8 @@ When invoked as `/save <session-name>`:
    - If user provided a name, use it (lowercase, hyphens, task-descriptive)
    - If no name provided, suggest one based on current work and ASK to confirm
    - Name should describe the TASK, not the repo (cross-repo sessions are normal)
-   - Good: `firstmover-stripe-checkout`, `blog-comments-api`, `aibm-dealer-research`
-   - Bad: `jitai`, `session1`, `work`
+   - Good: `auth-api-refactor`, `checkout-bug-fix`, `dashboard-redesign`
+   - Bad: `my-project`, `session1`, `work`
    - **Multiple tasks in session:** If the session touched more than one distinct task,
      ask ONE question: "This session touched [task A] and [task B]. Save as one
      checkpoint or separate?" Then create accordingly.

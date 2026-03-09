@@ -16,11 +16,11 @@ When invoked as `/enterprise`:
 ### Step 1: Load Governance Sources
 
 Read these files (in parallel where possible):
-- `C:\Users\dstolts\.claude\CLAUDE.md` -- global DOE guardrails (trust zones, approval workflow)
-- `D:\Code\.claude\CLAUDE.md` -- workspace rules (cross-repo protocol, write access)
-- `D:\Code\jitneuro\docs\holistic-review.md` -- 4-persona review gates
-- `D:\Code\jitneuro\docs\enterprise-isolation.md` -- single-repo isolation mode
-- `D:\Code\jitneuro\docs\master-session.md` -- multi-repo orchestration
+- `~/.claude/CLAUDE.md` -- global DOE guardrails (trust zones, approval workflow)
+- Workspace `.claude/CLAUDE.md` -- workspace rules (cross-repo protocol, write access)
+- JitNeuro `docs/holistic-review.md` -- 4-persona review gates
+- JitNeuro `docs/enterprise-isolation.md` -- single-repo isolation mode
+- JitNeuro `docs/master-session.md` -- multi-repo orchestration
 
 ### Step 2: Present Holistic View
 
@@ -34,7 +34,7 @@ TRUST ZONES
 |------|---------|----------|
 | GREEN | Read/write/edit code+docs, search, test, analyze | Execute freely |
 | YELLOW | Schema, dependencies, API contracts, .env | Execute, report at checkpoint |
-| RED | Push main, prod deploy, delete, DB migrations | Stop and ask Dan |
+| RED | Push main, prod deploy, delete, DB migrations | Stop and ask the project owner |
 
 APPROVAL WORKFLOW
 - Strategy Mode: .MD files only, no code until explicit approval
@@ -70,7 +70,7 @@ CROSS-REPO PROTOCOL
 BRANCH RULES
 - Sprint: sprint-<feature>-<number> (e.g., sprint-blog-001)
 - Ralph: feature branch or uat
-- Hotfix to main: only with Dan's explicit approval
+- Hotfix to main: only with explicit permission from the project owner
 
 FILE VERSIONING
 - Search first, ask user, then version (Name-01.md -> Name-02.md)

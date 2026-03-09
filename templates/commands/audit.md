@@ -27,6 +27,7 @@ For each repo, run these checks:
 - [ ] .env files not tracked in git (`git ls-files | grep -i '\.env'`)
 - [ ] No credentials in tracked files (grep for common patterns: password=, secret=, api_key=, token= in non-.env files)
 - [ ] .gitignore exists and includes: .env*, node_modules/, .claude/settings.local.json
+- [ ] .gitignore has exception for .env.example (`!.env.example`) so example configs can be tracked
 
 **Git Hygiene:**
 - [ ] No uncommitted changes on main/master
@@ -37,7 +38,7 @@ For each repo, run these checks:
 **DOE Compliance:**
 - [ ] .claude/CLAUDE.md exists (project passport)
 - [ ] Root CLAUDE.md exists (project identity)
-- [ ] Engram exists in D:\Code\.claude\engrams\ for this repo
+- [ ] Engram exists in `.claude/engrams/` for this repo
 - [ ] If TypeScript: tsconfig.json exists
 
 **File Hygiene:**
@@ -52,15 +53,15 @@ For each repo, run these checks:
 
 | Repo | Security | Git | DOE | Files | Issues |
 |------|----------|-----|-----|-------|--------|
-| jitai | WARN | OK | OK | WARN | 2 |
-| AIFieldSupport-API | OK | WARN | OK | OK | 1 |
-| jitneuro | OK | OK | OK | OK | 0 |
+| my-app | WARN | OK | OK | WARN | 2 |
+| my-api | OK | WARN | OK | OK | 1 |
+| my-tools | OK | OK | OK | OK | 0 |
 
 Details:
-  jitai:
+  my-app:
     [WARN] Security: .next/ build artifacts tracked in git
     [WARN] Files: .next/ in git history (needs .gitignore update)
-  AIFieldSupport-API:
+  my-api:
     [WARN] Git: 3 stale branches (>30 days): feature/old-thing, test/spike, hotfix/legacy
 
 Total: 12 repos scanned, 3 issues found

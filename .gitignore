@@ -1,5 +1,6 @@
 # Environment
 .env*
+!.env.example
 
 # Dependencies
 node_modules/
@@ -13,7 +14,15 @@ node_modules/
 # Session state (ephemeral, per-machine)
 .claude/session-state/
 
-# Ralph runtime files
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor swap/backup files
+*.swp
+*~
+
+# Ralph task runner runtime files (optional -- only needed if using ralph-tui)
 .ralph-tui/iterations/
 .ralph-tui/reports/
 .ralph-tui/progress.md

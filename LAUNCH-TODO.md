@@ -20,14 +20,23 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [x] All slash commands created (status, dashboard, gitstatus, diff, audit, bundle, onboard)
 - [x] FEATURE-REQUESTS.md updated with FR-006 through FR-020
 - [x] README updated with new files, commands, hooks
-- [ ] Final README review -- read top to bottom, fix any gaps
-- [ ] Test /learn in a real session (run it, verify health check output)
-- [ ] Test /save -> /clear -> /load cycle one more time
-- [ ] Clean up any test session-state files
-- [ ] Update install scripts to copy hooks + new commands
-- [ ] Test hooks on Windows (bash path compatibility)
-- [ ] Test /gitstatus across all repos
-- [ ] Test /health diagnostic
+- [x] Final README review -- tone, humility, no sales language, generic examples
+- [x] Test /learn in a real session (run it, verify health check output)
+- [x] Test /save -> /clear -> /load cycle one more time
+- [x] Clean up any test session-state files
+- [x] Update install scripts to copy hooks + new commands
+- [x] Test hooks on Windows (bash path compatibility)
+- [x] Test /gitstatus across all repos
+- [x] Test /health diagnostic
+- [x] Remove hardcoded paths from all templates (34 files, 3-agent cleanup)
+- [x] Remove "Dan" references -- generic for open source
+- [x] Remove project-specific examples (AIBM, FirstMover, jitai, etc.)
+- [x] Simplify QUICKSTART.md to 3-step flow
+- [x] Rewrite DEMO-SCRIPT.md as tutorial (not internal marketing)
+- [x] Rename Phase 2 from "Cognitive Layer" to "Decision Frameworks"
+- [x] Add FR-021 (customizable assistant/user names)
+- [x] Add FR-022 (artwork/logo)
+- [ ] Add prerequisite note (requires Claude Code -- what version?)
 
 ## Landing Page (jitneuro.ai)
 

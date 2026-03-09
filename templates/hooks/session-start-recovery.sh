@@ -5,7 +5,8 @@
 # Reads the most recent session state file and outputs it as context.
 # stdout from this hook goes directly into Claude's context window.
 
-SESSION_DIR="D:/Code/.claude/session-state"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SESSION_DIR="$(dirname "$SCRIPT_DIR")/session-state"
 
 # Find the most recently modified session state file
 if [ ! -d "$SESSION_DIR" ]; then

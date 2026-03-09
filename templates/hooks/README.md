@@ -33,7 +33,7 @@ stdout from this hook goes directly into Claude's context -- no user action need
 **Event:** `PreToolUse` | **Matcher:** `Bash` | **Timeout:** 5s
 
 Intercepts every Bash command and blocks RED zone git operations:
-- `git push ... main/master` -- blocked (requires Dan's permission)
+- `git push ... main/master` -- blocked (requires the project owner's permission)
 - `git push --force` -- blocked (destructive)
 - `git branch -D` -- blocked (force delete)
 - `git reset --hard` -- blocked (discards uncommitted work)

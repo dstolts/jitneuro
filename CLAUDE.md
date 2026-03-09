@@ -5,7 +5,7 @@ JIT memory management framework for Claude Code -- persistent context across ses
 ## Status
 - **Phase:** Active Development
 - **Version:** v0.1.1
-- **Repo:** D:\Code\jitneuro (https://github.com/dstolts/jitneuro)
+- **Repo:** https://github.com/dstolts/jitneuro
 
 ## Tech Stack
 - **Language:** Markdown, Bash, PowerShell

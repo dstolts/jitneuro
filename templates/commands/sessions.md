@@ -26,11 +26,11 @@ Trigger on these patterns (case-insensitive):
 ```
 Sessions (5 active):
   Name                          Age    Task                              Repos
-  firstmover-stripe-checkout    2h     Sprint-FirstMover-Checkout US-003 AIFS-API, jitai
-  blog-comments-api             1d     Sprint-BlogComments-001 testing   AIFS-API
-  jitneuro-deploy               1d     Deploy jitneuro to D:\Code        jitneuro
-  aibm-dealer-research          3d     Dealer script Phase 2 research    Automation
-  seo-automation-planning       5d     Sprint-SEO-Automation-001 spec    SEO
+  auth-api-refactor             2h     Sprint-Auth-Refactor US-003        auth-api, checkout-frontend
+  checkout-bug-fix              1d     Sprint-Checkout-001 testing       auth-api
+  deploy-pipeline-update        1d     Deploy pipeline v2 rollout        data-pipeline
+  dashboard-redesign            3d     Dashboard Phase 2 research        marketing-site
+  mobile-onboarding             5d     Sprint-Mobile-001 spec            mobile-app
 ```
 
 4. If stale sessions exist (>3 days), note at bottom:
@@ -71,5 +71,5 @@ Sessions (5 active):
 ## Important
 - Never delete without confirmation
 - Archive is preferred over delete for completed work (preserves history)
-- Stale threshold is 3 days -- adjustable if Dan changes preference
+- Stale threshold is 3 days -- adjustable per user preference
 - This skill is read-only except for clean/archive/delete operations

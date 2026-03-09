@@ -9,8 +9,8 @@ One file per named session. Sessions are cross-repo by design.
 
 ## Naming
 Name describes the TASK, not the repo:
-- Good: `firstmover-stripe-checkout`, `blog-comments-api`, `aibm-dealer-research`
-- Bad: `jitai`, `session1`, `work`
+- Good: `project-a-stripe-checkout`, `blog-comments-api`, `research-phase-2`
+- Bad: `my-app`, `session1`, `work`
 
 ## Lifecycle
 - Created by /save

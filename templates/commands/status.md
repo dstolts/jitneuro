@@ -7,7 +7,7 @@ after a break: what was I working on, what's dirty, what branch am I on.
 - Start of a session to orient yourself
 - After switching between repos or tasks
 - Before /save to see what needs checkpointing
-- When Dan asks "where was I"
+- When the user asks "where was I"
 
 ## Instructions
 
@@ -20,7 +20,7 @@ If a recent session exists, note its task and repos.
 
 ### Step 2: Check Active Work Bundle
 
-Read `.claude/bundles/active-work.md` for current sprint status and NEEDS DAN items.
+Read `.claude/bundles/active-work.md` for current sprint status and BLOCKED items.
 
 ### Step 3: Scan Repos for Dirty State
 
@@ -42,12 +42,12 @@ Task: [current task from session state]
 
 | Repo | Branch | Dirty | Last Commit |
 |------|--------|-------|-------------|
-| jitai | uat | 3 files | abc1234 fix: blog comments |
-| AIFieldSupport-API | sprint-blog-001 | clean | def5678 feat: comment endpoints |
-| jitneuro | master | 5 files | ghi9012 docs: hook templates |
+| my-app | uat | 3 files | abc1234 fix: blog comments |
+| my-api | sprint-blog-001 | clean | def5678 feat: comment endpoints |
+| my-tools | master | 5 files | ghi9012 docs: hook templates |
 
 Active sprint: [from active-work bundle]
-NEEDS DAN: [count] items (run /dashboard for full list)
+BLOCKED: [count] items (run /dashboard for full list)
 ```
 
 ### Step 5: Flag Issues

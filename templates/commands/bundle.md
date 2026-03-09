@@ -28,8 +28,8 @@ When invoked as `/bundle <name>`:
 Available bundles:
 | Bundle | Lines | Description |
 |--------|-------|-------------|
-| active-work | 42 | Current sprints, blockers, NEEDS DAN |
-| aibm | 38 | AIBoatMechanic product, sales, pricing |
+| active-work | 42 | Current sprints, blockers, NEEDS OWNER |
+| product | 38 | Product details, sales, pricing |
 | blog | 35 | Blog workflow, content state, sync script |
 | infrastructure | 30 | Servers, VMs, ports, deploy patterns |
 | integrations | 32 | API chains, auth, external services |

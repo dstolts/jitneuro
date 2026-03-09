@@ -57,7 +57,7 @@ Memory System Health:
 |-----------|--------|--------|-----|
 | MEMORY.md | OK (91/200) | | |
 | Bundles | OK (5 files, all under 70) | | |
-| Engrams | WARN | jitai at 142/150 | Trim History section |
+| Engrams | WARN | auth-api at 142/150 | Trim History section |
 | Sessions | STALE | deploy-fix (5d old) | Delete or /load to resume |
 | Routing | OK | All routes resolve | |
 | Manifest | MISS | blog.md not listed | Add to context-manifest.md |

@@ -21,6 +21,7 @@ MODE="${1:-project}"
 
 case "$MODE" in
   workspace)
+    # Assumes you run this from a repo directory; parent is the shared workspace root
     TARGET="$(dirname "$(pwd)")/.claude"
     echo "Installing JitNeuro at WORKSPACE level: $TARGET"
     echo "Commands will be available to all repos under $(dirname "$(pwd)")"
@@ -111,6 +112,7 @@ for hook in pre-compact-save.sh session-start-recovery.sh branch-protection.sh s
     echo "  hooks/$hook"
   fi
 done
+chmod +x "$TARGET/hooks/"*.sh 2>/dev/null
 
 # Show brainstem template hint
 echo ""

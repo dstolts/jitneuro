@@ -112,7 +112,7 @@ Memory System Health:
 |-----------|--------|--------|-----|
 | MEMORY.md | WARN (174/200) | Approaching limit | Extract largest section to bundle or engram |
 | Bundles | WARN | blog.md 76/80 | Split into blog-workflow.md + blog-content.md |
-| Engrams | MISS | No engram for jitai | Create from templates/engrams/example.md |
+| Engrams | MISS | No engram for auth-api | Create from templates/engrams/example.md |
 | Sessions | STALE | deploy-fix (5d old) | Delete if done, or /load to resume |
 | Routing | MISS | No route for "stripe" | Add to MEMORY.md routing weights |
 ```
@@ -151,11 +151,11 @@ Combine health check findings AND session learnings into one table:
 Proposed Updates:
 | # | Type | File | Change | Fix |
 |---|------|------|--------|-----|
-| 1 | Health | MEMORY.md | Extract Ralph detail (174/200 lines) | Move to memory/ralph-workflow.md, replace with pointer |
+| 1 | Health | MEMORY.md | Extract deploy detail (174/200 lines) | Move to memory/deploy-workflow.md, replace with pointer |
 | 2 | Health | stale-task.md | Stale session (5 days old) | Delete or /load to resume |
-| 3 | Learn | MEMORY.md | Add "stripe" -> [integrations] | Add routing entry |
-| 4 | Learn | blog.md | Add sync script v2 flag | Append to Conventions section |
-| 5 | Learn | aifs-api.md | Add /blog/feedback route | Append to Key Files table |
+| 3 | Learn | MEMORY.md | Add "payments" -> [integrations] | Add routing entry |
+| 4 | Learn | deploy.md | Add rollback flag v2 | Append to Conventions section |
+| 5 | Learn | auth-api.md | Add /auth/refresh route | Append to Key Files table |
 | 6 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 | Update line 47 |
 ```
 

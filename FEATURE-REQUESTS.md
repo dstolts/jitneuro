@@ -295,6 +295,46 @@ The /audit command validates repos comply with governance rules:
 4. Update /audit to validate against config
 5. Keep prose in CLAUDE.md as human-readable summary, config as machine-readable source
 
+## FR-021: Customizable Assistant and User Names
+**Priority:** Medium
+**Status:** Idea
+
+Let users name their JitNeuro assistant and set their own display name.
+Defaults to generic ("the assistant" / "the user") if not configured.
+
+Configuration in CLAUDE.md or context-manifest.md:
+```
+## Identity
+- assistant_name: Neuro     # or Jit, or whatever the user wants
+- user_name: Dan             # used in session state, predictions, anti-patterns
+```
+
+Why this matters:
+- Makes the framework feel personal, not generic
+- Prediction rules and anti-patterns read more naturally with a name
+- Users can pick a name that fits their team culture
+- Default assistant name (if we pick one) becomes part of the brand
+
+Candidate default names:
+- **Neuro** -- clean, directly from JitNeuro, professional
+- **Jit** -- short, punchy, casual ("Hey Jit, load the deploy bundle")
+- None -- let users choose, no default persona name
+
+Ties into FR-103 (Persona Weights) -- the name is part of the persona config.
+
+## FR-022: Artwork and Logo
+**Priority:** Low (post-launch)
+**Status:** Idea
+
+Create visual identity for JitNeuro:
+- Text wordmark or minimal icon for GitHub avatar and README header
+- Favicon for landing page (when built)
+- Monospace/developer aesthetic, dark theme friendly
+- Simple enough to work as a 64x64 GitHub avatar
+
+Options: generate in Lovable with landing page, or commission separately.
+Not a launch blocker -- many respected dev tools ship text-only.
+
 ---
 
 # Possible Integrations
@@ -308,15 +348,18 @@ Future optional integrations -- not planned, just noted for consideration:
 
 ---
 
-# Phase 2: Cognitive Layer
+# Phase 2: Decision Frameworks
 
-Phase 1 (v0.1.0) solves memory -- what to know and when to load it.
-Phase 2 solves cognition -- how to think, decide, and anticipate.
+Phase 1 (v0.1.x) solves memory -- what to know and when to load it.
+Phase 2 adds structured decision-making patterns -- teaching Claude not just
+your project context, but your preferences and workflows.
 
 Current guardrails (trust zones, approval workflows, critical rules) are the
 simplest form of this: hard-coded decision boundaries. Phase 2 extends this
-into full cognitive modeling -- teaching Claude not just what you know, but
-how you think.
+into reusable decision frameworks, prediction rules, and learned constraints.
+
+Note: The neural network metaphor below is a conceptual analogy for organizing
+these patterns, not a claim about actual neural network implementation.
 
 ## FR-100: Decision Models
 **Priority:** High
@@ -331,9 +374,9 @@ best practices, but how THIS user thinks.
 Example file: `build-vs-skip.md`
 ```
 When evaluating whether to build a feature:
-1. MUSK DELETE: What's the absolute minimum? If Phase 1 hasn't proven need, skip Phase 2.
-2. MARTELL BUYBACK: Can AI do this? If yes, build it. If it requires human judgment, flag.
-3. ROBERGE NUMBERS: Can we measure success? No metric = no build.
+1. MINIMUM VIABLE: What's the absolute minimum? If Phase 1 hasn't proven need, skip Phase 2.
+2. AI LEVERAGE: Can AI do this? If yes, build it. If it requires human judgment, flag.
+3. MEASURABLE: Can we measure success? No metric = no build.
 Apply in order. If step 1 says skip, stop.
 ```
 
@@ -358,10 +401,10 @@ Patterns that let Claude anticipate what the user will want next, based on
 observed sequences across sessions.
 
 Examples:
-- "When Dan finishes API stories, he always wants to deploy to uat next"
-- "When Dan asks about pricing, he'll ask about the sales script within 2 prompts"
-- "After a sprint review, Dan always asks for the push approval checklist"
-- "When Dan says 'what's next', check active-work bundle before answering"
+- "When the user finishes API stories, they always deploy to uat next"
+- "After a sprint review, the user always asks for the push approval checklist"
+- "When the user says 'what's next', check active-work bundle before answering"
+- "After fixing a bug, the user runs tests then commits -- anticipate the commit step"
 
 Updated by /learn when Claude observes repeated sequences. Presented to user
 for confirmation before being added ("I noticed you always do X after Y. Should
@@ -377,10 +420,10 @@ Things Claude should NEVER do, learned from corrections. Stronger than routing
 weights (which guide what to load) -- anti-patterns are hard stops.
 
 Current examples already in guardrails:
-- Never use jitai.com (always jitai.co)
 - Never push to main without approval
 - Never use emojis unless requested
 - Never claim "missing" without full codebase search
+- Always fetch before push
 
 Phase 2 adds:
 - Structured format with the correction that triggered each anti-pattern
@@ -392,8 +435,8 @@ Format:
 ```
 | Anti-Pattern | Severity | Scope | Trigger |
 |---|---|---|---|
-| Never suggest free pilot for AIBM | Hard | aibm | Dan corrected 2026-02-15 |
-| Always fetch before push | Hard | all repos | Dan's standing preference |
+| Never skip tests before commit | Hard | all repos | User corrected after broken deploy |
+| Always fetch before push | Hard | all repos | User's standing preference |
 | Don't over-engineer | Soft | all | Repeated corrections on abstractions |
 ```
 
@@ -408,10 +451,10 @@ picks a tone), Phase 2 makes it explicit and tunable.
 
 Examples:
 - Strategy discussion -> Sr Software Architect (conservative, risk-aware)
-- Sprint execution -> Ralph AFK (fast, autonomous, follow the spec)
-- Sales materials -> Marketing copywriter (Dan's voice, benefit-led)
-- Blog post -> Julia McCoy style (expert depth, repurposable, SEO-aware)
+- Sprint execution -> Task runner (fast, autonomous, follow the spec)
+- Content creation -> Technical writer (clear, structured, SEO-aware)
 - Bug investigation -> Reliability engineer (fail-fast, root cause, evidence)
+- Code review -> Security engineer (OWASP-aware, defensive patterns)
 
 Each persona includes:
 - Voice/tone description
@@ -422,29 +465,29 @@ Each persona includes:
 Loaded by /orchestrate based on task classification. User can override
 ("use the architect voice for this").
 
-## FR-104: Cognitive /learn (Backpropagation v2)
+## FR-104: Enhanced /learn (Decision Pattern Capture)
 **Priority:** High
 **Status:** Phase 2 Design
 
-Extends /learn to capture cognitive patterns, not just facts:
-- "Dan overrode my recommendation" -> extract the decision framework, propose decision model update
-- "Dan asked for X before I suggested it" -> propose prediction rule
-- "Dan said never do Y" -> propose anti-pattern entry
-- "Dan chose option A over B" -> analyze what framework drove the choice, update persona weights
-- "Dan corrected my tone/approach" -> update persona for that task type
+Extends /learn to capture decision patterns, not just facts:
+- "User overrode my recommendation" -> extract the decision framework, propose decision model update
+- "User asked for X before I suggested it" -> propose prediction rule
+- "User said never do Y" -> propose anti-pattern entry
+- "User chose option A over B" -> analyze what framework drove the choice, update persona weights
+- "User corrected my tone/approach" -> update persona for that task type
 
 Output adds a "Cognitive Updates" section to the /learn table:
 ```
 | # | Type | File | Change | Reason |
 |---|------|------|--------|--------|
-| 7 | Cognitive | decisions/build-vs-skip.md | Add "check existing code first" | Dan corrected duplicate utility |
-| 8 | Cognitive | predictions.md | Add "after sprint -> deploy uat" | Observed 3 times |
-| 9 | Cognitive | anti-patterns.md | Add "don't suggest free pilot" | Dan corrected |
+| 7 | Decision | decisions/build-vs-skip.md | Add "check existing code first" | User corrected duplicate utility |
+| 8 | Prediction | predictions.md | Add "after sprint -> deploy uat" | Observed 3 times |
+| 9 | Anti-Pattern | anti-patterns.md | Add "always run tests first" | User corrected |
 ```
 
-## Neural Network Mapping (Phase 2)
+## Neural Network Mapping (Phase 2 -- Conceptual Analogy)
 
-| Neural Network | Phase 1 (Memory) | Phase 2 (Cognition) |
+| Neural Network | Phase 1 (Memory) | Phase 2 (Decision Frameworks) |
 |---|---|---|
 | Weights | MEMORY.md routing | Decision models (how to choose) |
 | Layers | Bundles (domain knowledge) | Personas (expert voices) |

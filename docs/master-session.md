@@ -4,26 +4,26 @@ How JitNeuro manages multiple repos from a single orchestration session.
 
 ## The Pattern
 
-One "master" Claude Code session runs from the workspace root (e.g., `D:\Code\`).
+One "master" Claude Code session runs from the workspace root (e.g., `~/Code/`).
 It orchestrates work across any repo underneath. The master session stays thin --
 it routes tasks, tracks state, and collects summaries. All heavy work happens in
 subagent sessions scoped to individual repos.
 
 ```
-MASTER SESSION (workspace root: D:\Code\)
+MASTER SESSION (workspace root: ~/Code/)
   |-- Brainstem loaded: CLAUDE.md + MEMORY.md (routing weights)
   |-- Context: ~3-4% used for infrastructure
   |-- Role: route, delegate, summarize, checkpoint
   |
-  |-- AGENT 1 (repo: D:\Code\AIFS-API\)
+  |-- AGENT 1 (repo: ~/Code/my-api/)
   |     |-- Bundles: [api, sprint]
-  |     |-- Engram: aifs-api.md
+  |     |-- Engram: my-api.md
   |     |-- Does: execute API stories, run tests
   |     |-- Returns: summary + modified file list
   |
-  |-- AGENT 2 (repo: D:\Code\jitai\)
+  |-- AGENT 2 (repo: ~/Code/my-frontend/)
   |     |-- Bundles: [frontend, sprint]
-  |     |-- Engram: jitai.md
+  |     |-- Engram: my-frontend.md
   |     |-- Does: execute FE stories, build check
   |     |-- Returns: summary + modified file list
   |
@@ -59,8 +59,8 @@ the context it needs. Cross-repo dependencies are tracked in one place.
 
 Start Claude Code from your workspace root:
 ```bash
-cd D:\Code    # or ~/Code on Mac/Linux
-claude        # master session starts here
+cd ~/Code          # your workspace root
+claude             # master session starts here
 ```
 
 The master session has access to all repos underneath. Routing weights in MEMORY.md
@@ -73,7 +73,7 @@ This is the most common multi-repo pattern:
 
 ### 1. Sprint Kickoff
 ```
-User: "Execute Sprint-BlogComments-001 -- API first, then frontend"
+User: "Execute Sprint-Comments-001 -- API first, then frontend"
 
 Master:
   - Reads sprint spec
@@ -84,35 +84,35 @@ Master:
 ### 2. API Phase
 ```
 Master:
-  - Launches agent scoped to AIFS-API
-  - Agent gets: sprint.md + api.md + aifs-api engram + sprint spec
+  - Launches agent scoped to my-api
+  - Agent gets: sprint.md + api.md + my-api engram + sprint spec
   - Agent: creates branch, executes stories, runs tests, commits
-  - Returns: "4 stories done, all tests pass, on branch sprint-blogcomments-001"
+  - Returns: "4 stories done, all tests pass, on branch sprint-comments-001"
 ```
 
 ### 3. Deploy API to UAT
 ```
 Master:
   - API stories done, need to deploy before FE can test
-  - Launches agent with: deploy.md + aifs-api engram
-  - Returns: "Deployed to uat. Endpoint live at api.aifieldsupport.com"
+  - Launches agent with: deploy.md + my-api engram
+  - Returns: "Deployed to uat. Endpoint live."
 ```
 
 ### 4. Frontend Phase
 ```
 Master:
   - API on uat, FE can now test against it
-  - Launches agent scoped to jitai
-  - Agent gets: sprint.md + frontend.md + jitai engram + sprint spec + API summary
+  - Launches agent scoped to my-frontend
+  - Agent gets: sprint.md + frontend.md + my-frontend engram + sprint spec + API summary
   - Agent: creates matching branch, executes FE stories, build check
-  - Returns: "2 stories done, build passes, on branch sprint-blogcomments-001"
+  - Returns: "2 stories done, build passes, on branch sprint-comments-001"
 ```
 
 ### 5. Review + Checkpoint
 ```
 Master:
   - Both phases done
-  - /save sprint-blogcomments-001
+  - /save sprint-comments-001
   - Session state captures: both repos, branch names, story status, next steps
   - /learn evaluates: any routing weight updates? engram changes? bundle gaps?
 ```
@@ -122,15 +122,15 @@ Master:
 A cross-repo session-state file looks like:
 
 ```markdown
-# Session: sprint-blogcomments-001
+# Session: sprint-comments-001
 **Checkpointed:** 2026-03-09 14:30
 
 ## Current Task
-Sprint-BlogComments-001 -- API complete, FE complete, needs review
+Sprint-Comments-001 -- API complete, FE complete, needs review
 
 ## Repos Involved
-- D:\Code\AIFS-API -- branch sprint-blogcomments-001, 4 stories done
-- D:\Code\jitai -- branch sprint-blogcomments-001, 2 stories done
+- ~/Code/my-api -- branch sprint-comments-001, 4 stories done
+- ~/Code/my-frontend -- branch sprint-comments-001, 2 stories done
 
 ## Active Bundles
 - sprint.md -- sprint protocol
@@ -138,7 +138,7 @@ Sprint-BlogComments-001 -- API complete, FE complete, needs review
 - frontend.md -- React patterns (used in FE phase)
 
 ## Next Steps
-1. Dan reviews US-HER output
+1. Project owner reviews output
 2. Push to main (both repos, API first)
 3. Deploy API to prod
 4. Deploy FE to prod
@@ -148,6 +148,6 @@ Sprint-BlogComments-001 -- API complete, FE complete, needs review
 
 1. **Master never writes code** -- it delegates, tracks, and reports
 2. **One session-state per task** -- not per repo. The task spans repos.
-3. **Branch names match** across repos (e.g., `sprint-blogcomments-001` in both)
+3. **Branch names match** across repos (e.g., `sprint-comments-001` in both)
 4. **API before FE** -- always. FE can't test against undeployed API changes.
 5. **Summaries flow up, context flows down** -- master gets summaries, agents get bundles

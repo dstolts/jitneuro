@@ -4,7 +4,7 @@
 
 Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 4 hooks that protect your work and enforce governance automatically.
 
-JitNeuro lets you talk to your AI with full context and understanding -- every session. Hooks are the safety net that ensures context is never silently lost. When compaction fires, your session state is preserved. When you accidentally try to push to main, the hook catches it. This is how one developer manages 16+ repos and stays 3x more productive than a 15-person team.
+Hooks are the safety net that ensures context is never silently lost. When compaction fires, your session state is preserved. When you accidentally try to push to a protected branch, the hook catches it. They run automatically on Claude Code lifecycle events with no manual intervention required.
 
 ## Installed Hooks
 
@@ -129,7 +129,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
 }
 ```
 
-Replace `/path/to/` with your actual workspace or project path (e.g., `D:/Code/.claude/hooks/`).
+Replace `/path/to/` with your actual workspace or project path (e.g., `/home/user/workspace/.claude/hooks/`).
 
 ### jitneuro-hooks.json
 
@@ -220,7 +220,7 @@ Check that exit codes and output match your expectations before relying on the h
 ## Troubleshooting
 
 **Windows path issues:**
-Use forward slashes in all hook paths (`D:/Code/.claude/hooks/`, not `D:\Code\.claude\hooks\`). Bash must be available in PATH -- Git for Windows includes bash at `C:/Program Files/Git/bin/bash.exe`.
+Use forward slashes in all hook paths (`C:/workspace/.claude/hooks/`, not `C:\workspace\.claude\hooks\`). Bash must be available in PATH -- Git for Windows includes bash at `C:/Program Files/Git/bin/bash.exe`.
 
 **Script not firing:**
 Check the matcher pattern in settings.local.json. An empty string (`""`) matches all events of that type. Run `/hooks` in Claude Code to verify registered hooks. Confirm the script path is correct and the file has execute permissions.

@@ -7,7 +7,7 @@ Formatted for quick review before push or PR.
 - Before pushing to verify what's going out
 - Before creating a PR to review changes
 - To understand what a feature branch contains
-- When Dan asks "what did we change"
+- When the user asks "what did we change"
 
 ## Instructions
 
@@ -15,9 +15,9 @@ When invoked as `/diff` or `/diff <repo>`:
 
 ### Step 1: Determine Repo
 
-- If repo name provided: use D:\Code\[repo]
+- If repo name provided: resolve relative to the workspace root
 - If no repo: use current working directory
-- If working directory is D:\Code (workspace root): ask which repo
+- If working directory is the workspace root: ask which repo
 
 ### Step 2: Gather Diff Information
 

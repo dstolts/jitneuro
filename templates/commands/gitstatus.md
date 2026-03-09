@@ -7,7 +7,7 @@ for every active repo. One table, one glance, full picture.
 - Start of day to see where everything stands
 - Before a cross-repo sprint to verify clean baselines
 - After a long session touching multiple repos
-- When Dan says "I don't know what's where"
+- When the user asks "I don't know what's where"
 
 ## Instructions
 
@@ -18,25 +18,17 @@ When invoked as `/gitstatus`:
 Read MEMORY.md project table. Collect all repos with status "Active Dev", "Active",
 or "Prod". Skip "Maintenance" and "Active Docs" unless user asks for them.
 
-Expected repos (from MEMORY.md):
-- D:\Code\AIFieldSupport-API
-- D:\Code\AIFieldSupport-App
-- D:\Code\AuthFirebase
-- D:\Code\ai-boat-mechanic
-- D:\Code\jitai
-- D:\Code\FirstMover
-- D:\Code\diyaisupport
-- D:\Code\JitUrl
-- D:\Code\Automation
-- D:\Code\TaskManager
-- D:\Code\jIT
-- D:\Code\jITSecure
-- D:\Code\SEO
-- D:\Code\Salesforce
-- D:\Code\AIFS-Docs
-- D:\Code\Docs-Executive
-- D:\Code\Slotnick
-- D:\Code\jitneuro
+If MEMORY.md is not available, dynamically discover repos by scanning the workspace
+root directory for subdirectories containing a `.git` folder. Example:
+
+```bash
+# Find all git repos under the workspace root
+for dir in /path/to/workspace/*/; do
+  if [ -d "$dir/.git" ]; then
+    echo "$dir"
+  fi
+done
+```
 
 ### Step 2: For Each Repo, Gather Git State
 
@@ -84,19 +76,19 @@ git -C [repo] rev-list --left-right --count uat...origin/uat 2>/dev/null
 
 | Repo | Branch | Dirty | Local vs UAT | UAT vs Main | Last Commit |
 |------|--------|-------|-------------|-------------|-------------|
-| jitai | uat | 3 | -- | 5 ahead | abc1234 feat: comments |
-| AIFS-API | sprint-blog | 0 | 2 ahead | 3 ahead | def5678 fix: auth |
-| jitneuro | master | 5 | no uat | -- | ghi9012 docs: hooks |
-| FirstMover | main | 1 | no uat | -- | jkl3456 add: jitneuro |
-| AuthFirebase | main | 0 | no uat | -- | mno7890 v1.0.1 |
+| my-app | uat | 3 | -- | 5 ahead | abc1234 feat: comments |
+| my-api | sprint-blog | 0 | 2 ahead | 3 ahead | def5678 fix: auth |
+| my-tools | master | 5 | no uat | -- | ghi9012 docs: hooks |
+| my-site | main | 1 | no uat | -- | jkl3456 add: feature |
+| my-auth | main | 0 | no uat | -- | mno7890 v1.0.1 |
 | ... | | | | | |
 
 With `fetch` flag, add upstream columns:
 | Repo | Branch | Dirty | Local vs UAT | UAT vs Main | Local vs Remote | Last Commit |
 |------|--------|-------|-------------|-------------|-----------------|-------------|
-| jitai | uat | 3 | -- | 5 ahead | 2 ahead | abc1234 feat: comments |
-| AIFS-API | sprint-blog | 0 | 2 ahead | 3 ahead | in sync | def5678 fix: auth |
-| jitneuro | master | 5 | no uat | -- | no remote | ghi9012 docs: hooks |
+| my-app | uat | 3 | -- | 5 ahead | 2 ahead | abc1234 feat: comments |
+| my-api | sprint-blog | 0 | 2 ahead | 3 ahead | in sync | def5678 fix: auth |
+| my-tools | master | 5 | no uat | -- | no remote | ghi9012 docs: hooks |
 ```
 
 Column meanings:
@@ -119,10 +111,10 @@ After the table, list any concerns:
 
 ```
 Flags:
-  [!] jitai: 3 dirty files on uat (should commit or stash)
-  [!] FirstMover: 1 dirty file on main (should be on feature branch)
-  [i] AIFS-API: uat is 3 ahead of main (push to main when ready)
-  [i] jitneuro: no uat branch (single-branch repo, OK)
+  [!] my-app: 3 dirty files on uat (should commit or stash)
+  [!] my-site: 1 dirty file on main (should be on feature branch)
+  [i] my-api: uat is 3 ahead of main (push to main when ready)
+  [i] my-tools: no uat branch (single-branch repo, OK)
 ```
 
 Flag types:
