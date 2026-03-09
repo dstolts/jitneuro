@@ -1,4 +1,4 @@
-# Checkpoint
+# Save
 
 Save current working state before a context reset (/clear or /compact).
 This preserves short-term memory so it can be restored by the /resume skill.
@@ -17,14 +17,14 @@ After `/compact`, the session file serves as a safety net -- if compaction
 dropped something important, the full state is still on disk.
 
 ```
-/checkpoint blog-comments-api    <-- saves to disk
+/save blog-comments-api    <-- saves to disk
 /clear                           <-- wipes context (disk untouched)
 /resume blog-comments-api        <-- reads from disk, reloads bundles
 ```
 
 ## Instructions
 
-When invoked as `/checkpoint <session-name>`:
+When invoked as `/save <session-name>`:
 
 1. **Determine session name:**
    - If user provided a name, use it (lowercase, hyphens, task-descriptive)

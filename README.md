@@ -1,7 +1,7 @@
-# JitNeuro: Just-In-Time Memory Management for Claude Code
+# JitNeuro: Endless Memory for Claude Code
 
 **Status: v0.1.0 -- Core framework complete, ready for testing**
-**Website:** [jitneuro.com](https://jitneuro.com)
+**Website:** [jitneuro.ai](https://jitneuro.ai)
 
 A framework for managing short-term and long-term memory in Claude Code sessions,
 inspired by neural network architecture. Stop losing context. Stop reloading everything.
@@ -130,7 +130,7 @@ your-project/
   |   |   |-- example.md
   |   |   |-- (your domain bundles)
   |   |-- skills/
-  |   |   |-- checkpoint.md      <-- save state before /clear
+  |   |   |-- save.md      <-- save state before /clear
   |   |   |-- resume.md          <-- reload state after /clear
   |   |   |-- orchestrate.md     <-- auto-route tasks to agents
   |   |   |-- conversation-log.md <-- toggle-based session logging
@@ -149,7 +149,7 @@ your-project/
 3. Create bundles for your domains in `.claude/bundles/`
 4. Update `.claude/context-manifest.md` with your bundles
 5. Add routing weights to your MEMORY.md
-6. Use `/checkpoint` before `/clear`, `/resume` after
+6. Use `/save` before `/clear`, `/resume` after
 7. Or let the orchestrator handle it automatically via subagents
 
 ## Files
@@ -158,7 +158,7 @@ your-project/
 |------|--------|-------------|
 | `templates/context-manifest.md` | DONE | Bundle index + routing weights + session state |
 | `templates/bundles/example.md` | DONE | Example bundle template with guidelines |
-| `templates/skills/checkpoint.md` | DONE | Save state before /clear |
+| `templates/skills/save.md` | DONE | Save state before /clear |
 | `templates/skills/resume.md` | DONE | Reload state after /clear |
 | `templates/skills/orchestrate.md` | DONE | Auto-route tasks to agents with bundles |
 | `templates/skills/conversation-log.md` | DONE | Toggle-based session logging to .logs/ |
@@ -222,7 +222,7 @@ This fires automatically when context fills -- no user action needed.
 | /memory | Verify loaded files |
 | Subagents | Isolated context windows with selective bundle loading |
 | .claude/rules/ | Path-scoped rules that only load when relevant |
-| Skills | On-demand workflow loading (/checkpoint, /resume, convlog) |
+| Skills | On-demand workflow loading (/save, /resume, convlog) |
 | Hooks | Automatic triggers (pre-compact, session start) |
 | .logs/ | Conversation log files (prompt-first, response-after pattern) |
 
@@ -232,4 +232,4 @@ MIT
 
 ## Author
 
-Dan Stolts - [jitai.co](https://jitai.co) | [jitneuro.com](https://jitneuro.com)
+Dan Stolts - [jitai.co](https://jitai.co) | [jitneuro.ai](https://jitneuro.ai)
