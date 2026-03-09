@@ -163,15 +163,29 @@ Claude Code merges commands from all three levels. More specific scopes take pri
 
 ## Quick Start
 
-1. Copy the template files into your project (see [Setup Guide](docs/setup-guide.md))
-2. Slim your CLAUDE.md to brainstem using `templates/CLAUDE-brainstem.md`
-3. Create bundles for your domains in `.claude/bundles/`
-4. Create engrams for your projects in `.claude/engrams/`
-5. Update `.claude/context-manifest.md` with your bundles
-6. Add routing weights to your MEMORY.md
-7. Use `/save` before `/clear`, `/load` after
-8. Run `/learn` periodically to persist session knowledge
-9. Or let the orchestrator handle it automatically via subagents
+```bash
+# Clone the repo
+git clone https://github.com/dstolts/jitneuro.git
+cd jitneuro
+
+# Install (pick your level)
+./install.sh workspace   # all repos under parent directory
+./install.sh project     # current repo only
+./install.sh user        # global, all projects
+
+# Windows (PowerShell)
+.\install.ps1 -Mode workspace
+```
+
+Then:
+1. Slim your CLAUDE.md to brainstem using `templates/CLAUDE-brainstem.md`
+2. Create bundles for your domains in `.claude/bundles/`
+3. Create engrams for your projects in `.claude/engrams/`
+4. Add routing weights to your MEMORY.md
+5. Start a new Claude Code session (commands load at session start)
+6. Use `/save` before `/clear`, `/load` after, `/learn` to persist knowledge
+
+See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 
 ## Files
 
@@ -198,6 +212,8 @@ Claude Code merges commands from all three levels. More specific scopes take pri
 | `docs/master-session.md` | DONE | Multi-repo orchestration from one session |
 | `docs/ralph-integration.md` | DONE | Ralph autonomous execution + JitNeuro memory |
 | `docs/holistic-review.md` | DONE | 4-persona pre/post execution review gates |
+| `install.sh` | DONE | Bash installer (workspace/project/user) |
+| `install.ps1` | DONE | PowerShell installer (workspace/project/user) |
 
 ## Key Concepts
 
