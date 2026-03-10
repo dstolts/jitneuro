@@ -9,12 +9,12 @@ git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
 
 # Pick your install level:
-./install.sh workspace   # all repos under parent directory (recommended)
+./install.sh user        # global -- commands available in ALL repos (recommended)
+./install.sh workspace   # parent directory -- only works when launched from there
 ./install.sh project     # current repo only
-./install.sh user        # global, all projects on this machine
 
 # Windows (PowerShell)
-.\install.ps1 -Mode workspace
+.\install.ps1 -Mode user
 ```
 
 The installer automatically:
@@ -86,6 +86,7 @@ See [Setup Guide](docs/setup-guide.md) for a detailed walkthrough.
 | Problem | Fix |
 |---------|-----|
 | Commands not recognized | Restart Claude Code. Verify `.claude/commands/` has .md files. |
+| Commands work at parent but not in repos | Installed in workspace mode. Re-run with `user` mode. |
 | Hooks not firing | Run `/verify` -- check hooks config and hook paths. |
 | "bash not found" on Windows | Install Git for Windows. Installer detects Git Bash automatically. |
 | settings.local.json parse error | Installer skips merge if file can't be parsed. Fix JSON syntax and re-run. |

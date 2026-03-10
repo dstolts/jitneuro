@@ -58,12 +58,12 @@ git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
 
 # Install (pick your level)
-./install.sh workspace   # all repos under parent directory
+./install.sh workspace   # parent directory -- only works when launched from there
 ./install.sh project     # current repo only
-./install.sh user        # global, all projects
+./install.sh user        # global -- commands available in ALL repos (recommended)
 
 # Windows (PowerShell)
-.\install.ps1 -Mode workspace
+.\install.ps1 -Mode user
 ```
 
 **Close and reopen Claude Code after installing.** Commands load at session start.
@@ -97,6 +97,12 @@ workspace-root/
 
 Commands can be installed at three levels (user, workspace, project).
 Claude Code merges all levels; more specific scopes take priority.
+
+**Important:** Claude Code only resolves commands from the **user** level (`~/.claude/commands/`)
+and the **project** level (`<git-root>/.claude/commands/`). It does NOT walk up parent directories.
+Workspace mode installs to a parent `.claude/` folder, which is only visible when Claude Code is
+launched directly from that parent folder -- not from any child repo. If you work inside individual
+repos, use **user** mode so commands are available everywhere.
 
 ## What's Included
 
