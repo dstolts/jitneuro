@@ -141,7 +141,7 @@ uncommitted changes.
 Claude Code hook that fires before context compaction. Prompts Claude to offer
 /save so session state is checkpointed before context gets compressed.
 
-Configurable behavior via jitneuro-hooks.json:
+Configurable behavior via jitneuro.json:
 - `warn` (default): message injected, compaction proceeds, Claude asks about /save
 - `block`: compaction blocked until user responds
 
@@ -500,7 +500,7 @@ Output adds a "Cognitive Updates" section to the /learn table:
 **Status:** Idea
 
 Add a config switch to disable the SessionEnd _autosave hook. Some users may not
-want the breadcrumb file written on every session exit. Config in jitneuro-hooks.json:
+want the breadcrumb file written on every session exit. Config in jitneuro.json:
 ```json
 { "autosave": false }
 ```

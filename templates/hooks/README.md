@@ -12,11 +12,11 @@ All hooks are configured in `.claude/settings.local.json` (or `settings.json`).
 Fires before context compaction. Prompts Claude to offer `/save` so session
 state is checkpointed before context gets compressed.
 
-**Configuration** (jitneuro-hooks.json):
+**Configuration** (jitneuro.json -> hooks.preCompactBehavior):
 | Value | Behavior |
 |-------|----------|
-| `warn` (default) | Message injected into context. Claude asks about /save. Compaction proceeds. |
-| `block` | Compaction blocked (exit 2). User must respond before compaction can proceed. |
+| `block` (default) | Compaction blocked (exit 2). User must respond before compaction can proceed. |
+| `warn` | Message injected into context. Claude asks about /save. Compaction proceeds. |
 
 ### 2. Post-Compact Context Recovery (session-start-recovery.sh)
 
@@ -122,7 +122,7 @@ Replace `/path/to/` with your actual workspace or project path.
 | session-start-recovery.sh | SessionStart | Re-inject context after compaction |
 | branch-protection.sh | PreToolUse (Bash) | Block RED zone git operations |
 | session-end-autosave.sh | SessionEnd | Safety net breadcrumb on exit |
-| jitneuro-hooks.json | Config | Hook behavior settings |
+| ../jitneuro.json | Config | Version, hook behavior, protected branches |
 
 ## Future Hooks (Planned)
 
