@@ -7,15 +7,31 @@
 
 INPUT=$(cat)
 
-# Extract the command from tool input
+# Extract the command from tool input JSON (no python dependency)
+# Try multiple patterns to handle different JSON structures Claude Code may send
 COMMAND=$(echo "$INPUT" | grep -o '"command"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"//;s/"$//')
 
-# Also handle escaped quotes in JSON
+# If command contains escaped quotes or multiline, try broader extraction
 if [ -z "$COMMAND" ]; then
-  COMMAND=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('command',''))" 2>/dev/null)
+  COMMAND=$(echo "$INPUT" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(.*\)/\1/p' | head -1 | sed 's/"[[:space:]]*,.*//' | sed 's/"[[:space:]]*}//')
 fi
 
+# Safety: if we still can't parse the command, block git operations rather than allow-all
 if [ -z "$COMMAND" ]; then
+  # Check raw input for dangerous patterns as a fallback
+  if echo "$INPUT" | grep -qiE 'git\s+push.*\b(main|master)\b'; then
+    echo "BLOCKED by JitNeuro branch protection: git push to main/master detected (fallback parser)." >&2
+    echo "This requires the project owner's explicit permission. Ask before retrying." >&2
+    exit 2
+  fi
+  if echo "$INPUT" | grep -qiE 'git\s+push.*--force'; then
+    echo "BLOCKED by JitNeuro branch protection: force push detected (fallback parser)." >&2
+    exit 2
+  fi
+  if echo "$INPUT" | grep -qiE 'git\s+reset\s+--hard'; then
+    echo "BLOCKED by JitNeuro branch protection: git reset --hard detected (fallback parser)." >&2
+    exit 2
+  fi
   exit 0
 fi
 
