@@ -11,10 +11,28 @@ A developer with write access to hook scripts or config files can modify them
 to bypass any check. The trust chain must start at a point the developer
 cannot modify.
 
+**The full trust chain (all must be protected):**
+
+| File | What It Controls | Risk If Modified |
+|------|-----------------|------------------|
+| `settings.local.json` | Which hooks Claude Code loads and where scripts live | Remove hooks = no enforcement |
+| `settings.json` | Can override settings.local.json | Same as above |
+| Hook scripts (`.sh`) | Enforcement logic (what gets blocked) | Weaken or disable checks |
+| `jitneuro.json` | Config hooks read (protectedBranches, behavior) | Change protected branches to empty list |
+| `CLAUDE.md` (all levels) | Prose guardrails (trust zones, approval rules) | Add "push to main freely" = Claude obeys |
+| `.claude/rules/` | Scoped rules Claude follows per file type | Remove or weaken rules |
+
+**CLAUDE.md is the subtlest risk.** It is not code -- it is natural language
+instructions that Claude follows. A developer adding "ignore branch protection"
+or "push to main is always allowed" to any CLAUDE.md will override prose
+guardrails. Hooks still block (if intact), but Claude will stop asking for
+permission and may find other ways to accomplish the goal.
+
 **Defense in depth:**
 
 | Layer | Prevents | Enforced By | Bypassable? |
 |-------|----------|-------------|-------------|
+| CLAUDE.md guardrails | Claude following unsafe patterns | Prose instructions | YES -- developer can edit |
 | JitNeuro hooks (local) | Accidental pushes, context loss | Hook scripts + config | YES -- developer can edit |
 | GitHub branch protection | Direct push to protected branches | GitHub server | NO (if admin-only) |
 | CI/CD gates | Bad code reaching production | CI pipeline | NO (if properly configured) |
@@ -169,27 +187,70 @@ Option 2c -- Read-only settings.local.json:
    - Developer cannot edit the file at all
    - Limitation: blocks ALL settings changes, not just hooks
 
-**Step 3: Validate with Group Policy**
+**Step 3: Lock down CLAUDE.md guardrails (prevents prose bypass)**
+
+CLAUDE.md files contain the trust zones, approval workflows, and critical rules
+that Claude follows. If a developer modifies these, Claude will follow the
+modified instructions -- even if hooks are intact.
+
+Files to protect:
+- Workspace-level: `<workspace>\.claude\CLAUDE.md` (shared guardrails)
+- Workspace-level: `<workspace>\CLAUDE.md` (if used for project passport)
+- User-level: `~\.claude\CLAUDE.md` (global rules)
+
+Options:
+- **GPO file deployment:** Deploy CLAUDE.md from policy source on each login
+  (same pattern as settings.local.json). Developer edits overwritten on refresh.
+- **NTFS read-only:** Set CLAUDE.md files read-only for developers. Limitation:
+  blocks legitimate updates (new project paths, updated rules). Best for stable
+  enterprise guardrails that rarely change.
+- **Hash validation:** Scheduled task compares CLAUDE.md hash against known-good.
+  Alerts IT on mismatch. Less disruptive than read-only.
+
+Note: Project-level CLAUDE.md files (inside each repo's `.claude/`) are harder
+to lock down because developers need write access to the repo. For these, rely
+on PR review to catch guardrail modifications -- add CLAUDE.md to CODEOWNERS
+so guardrail changes require admin approval.
+
+**Step 4: Validate with Group Policy**
 
 Create a GPO that:
 1. Deploys hook scripts to C:\ProgramData\JitNeuro\ on login
 2. Deploys settings.local.json to each user's ~/.claude/ on login
-3. Sets correct NTFS permissions on both locations
-4. Runs a validation script that checks file hashes
+3. Deploys CLAUDE.md guardrails to workspace and user .claude/ directories
+4. Sets correct NTFS permissions on all protected locations
+5. Runs a validation script that checks file hashes
 
 ```powershell
 # GPO startup script example
 $policySource = "\\server\jitneuro-policy"
 $localHooks = "C:\ProgramData\JitNeuro"
 $userSettings = "$env:USERPROFILE\.claude\settings.local.json"
+$userClaude = "$env:USERPROFILE\.claude\CLAUDE.md"
 
 # Sync hooks from network to local (admin context)
 robocopy "$policySource\hooks" "$localHooks\hooks" /MIR /R:3
 Copy-Item "$policySource\jitneuro-policy.json" "$localHooks\jitneuro-policy.json" -Force
 
-# Deploy user settings
+# Deploy user settings and guardrails
 Copy-Item "$policySource\settings.local.json" $userSettings -Force
 Set-ItemProperty $userSettings -Name IsReadOnly -Value $true
+Copy-Item "$policySource\CLAUDE.md" $userClaude -Force
+Set-ItemProperty $userClaude -Name IsReadOnly -Value $true
+
+# Deploy workspace guardrails (adjust path per team)
+$workspaces = @("D:\Code", "C:\Projects")  # customize per org
+foreach ($ws in $workspaces) {
+    $wsClaude = "$ws\.claude\CLAUDE.md"
+    if (Test-Path "$ws\.claude") {
+        Copy-Item "$policySource\workspace-CLAUDE.md" $wsClaude -Force
+        Set-ItemProperty $wsClaude -Name IsReadOnly -Value $true
+    }
+}
+
+# Validate hashes
+$expected = Get-Content "$policySource\hashes.txt"
+# ... hash comparison logic ...
 ```
 
 ### Option C: Git-Protected Policy Repo
@@ -223,6 +284,8 @@ For GitHub-native teams without on-prem infrastructure.
 | Hook scripts read-only to devs | N/A | Recommended | Required |
 | Config on network share or GPO | N/A | Optional | Required |
 | settings.local.json locked via GPO | N/A | N/A | Required |
+| CLAUDE.md guardrails locked (GPO/CODEOWNERS) | N/A | Recommended | Required |
+| CLAUDE.md in CODEOWNERS (PR review for changes) | N/A | Recommended | Required |
 | CI gates on PR merge | Optional | Required | Required |
 | File hash auditing | N/A | N/A | Recommended |
 | SIEM integration for bypass attempts | N/A | N/A | Optional |
