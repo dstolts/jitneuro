@@ -2,19 +2,19 @@
 # JitNeuro PreCompact Hook
 # Fires before context compaction -- prompts Claude to offer /save
 #
-# Config: .claude/hooks/jitneuro-hooks.json
-# Behavior options: "warn" (default) or "block"
+# Config: .claude/jitneuro.json (hooks.preCompactBehavior)
+# Behavior options: "warn" or "block" (default)
 #   warn  = message to Claude, compaction proceeds
 #   block = exit 2, compaction blocked until user responds
 
 HOOKS_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONFIG="$HOOKS_DIR/jitneuro-hooks.json"
+CONFIG="$(dirname "$HOOKS_DIR")/jitneuro.json"
 
-# Read config (default to warn if no config)
-BEHAVIOR="warn"
+# Read config (default to block if no config -- fail secure)
+BEHAVIOR="block"
 if [ -f "$CONFIG" ]; then
-  BEHAVIOR=$(cat "$CONFIG" | grep -o '"preCompactBehavior"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')
-  [ -z "$BEHAVIOR" ] && BEHAVIOR="warn"
+  BEHAVIOR=$(grep -o '"preCompactBehavior"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" | head -1 | grep -o '"[^"]*"$' | tr -d '"')
+  [ -z "$BEHAVIOR" ] && BEHAVIOR="block"
 fi
 
 # Read hook input from stdin

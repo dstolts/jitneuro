@@ -141,7 +141,7 @@ uncommitted changes.
 Claude Code hook that fires before context compaction. Prompts Claude to offer
 /save so session state is checkpointed before context gets compressed.
 
-Configurable behavior via jitneuro-hooks.json:
+Configurable behavior via jitneuro.json:
 - `warn` (default): message injected, compaction proceeds, Claude asks about /save
 - `block`: compaction blocked until user responds
 
@@ -365,6 +365,16 @@ these patterns, not a claim about actual neural network implementation.
 **Priority:** High
 **Status:** Phase 2 Design
 
+**Core schema (from pre-compact hook failure, 2026-03-10):**
+Every agent directive should have four components:
+- **Goal:** what outcomes we are looking for
+- **Guardrails:** what the agent should NOT do to accomplish the task
+- **Clarification:** under what circumstances it should stop and ask
+- **OverridingRule:** if goal and guardrails conflict, guardrails always win
+
+This schema applies to CLAUDE.md brainstems, slash command instructions,
+agent dispatch, and sprint stories. Concrete design TBD in Phase 2.
+
 A new file type: `.claude/cognition/decisions/`
 
 Decision models are structured frameworks that Claude applies when evaluating
@@ -484,6 +494,20 @@ Output adds a "Cognitive Updates" section to the /learn table:
 | 8 | Prediction | predictions.md | Add "after sprint -> deploy uat" | Observed 3 times |
 | 9 | Anti-Pattern | anti-patterns.md | Add "always run tests first" | User corrected |
 ```
+
+## FR-023: Autosave Toggle
+**Priority:** Low
+**Status:** Idea
+
+Add a config switch to disable the SessionEnd _autosave hook. Some users may not
+want the breadcrumb file written on every session exit. Config in jitneuro.json:
+```json
+{ "autosave": false }
+```
+When disabled, the SessionEnd hook skips writing _autosave.md entirely.
+Default: enabled (current behavior).
+
+---
 
 ## Neural Network Mapping (Phase 2 -- Conceptual Analogy)
 

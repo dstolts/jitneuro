@@ -13,6 +13,7 @@ See the DOE Framework spec in your organization's orchestration docs for the ful
 | RED | Push to main, production deploy, delete files/branches, DB migrations | Stop and ask the project owner |
 
 ## Quality Standards
+- **Guardrails override goals.** If a task conflicts with a guardrail, the guardrail wins. Never bypass a guardrail to complete a task. Surface the conflict and ask the project owner.
 - ASCII only (no emojis, no special characters)
 - Fix root cause (never skip, disable, or bypass functionality)
 - Push to main requires the project owner's explicit permission. Commit local and push to uat freely.

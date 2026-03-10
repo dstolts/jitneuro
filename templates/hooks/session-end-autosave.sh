@@ -8,8 +8,18 @@
 # The file is overwritten each time (it's a "last known state" marker, not a log).
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SESSION_DIR="$(dirname "$SCRIPT_DIR")/session-state"
+CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
+CONFIG="$CLAUDE_DIR/jitneuro.json"
+SESSION_DIR="$CLAUDE_DIR/session-state"
 AUTOSAVE_FILE="$SESSION_DIR/_autosave.md"
+
+# Check if autosave is disabled in config
+if [ -f "$CONFIG" ]; then
+  AUTOSAVE=$(grep -o '"autosave"[[:space:]]*:[[:space:]]*[a-z]*' "$CONFIG" | head -1 | grep -o '[a-z]*$')
+  if [ "$AUTOSAVE" = "false" ]; then
+    exit 0
+  fi
+fi
 
 # Read hook input
 INPUT=$(cat)

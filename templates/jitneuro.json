@@ -1,0 +1,43 @@
+{
+  "version": "0.1.2",
+  "hooks": {
+    "preCompactBehavior": "block",
+    "autosave": true,
+    "protectedBranches": ["main", "master"],
+    "hookEvents": [
+      {
+        "event": "PreCompact",
+        "matcher": "",
+        "script": "pre-compact-save.sh",
+        "timeout": 10
+      },
+      {
+        "event": "SessionStart",
+        "matcher": "compact",
+        "script": "session-start-recovery.sh",
+        "timeout": 10
+      },
+      {
+        "event": "PreToolUse",
+        "matcher": "Bash",
+        "script": "branch-protection.sh",
+        "timeout": 5
+      },
+      {
+        "event": "SessionEnd",
+        "matcher": "",
+        "script": "session-end-autosave.sh",
+        "timeout": 10
+      }
+    ],
+    "_options": {
+      "preCompactBehavior": {
+        "warn": "Message injected into context, compaction proceeds. Claude asks user about /save.",
+        "block": "Compaction blocked (exit 2). User must respond before compaction can proceed."
+      },
+      "autosave": "true = write _autosave.md on session end; false = skip",
+      "protectedBranches": "Branches that require explicit permission to push to"
+    },
+    "_configResolution": "Single-level config for v0.1.x. Future: multi-level with most-secure-wins."
+  }
+}

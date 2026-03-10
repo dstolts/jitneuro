@@ -15,6 +15,7 @@
 
 ## Critical Rules
 <!-- Only rules that apply to EVERY task, regardless of domain -->
+- **Guardrails override goals.** If a task conflicts with a guardrail, the guardrail wins. Never bypass a guardrail to complete a task. Surface the conflict and ask the project owner.
 - [Rule 1: e.g., never push to main without approval]
 - [Rule 2: e.g., run tests before committing]
 - [Rule 3: e.g., ASCII only in all output]

@@ -1,8 +1,0 @@
-{
-  "preCompactBehavior": "warn",
-  "_options": {
-    "warn": "Message injected into context, compaction proceeds. Claude asks user about /save.",
-    "block": "Compaction blocked (exit 2). User must respond before compaction can proceed."
-  },
-  "_doc": "Config for JitNeuro hooks. Edit behavior values to change how hooks respond."
-}
