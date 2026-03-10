@@ -17,13 +17,32 @@ git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
 
 # Pick your install level:
-./install.sh workspace   # all repos under parent directory (recommended)
+./install.sh user        # global -- commands available in ALL repos (recommended)
+./install.sh workspace   # parent directory only (see note below)
 ./install.sh project     # current repo only
-./install.sh user        # global, all projects
 
 # Windows (PowerShell)
-.\install.ps1 -Mode workspace
+.\install.ps1 -Mode user
 ```
+
+**Which mode should I use?**
+
+Claude Code resolves slash commands from exactly two locations:
+1. **User level:** `~/.claude/commands/` -- always loaded, every project
+2. **Project level:** `<git-root>/.claude/commands/` -- loaded for that repo only
+
+There is no parent-directory traversal. **Workspace mode** installs commands to a parent
+folder's `.claude/commands/`, but those commands are only visible when Claude Code is
+launched directly from that parent folder -- not from any child repo under it.
+
+| Mode | When to use |
+|------|-------------|
+| **user** | You work inside individual repos (recommended for most setups) |
+| **workspace** | You always launch Claude Code from the workspace root folder |
+| **project** | You only want JitNeuro in one specific repo |
+
+If you previously installed in workspace mode and commands are missing from child repos,
+re-run the installer with `user` mode to fix it.
 
 The installer:
 - Copies all commands to `.claude/commands/`
@@ -68,11 +87,13 @@ cp templates/commands/*.md .claude/commands/
 ```
 
 **Three scopes:**
-- **Project:** `<repo>/.claude/commands/` -- single repo
-- **Workspace:** `<workspace>/.claude/commands/` -- all repos under workspace
-- **User:** `~/.claude/commands/` -- all projects on this machine
+- **User:** `~/.claude/commands/` -- all projects on this machine (recommended)
+- **Project:** `<repo>/.claude/commands/` -- single repo only
+- **Workspace:** `<workspace>/.claude/commands/` -- only works when launched from workspace root
 
-Claude Code merges all levels; more specific scopes take priority.
+Claude Code merges user + project levels; project-level takes priority if both define the
+same command. Workspace mode only works when Claude Code is launched from the workspace
+root directory itself -- commands are NOT inherited by child repos.
 
 ### Step 2: Copy Hooks
 
@@ -209,6 +230,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | Problem | Solution |
 |---------|----------|
 | Commands not recognized | Restart Claude Code. Verify `.claude/commands/` has .md files. |
+| Commands work at workspace root but not in repos | Installed in workspace mode. Re-run installer with `user` mode. |
 | Hooks not firing | Run `/verify` to check hooks config and script paths. |
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
