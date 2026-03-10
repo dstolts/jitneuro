@@ -1,53 +1,107 @@
 # Bundle
 
-Load a specific context bundle on demand. Shortcut for when routing weights
-don't auto-trigger and you know exactly what context you need.
+Manage context bundles -- load, create, refresh, or inspect domain knowledge.
 
 ## When to Use
-- When you need domain context that wasn't auto-loaded
-- To quickly switch mental context ("give me the blog workflow")
-- When /orchestrate is overkill for a simple context load
-- To inspect what's in a bundle before deciding to use it
+- Load domain context that wasn't auto-loaded
+- Create a new bundle for a repo or domain
+- Refresh a stale bundle with current codebase state
+- Inspect what's in a bundle before deciding to use it
 
 ## Instructions
 
 When invoked as `/bundle <name>`:
 
-### With a name argument:
+### 1. Check if the bundle exists
 
-1. Check if `.claude/bundles/<name>.md` exists
-2. If yes: read and present the bundle content to the conversation
-3. If no: list available bundles and suggest the closest match
+Read `.claude/bundles/<name>.md`.
 
-### Without arguments (`/bundle`):
+### 2. If the bundle EXISTS: load it
 
-1. Read `.claude/context-manifest.md` for the full bundle index
-2. List all available bundles with their descriptions and line counts:
-
-```
-Available bundles:
-| Bundle | Lines | Description |
-|--------|-------|-------------|
-| active-work | 42 | Current sprints, blockers, NEEDS OWNER |
-| product | 38 | Product details, sales, pricing |
-| blog | 35 | Blog workflow, content state, sync script |
-| infrastructure | 30 | Servers, VMs, ports, deploy patterns |
-| integrations | 32 | API chains, auth, external services |
-
-Load one: /bundle <name>
-```
-
-### Loading behavior:
-
-When loading a bundle, read the file and output its contents prefixed with:
+Read the file and output its contents prefixed with:
 ```
 [Bundle loaded: <name>]
 ```
 
-This makes the bundle content part of the current conversation context.
+If the bundle is over 70 lines, note the line count and suggest reviewing
+with /learn if it should be split.
+
+### 3. If the bundle DOES NOT EXIST: offer to create it
+
+Do NOT just list alternatives. Instead:
+
+a. **Look for context to build from.** Search the workspace for a repo, directory,
+   or domain matching `<name>`. Check:
+   - Is there a repo at `../<name>/` or nearby with a similar name?
+   - Is there an engram at `.claude/engrams/<name>-context.md`?
+   - Is there a CLAUDE.md in a matching repo?
+   - Grep for `<name>` in existing bundles and MEMORY.md for related context.
+
+b. **If source material found:** Analyze it (package.json, README, CLAUDE.md,
+   key files, recent commits, engram) and draft a bundle. A good bundle is
+   50-80 lines covering:
+   - Identity (what is this, one line)
+   - Architecture (how it's structured, key patterns)
+   - Key Files (table: path, purpose -- most important files only)
+   - Conventions (coding patterns, naming, workflow rules)
+   - Integrations (what it connects to, API contracts)
+   - Current State (active work, known issues, recent changes)
+
+c. **If no source material found:** Ask the user what this bundle should cover.
+   Use brief Q&A (3-5 questions max) to gather enough to draft it.
+
+d. **Present the draft** and ask for approval before writing.
+
+e. **On approval:** Write to `.claude/bundles/<name>.md`, update
+   `context-manifest.md` (add row to Available Bundles table), and suggest
+   routing weight entries for MEMORY.md.
+
+### 4. Without arguments (`/bundle`):
+
+a. Scan `.claude/bundles/` for actual files. Count lines in each.
+b. Read `context-manifest.md` and compare -- flag bundles that exist on disk
+   but aren't in the manifest, or manifest entries with no matching file.
+c. Present:
+
+```
+Bundles:
+| Bundle | Lines | Status | Description |
+|--------|-------|--------|-------------|
+| active-work | 42 | OK | Current sprints, blockers |
+| blog-content | 61 | WARN | Approaching 80-line limit |
+| deploy | -- | MISSING | In manifest but no file |
+| new-thing | 35 | UNLISTED | File exists, not in manifest |
+
+Load: /bundle <name>
+Create: /bundle <name> (will draft from repo/domain analysis)
+```
+
+d. If there are MISSING or UNLISTED items, offer to fix the manifest.
+
+## Refreshing a Bundle
+
+If the user says "refresh", "update", or "rebuild" in the context of a bundle
+(e.g., "refresh the blog bundle", "/bundle blog -- it's stale"):
+
+1. Read the current bundle content
+2. Re-analyze the source (repo, engram, recent commits, current files)
+3. Show a diff of what changed (added/removed/updated sections)
+4. Ask for approval before overwriting
+5. After writing, verify line count is under 80
+
+## Splitting a Bundle
+
+If a bundle is over 80 lines, or the user asks to split:
+
+1. Identify natural subdomain boundaries in the content
+2. Propose split: `<name>-a.md` and `<name>-b.md` with clear names
+3. Show what goes where
+4. On approval: write both files, archive original, update manifest,
+   update routing weights to reference both
 
 ## Important
-- This is READ-ONLY. Never modifies bundle files (that's /learn's job).
-- Only loads from `.claude/bundles/` directory.
-- One bundle at a time. To load multiple: `/bundle blog` then `/bundle infra`.
-- If the user asks to edit a bundle, suggest using /learn instead.
+- Always ask before writing or modifying bundle files.
+- Keep bundles under 80 lines. Over 80 means Claude may skip content.
+- One bundle = one domain. If a bundle covers two unrelated things, split it.
+- After any write, update context-manifest.md to match reality.
+- Routing weights live in MEMORY.md -- suggest entries but let the user approve.

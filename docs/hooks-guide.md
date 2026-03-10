@@ -16,12 +16,12 @@ Hooks are the safety net that ensures context is never silently lost. When compa
 
 Prompts Claude to offer `/save` before context gets compressed. Claude will ask the user if they want to checkpoint their session state before compaction proceeds.
 
-**Configuration** (jitneuro-hooks.json):
+**Configuration** (jitneuro.json -> hooks.preCompactBehavior):
 
 | Value | Behavior |
 |-------|----------|
-| `warn` (default) | Message injected into context. Claude asks about /save. Compaction proceeds. |
-| `block` | Compaction blocked (exit 2). User must respond before compaction can proceed. |
+| `block` (default) | Compaction blocked (exit 2). User must respond before compaction can proceed. |
+| `warn` | Message injected into context. Claude asks about /save. Compaction proceeds. |
 
 **Why this matters:** Context compaction is the #1 cause of lost work. After compaction, Claude forgets active tasks, loaded bundles, file positions, and next steps. This hook catches it before it happens.
 
@@ -131,22 +131,31 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
 
 Replace `/path/to/` with your actual workspace or project path (e.g., `/home/user/workspace/.claude/hooks/`).
 
-### jitneuro-hooks.json
+### jitneuro.json
 
-Located alongside the hook scripts in `.claude/hooks/`. Controls hook behavior without editing settings.local.json.
+Located at `.claude/jitneuro.json`. Central config for JitNeuro version, hook behavior, and settings.
 
 ```json
 {
-  "preCompactBehavior": "warn",
-  "_options": {
-    "warn": "Message injected into context, compaction proceeds. Claude asks user about /save.",
-    "block": "Compaction blocked (exit 2). User must respond before compaction can proceed."
-  },
-  "_doc": "Config for JitNeuro hooks. Edit behavior values to change how hooks respond."
+  "version": "0.1.2",
+  "hooks": {
+    "preCompactBehavior": "block",
+    "autosave": true,
+    "protectedBranches": ["main", "master"],
+    "hookEvents": [...]
+  }
 }
 ```
 
-Currently only `preCompactBehavior` is configurable. Future hooks will add settings here as needed.
+| Setting | Default | Purpose |
+|---------|---------|---------|
+| `preCompactBehavior` | `block` | "block" halts compaction until user responds. "warn" lets it proceed. |
+| `autosave` | `true` | Write `_autosave.md` breadcrumb on session end. Set false to disable. |
+| `protectedBranches` | `["main", "master"]` | Branches that branch-protection hook blocks push to. |
+
+Hook scripts read this config from `$(dirname "$HOOKS_DIR")/jitneuro.json` (one level up from hooks/).
+
+For enterprise security considerations, see [enterprise-security.md](enterprise-security.md).
 
 ## How Hooks Work
 

@@ -17,24 +17,32 @@ if [ ! -d "$TEMPLATES" ]; then
   exit 1
 fi
 
+# Read version from jitneuro.json
+VERSION="unknown"
+if [ -f "$TEMPLATES/jitneuro.json" ]; then
+  VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$TEMPLATES/jitneuro.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"//;s/"$//')
+fi
+
 MODE="${1:-project}"
 
 case "$MODE" in
   workspace)
-    # Assumes you run this from a repo directory; parent is the shared workspace root
     TARGET="$(dirname "$(pwd)")/.claude"
-    echo "Installing JitNeuro at WORKSPACE level: $TARGET"
+    echo "Installing JitNeuro v$VERSION at WORKSPACE level: $TARGET"
     echo "Commands will be available to all repos under $(dirname "$(pwd)")"
+    WORKSPACE_ROOT="$(dirname "$(pwd)")"
     ;;
   project)
     TARGET="$(pwd)/.claude"
-    echo "Installing JitNeuro at PROJECT level: $TARGET"
+    echo "Installing JitNeuro v$VERSION at PROJECT level: $TARGET"
     echo "Commands will be available in this repo only."
+    WORKSPACE_ROOT=""
     ;;
   user)
     TARGET="$HOME/.claude"
-    echo "Installing JitNeuro at USER level: $TARGET"
+    echo "Installing JitNeuro v$VERSION at USER level: $TARGET"
     echo "Commands will be available in all projects on this machine."
+    WORKSPACE_ROOT=""
     ;;
   *)
     echo "Usage: ./install.sh [workspace|project|user]"
@@ -48,6 +56,25 @@ esac
 
 echo ""
 
+# --- Upgrade detection (US-007) ---
+INSTALLED_CONFIG="$TARGET/jitneuro.json"
+PREV_VERSION=""
+if [ -f "$INSTALLED_CONFIG" ]; then
+  PREV_VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$INSTALLED_CONFIG" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"//;s/"$//')
+fi
+if [ -n "$PREV_VERSION" ]; then
+  if [ "$PREV_VERSION" = "$VERSION" ]; then
+    echo "Re-installing JitNeuro v$VERSION (same version)"
+  else
+    echo "Upgrading JitNeuro: v$PREV_VERSION -> v$VERSION"
+  fi
+elif [ -d "$TARGET/commands" ] && [ -n "$(ls -A "$TARGET/commands/" 2>/dev/null)" ]; then
+  echo "Upgrading from pre-versioned JitNeuro install"
+else
+  echo "Fresh install"
+fi
+echo ""
+
 # Create directories
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/bundles"
@@ -56,14 +83,36 @@ mkdir -p "$TARGET/session-state"
 mkdir -p "$TARGET/rules"
 mkdir -p "$TARGET/hooks"
 
-# Copy commands (slash commands)
-echo "Installing commands..."
-for cmd in save load learn sessions orchestrate conversation-log health enterprise status dashboard gitstatus diff audit bundle onboard; do
-  if [ -f "$TEMPLATES/commands/$cmd.md" ]; then
-    cp "$TEMPLATES/commands/$cmd.md" "$TARGET/commands/$cmd.md"
-    echo "  /$cmd"
+# --- Backup existing commands before overwrite (US-002) ---
+BACKUP_COUNT=0
+BACKUP_DIR="$TARGET/commands/.backup"
+for cmd_file in "$TEMPLATES/commands/"*.md; do
+  [ -f "$cmd_file" ] || continue
+  cmd_name="$(basename "$cmd_file")"
+  existing="$TARGET/commands/$cmd_name"
+  if [ -f "$existing" ]; then
+    if ! diff -q "$cmd_file" "$existing" >/dev/null 2>&1; then
+      mkdir -p "$BACKUP_DIR"
+      cp "$existing" "$BACKUP_DIR/$cmd_name"
+      BACKUP_COUNT=$((BACKUP_COUNT + 1))
+    fi
   fi
 done
+if [ "$BACKUP_COUNT" -gt 0 ]; then
+  echo "Backed up $BACKUP_COUNT existing commands to commands/.backup/"
+fi
+
+# --- Install commands (dynamic scan) ---
+echo "Installing commands..."
+CMD_COUNT=0
+for cmd_file in "$TEMPLATES/commands/"*.md; do
+  [ -f "$cmd_file" ] || continue
+  cmd_name="$(basename "$cmd_file" .md)"
+  cp "$cmd_file" "$TARGET/commands/$(basename "$cmd_file")"
+  echo "  /$cmd_name"
+  CMD_COUNT=$((CMD_COUNT + 1))
+done
+echo "  ($CMD_COUNT commands installed)"
 
 # Copy templates (don't overwrite existing)
 if [ ! -f "$TARGET/context-manifest.md" ]; then
@@ -104,47 +153,149 @@ else
   echo "Skipped rules/ (already has files)"
 fi
 
-# Copy hooks
+# Install hooks
 echo "Installing hooks..."
-for hook in pre-compact-save.sh session-start-recovery.sh branch-protection.sh session-end-autosave.sh jitneuro-hooks.json; do
-  if [ -f "$TEMPLATES/hooks/$hook" ]; then
-    cp "$TEMPLATES/hooks/$hook" "$TARGET/hooks/$hook"
-    echo "  hooks/$hook"
-  fi
+for hook_file in "$TEMPLATES/hooks/"*.sh; do
+  [ -f "$hook_file" ] || continue
+  hook_name="$(basename "$hook_file")"
+  cp "$hook_file" "$TARGET/hooks/$hook_name"
+  echo "  hooks/$hook_name"
 done
-chmod +x "$TARGET/hooks/"*.sh 2>/dev/null
 
-# Show brainstem template hint
+# Set permissions (Linux/Mac only)
+if [ "$(uname -s)" != "MINGW"* ] && [ "$(uname -s)" != "MSYS"* ]; then
+  chmod 700 "$TARGET/hooks" 2>/dev/null || true
+  chmod 500 "$TARGET/hooks/"*.sh 2>/dev/null || true
+fi
+
+# --- Copy jitneuro.json config ---
+cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
+echo "Installed jitneuro.json (v$VERSION)"
+
+# --- Auto-configure hooks in settings.local.json (US-001) ---
+echo ""
+echo "Configuring hooks..."
+SETTINGS_FILE="$TARGET/settings.local.json"
+HOOKS_PATH="$TARGET/hooks"
+
+# Build hooks JSON using jitneuro.json hookEvents
+# Use forward slashes for all paths (Claude Code expects this)
+HOOKS_PATH_FWD=$(echo "$HOOKS_PATH" | sed 's|\\|/|g')
+
+build_hooks_json() {
+  cat <<HOOKJSON
+{
+  "hooks": {
+    "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-compact-save.sh\"", "timeout": 10 }] }],
+    "SessionStart": [{ "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }],
+    "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 5 }] }],
+    "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-end-autosave.sh\"", "timeout": 10 }] }]
+  }
+}
+HOOKJSON
+}
+
+if [ -f "$SETTINGS_FILE" ]; then
+  # Existing settings -- try to merge with jq
+  if command -v jq >/dev/null 2>&1; then
+    HOOKS_JSON=$(build_hooks_json)
+    TEMP_FILE="$SETTINGS_FILE.tmp.$$"
+    jq -s '.[0] * .[1]' "$SETTINGS_FILE" <(echo "$HOOKS_JSON") > "$TEMP_FILE" 2>/dev/null
+    if [ $? -eq 0 ] && [ -s "$TEMP_FILE" ]; then
+      mv "$TEMP_FILE" "$SETTINGS_FILE"
+      echo "  Merged hooks into existing settings.local.json"
+    else
+      rm -f "$TEMP_FILE"
+      echo "  WARNING: jq merge failed. Existing settings.local.json left UNTOUCHED."
+      echo "  You must manually add hooks config. See $TARGET/jitneuro.json for reference."
+    fi
+  else
+    echo "  WARNING: jq not found and settings.local.json already exists."
+    echo "  Existing file left UNTOUCHED to prevent data loss."
+    echo "  Install jq and re-run, or manually add hooks config."
+    echo "  See $TARGET/jitneuro.json for the hooks configuration."
+  fi
+else
+  # No existing settings -- create hooks-only file (atomic write)
+  TEMP_FILE="$SETTINGS_FILE.tmp.$$"
+  build_hooks_json > "$TEMP_FILE"
+  mv "$TEMP_FILE" "$SETTINGS_FILE"
+  echo "  Created settings.local.json with hooks config"
+fi
+
+# --- Post-install workspace repo scan (US-003) ---
+if [ "$MODE" = "workspace" ] && [ -n "$WORKSPACE_ROOT" ]; then
+  echo ""
+  echo "Scanning workspace for repos..."
+  echo ""
+  printf "  %-20s %-10s %-10s %-10s\n" "REPO" "CLAUDE.md" "BRAINSTEM" "ENGRAM"
+  printf "  %-20s %-10s %-10s %-10s\n" "----" "---------" "---------" "------"
+  REPO_COUNT=0
+  NEEDS_ONBOARD=0
+  for dir in "$WORKSPACE_ROOT"/*/; do
+    [ -d "$dir/.git" ] || continue
+    repo_name="$(basename "$dir")"
+    # Skip .claude and jitneuro directories
+    [ "$repo_name" = ".claude" ] && continue
+    [ "$repo_name" = "jitneuro" ] && continue
+
+    # Truncate long names
+    display_name="$repo_name"
+    if [ ${#display_name} -gt 20 ]; then
+      display_name="${display_name:0:17}..."
+    fi
+
+    has_claude="--"
+    has_brainstem="--"
+    has_engram="--"
+
+    [ -f "$dir/CLAUDE.md" ] && has_claude="YES"
+    [ -f "$dir/.claude/CLAUDE.md" ] && has_brainstem="YES"
+    [ -f "$WORKSPACE_ROOT/.claude/engrams/${repo_name}-context.md" ] && has_engram="YES"
+
+    if [ "$has_claude" = "--" ] || [ "$has_brainstem" = "--" ] || [ "$has_engram" = "--" ]; then
+      NEEDS_ONBOARD=$((NEEDS_ONBOARD + 1))
+    fi
+
+    printf "  %-20s %-10s %-10s %-10s\n" "$display_name" "$has_claude" "$has_brainstem" "$has_engram"
+    REPO_COUNT=$((REPO_COUNT + 1))
+
+    # Cap at 30 repos
+    if [ "$REPO_COUNT" -ge 30 ]; then
+      echo "  ... ($REPO_COUNT+ repos, showing first 30)"
+      break
+    fi
+  done
+  echo ""
+  echo "  $REPO_COUNT repos found, $NEEDS_ONBOARD need onboarding"
+  if [ "$NEEDS_ONBOARD" -gt 0 ]; then
+    echo "  Run /onboard <repo> to set up context for missing repos"
+  fi
+  # US-004: Git sync tip
+  echo "  Tip: /onboard checks if repos are behind their remote"
+fi
+
+# --- Add *.backup to .gitignore ---
+GITIGNORE="$TARGET/../.gitignore"
+if [ -f "$GITIGNORE" ]; then
+  if ! grep -q '\.backup' "$GITIGNORE" 2>/dev/null; then
+    echo "" >> "$GITIGNORE"
+    echo "# JitNeuro command backups" >> "$GITIGNORE"
+    echo ".claude/commands/.backup/" >> "$GITIGNORE"
+  fi
+fi
+
+# --- Summary ---
 echo ""
 echo "---"
-echo "JitNeuro installed to: $TARGET"
+echo "JitNeuro v$VERSION installed to: $TARGET"
 echo ""
 echo "Next steps:"
-echo "  1. Slim your CLAUDE.md using templates/CLAUDE-brainstem.md as a guide"
-echo "  2. Create bundles for your domains in $TARGET/bundles/"
-echo "  3. Create engrams for your projects in $TARGET/engrams/"
-echo "  4. Update $TARGET/context-manifest.md with your bundles"
-echo "  5. Add routing weights to your MEMORY.md"
-echo "  6. CLOSE AND REOPEN Claude Code (commands are only discovered at session start)"
+echo "  1. CLOSE AND REOPEN Claude Code (commands load at session start)"
+echo "  2. Run /verify to confirm everything is working"
+echo "  3. Run /onboard <repo> to set up context for your repos"
+echo "  4. Create bundles for your domains in $TARGET/bundles/"
 echo ""
 echo "*** You MUST restart Claude Code for slash commands to take effect. ***"
-echo ""
-echo "Commands available after restart: /save /load /learn /sessions /orchestrate"
-echo "New commands: /health /enterprise /status /dashboard /gitstatus /diff /audit /bundle /onboard"
-echo ""
-echo "IMPORTANT: Hooks were installed to $TARGET/hooks/ but you must"
-echo "manually configure them in your settings.local.json file."
-echo ""
-echo "Add the following to your ~/.claude/settings.local.json (or merge"
-echo "with existing hooks config):"
-echo ""
-echo '  "hooks": {'
-echo '    "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/pre-compact-save.sh" }] }],'
-echo '    "SessionStart": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/session-start-recovery.sh" }] }],'
-echo '    "PrePush": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/branch-protection.sh" }] }],'
-echo '    "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash '"$TARGET"'/hooks/session-end-autosave.sh" }] }]'
-echo '  }'
-echo ""
-echo "See $TARGET/hooks/jitneuro-hooks.json for the full hooks configuration."
 echo ""
 echo "Docs: $SCRIPT_DIR/docs/setup-guide.md"

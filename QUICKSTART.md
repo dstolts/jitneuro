@@ -1,6 +1,6 @@
 # JitNeuro Quickstart
 
-Get up and running in 3 steps.
+Get up and running in 4 steps.
 
 ## 1. Clone and Install
 
@@ -17,11 +17,27 @@ cd jitneuro
 .\install.ps1 -Mode workspace
 ```
 
+The installer automatically:
+- Copies all commands and hook scripts
+- Configures hooks in settings.local.json (no manual JSON editing)
+- Backs up any existing commands that differ
+- Scans your workspace for repos needing onboarding (workspace mode)
+- Detects bash on Windows (Git Bash paths)
+
 ## 2. Restart Claude Code
 
 Close and reopen Claude Code. Slash commands are only discovered at session start.
 
-## 3. Try It
+## 3. Verify
+
+```
+/verify              # checks all 9 components, reports GREEN/YELLOW/RED
+```
+
+If everything is GREEN, you're done. If anything is YELLOW or RED, `/verify`
+tells you exactly what to fix.
+
+## 4. Try It
 
 ```
 /status          # where am I? what's loaded?
@@ -31,18 +47,20 @@ Close and reopen Claude Code. Slash commands are only discovered at session star
 /sessions        # list all saved sessions
 ```
 
-That's it. You now have 15 commands, 4 hooks, and a memory management layer.
+That's it. You now have 15+ commands, 4 hooks, and a memory management layer.
 
 ---
 
 ## What You Get
 
-**15 Commands** -- `/save`, `/load`, `/learn`, `/health`, `/sessions`, `/status`,
+**Commands** -- `/save`, `/load`, `/learn`, `/health`, `/verify`, `/sessions`, `/status`,
 `/dashboard`, `/enterprise`, `/audit`, `/gitstatus`, `/diff`, `/bundle`,
 `/orchestrate`, `/onboard`, `convlog`
 
-**4 Hooks** -- pre-compact save prompt, post-compact recovery, branch protection,
+**Hooks** -- pre-compact save prompt, post-compact recovery, branch protection,
 session-end auto-save
+
+**Config** -- `jitneuro.json` with version, hook settings, protected branches
 
 **Templates** -- brainstem CLAUDE.md, bundle/engram examples, scoped rules
 
@@ -52,12 +70,12 @@ See [commands reference](docs/commands-reference.md) for details on each command
 
 ## Next Steps (Optional)
 
-Once commands are working, you can set up the full memory system:
+Once commands are working, set up the full memory system:
 
 1. **Slim your CLAUDE.md** -- use `templates/CLAUDE-brainstem.md` as a starting point (30-40 lines max)
-2. **Create bundles** -- add domain knowledge files to `.claude/bundles/` (see `templates/bundles/example.md`)
-3. **Create engrams** -- add per-project context to `.claude/engrams/` (see `templates/engrams/example.md`)
-4. **Set routing weights** -- add trigger patterns to your MEMORY.md so the orchestrator auto-loads the right bundles
+2. **Onboard repos** -- run `/onboard <repo>` to generate context for your projects
+3. **Create bundles** -- add domain knowledge files to `.claude/bundles/`
+4. **Set routing weights** -- add trigger patterns to your MEMORY.md
 
 See [Setup Guide](docs/setup-guide.md) for a detailed walkthrough.
 
@@ -67,9 +85,14 @@ See [Setup Guide](docs/setup-guide.md) for a detailed walkthrough.
 
 | Problem | Fix |
 |---------|-----|
-| Commands not recognized | Verify `.claude/commands/` has the .md files. Restart Claude Code. |
-| Hooks not firing | Check `.claude/settings.local.json` -- paths must be absolute. |
+| Commands not recognized | Restart Claude Code. Verify `.claude/commands/` has .md files. |
+| Hooks not firing | Run `/verify` -- check hooks config and hook paths. |
+| "bash not found" on Windows | Install Git for Windows. Installer detects Git Bash automatically. |
+| settings.local.json parse error | Installer skips merge if file can't be parsed. Fix JSON syntax and re-run. |
+| /verify shows RED for hooks config | Re-run install script to auto-configure. |
 | Wrong bundle loads | Tune routing weights in MEMORY.md -- does the trigger word match? |
 | /save too short | Work more before saving -- Claude needs context to summarize. |
+| Interrupted install | No jitneuro.json = incomplete. Re-run installer. |
 
-**Windows note:** Hooks require bash (Git Bash or WSL). Core commands work on any platform.
+**Windows note:** Hooks require bash (Git Bash). WSL is detected but not supported for hooks.
+Core commands work on any platform.

@@ -5,6 +5,17 @@
 # RED zone enforcement: push to main requires the project owner's explicit permission.
 # This hook enforces it programmatically so Claude can't accidentally push.
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONFIG="$(dirname "$SCRIPT_DIR")/jitneuro.json"
+
+# Read protected branches from config (default: main, master)
+PROTECTED="main|master"
+if [ -f "$CONFIG" ]; then
+  # Extract branch names from protectedBranches array
+  BRANCHES=$(grep -o '"protectedBranches"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$CONFIG" | grep -o '"[a-zA-Z0-9_-]*"' | tr -d '"' | tr '\n' '|' | sed 's/|$//')
+  [ -n "$BRANCHES" ] && PROTECTED="$BRANCHES"
+fi
+
 INPUT=$(cat)
 
 # Extract the command from tool input JSON (no python dependency)
@@ -19,9 +30,9 @@ fi
 # Safety: if we still can't parse the command, block git operations rather than allow-all
 if [ -z "$COMMAND" ]; then
   # Check raw input for dangerous patterns as a fallback
-  if echo "$INPUT" | grep -qiE 'git\s+push.*\b(main|master)\b'; then
-    echo "BLOCKED by JitNeuro branch protection: git push to main/master detected (fallback parser)." >&2
-    echo "This requires the project owner's explicit permission. Ask before retrying." >&2
+  if echo "$INPUT" | grep -qiE "git\s+push.*\b($PROTECTED)\b"; then
+    echo "BLOCKED by JitNeuro branch protection: git push to protected branch detected (fallback parser)." >&2
+    echo "Protected branches: $PROTECTED. This requires the project owner's explicit permission." >&2
     exit 2
   fi
   if echo "$INPUT" | grep -qiE 'git\s+push.*--force'; then
@@ -37,9 +48,9 @@ fi
 
 # Check for git push to main or master (with or without origin/upstream)
 # Match: git push origin main, git push main, git push --force origin main, etc.
-if echo "$COMMAND" | grep -qiE 'git\s+push\s+.*\b(main|master)\b'; then
-  echo "BLOCKED by JitNeuro branch protection: git push to main/master is a RED zone action." >&2
-  echo "This requires the project owner's explicit permission. Ask before retrying." >&2
+if echo "$COMMAND" | grep -qiE "git\s+push\s+.*\b($PROTECTED)\b"; then
+  echo "BLOCKED by JitNeuro branch protection: git push to protected branch is a RED zone action." >&2
+  echo "Protected branches: $PROTECTED. This requires the project owner's explicit permission." >&2
   exit 2
 fi
 
@@ -65,9 +76,9 @@ if echo "$COMMAND" | grep -qiE 'git\s+reset\s+--hard'; then
 fi
 
 # Check for git rebase onto main/master (rewrites history on protected branch)
-if echo "$COMMAND" | grep -qiE 'git\s+rebase\s+.*(main|master)'; then
-  echo "BLOCKED by JitNeuro branch protection: rebase onto main/master detected." >&2
-  echo "Rebasing rewrites history on a protected branch. Requires the project owner's explicit permission." >&2
+if echo "$COMMAND" | grep -qiE "git\s+rebase\s+.*($PROTECTED)"; then
+  echo "BLOCKED by JitNeuro branch protection: rebase onto protected branch detected." >&2
+  echo "Protected branches: $PROTECTED. Requires the project owner's explicit permission." >&2
   exit 2
 fi
 
