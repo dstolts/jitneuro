@@ -58,6 +58,13 @@ Pick a number to show details, or: sessions archive|delete <#>
 10. If stale sessions exist (>3 days), note:
     "2 sessions are stale (>3 days). Run `sessions stale` to review."
 11. If no NEEDS DAN items: omit that section
+12. MANDATORY -- end the response with a plain text prompt. Do NOT use AskUserQuestion. Just print this line at the very end:
+
+```
+Enter a session # to open, or: show|archive|delete <#>, stale, clean
+```
+
+The user's next message will be a number or command. Never skip this prompt.
 
 ### sessions show <name|number>
 
