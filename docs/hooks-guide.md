@@ -64,11 +64,26 @@ When a command is blocked, Claude receives the reason via stderr and will inform
 - **Script:** session-end-autosave.sh
 - **Timeout:** 10s
 
-Writes a minimal recovery breadcrumb when a session terminates. Captures: timestamp, exit reason, duration, working directory, and session ID. Written to `.claude/session-state/_autosave.md` (overwritten each time).
+Safety net for forgotten `/save`. When a session ends, this hook checks whether a `/save` was called during the session by comparing the active session file's modification time against the session duration.
 
-This is NOT a full `/save` -- it only records that a session ended and where. If you forgot to `/save` before exiting, this file confirms a session was active.
+**If /save was detected:** Writes a minimal "all clear" breadcrumb -- no action needed.
 
-**Why this matters:** If you close your terminal, lose connection, or just forget to checkpoint, this hook ensures there is always a trace of what was happening.
+**If /save was NOT detected:** Writes a warning breadcrumb with recovery info:
+- The active session name (from `.current`)
+- How long ago the last save was
+- The last known task and repos (extracted from the session file)
+- A `/load` command to restore the last checkpoint
+
+Written to `.claude/session-state/_autosave.md` (overwritten each time). Excluded from `/sessions` dashboard output.
+
+**Why this matters:** The most common way to lose context is forgetting to `/save` before closing the terminal. This hook detects that gap and tells the next session exactly what to recover.
+
+**Limitations:**
+- The SessionEnd event provides only 4 fields: reason, duration, cwd, session_id. It has NO access to conversation context. The hook cannot capture what you were actually working on -- only what the last `/save` recorded.
+- Save detection relies on file modification timestamps. If the system clock is wrong or the filesystem doesn't update mtime, detection may be inaccurate.
+- If no `/save` was ever called (no `.current` file, no session files), the breadcrumb can only report "none" for session name, task, and repos.
+- The hook reads the first 15 lines of the session file to extract task/repos. If the session file format changes or those fields are beyond line 15, extraction will miss them.
+- On Windows, `stat -c %Y` may not work depending on the bash environment. The hook falls back to `stat -f %m` (BSD/macOS), but if both fail, save detection defaults to "no" (safe fallback -- always warns).
 
 ## Configuration
 
