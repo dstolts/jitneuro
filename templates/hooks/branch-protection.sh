@@ -45,7 +45,7 @@ fi
 # Safety: if we still can't parse the command, block git operations rather than allow-all
 if [ -z "$COMMAND" ]; then
   # Check raw input for dangerous patterns as a fallback
-  if echo "$INPUT" | grep -qiE "git\s+push.*\b($PROTECTED)\b"; then
+  if echo "$INPUT" | grep -qiE "git\s+push.*\b($PROTECTED)(\s|$)"; then
     if ! echo "$INPUT" | grep -qiE 'git\s+push.*--force' && is_repo_allowed; then
       exit 0
     fi
@@ -66,7 +66,7 @@ fi
 
 # Check for git push to main or master (with or without origin/upstream)
 # Match: git push origin main, git push main, git push --force origin main, etc.
-if echo "$COMMAND" | grep -qiE "git\s+push\s+.*\b($PROTECTED)\b"; then
+if echo "$COMMAND" | grep -qiE "git\s+push\s+.*\b($PROTECTED)(\s|$)"; then
   # Allow if this repo's remote URL is in mainPushAllowed (force push still blocked below)
   if ! echo "$COMMAND" | grep -qiE 'git\s+push\s+.*--force' && is_repo_allowed; then
     exit 0
