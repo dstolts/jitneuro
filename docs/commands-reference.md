@@ -1,43 +1,71 @@
 # Commands Reference
 
-JitNeuro ships 15 slash commands organized into 5 categories. All commands are read-only unless explicitly noted.
+JitNeuro ships 12 commands and 5 shortcuts organized into 5 categories. All commands are read-only unless explicitly noted.
 
 ---
 
-## Memory Management
+## Session Management
 
-### /save <name>
-Checkpoint session state before /clear. Writes current context, active tasks, and working state to a named snapshot so nothing is lost when the conversation resets.
+### /session [new|save|load|pulse|switch|rename|dashboard]
+Manage the current session. Default (no subcommand) shows current session status, repos, dirty files, and next steps.
 
-- **Arguments:** `name` (required) -- identifier for the checkpoint
-- **Note:** Writes to `D:\Code\.claude\session-state\`
+- **Subcommands:**
+  - `new <name>` -- create fresh named session (checks for unsaved work first)
+  - `save <name>` -- checkpoint to disk
+  - `load <name|#>` -- restore from disk
+  - `pulse` -- re-read shared state from other sessions
+  - `switch <name|#>` -- save current + load another in one step
+  - `rename <new-name>` -- rename current session
+  - `dashboard` -- current session's blockers and NEEDS DAN items
 
-Example:
+- **Tracking:** Active session stored in `.claude/session-state/.current`
+- **Tag rule:** Every response ends with `[session: <name>]`
+
+Examples:
 ```
-/save sprint-blog-progress
+/session                     -- where am I, what's dirty, what's next
+/session new sprint-auth     -- start fresh (prompts to save existing)
+/session save                -- checkpoint current session
+/session load 3              -- load session #3 from last /sessions list
+/session pulse               -- what changed in other sessions since I last looked
+/session switch 2            -- save current, load #2
+/session rename sprint-auth-v2
+/session dashboard           -- blockers for THIS session only
 ```
-Saves the current session as "sprint-blog-progress". Confirmation shows files written and context captured.
 
 ---
 
-### /load <name>
-Restore session state after /clear. Rehydrates context, active tasks, and working state from a previously saved checkpoint.
+### /sessions [list|show|stale|clean|archive|delete|dashboard]
+Manage all session checkpoints. Default shows a numbered list with NEEDS DAN summary across all sessions and active work.
 
-- **Arguments:** `name` (required) -- identifier of the checkpoint to restore
+- **Subcommands:**
+  - `<number>` or `show <name|#>` -- show full detail
+  - `stale` -- list sessions >3 days old
+  - `clean` -- delete stale sessions (confirms first)
+  - `archive <name|#>` -- move to archive
+  - `delete <name|#>` -- delete (confirms first)
+  - `dashboard` -- aggregate NEEDS DAN across all sessions
 
-Example:
+- **Note:** Active session marked with `*` in list output
+
+Examples:
 ```
-/load sprint-blog-progress
+/sessions                    -- numbered list + NEEDS DAN summary
+/sessions 3                  -- show detail for session #3
+/sessions archive 4          -- archive session #4
+/sessions stale              -- which sessions are >3 days old
+/sessions clean              -- delete all stale (confirms first)
 ```
-Restores the "sprint-blog-progress" checkpoint. Claude resumes with full awareness of where you left off.
 
 ---
+
+## Memory
 
 ### /learn
 Evaluate the current session for long-term knowledge updates and run a memory health check. Proposes updates to engrams, bundles, and MEMORY.md based on what happened during the session.
 
 - **Arguments:** None
-- **Note:** Writes to engrams and bundles in `D:\Code\.claude\`
+- **Note:** Writes to engrams and bundles
 
 Example:
 ```
@@ -60,38 +88,23 @@ Returns a table of all memory components with status (current, stale, missing, c
 
 ---
 
-## Governance
+### /bundle <name>
+Load a specific context bundle on demand. Bundles are curated knowledge sets that give Claude deep domain knowledge for a task.
 
-### /enterprise
-Display consolidated governance rules, trust zones, and review gates. Surfaces the full DOE compliance framework in one view so you know exactly what requires approval and what runs freely.
-
-- **Arguments:** None
+- **Arguments:** `name` (required) -- bundle identifier
 
 Example:
 ```
-/enterprise
+/bundle infrastructure
 ```
-Shows trust zone table (GREEN/YELLOW/RED), approval workflow, branch rules, and sprint protocol in a single consolidated view.
-
----
-
-### /audit [repo]
-Scan one or all repos for security issues, git hygiene, and DOE compliance. Checks for exposed secrets, missing CLAUDE.md files, uncommitted changes, and framework conformance.
-
-- **Arguments:** `repo` (optional) -- specific repo name to audit; omit to scan all repos
-
-Example:
-```
-/audit auth-api
-```
-Scans auth-api for .env exposure, missing engrams, CLAUDE.md presence, git status, and guardrail compliance. Returns a pass/fail table with remediation steps.
+Loads the infrastructure bundle, giving Claude full awareness of servers, VMs, ports, and deploy patterns.
 
 ---
 
 ## Git Operations
 
 ### /gitstatus [fetch|dirty|behind|unpushed|repo]
-Cross-repo git comparison showing local vs uat vs main status. Gives a bird's-eye view of all repos or filters by condition.
+Cross-repo git comparison showing local vs uat vs main status.
 
 - **Arguments (all optional):**
   - `fetch` -- fetch remotes before comparing
@@ -104,12 +117,12 @@ Example:
 ```
 /gitstatus dirty
 ```
-Returns a table of all repos with uncommitted changes, showing branch name, modified file count, and last commit date.
+Returns a table of all repos with uncommitted changes.
 
 ---
 
 ### /diff [repo]
-Show changes since last push or main divergence. Summarizes what has changed in the working tree and staged files relative to the remote branch.
+Show changes since last push or main divergence.
 
 - **Arguments:** `repo` (optional) -- specific repo name; defaults to current repo
 
@@ -117,68 +130,42 @@ Example:
 ```
 /diff auth-api
 ```
-Shows a summary of all changed files in the auth-api repo since the last push, with line counts and change descriptions.
+Shows a summary of all changed files since the last push, with line counts and change descriptions.
 
 ---
 
-## Context Management
+## Governance
 
-### /bundle <name>
-Load a specific context bundle on demand. Bundles are curated knowledge sets (e.g., deploy pipeline, infrastructure details, API design patterns) that give Claude deep domain knowledge for a task.
-
-- **Arguments:** `name` (required) -- bundle identifier (e.g., `deploy`, `infrastructure`, `api-design`, `integrations`, `testing`)
-
-Example:
-```
-/bundle deploy
-```
-Loads the deploy bundle, giving Claude full awareness of the deployment pipeline, environment configs, and release process.
-
----
-
-### /orchestrate
-Auto-route tasks to agents with appropriate bundles. Analyzes the current request, determines which bundles and context are needed, and loads them automatically based on routing weights.
+### /enterprise
+Display consolidated governance rules, trust zones, and review gates.
 
 - **Arguments:** None
 
 Example:
 ```
-/orchestrate
+/enterprise
 ```
-Claude analyzes the pending task, selects relevant bundles (e.g., deploy + infrastructure for a cross-repo task), and loads them before proceeding.
+Shows trust zone table (GREEN/YELLOW/RED), approval workflow, branch rules, and sprint protocol.
 
 ---
 
-### /status
-Quick "where am I" snapshot. Shows current branch, dirty files, active sprint, and working context in a compact summary.
+### /audit [repo]
+Scan one or all repos for security issues, git hygiene, and DOE compliance.
 
-- **Arguments:** None
-
-Example:
-```
-/status
-```
-Returns: current repo, branch, uncommitted file count, active sprint name, and last checkpoint timestamp.
-
----
-
-### /dashboard
-Aggregate all NEEDS DAN items into one prioritized triage view. Pulls pending decisions, blockers, and approval requests from all active sprints and repos into a single actionable list.
-
-- **Arguments:** None
+- **Arguments:** `repo` (optional) -- specific repo; omit to scan all
 
 Example:
 ```
-/dashboard
+/audit auth-api
 ```
-Returns a prioritized table of items requiring attention: approvals, blockers, decisions, and review requests across all active work.
+Scans for .env exposure, missing engrams, CLAUDE.md presence, git status, and guardrail compliance.
 
 ---
 
 ## Setup and Maintenance
 
 ### /onboard <repo>
-Bootstrap a new repo into the DOE/JitNeuro framework. Creates CLAUDE.md guardrails, initializes engram, registers in MEMORY.md, and sets up the .claude directory structure.
+Bootstrap a new repo into the DOE/JitNeuro framework.
 
 - **Arguments:** `repo` (required) -- name of the repo to onboard
 - **Note:** Writes new files (CLAUDE.md, engram, MEMORY.md entry)
@@ -187,31 +174,46 @@ Example:
 ```
 /onboard NewProject
 ```
-Creates `D:\Code\NewProject\.claude\CLAUDE.md`, initializes `D:\Code\.claude\engrams\newproject-context.md`, adds the repo to the MEMORY.md project table, and confirms DOE compliance.
+Creates CLAUDE.md, initializes engram, registers in MEMORY.md, confirms DOE compliance.
 
 ---
 
-### /sessions
-List, inspect, and clean session checkpoints. Manages the saved states created by /save, showing age, size, and contents of each checkpoint.
+### /orchestrate
+Auto-route tasks to agents with appropriate bundles.
 
 - **Arguments:** None
 
 Example:
 ```
-/sessions
+/orchestrate
 ```
-Returns a table of all saved checkpoints with name, date, size, and a brief description. Offers to clean stale checkpoints older than 7 days.
+Analyzes the pending task, selects relevant bundles, and loads them before proceeding.
 
 ---
 
-### convlog [on|off|status]
-Toggle conversation logging to .logs/ directory. When enabled, full session transcripts are saved for audit and review purposes.
+### /conversation-log [on|off|status]
+Toggle conversation logging to .logs/ directory.
 
 - **Arguments:** `on`, `off`, or `status` (optional, defaults to `status`)
-- **Note:** No leading slash -- this is invoked as `convlog`, not `/convlog`
 
 Example:
 ```
-convlog on
+/conversation-log on
 ```
-Enables conversation logging. All subsequent messages are written to `D:\Code\.claude\.logs\` with timestamped filenames. Use `convlog status` to check current state.
+Enables conversation logging with timestamped filenames.
+
+---
+
+## Shortcuts
+
+These delegate to `/session` or `/sessions` based on the `shortcut_scope` preference in `.claude/session-state/.preferences`. Default scope: `session` (current).
+
+| Shortcut | Default target (session) | Alternate target (sessions) |
+|----------|--------------------------|----------------------------|
+| `/save <name>` | `/session save` | `/session save` (always current) |
+| `/load <name\|#>` | `/session load` | `/session load` (always current) |
+| `/pulse` | `/session pulse` | `/session pulse` (always current) |
+| `/status` | `/session` | `/sessions` |
+| `/dashboard` | `/session dashboard` | `/sessions dashboard` |
+
+Note: `/save`, `/load`, and `/pulse` always target the current session regardless of preference. Only `/status` and `/dashboard` switch scope.
