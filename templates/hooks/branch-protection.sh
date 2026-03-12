@@ -10,11 +10,26 @@ CONFIG="$(dirname "$SCRIPT_DIR")/jitneuro.json"
 
 # Read protected branches from config (default: main, master)
 PROTECTED="main|master"
+ALLOWED_URLS=""
 if [ -f "$CONFIG" ]; then
   # Extract branch names from protectedBranches array
   BRANCHES=$(grep -o '"protectedBranches"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$CONFIG" | grep -o '"[a-zA-Z0-9_-]*"' | tr -d '"' | tr '\n' '|' | sed 's/|$//')
   [ -n "$BRANCHES" ] && PROTECTED="$BRANCHES"
+  # Extract mainPushAllowed URLs (repos allowed to push to protected branches)
+  ALLOWED_URLS=$(grep -o '"mainPushAllowed"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$CONFIG" | grep -o '"https://[^"]*"' | tr -d '"')
 fi
+
+# Check if current repo's remote is in the allowed list
+is_repo_allowed() {
+  [ -z "$ALLOWED_URLS" ] && return 1
+  local REMOTE_URL
+  REMOTE_URL=$(git remote get-url origin 2>/dev/null)
+  [ -z "$REMOTE_URL" ] && return 1
+  echo "$ALLOWED_URLS" | while IFS= read -r url; do
+    [ "$url" = "$REMOTE_URL" ] && exit 0
+  done
+  return $?
+}
 
 INPUT=$(cat)
 
@@ -31,6 +46,9 @@ fi
 if [ -z "$COMMAND" ]; then
   # Check raw input for dangerous patterns as a fallback
   if echo "$INPUT" | grep -qiE "git\s+push.*\b($PROTECTED)\b"; then
+    if ! echo "$INPUT" | grep -qiE 'git\s+push.*--force' && is_repo_allowed; then
+      exit 0
+    fi
     echo "BLOCKED by JitNeuro branch protection: git push to protected branch detected (fallback parser)." >&2
     echo "Protected branches: $PROTECTED. This requires the project owner's explicit permission." >&2
     exit 2
@@ -49,6 +67,10 @@ fi
 # Check for git push to main or master (with or without origin/upstream)
 # Match: git push origin main, git push main, git push --force origin main, etc.
 if echo "$COMMAND" | grep -qiE "git\s+push\s+.*\b($PROTECTED)\b"; then
+  # Allow if this repo's remote URL is in mainPushAllowed (force push still blocked below)
+  if ! echo "$COMMAND" | grep -qiE 'git\s+push\s+.*--force' && is_repo_allowed; then
+    exit 0
+  fi
   echo "BLOCKED by JitNeuro branch protection: git push to protected branch is a RED zone action." >&2
   echo "Protected branches: $PROTECTED. This requires the project owner's explicit permission." >&2
   exit 2

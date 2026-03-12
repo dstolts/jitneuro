@@ -1,9 +1,12 @@
 {
-  "version": "0.1.2",
+  "version": "0.1.3",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
     "protectedBranches": ["main", "master"],
+    "mainPushAllowed": [
+      "https://github.com/dstolts/jitai-35.git"
+    ],
     "hookEvents": [
       {
         "event": "PreCompact",
@@ -36,7 +39,8 @@
         "block": "Compaction blocked (exit 2). User must respond before compaction can proceed."
       },
       "autosave": "true = write _autosave.md on session end; false = skip",
-      "protectedBranches": "Branches that require explicit permission to push to"
+      "protectedBranches": "Branches that require explicit permission to push to",
+      "mainPushAllowed": "Full git remote URLs whose repos are allowed to push to protected branches without approval. Must match output of git remote get-url origin exactly."
     },
     "_configResolution": "Single-level config for v0.1.x. Future: multi-level with most-secure-wins."
   }

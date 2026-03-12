@@ -47,10 +47,12 @@ Intercepts every Bash command before execution and blocks RED zone git operation
 
 | Command Pattern | Why Blocked |
 |-----------------|-------------|
-| `git push ... main/master` | Push to main requires explicit permission |
-| `git push --force` | Force push is destructive and irreversible |
+| `git push ... main/master` | Push to main requires explicit permission (unless repo is in `mainPushAllowed`) |
+| `git push --force` | Force push is destructive and irreversible (always blocked, no override) |
 | `git branch -D` | Force-deletes a branch without merge check |
 | `git reset --hard` | Discards all uncommitted work |
+
+**Per-repo override:** For local development repos and self-made internal tools where push-to-main is low risk (e.g., Vercel auto-deploys, no team review required), you can add the repo's full upstream URL to `mainPushAllowed` in jitneuro.json. The hook checks `git remote get-url origin` against this list before blocking. Force push is always blocked regardless of this setting.
 
 When a command is blocked, Claude receives the reason via stderr and will inform the user and ask for permission before retrying.
 
@@ -137,11 +139,14 @@ Located at `.claude/jitneuro.json`. Central config for JitNeuro version, hook be
 
 ```json
 {
-  "version": "0.1.2",
+  "version": "0.1.3",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
     "protectedBranches": ["main", "master"],
+    "mainPushAllowed": [
+      "https://github.com/yourorg/your-repo.git"
+    ],
     "hookEvents": [...]
   }
 }
@@ -152,6 +157,7 @@ Located at `.claude/jitneuro.json`. Central config for JitNeuro version, hook be
 | `preCompactBehavior` | `block` | "block" halts compaction until user responds. "warn" lets it proceed. |
 | `autosave` | `true` | Write `_autosave.md` breadcrumb on session end. Set false to disable. |
 | `protectedBranches` | `["main", "master"]` | Branches that branch-protection hook blocks push to. |
+| `mainPushAllowed` | `[]` | Full git remote URLs allowed to push to protected branches without approval. Must match `git remote get-url origin` exactly. Use for local dev repos and self-made internal tools where push-to-main is low risk. Force push is always blocked. |
 
 Hook scripts read this config from `$(dirname "$HOOKS_DIR")/jitneuro.json` (one level up from hooks/).
 
@@ -241,7 +247,7 @@ JitNeuro hooks use grep patterns instead of jq to avoid external dependencies. I
 Default timeout is 10 seconds (5s for branch-protection). If a hook needs more time, increase the `timeout` value in settings.local.json. Keep timeouts short -- hooks block Claude's execution while running.
 
 **Hook blocks unexpectedly:**
-If branch-protection blocks a command you have permission to run, the user must explicitly tell Claude to proceed. The hook itself cannot be bypassed -- this is by design. The user confirms, and Claude can then run the command without the hook intercepting (or the hook must be temporarily removed).
+If branch-protection blocks a push to main that you want to allow, add the repo's full upstream URL to `mainPushAllowed` in jitneuro.json. The URL must match `git remote get-url origin` exactly -- check with `git -C /path/to/repo remote get-url origin`. This is designed for local development repos and self-made internal tools where the owner is the sole committer and push-to-main is low risk. For shared repos or repos with CI gates, keep the RED zone protection and use explicit per-push approval instead.
 
 ## Future Hooks (Planned)
 
