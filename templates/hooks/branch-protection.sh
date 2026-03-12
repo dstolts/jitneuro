@@ -61,8 +61,8 @@ if echo "$COMMAND" | grep -qiE 'git\s+push\s+.*--force'; then
   exit 2
 fi
 
-# Check for git branch -D (force delete branch)
-if echo "$COMMAND" | grep -qiE 'git\s+branch\s+-D\s'; then
+# Check for git branch -D (force delete branch) -- case-sensitive, -d (safe delete) is allowed
+if echo "$COMMAND" | grep -qE 'git\s+branch\s+-D\s'; then
   echo "BLOCKED by JitNeuro branch protection: force branch delete detected." >&2
   echo "This is destructive and requires the project owner's explicit permission." >&2
   exit 2
