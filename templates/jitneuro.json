@@ -1,18 +1,22 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
     "protectedBranches": ["main", "master"],
-    "mainPushAllowed": [
-      "https://github.com/dstolts/jitai-35.git"
-    ],
+    "mainPushAllowed": [],
     "hookEvents": [
       {
         "event": "PreCompact",
         "matcher": "",
         "script": "pre-compact-save.sh",
         "timeout": 10
+      },
+      {
+        "event": "SessionStart",
+        "matcher": "",
+        "script": "session-start-write-id.sh",
+        "timeout": 5
       },
       {
         "event": "SessionStart",

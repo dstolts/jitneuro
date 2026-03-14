@@ -48,7 +48,7 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [ ] Key concepts: bundles, engrams, routing weights, /learn
 - [ ] "Get Started" CTA -> GitHub repo
 - [ ] Enterprise section: holistic review, multi-repo orchestration, Ralph integration
-- [ ] About/author section: Dan Stolts / jitai.co
+- [ ] About/author section: [Your Name] / [your-site]
 - [ ] #FirstMover badge
 - [ ] Deploy to Vercel (jitneuro.ai DNS)
 - [ ] Mobile responsive check
@@ -56,7 +56,7 @@ Target: publish GitHub + blog + LinkedIn same day.
 ## GitHub
 
 - [x] Initialize git remote (github.com/dstolts/jitneuro)
-- [ ] Push to main (RED -- needs Dan's explicit approval)
+- [ ] Push to main (RED -- needs owner's explicit approval)
 - [ ] Verify README renders correctly on GitHub
 - [ ] Add topics: claude-code, ai-memory, context-management, developer-tools
 - [ ] Add description: "Endless Auto-Recall Memory for Claude Code"

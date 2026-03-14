@@ -16,9 +16,9 @@ Manage the current session. Default (no subcommand) shows current session status
   - `pulse` -- re-read shared state from other sessions
   - `switch <name|#>` -- save current + load another in one step
   - `rename <new-name>` -- rename current session
-  - `dashboard` -- current session's blockers and NEEDS DAN items
+  - `dashboard` -- current session's blockers and NEEDS OWNER items
 
-- **Tracking:** Active session stored in `.claude/session-state/.current`
+- **Tracking:** Active session resolved from `.claude/session-state/.session-id` + `.current.d/<id>` when set (per-session), else `.claude/session-state/.current` (legacy). See session.md "Resolve my current".
 - **Tag rule:** Every response ends with `[session: <name>]`
 
 Examples:
