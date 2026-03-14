@@ -73,7 +73,7 @@ if ($PrevVersion) {
 Write-Host ""
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "rules", "hooks")
+$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\.current.d", "rules", "hooks")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -242,6 +242,12 @@ $hooksConfig = @{
             }
         )
         SessionStart = @(
+            @{
+                matcher = ""
+                hooks = @(
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-write-id.sh`""; timeout = 5 }
+                )
+            }
             @{
                 matcher = "compact"
                 hooks = @(

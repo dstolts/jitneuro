@@ -18,7 +18,7 @@ When invoked as `/verify`:
    |---|-----------|-------|-------|--------|-----|
    | 1 | Install version | Read version from .claude/jitneuro.json | Version found | Pre-versioned install (no jitneuro.json) | Not installed |
    | 2 | Commands | Scan .claude/commands/*.md | All 15 commands present | Some commands missing | commands/ dir missing |
-   | 3 | Hook scripts | Check .claude/hooks/*.sh exist | All 4 scripts present | Some missing | hooks/ dir missing |
+   | 3 | Hook scripts | Check .claude/hooks/*.sh exist | All 5 scripts present | Some missing | hooks/ dir missing |
    | 4 | Hooks config | Read settings.local.json, verify hooks section | All 4 hook events configured | Some events missing | No hooks config |
    | 5 | Hook paths | Each hook command path in settings.local.json points to existing file | All paths valid | -- | Script file not found |
    | 6 | Hook events | Event names match Claude Code events (PreCompact, SessionStart, PreToolUse, SessionEnd) | All valid | Unknown event name | -- |
@@ -43,8 +43,8 @@ When invoked as `/verify`:
 
    [1] Install version    GREEN  v0.1.2
    [2] Commands            GREEN  15/15 installed
-   [3] Hook scripts        GREEN  4/4 present
-   [4] Hooks config        GREEN  4/4 events configured
+[3] Hook scripts        GREEN  5/5 present
+[4] Hooks config        GREEN  4 event types configured (SessionStart has 2 hooks)
    [5] Hook paths          GREEN  All paths valid
    [6] Hook events         GREEN  All event names valid
    [7] Bundles             GREEN  3 bundles
@@ -73,5 +73,5 @@ When invoked as `/verify`:
 ## Important
 - Use relative paths in output (not full system paths with username)
 - This command is READ-ONLY -- never modify files
-- If settings.local.json has extra hooks beyond JitNeuro's 4, that's fine -- only check for JitNeuro's hooks
+- If settings.local.json has extra hooks beyond JitNeuro's 5 scripts (4 event types), that's fine -- only check for JitNeuro's hooks
 - Do not fail on extras, only on missing components

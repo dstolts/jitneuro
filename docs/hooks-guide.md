@@ -2,7 +2,7 @@
 
 ## Why Hooks Matter
 
-Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 4 hooks that protect your work and enforce governance automatically.
+Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 5 hooks that protect your work and enforce governance automatically.
 
 Hooks are the safety net that ensures context is never silently lost. When compaction fires, your session state is preserved. When you accidentally try to push to a protected branch, the hook catches it. They run automatically on Claude Code lifecycle events with no manual intervention required.
 
@@ -25,7 +25,17 @@ Prompts Claude to offer `/save` before context gets compressed. Claude will ask 
 
 **Why this matters:** Context compaction is the #1 cause of lost work. After compaction, Claude forgets active tasks, loaded bundles, file positions, and next steps. This hook catches it before it happens.
 
-### 2. Post-Compact Context Recovery
+### 2. Session Start — Write Session ID (per-session .current)
+
+- **Event:** SessionStart (matcher: `""` — all session starts)
+- **Script:** session-start-write-id.sh
+- **Timeout:** 5s
+
+Parses `session_id` from the hook JSON and writes it to `.claude/session-state/.session-id`. Commands then resolve "my current" from `.current.d/<id>` so multiple conversations can each have their own active session. No stdout; exit 0.
+
+**Why this matters:** Without this, only one conversation per workspace could have a "current" session; the single `.current` file was shared. With it, each Claude Code (or Cursor) chat can track its own current session.
+
+### 3. Post-Compact Context Recovery
 
 - **Event:** SessionStart (matcher: `compact`)
 - **Script:** session-start-recovery.sh
@@ -37,7 +47,7 @@ stdout from this hook goes directly into Claude's context -- no user action need
 
 **Why this matters:** After compaction, Claude forgets what it was doing. This hook restores the last checkpoint automatically so you can pick up where you left off without manually re-explaining context.
 
-### 3. Branch Protection
+### 4. Branch Protection
 
 - **Event:** PreToolUse (matcher: `Bash`)
 - **Script:** branch-protection.sh
@@ -58,7 +68,7 @@ When a command is blocked, Claude receives the reason via stderr and will inform
 
 **Why this matters:** Governance rules written in CLAUDE.md are "prose rules" -- Claude follows them most of the time, but can still slip. This hook enforces RED zone protections programmatically. The dangerous command never executes.
 
-### 4. Session End Auto-Save
+### 5. Session End Auto-Save
 
 - **Event:** SessionEnd
 - **Script:** session-end-autosave.sh
