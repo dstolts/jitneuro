@@ -12,7 +12,7 @@ Trigger on these patterns (case-insensitive):
 - `session pulse` -- re-read shared state from other sessions (shortcut: `/pulse`)
 - `session switch <name|#>` -- save current + load another in one step
 - `session rename <new-name>` -- rename current session
-- `session dashboard` -- current session blockers and NEEDS DAN items
+- `session dashboard` -- current session blockers and NEEDS OWNER items
 
 Numbers reference the last `/sessions` list output.
 

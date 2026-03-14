@@ -5,7 +5,7 @@ List, inspect, and manage all session checkpoints. Numbered output for quick sel
 ## Commands
 
 Trigger on these patterns (case-insensitive):
-- `sessions` or `sessions list` -- numbered list of all sessions + NEEDS DAN summary (alias: `dashboard`)
+- `sessions` or `sessions list` -- numbered list of all sessions + NEEDS OWNER summary (alias: `dashboard`)
 - `sessions <number>` -- show full detail of session at that number
 - `sessions show <name|number>` -- show full detail
 - `sessions stale` -- list sessions >3 days old
@@ -42,12 +42,12 @@ Sessions (5 active):                              [* = current]
   5  mobile-onboarding             5d     Sprint-Mobile-001 spec            mobile-app
 ```
 
-7. Read `.claude/bundles/active-work.md` for NEEDS DAN / BLOCKED items
+7. Read `.claude/bundles/active-work.md` for NEEDS OWNER / BLOCKED items
 8. Scan Hub.md files across active repos for additional blocked items
 9. Append aggregate summary:
 
 ```
-NEEDS DAN:
+NEEDS OWNER:
   - [BLOCKED] Sprint-Auth-Refactor: push to main approval needed
   - [APPROVAL] Sprint-Checkout-001: plan review
   - [DECISION] Blog platform: Ghost vs custom
@@ -57,7 +57,7 @@ Pick a number to show details, or: sessions archive|delete <#>
 
 10. If stale sessions exist (>3 days), note:
     "2 sessions are stale (>3 days). Run `sessions stale` to review."
-11. If no NEEDS DAN items: omit that section
+11. If no NEEDS OWNER items: omit that section
 12. MANDATORY -- end the response with a plain text prompt. Do NOT use AskUserQuestion. Just print this line at the very end:
 
 ```

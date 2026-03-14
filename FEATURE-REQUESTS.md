@@ -88,7 +88,7 @@ sprints, during onboarding, or when planning cross-repo changes.
 Quick context snapshot: current branch per repo, dirty files, active sprint,
 last commit, what bundle is loaded. Answers "where was I" in 5 seconds.
 
-## FR-009: /dashboard Command (NEEDS DAN Aggregator)
+## FR-009: /dashboard Command (NEEDS OWNER Aggregator)
 **Priority:** Medium
 **Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\dashboard.md
 
