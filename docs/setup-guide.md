@@ -144,7 +144,7 @@ Copy `templates/bundles/example.md` and fill in your domain:
 cp templates/bundles/example.md .claude/bundles/deploy.md
 ```
 
-Edit with your actual deployment context. Keep under 80 lines.
+Edit with your actual deployment context. Keep under 180 lines.
 Include: key files, commands, conventions, gotchas.
 Exclude: anything Claude can infer from reading the code.
 
@@ -234,7 +234,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | Hooks not firing | Run `/verify` to check hooks config and script paths. |
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
-| Claude ignores bundle content | Bundle too long (over 80 lines) or conflicting with CLAUDE.md. |
+| Claude ignores bundle content | Bundle too long (over 180 lines) or conflicting with CLAUDE.md. |
 | Wrong bundles loaded | Update routing weights in manifest/MEMORY.md. |
 | Context still fills up | Use agents more aggressively, save/clear more often. |
 | /load loads stale state | Check session date with `/sessions`. |

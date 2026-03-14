@@ -5,7 +5,7 @@
 
   A bundle is a self-contained context file for one domain.
   Guidelines:
-  - Keep under 80 lines (ideally 40-60)
+  - Keep under 180 lines (ideally 40-60)
   - Include everything Claude needs for this domain
   - No dependencies on other bundles (self-contained)
   - Use tables and lists for density

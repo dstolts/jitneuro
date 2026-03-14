@@ -39,7 +39,7 @@ a. **Look for context to build from.** Search the workspace for a repo, director
 
 b. **If source material found:** Analyze it (package.json, README, CLAUDE.md,
    key files, recent commits, engram) and draft a bundle. A good bundle is
-   50-80 lines covering:
+   50-180 lines covering:
    - Identity (what is this, one line)
    - Architecture (how it's structured, key patterns)
    - Key Files (table: path, purpose -- most important files only)
@@ -68,7 +68,7 @@ Bundles:
 | Bundle | Lines | Status | Description |
 |--------|-------|--------|-------------|
 | active-work | 42 | OK | Current sprints, blockers |
-| blog-content | 61 | WARN | Approaching 80-line limit |
+| blog-content | 61 | WARN | Approaching 180-line limit |
 | deploy | -- | MISSING | In manifest but no file |
 | new-thing | 35 | UNLISTED | File exists, not in manifest |
 
@@ -91,7 +91,7 @@ If the user says "refresh", "update", or "rebuild" in the context of a bundle
 
 ## Splitting a Bundle
 
-If a bundle is over 80 lines, or the user asks to split:
+If a bundle is over 180 lines, or the user asks to split:
 
 1. Identify natural subdomain boundaries in the content
 2. Propose split: `<name>-a.md` and `<name>-b.md` with clear names
@@ -101,7 +101,7 @@ If a bundle is over 80 lines, or the user asks to split:
 
 ## Important
 - Always ask before writing or modifying bundle files.
-- Keep bundles under 80 lines. Over 80 means Claude may skip content.
+- Keep bundles under 180 lines. Over 80 means Claude may skip content.
 - One bundle = one domain. If a bundle covers two unrelated things, split it.
 - After any write, update context-manifest.md to match reality.
 - Routing weights live in MEMORY.md -- suggest entries but let the user approve.
