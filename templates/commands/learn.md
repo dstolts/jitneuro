@@ -23,7 +23,7 @@ Did Claude load the wrong bundle? Did the user have to manually specify context?
 Is any bundle stale, missing information, or too large?
 - New convention established this session -> add to relevant bundle
 - Bundle was loaded but didn't have what Claude needed -> update content
-- Bundle over 80 lines -> suggest split
+- Bundle over 180 lines -> suggest split
 
 ### 3. Engram Updates (.claude/engrams/)
 Did the session reveal new facts about a project's identity or architecture?
@@ -68,8 +68,8 @@ Read these files and measure actual line counts:
 
 **Bundles** (.claude/bundles/)
 - List all bundles. Count lines in each.
-- WARN at 70+ lines (approaching 80-line max)
-- Flag any bundle over 80 lines -> suggest split
+- WARN at 150+ lines (approaching 180-line max)
+- Flag any bundle over 180 lines -> suggest split
 - Flag bundles not loaded in current session that routing weights say should have been
 - Check for bundles referenced in routing weights that don't exist
 
@@ -97,7 +97,7 @@ Memory System Health:
 | Component | Status | Detail |
 |-----------|--------|--------|
 | MEMORY.md | OK (89/200 lines) | |
-| Bundles | WARN | blog.md at 74/80 lines |
+| Bundles | WARN | blog.md at 155/180 lines |
 | Engrams | OK (3 files, all under 150) | |
 | Sessions | WARN | 2 stale (>3 days) |
 | Routing | MISS | No route for "stripe" tasks |
@@ -125,8 +125,8 @@ Memory System Health:
 | MEMORY.md over 200 lines | CRITICAL. Identify what's being truncated (lines 201+). Move truncated content to appropriate file immediately. Then apply 170+ fix to create headroom. |
 | MEMORY.md has duplicates | Keep the canonical copy in the more specific file (bundle > MEMORY.md). Replace duplicate in MEMORY.md with pointer. |
 | MEMORY.md has stale entries | Verify with user before removing. Mark as "UNVERIFIED" if unsure, delete if confirmed stale. |
-| Bundle over 80 lines | Split by subdomain. Example: `deploy.md` -> `deploy-pipeline.md` + `deploy-environments.md`. Update routing weights to reference both. |
-| Bundle missing content | Add the missing information. If it pushes over 80 lines, split first. |
+| Bundle over 180 lines | Split by subdomain. Example: `deploy.md` -> `deploy-pipeline.md` + `deploy-environments.md`. Update routing weights to reference both. |
+| Bundle missing content | Add the missing information. If it pushes over 180 lines, split first. |
 | Bundle referenced but missing | Create from `templates/bundles/example.md`. Populate with known context from session. |
 | Engram over 150 lines | Trim History section (keep last 3-5 entries). Move Gotchas to a bundle if they're domain-general. Compress verbose sections. |
 | Engram missing for active project | Create from `templates/engrams/example.md`. Populate with: tech stack, key files, architecture, integrations discovered this session. |
@@ -178,7 +178,7 @@ Proposed Updates:
 - NEVER write without user approval. Present the table first.
 - Health check runs EVERY time, even if session had no learnings.
 - MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated by Claude Code.
-- Bundle hard limit: 80 lines. Longer bundles get ignored or partially read.
+- Bundle hard limit: 180 lines. Longer bundles get ignored or partially read.
 - Engram soft limit: 150 lines. Longer engrams waste context on low-value detail.
 - Session state soft limit: 10 active files. More than that is clutter.
 - This command reads and proposes. It does not modify code files, only memory/context files.
