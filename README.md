@@ -77,6 +77,18 @@ Then:
 
 See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 
+### Using JitNeuro with Cursor
+
+Cursor doesn't use slash commands. To get **guardrails**, **save**, **load**, and **learn** in Cursor: copy the intent rule so the agent knows what to do when it sees those intents. The agent will **read** CLAUDE.md and MEMORY.md (they change constantly) instead of using copied text.
+
+1. Install JitNeuro as above so your workspace or project has `.claude/` (commands, session-state, bundles, engrams, etc.).
+2. Copy the Cursor rule:  
+   `cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/`  
+   (create `.cursor/rules/` if needed).
+3. Use the same `.claude/` layout; the rule tells the agent to read CLAUDE.md and MEMORY.md when needed.
+
+See [templates/cursor/README.md](templates/cursor/README.md) and [docs/cursor-and-cross-vendor.md](docs/cursor-and-cross-vendor.md) for details. What we ship for Cursor is defined in [docs/cursor-enablement-context.md](docs/cursor-enablement-context.md).
+
 ## File Structure
 
 ```
