@@ -29,7 +29,7 @@ Anywhere a `<name>` is accepted, a `<number>` from the last list works too.
    - Current Task line
    - Repos Involved
 4. Assign sequential numbers starting at 1
-5. Mark the active session (from `.current`) with `*`
+5. **Resolve "my current"** (see session.md — uses .session-id + .current.d/<id> or .current). Mark that session with `*` in the table (current for this conversation).
 6. Display as numbered table:
 
 ```
@@ -84,14 +84,14 @@ The user's next message will be a number or command. Never skip this prompt.
 2. Show each number, name, and task
 3. Ask confirmation: "Delete these N stale sessions? (yes/no)"
 4. On yes, delete the files
-5. If active session (`.current`) is being deleted, clear `.current`
+5. If the deleted session was **"my current"** (resolve "my current" from session.md), **clear "my current"** (remove .current.d/<id> if used; clear .current if that session was the one in .current).
 6. Report what was deleted
 
 ### sessions archive <name|number>
 
 1. Create `.claude/session-state/archive/` if needed
 2. Move `<name>.md` to `archive/<name>.md`
-3. If archived session was active (`.current`), clear `.current`
+3. If archived session was **"my current"**, **clear "my current"** (see session.md).
 4. Confirm: "Archived <name>. Still readable at session-state/archive/<name>.md"
 
 ### sessions delete <name|number>
@@ -99,7 +99,7 @@ The user's next message will be a number or command. Never skip this prompt.
 1. Read the session file, show task and last checkpoint date
 2. Ask confirmation: "Delete session '<name>'? (yes/no)"
 3. On yes, delete the file
-4. If deleted session was active (`.current`), clear `.current`
+4. If deleted session was **"my current"**, **clear "my current"** (see session.md).
 5. Confirm: "Deleted <name>."
 
 ## Important
