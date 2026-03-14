@@ -84,7 +84,7 @@ Only generate files that are missing or that the user asked to refresh.
 Use the JitNeuro `templates/CLAUDE-brainstem.md` as the template.
 Fill in project-specific values.
 
-**Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-80 lines):
+**Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-180 lines):
 Use the JitNeuro `templates/engrams/example.md` as the template.
 Populate with discovered tech stack, key files, architecture, integrations.
 

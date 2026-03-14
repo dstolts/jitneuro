@@ -16,9 +16,9 @@ Manage the current session. Default (no subcommand) shows current session status
   - `pulse` -- re-read shared state from other sessions
   - `switch <name|#>` -- save current + load another in one step
   - `rename <new-name>` -- rename current session
-  - `dashboard` -- current session's blockers and NEEDS DAN items
+  - `dashboard` -- current session's blockers and NEEDS OWNER items
 
-- **Tracking:** Active session stored in `.claude/session-state/.current`
+- **Tracking:** Active session resolved from `.claude/session-state/.session-id` + `.current.d/<id>` when set (per-session), else `.claude/session-state/.current` (legacy). See session.md "Resolve my current".
 - **Tag rule:** Every response ends with `[session: <name>]`
 
 Examples:
@@ -36,7 +36,7 @@ Examples:
 ---
 
 ### /sessions [list|show|stale|clean|archive|delete|dashboard]
-Manage all session checkpoints. Default shows a numbered list with NEEDS DAN summary across all sessions and active work.
+Manage all session checkpoints. Default shows a numbered list with NEEDS OWNER summary across all sessions and active work.
 
 - **Subcommands:**
   - `<number>` or `show <name|#>` -- show full detail
@@ -44,13 +44,13 @@ Manage all session checkpoints. Default shows a numbered list with NEEDS DAN sum
   - `clean` -- delete stale sessions (confirms first)
   - `archive <name|#>` -- move to archive
   - `delete <name|#>` -- delete (confirms first)
-  - `dashboard` -- aggregate NEEDS DAN across all sessions
+  - `dashboard` -- aggregate NEEDS OWNER across all sessions
 
 - **Note:** Active session marked with `*` in list output
 
 Examples:
 ```
-/sessions                    -- numbered list + NEEDS DAN summary
+/sessions                    -- numbered list + NEEDS OWNER summary
 /sessions 3                  -- show detail for session #3
 /sessions archive 4          -- archive session #4
 /sessions stale              -- which sessions are >3 days old

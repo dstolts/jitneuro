@@ -15,7 +15,7 @@ These load automatically at session start via CLAUDE.md:
 |--------|------|--------|-------|-----------|
 | example | .claude/bundles/example.md | Example template | ~30 | never |
 
-<!-- Add your bundles here. Keep under 80 lines each. -->
+<!-- Add your bundles here. Keep under 180 lines each. -->
 <!-- Example entries:
 | deploy    | .claude/bundles/deploy.md    | CI/CD, containers, environments | ~60 | 2026-03-09 |
 | api       | .claude/bundles/api.md       | API design, auth, error handling | ~50 | 2026-03-09 |

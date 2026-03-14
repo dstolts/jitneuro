@@ -80,6 +80,7 @@ mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/bundles"
 mkdir -p "$TARGET/engrams"
 mkdir -p "$TARGET/session-state"
+mkdir -p "$TARGET/session-state/.current.d"
 mkdir -p "$TARGET/rules"
 mkdir -p "$TARGET/hooks"
 
@@ -187,7 +188,10 @@ build_hooks_json() {
 {
   "hooks": {
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-compact-save.sh\"", "timeout": 10 }] }],
-    "SessionStart": [{ "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }],
+    "SessionStart": [
+    { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 5 }] },
+    { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }
+  ],
     "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 5 }] }],
     "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-end-autosave.sh\"", "timeout": 10 }] }]
   }

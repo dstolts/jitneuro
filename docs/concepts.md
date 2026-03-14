@@ -2,7 +2,7 @@
 
 ## Context Bundles
 
-Self-contained knowledge files (50-80 lines max) covering one domain. Examples:
+Self-contained knowledge files (50-180 lines max) covering one domain. Examples:
 - `deploy.md` -- deployment pipeline, container commands, environments
 - `api-design.md` -- API conventions, auth patterns, error handling
 - `sprint.md` -- sprint protocol, task format, commit conventions
@@ -137,7 +137,7 @@ A typical working session adds **~1-2%** more for on-demand context.
 | Component | Limit | Why |
 |-----------|-------|-----|
 | MEMORY.md | 200 lines (hard) | Claude Code truncates beyond 200 -- content silently lost |
-| Bundles | 80 lines each | Longer bundles get skimmed or partially read |
+| Bundles | 180 lines each | Longer bundles get skimmed or partially read |
 | Engrams | 150 lines each | Diminishing returns -- trim stale content |
 | CLAUDE.md | 30-40 lines | Loaded every session -- keep minimal |
 | Session state | 30-60 lines | Checkpoint, not transcript |

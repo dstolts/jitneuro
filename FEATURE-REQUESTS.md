@@ -9,7 +9,7 @@ Light local agent (Node or PowerShell) that:
 - Kicks off Claude Code sessions via JitNeuro with the right bundles
 - Runs on a schedule (cron/Task Scheduler)
 - Each task gets its own session-state checkpoint
-- Reports results back to the todo list (pass/fail/needs-Dan)
+- Reports results back to the todo list (pass/fail/needs-owner)
 
 Use cases:
 - Nightly code reviews across repos
@@ -88,12 +88,12 @@ sprints, during onboarding, or when planning cross-repo changes.
 Quick context snapshot: current branch per repo, dirty files, active sprint,
 last commit, what bundle is loaded. Answers "where was I" in 5 seconds.
 
-## FR-009: /dashboard Command (NEEDS DAN Aggregator)
+## FR-009: /dashboard Command (NEEDS OWNER Aggregator)
 **Priority:** Medium
 **Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\dashboard.md
 
-Aggregate all NEEDS DAN items from active-work bundle, hub.md files across repos,
-and pending approvals. Single prioritized list so Dan can triage in one view.
+Aggregate all NEEDS OWNER items from active-work bundle, hub.md files across repos,
+and pending approvals. Single prioritized list so the owner can triage in one view.
 
 ## FR-010: /audit Command (Repo Hygiene)
 **Priority:** Medium
@@ -256,11 +256,11 @@ New directory: `.claude/governance/`
 ```
 | Repo | Branch | Policy | Approver |
 |------|--------|--------|----------|
-| * | main | RED (ask Dan) | Dan |
+| * | main | RED (ask owner) | owner |
 | * | uat | GREEN (push freely) | auto |
 | * | sprint-* | GREEN (push freely) | auto |
 | * | hotfix-* | YELLOW (push, report) | auto |
-| jitai | prod | RED (ask Dan) | Dan |
+| jitai | prod | RED (ask owner) | owner |
 ```
 
 **Merge policies**:
@@ -306,7 +306,7 @@ Configuration in CLAUDE.md or context-manifest.md:
 ```
 ## Identity
 - assistant_name: Neuro     # or Jit, or whatever the user wants
-- user_name: Dan             # used in session state, predictions, anti-patterns
+- user_name: Owner           # used in session state, predictions, anti-patterns
 ```
 
 Why this matters:

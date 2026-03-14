@@ -22,6 +22,9 @@ Thumbs.db
 *.swp
 *~
 
+# Internal project notes (per-machine, not shared)
+.HUB/
+
 # Ralph task runner runtime files (optional -- only needed if using ralph-tui)
 .ralph-tui/iterations/
 .ralph-tui/reports/

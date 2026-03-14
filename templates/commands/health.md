@@ -80,7 +80,7 @@ Use these remediation patterns:
 | MEMORY.md over 170 | Extract largest section to bundle, replace with pointer |
 | MEMORY.md over 200 | CRITICAL. Identify truncated content, move immediately |
 | MEMORY.md duplicates | Keep in more-specific file, replace with pointer |
-| Bundle over 80 | Split by subdomain, update routing weights |
+| Bundle over 180 | Split by subdomain, update routing weights |
 | Bundle missing (referenced) | Create from template, populate with known context |
 | Bundle no routing entry | Add routing entry to MEMORY.md |
 | Engram over 150 | Trim History (keep 3-5 entries), compress verbose sections |
