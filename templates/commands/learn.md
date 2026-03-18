@@ -82,8 +82,8 @@ Read these files and measure actual line counts:
 
 **Session State** (.claude/session-state/)
 - List all session files with ages
-- Flag sessions older than 3 days as stale
-- Flag sessions older than 7 days -> suggest archiving or deleting
+- Flag sessions older than 7 days as stale
+- Flag sessions older than 14 days -> suggest archiving or deleting
 - Count total sessions (more than 10 active = clutter)
 
 **Routing Weights** (in MEMORY.md)
@@ -99,7 +99,7 @@ Memory System Health:
 | MEMORY.md | OK (89/200 lines) | |
 | Bundles | WARN | blog.md at 155/180 lines |
 | Engrams | OK (3 files, all under 150) | |
-| Sessions | WARN | 2 stale (>3 days) |
+| Sessions | WARN | 2 stale (>7 days) |
 | Routing | MISS | No route for "stripe" tasks |
 ```
 
@@ -131,8 +131,8 @@ Memory System Health:
 | Engram over 150 lines | Trim History section (keep last 3-5 entries). Move Gotchas to a bundle if they're domain-general. Compress verbose sections. |
 | Engram missing for active project | Create from `templates/engrams/example.md`. Populate with: tech stack, key files, architecture, integrations discovered this session. |
 | Engram has outdated info | Update specific fields. Don't rewrite the whole file -- surgical edits only. |
-| Session state older than 3 days | Flag as stale in output. User decides: delete, resume, or keep. |
-| Session state older than 7 days | Recommend deletion. If task is still relevant, suggest creating a fresh save. |
+| Session state older than 7 days | Flag as stale in output. User decides: delete, resume, or keep. |
+| Session state older than 14 days | Recommend deletion. If task is still relevant, suggest creating a fresh save. |
 | More than 10 active sessions | List all with ages. Ask user to clean up completed tasks. |
 | Routing weight miss | Add new routing entry to MEMORY.md. Format: `- [trigger words] -> [bundle list]` |
 | Routing weight points to missing bundle | Either create the bundle or remove the routing entry. |

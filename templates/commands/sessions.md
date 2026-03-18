@@ -8,7 +8,7 @@ Trigger on these patterns (case-insensitive):
 - `sessions` or `sessions list` -- numbered list of all sessions + NEEDS OWNER summary (alias: `dashboard`)
 - `sessions <number>` -- show full detail of session at that number
 - `sessions show <name|number>` -- show full detail
-- `sessions stale` -- list sessions >3 days old
+- `sessions stale` -- list sessions >7 days old
 - `sessions clean` -- delete stale sessions (confirms first)
 - `sessions archive <name|number>` -- move to session-state/archive/
 - `sessions delete <name|number>` -- delete (confirms first)
@@ -55,8 +55,8 @@ NEEDS OWNER:
 Pick a number to show details, or: sessions archive|delete <#>
 ```
 
-10. If stale sessions exist (>3 days), note:
-    "2 sessions are stale (>3 days). Run `sessions stale` to review."
+10. If stale sessions exist (>7 days), note:
+    "2 sessions are stale (>7 days). Run `sessions stale` to review."
 11. If no NEEDS OWNER items: omit that section
 12. MANDATORY -- end the response with a plain text prompt. Do NOT use AskUserQuestion. Just print this line at the very end:
 
@@ -74,13 +74,13 @@ The user's next message will be a number or command. Never skip this prompt.
 
 ### sessions stale
 
-1. List only sessions with checkpoint date >3 days old
+1. List only sessions with checkpoint date >7 days old
 2. For each, show number, name, age, task, and last next-step
 3. Suggest: "Run `sessions clean` to delete all stale, or `sessions delete <#>` for one."
 
 ### sessions clean
 
-1. List all stale sessions (>3 days)
+1. List all stale sessions (>7 days)
 2. Show each number, name, and task
 3. Ask confirmation: "Delete these N stale sessions? (yes/no)"
 4. On yes, delete the files
@@ -105,7 +105,7 @@ The user's next message will be a number or command. Never skip this prompt.
 ## Important
 - Never delete without confirmation
 - Archive is preferred over delete for completed work (preserves history)
-- Stale threshold is 3 days -- adjustable per user preference
+- Stale threshold is 7 days -- adjustable per user preference
 - This skill is read-only except for clean/archive/delete operations
 - Number assignments are ephemeral -- they reset each time list runs
 - When user provides just a number (e.g., `sessions 3`), treat as `sessions show 3`

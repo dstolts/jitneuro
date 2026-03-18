@@ -86,7 +86,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
 
 6. **Report**  
    Summarize: “Loaded: &lt;name&gt; (checkpointed &lt;date&gt;). Task: … Repos: … Loaded bundles: … Next steps: 1. …”  
-   If the checkpoint is older than 3 days, note that it may be stale and ask if it’s still relevant.
+   If the checkpoint is older than 7 days, note that it may be stale and ask if it’s still relevant.
 
 **Paths:** Same as save — workspace or project `.claude/`.
 
@@ -103,7 +103,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    - Count lines. Warn at 150+, critical at 190+ (hard limit 200). Note truncation/stale/duplicates.  
    - **Bundles** (`.claude/bundles/`): List, count lines each. Warn at 150+ (max 180). Note missing or oversized.  
    - **Engrams** (`.claude/engrams/`): List, count lines each. Warn at 130+ (soft max 150). Note missing for active projects.  
-   - **Session state** (`.claude/session-state/`): List files and age. Flag >3 days stale, >7 days for archive/delete.  
+   - **Session state** (`.claude/session-state/`): List files and age. Flag >7 days stale, >14 days for archive/delete.  
    - **Routing:** From the MEMORY.md you just read, check routing weights; note missing routes or references to missing bundles/engrams.  
    Present a short table: Component | Status | Detail | Fix.
 

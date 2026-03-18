@@ -23,5 +23,5 @@ Name describes the TASK, not the repo:
 ## Lifecycle
 - Created by /save
 - Read by /load
-- Stale after 3 days (flagged on resume, not auto-deleted)
+- Stale after 7 days (flagged on resume, not auto-deleted)
 - Delete manually when a task is fully complete
