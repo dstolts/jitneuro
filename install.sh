@@ -83,6 +83,8 @@ mkdir -p "$TARGET/session-state"
 mkdir -p "$TARGET/session-state/.current.d"
 mkdir -p "$TARGET/rules"
 mkdir -p "$TARGET/hooks"
+mkdir -p "$TARGET/cognition/decisions"
+mkdir -p "$TARGET/scripts"
 
 # --- Backup existing commands before overwrite (US-002) ---
 BACKUP_COUNT=0
@@ -154,6 +156,37 @@ else
   echo "Skipped rules/ (already has files)"
 fi
 
+# Install cognition layer (Phase 2)
+echo "Installing cognition layer..."
+for cog_file in "$TEMPLATES/cognition/"*.md; do
+  [ -f "$cog_file" ] || continue
+  cp "$cog_file" "$TARGET/cognition/$(basename "$cog_file")"
+done
+for dec_file in "$TEMPLATES/cognition/decisions/"*.md; do
+  [ -f "$dec_file" ] || continue
+  cp "$dec_file" "$TARGET/cognition/decisions/$(basename "$dec_file")"
+done
+echo "  cognition/personas.md (16 personas)"
+echo "  cognition/friction-detection.md"
+echo "  cognition/anti-patterns.md (seed entries)"
+echo "  cognition/decisions/ ($(ls -1 "$TEMPLATES/cognition/decisions/"*.md 2>/dev/null | wc -l) models)"
+# Create owner-persona from example if it doesn't exist
+if [ ! -f "$TARGET/cognition/owner-persona.md" ]; then
+  cp "$TEMPLATES/cognition/owner-persona.example.md" "$TARGET/cognition/owner-persona.md"
+  echo "  cognition/owner-persona.md (created from template -- customize this)"
+else
+  echo "  Skipped owner-persona.md (already exists)"
+fi
+
+# Install scripts
+echo "Installing scripts..."
+for script_file in "$TEMPLATES/scripts/"*.sh; do
+  [ -f "$script_file" ] || continue
+  script_name="$(basename "$script_file")"
+  cp "$script_file" "$TARGET/scripts/$script_name"
+  echo "  scripts/$script_name"
+done
+
 # Install hooks
 echo "Installing hooks..."
 for hook_file in "$TEMPLATES/hooks/"*.sh; do
@@ -190,7 +223,8 @@ build_hooks_json() {
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-compact-save.sh\"", "timeout": 10 }] }],
     "SessionStart": [
     { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 10 }] },
-    { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }
+    { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] },
+    { "matcher": "clear", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-post-clear.sh\"", "timeout": 10 }] }
   ],
     "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 10 }] }],
     "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-end-autosave.sh\"", "timeout": 10 }] }]

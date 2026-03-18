@@ -510,6 +510,74 @@ Default: enabled (current behavior).
 
 ---
 
+## FR-105: Autonomous Orchestration
+**Priority:** High (next release)
+**Status:** Planned -- coming after Phase 2 ships
+
+Letting Claude drive the discussions with full autonomous orchestration, including
+running Claude from schedulers and spawning sessions from other sessions.
+
+### Vision
+
+Today, JitNeuro gives Claude persistent memory and cognitive frameworks. But every
+session still requires a human to start it. FR-105 removes that constraint --
+Claude sessions can be triggered by events, schedules, and other sessions.
+
+### Capabilities
+
+**Scheduled execution:**
+- Scheduled /learn runs (daily memory health, weekly engram updates)
+- Nightly /audit across all repos (security scan, stale branch detection)
+- Weekly /health reports delivered to a dashboard or notification channel
+
+**Event-driven sessions:**
+- Git push triggers /diff analysis on the changed repo
+- CI/CD failure triggers root-cause-analysis session with full context
+- Webhook fires and Claude auto-starts to handle it (support ticket, deployment alert)
+
+**Cross-session orchestration:**
+- Active session spawns background research sessions (parallel investigation)
+- Automated sprint kickoff (scheduler triggers execution with prepared task list)
+- Cross-session task delegation (session A assigns work to session B with full context)
+
+**Session-to-session communication:**
+- Sessions can read each other's state via session-state files (already works)
+- Sessions can write tasks to shared pending queues (already works via /task)
+- NEW: Sessions can spawn new sessions with specific commands and context injection
+
+### Architecture Requirements
+
+- Claude Code CLI headless mode (no interactive terminal required)
+- Session spawn API (programmatic session creation with context injection)
+- Credential passthrough (spawned sessions inherit auth from parent/scheduler)
+- Audit trail for all autonomous actions (who spawned what, when, why)
+- Trust zone inheritance: autonomous sessions inherit the trust zone of the
+  scheduler/parent, not an elevated zone. A cron job gets GREEN zone, not RED.
+
+### Security Model
+
+- Autonomous sessions CANNOT escalate trust zones (cron job stays GREEN)
+- All autonomous actions are logged with source (scheduler name, parent session ID)
+- RED zone actions (push to main, production deploy) are NEVER autonomous
+- Kill switch: any session can be stopped by the user at any time
+- Rate limiting: autonomous sessions have a configurable action-per-hour cap
+
+### Integration Points
+
+- Scheduler backends: cron, n8n, GitHub Actions, ADO Pipelines
+- Notification targets: Slack, email, dashboard, session-state files
+- Context injection: bundles, engrams, and session state passed at spawn time
+- Result collection: spawned sessions write results to a shared location
+
+### Dependencies
+
+- Phase 2 cognition layer shipped (personas, decisions, anti-patterns, friction detection)
+- /task command operational (cross-session task delegation)
+- Session state system stable (cross-session communication via files)
+- Claude Code CLI supports headless invocation
+
+---
+
 ## Neural Network Mapping (Phase 2 -- Conceptual Analogy)
 
 | Neural Network | Phase 1 (Memory) | Phase 2 (Decision Frameworks) |
