@@ -1,20 +1,28 @@
 #!/bin/bash
 # JitNeuro SessionStart Post-Clear Hook
-# Fires after /clear. Shows all sessions with numbered list so user can
+# Fires after /clear or new session. Shows all sessions with numbered list so user can
 # pick one to reload. Most recent session is the default.
 #
 # stdout goes into Claude's context window as injected context.
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+set +e  # never abort on errors
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
 SESSION_DIR="$CLAUDE_DIR/session-state"
 CURRENT_FILE="$SESSION_DIR/.current"
-SCRIPTS_DIR="$CLAUDE_DIR/scripts"
+
+# Consume stdin with timeout (prevents pipe hangs)
+if command -v timeout >/dev/null 2>&1; then
+  timeout 2 cat >/dev/null 2>&1 || true
+else
+  while IFS= read -r -t 2 line; do :; done
+fi
 
 # Read last active session name (will be default)
 LAST_SESSION=""
 if [ -f "$CURRENT_FILE" ]; then
-  LAST_SESSION=$(cat "$CURRENT_FILE" | tr -d '[:space:]')
+  LAST_SESSION=$(cat "$CURRENT_FILE" 2>/dev/null | tr -d '[:space:]')
 fi
 
 # Count available sessions (exclude _autosave, README, dotfiles)
@@ -42,7 +50,7 @@ for f in $(ls -t "$SESSION_DIR"/*.md 2>/dev/null); do
   NUM=$((NUM + 1))
 
   # Extract checkpoint date and task
-  CHECKPOINT=$(head -5 "$f" | grep -o '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' | head -1)
+  CHECKPOINT=$(head -5 "$f" 2>/dev/null | grep -o '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' | head -1)
   TASK=$(sed -n '/^## Current Task/{n;/^$/d;p;q;}' "$f" 2>/dev/null | head -c 60)
 
   # Mark default

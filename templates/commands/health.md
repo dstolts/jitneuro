@@ -25,7 +25,7 @@ Read these files and count actual lines:
 
 **Bundles** (.claude/bundles/)
 - List all bundles with line counts.
-- OK < 70, WARN 70-79, OVER 80+.
+- OK < 150, WARN 150-179, OVER 180+.
 - Flag bundles referenced in routing weights that don't exist.
 - Flag bundles that exist but have no routing weight entry.
 
@@ -56,7 +56,7 @@ Memory System Health:
 | Component | Status | Detail | Fix |
 |-----------|--------|--------|-----|
 | MEMORY.md | OK (91/200) | | |
-| Bundles | OK (5 files, all under 70) | | |
+| Bundles | OK (5 files, all under 150) | | |
 | Engrams | WARN | auth-api at 142/150 | Trim History section |
 | Sessions | STALE | deploy-fix (5d old) | Delete or /load to resume |
 | Routing | OK | All routes resolve | |
