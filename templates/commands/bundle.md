@@ -23,7 +23,7 @@ Read the file and output its contents prefixed with:
 [Bundle loaded: <name>]
 ```
 
-If the bundle is over 70 lines, note the line count and suggest reviewing
+If the bundle is over 150 lines, note the line count and suggest reviewing
 with /learn if it should be split.
 
 ### 3. If the bundle DOES NOT EXIST: offer to create it
@@ -87,7 +87,7 @@ If the user says "refresh", "update", or "rebuild" in the context of a bundle
 2. Re-analyze the source (repo, engram, recent commits, current files)
 3. Show a diff of what changed (added/removed/updated sections)
 4. Ask for approval before overwriting
-5. After writing, verify line count is under 80
+5. After writing, verify line count is under 180
 
 ## Splitting a Bundle
 
@@ -101,7 +101,7 @@ If a bundle is over 180 lines, or the user asks to split:
 
 ## Important
 - Always ask before writing or modifying bundle files.
-- Keep bundles under 180 lines. Over 80 means Claude may skip content.
+- Keep bundles under 180 lines. Over 180 means Claude may skip content.
 - One bundle = one domain. If a bundle covers two unrelated things, split it.
 - After any write, update context-manifest.md to match reality.
 - Routing weights live in MEMORY.md -- suggest entries but let the user approve.

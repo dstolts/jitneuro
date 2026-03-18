@@ -7,19 +7,33 @@
 #   warn  = message to Claude, compaction proceeds
 #   block = exit 2, compaction blocked until user responds
 
-HOOKS_DIR="$(cd "$(dirname "$0")" && pwd)"
+set +e  # never abort on errors
+
+HOOKS_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 CONFIG="$(dirname "$HOOKS_DIR")/jitneuro.json"
+LOG="/tmp/jitneuro-precompact.log"
 
 # Read config (default to block if no config -- fail secure)
 BEHAVIOR="block"
 if [ -f "$CONFIG" ]; then
-  BEHAVIOR=$(grep -o '"preCompactBehavior"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" | head -1 | grep -o '"[^"]*"$' | tr -d '"')
+  BEHAVIOR=$(grep -o '"preCompactBehavior"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" 2>/dev/null | head -1 | grep -o '"[^"]*"$' | tr -d '"')
   [ -z "$BEHAVIOR" ] && BEHAVIOR="block"
 fi
 
-# Read hook input from stdin (timeout prevents hang if stdin delayed)
-INPUT=$(timeout 3 cat 2>/dev/null || echo '{}')
-SOURCE=$(echo "$INPUT" | grep -o '"source"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')
+# Read hook input from stdin with timeout
+INPUT=""
+if command -v timeout >/dev/null 2>&1; then
+  INPUT=$(timeout 2 cat 2>/dev/null || true)
+else
+  while IFS= read -r -t 2 line; do
+    INPUT="${INPUT}${line}"
+  done
+fi
+
+echo "[$(date 2>/dev/null)] PreCompact hook fired. Behavior=$BEHAVIOR" >> "$LOG" 2>/dev/null
+echo "[$(date 2>/dev/null)] Input: $INPUT" >> "$LOG" 2>/dev/null
+
+SOURCE=$(echo "$INPUT" | grep -o '"source"[[:space:]]*:[[:space:]]*"[^"]*"' 2>/dev/null | grep -o '"[^"]*"$' | tr -d '"')
 
 # Build the message
 MSG="[JitNeuro] Context compaction triggered (source: ${SOURCE:-auto}). Run /save to checkpoint your session before context is compressed."
