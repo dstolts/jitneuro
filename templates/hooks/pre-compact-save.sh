@@ -17,8 +17,8 @@ if [ -f "$CONFIG" ]; then
   [ -z "$BEHAVIOR" ] && BEHAVIOR="block"
 fi
 
-# Read hook input from stdin
-INPUT=$(cat)
+# Read hook input from stdin (timeout prevents hang if stdin delayed)
+INPUT=$(timeout 3 cat 2>/dev/null || echo '{}')
 SOURCE=$(echo "$INPUT" | grep -o '"source"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')
 
 # Build the message

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -16,7 +16,7 @@
         "event": "SessionStart",
         "matcher": "",
         "script": "session-start-write-id.sh",
-        "timeout": 5
+        "timeout": 10
       },
       {
         "event": "SessionStart",
@@ -28,7 +28,7 @@
         "event": "PreToolUse",
         "matcher": "Bash",
         "script": "branch-protection.sh",
-        "timeout": 5
+        "timeout": 10
       },
       {
         "event": "SessionEnd",
