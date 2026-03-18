@@ -206,7 +206,7 @@ BLOCKED: [count] items needing attention
    1. [from session state]
    ```
 
-7. If session is stale (>3 days), mention it and ask if still relevant
+7. If session is stale (>7 days), mention it and ask if still relevant
 
 ### session pulse
 

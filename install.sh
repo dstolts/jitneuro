@@ -189,10 +189,10 @@ build_hooks_json() {
   "hooks": {
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-compact-save.sh\"", "timeout": 10 }] }],
     "SessionStart": [
-    { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 5 }] },
+    { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 10 }] },
     { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }
   ],
-    "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 5 }] }],
+    "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 10 }] }],
     "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-end-autosave.sh\"", "timeout": 10 }] }]
   }
 }

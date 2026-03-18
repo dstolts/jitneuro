@@ -83,7 +83,7 @@ a 15-person dev team -- because the AI never loses context."
   - 4 safety hooks running automatically
   - 6 scoped rule templates included
   - Context budget: ~3-4% of context window for full infrastructure
-- Attribution: Dan Stolts, jitai.co
+- Attribution: Project author (see GitHub profile)
 
 ### US-006: How It Works Section
 **Priority:** P1
@@ -122,8 +122,8 @@ a 15-person dev team -- because the AI never loses context."
 **Priority:** P1
 **Accept:** Clean footer with links and attribution
 
-- Links: GitHub, Documentation, jitai.co, LinkedIn
-- Copyright: "2025-2026 Just In Time AI"
+- Links: GitHub, Documentation
+- Copyright: "2025-2026 JitNeuro Contributors"
 - Disclaimer: "JitNeuro is an independent open-source project. Not affiliated with Anthropic."
 - MIT License badge
 

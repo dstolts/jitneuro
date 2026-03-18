@@ -13,7 +13,7 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [x] Context budget documented
 - [x] LICENSE (MIT)
 - [x] Disclaimer (not affiliated with Anthropic)
-- [x] Deployed to D:\Code\ as pilot (workspace + user level)
+- [x] Deployed as pilot (workspace + user level)
 - [x] /health command created
 - [x] /enterprise command created
 - [x] Hooks created (PreCompact, SessionStart recovery, branch protection, SessionEnd auto-save)
@@ -67,27 +67,14 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [ ] Add JitNeuro entry to FirstMover DIRECTORY.md
 - [ ] Update FirstMover README if needed
 
-## Blog Post (FR-003)
+## Content & Promotion
 
-- [ ] Write "How to Get AI Coding Assistants to Actually Remember" on jitai.co
-- [ ] Include JitNeuro repo link at end
-- [ ] Publish on jitai.co
+- [x] Blog post published (FR-003)
 - [ ] Cross-post to Dev.to
-
-## Video
-
-- [ ] Record walkthrough using QUICKSTART.md as demo script
-- [ ] Show: routing weights, /save, /clear, /load, /learn, multi-repo
-- [ ] Upload to YouTube or embed on jitai.co
-
-## LinkedIn
-
-- [ ] Post announcing JitNeuro with video
-- [ ] Link to blog post + GitHub repo
-- [ ] Tag relevant AI/dev communities
+- [ ] Record walkthrough video using QUICKSTART.md as demo script
+- [ ] Upload video to YouTube
 
 ## Post-Launch
 
 - [ ] Monitor GitHub issues/stars
-- [ ] Update active-work bundle (jitneuro status -> launched)
 - [ ] Run /learn to capture launch learnings

@@ -40,7 +40,7 @@ Manage all session checkpoints. Default shows a numbered list with NEEDS OWNER s
 
 - **Subcommands:**
   - `<number>` or `show <name|#>` -- show full detail
-  - `stale` -- list sessions >3 days old
+  - `stale` -- list sessions >7 days old
   - `clean` -- delete stale sessions (confirms first)
   - `archive <name|#>` -- move to archive
   - `delete <name|#>` -- delete (confirms first)
@@ -53,7 +53,7 @@ Examples:
 /sessions                    -- numbered list + NEEDS OWNER summary
 /sessions 3                  -- show detail for session #3
 /sessions archive 4          -- archive session #4
-/sessions stale              -- which sessions are >3 days old
+/sessions stale              -- which sessions are >7 days old
 /sessions clean              -- delete all stale (confirms first)
 ```
 

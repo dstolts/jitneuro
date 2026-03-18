@@ -36,8 +36,8 @@ Read these files and count actual lines:
 
 **Session State** (.claude/session-state/)
 - List all sessions with file modification dates.
-- Flag sessions older than 3 days as STALE.
-- Flag sessions older than 7 days as EXPIRED.
+- Flag sessions older than 7 days as STALE.
+- Flag sessions older than 14 days as EXPIRED.
 - Count total (more than 10 = CLUTTER).
 
 **Routing Weights** (in MEMORY.md)
@@ -85,8 +85,8 @@ Use these remediation patterns:
 | Bundle no routing entry | Add routing entry to MEMORY.md |
 | Engram over 150 | Trim History (keep 3-5 entries), compress verbose sections |
 | Engram missing for active project | Create from templates/engrams/example.md |
-| Session older than 3 days | Flag for user decision |
-| Session older than 7 days | Recommend deletion |
+| Session older than 7 days | Flag for user decision |
+| Session older than 14 days | Recommend deletion |
 | More than 10 sessions | List all, ask user to clean up |
 | Manifest out of sync | Update to match actual files on disk |
 

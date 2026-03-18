@@ -20,8 +20,8 @@ if [ -f "$CONFIG" ]; then
   fi
 fi
 
-# Read hook input
-INPUT=$(cat)
+# Read hook input (timeout prevents hang if stdin delayed)
+INPUT=$(timeout 3 cat 2>/dev/null || echo '{}')
 REASON=$(echo "$INPUT" | grep -o '"reason"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')
 DURATION=$(echo "$INPUT" | grep -o '"session_duration_seconds"[[:space:]]*:[[:space:]]*[0-9]*' | grep -o '[0-9]*$')
 SESSION_ID=$(echo "$INPUT" | grep -o '"session_id"[[:space:]]*:[[:space:]]*"[^"]*"' | grep -o '"[^"]*"$' | tr -d '"')

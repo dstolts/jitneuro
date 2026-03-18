@@ -245,7 +245,7 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-write-id.sh`""; timeout = 5 }
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-write-id.sh`""; timeout = 10 }
                 )
             }
             @{
@@ -259,7 +259,7 @@ $hooksConfig = @{
             @{
                 matcher = "Bash"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/branch-protection.sh`""; timeout = 5 }
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/branch-protection.sh`""; timeout = 10 }
                 )
             }
         )

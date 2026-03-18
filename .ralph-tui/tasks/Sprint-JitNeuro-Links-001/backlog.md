@@ -4,8 +4,8 @@
 
 | # | Story | Priority | Risk | Est | Deps |
 |---|-------|----------|------|-----|------|
-| US-001 | jitai.co Navigation | P0 | Low | 15m | Landing page live |
-| US-002 | jitai.co About/Products | P0 | Low | 15m | Landing page live |
+| US-001 | Company Website Navigation | P0 | Low | 15m | Landing page live |
+| US-002 | Company Website About/Products | P0 | Low | 15m | Landing page live |
 | US-003 | LinkedIn Company Page | P0 | Low | 10m | Landing page live |
 | US-004 | LinkedIn Personal Profile | P1 | Low | 10m | Landing page live |
 | US-005 | GitHub Profile Pin | P0 | Low | 5m | Repo pushed |

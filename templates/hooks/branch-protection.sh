@@ -31,7 +31,7 @@ is_repo_allowed() {
   return $?
 }
 
-INPUT=$(cat)
+INPUT=$(timeout 3 cat 2>/dev/null || echo '{}')
 
 # Extract the command from tool input JSON (no python dependency)
 # Try multiple patterns to handle different JSON structures Claude Code may send
