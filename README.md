@@ -3,12 +3,16 @@
 > This started because reloading context after every /clear got old.
 > If it helps you, share what you learn.
 
-**Status: v0.1.3 -- 12 commands, 5 shortcuts, 4 hooks, install scripts**
+**Status: v0.1.5 -- 12 commands, 5 shortcuts, 5 hooks, install scripts**
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
 **JIT = Just In Time.** A framework for managing short-term and long-term memory
 in Claude Code sessions, inspired by neural network architecture. Stop losing context.
 Stop reloading everything. Load only what you need, when you need it -- just in time.
+
+## Blog & Articles
+
+- [Deep Dive: Building a Brain for Your AI Coding Assistant](https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/) -- how JitNeuro works and why it exists
 
 ## The Problem
 

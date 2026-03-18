@@ -21,7 +21,7 @@ Copy the rule into your project or workspace so Cursor loads it:
 mkdir -p .cursor/rules
 cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/
 
-# Or workspace-level (e.g. D:\Code)
+# Or workspace-level (e.g. your parent workspace dir)
 mkdir -p .cursor/rules
 cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/
 ```

@@ -239,7 +239,7 @@ Copy-Item "$policySource\CLAUDE.md" $userClaude -Force
 Set-ItemProperty $userClaude -Name IsReadOnly -Value $true
 
 # Deploy workspace guardrails (adjust path per team)
-$workspaces = @("D:\Code", "C:\Projects")  # customize per org
+$workspaces = @("C:\YourWorkspace", "C:\Projects")  # customize per org
 foreach ($ws in $workspaces) {
     $wsClaude = "$ws\.claude\CLAUDE.md"
     if (Test-Path "$ws\.claude") {

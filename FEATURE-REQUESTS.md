@@ -31,9 +31,10 @@ bundles, modified files, decisions, next steps) with placeholder prompts.
 
 ## FR-003: Blog Post -- "How to Get AI Coding Assistants to Actually Remember"
 **Priority:** High (launch day)
-**Status:** Planned
+**Status:** Published
+**Published URL:** https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/
 
-Thought leadership piece on jitai.co. Not a product announcement -- a problem statement every developer relates to.
+Thought leadership blog post. Not a product announcement -- a problem statement every developer relates to.
 
 Outline:
 - The universal problem: context limits, memory loss, /clear kills everything
@@ -44,7 +45,7 @@ Outline:
 - Live example: managing 16 repos, 6 concurrent sessions
 - Link to GitHub repo at the end
 
-Publish on jitai.co, cross-post to Dev.to, share on LinkedIn with video.
+Publish on your blog, cross-post to Dev.to, share on LinkedIn with video.
 Record walkthrough video using QUICKSTART.md as the demo script.
 
 ## FR-004: Install Command (/install)
@@ -65,7 +66,7 @@ enterprise features, get started CTA to GitHub. Deploy to Vercel. See LAUNCH-TOD
 
 ## FR-006: /health Command (Standalone Diagnostic)
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\health.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/health.md
 
 Standalone memory system diagnostic extracted from /learn. Checks MEMORY.md line count,
 bundle sizes, engram coverage, stale sessions, routing integrity, manifest sync.
@@ -74,7 +75,7 @@ want a quick system check without evaluating session learnings.
 
 ## FR-007: /enterprise Command (Governance Quick-Reference)
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\enterprise.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/enterprise.md
 
 Consolidated view of all DOE governance rules: trust zones, approval workflow,
 quality gates (pre/post execution), cross-repo protocol, branch rules, file versioning.
@@ -83,35 +84,35 @@ sprints, during onboarding, or when planning cross-repo changes.
 
 ## FR-008: /status Command (Where Am I)
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\status.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/status.md
 
 Quick context snapshot: current branch per repo, dirty files, active sprint,
 last commit, what bundle is loaded. Answers "where was I" in 5 seconds.
 
 ## FR-009: /dashboard Command (NEEDS OWNER Aggregator)
 **Priority:** Medium
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\dashboard.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/dashboard.md
 
 Aggregate all NEEDS OWNER items from active-work bundle, hub.md files across repos,
 and pending approvals. Single prioritized list so the owner can triage in one view.
 
 ## FR-010: /audit Command (Repo Hygiene)
 **Priority:** Medium
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\audit.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/audit.md
 
 Scan repos for .env leaks, stale branches, uncommitted work, broken .gitignore,
 missing CLAUDE.md, missing engrams. Security + hygiene in one pass.
 
 ## FR-011: /bundle Command (On-Demand Context Loading)
 **Priority:** Low
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\bundle.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/bundle.md
 
 Explicit bundle loading: `/bundle blog` loads blog.md into context. Useful when
 routing weights don't auto-trigger and user knows what they need.
 
 ## FR-012: /onboard Command (New Repo Bootstrap)
 **Priority:** Medium
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\onboard.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/onboard.md
 
 Generate CLAUDE.md + engram + brainstem for a new repo from its codebase.
 Analyzes package.json, folder structure, git history to auto-populate identity,
@@ -119,7 +120,7 @@ tech stack, key files, and integration points.
 
 ## FR-019: /gitstatus Command (Cross-Repo Git Comparison)
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\gitstatus.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/gitstatus.md
 
 Cross-repo git status showing local vs uat vs main for every active repo.
 One table showing: current branch, dirty files, commits ahead/behind between
@@ -128,7 +129,7 @@ Supports filters: `/gitstatus dirty`, `/gitstatus behind`.
 
 ## FR-020: /diff Command (Repo Change Summary)
 **Priority:** Medium
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\commands\diff.md
+**Status:** Done (v0.1.1) -- deployed to .claude/commands/diff.md
 
 Show what changed in a repo since last push or since diverging from main.
 Formatted for quick review before push or PR. Shows commit log, stat summary,
@@ -136,7 +137,7 @@ uncommitted changes.
 
 ## FR-014: PreCompact Save Hook
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to D:\Code\.claude\hooks\pre-compact-save.sh
+**Status:** Done (v0.1.1) -- deployed to .claude/hooks/pre-compact-save.sh
 
 Claude Code hook that fires before context compaction. Prompts Claude to offer
 /save so session state is checkpointed before context gets compressed.
