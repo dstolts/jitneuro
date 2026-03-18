@@ -3,7 +3,7 @@
 > This started because reloading context after every /clear got old.
 > If it helps you, share what you learn.
 
-**Status: v0.1.5 -- 12 commands, 5 shortcuts, 5 hooks, install scripts**
+**Status: v0.2.0 -- 12 commands, 5 shortcuts, 6 hooks, 16 personas, 4 decision models, cognition layer**
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
 **JIT = Just In Time.** A framework for managing short-term and long-term memory
@@ -74,10 +74,11 @@ cd jitneuro
 
 Then:
 1. Run `/verify` to confirm installation
-2. Slim your CLAUDE.md using `templates/CLAUDE-brainstem.md`
-3. Create bundles for your domains in `.claude/bundles/`
-4. Run `/onboard <repo>` to set up context for your repos
-5. Use `/save` before `/clear`, `/load` after, `/learn` to persist knowledge
+2. Review and customize -- see [Customization Guide](docs/customization-guide.md)
+3. Slim your CLAUDE.md using `templates/CLAUDE-brainstem.md`
+4. Create bundles for your domains in `.claude/bundles/`
+5. Run `/onboard <repo>` to set up context for your repos
+6. Use `/save` before `/clear`, `/load` after, `/learn` to persist knowledge
 
 See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 
@@ -101,7 +102,9 @@ workspace-root/
   |   |-- commands/           slash commands (installed by JitNeuro)
   |   |-- bundles/            domain knowledge, loaded on-demand
   |   |-- engrams/            per-project deep context
-  |   |-- hooks/              hook scripts
+  |   |-- cognition/          personas, decisions, anti-patterns, friction detection
+  |   |-- scripts/            deterministic bash scripts (dashboard, sessions)
+  |   |-- hooks/              hook scripts (6 lifecycle hooks)
   |   |-- rules/              path-scoped rules (optional)
   |   |-- session-state/      session checkpoints
   |   |-- context-manifest.md bundle index + routing
@@ -123,44 +126,43 @@ repos, use **user** mode so commands are available everywhere.
 ## What's Included
 
 - **12 commands + 5 shortcuts** -- session (/session, /sessions), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify). Shortcuts: /save, /load, /pulse, /status, /dashboard
-- **4 hooks** -- pre-compact save, session recovery, branch protection, auto-save
-- **5 rule templates** -- schema, tests, coverage, deployment, components
-- **Templates** -- brainstem CLAUDE.md, bundle example, engram example, context manifest
+- **6 hooks** -- pre-compact save, session recovery, post-clear session picker, branch protection, auto-save, session ID tracking
+- **16 personas** -- expert roles that evaluate every request (Security Engineer, DBA, Content Strategist, QA, etc.)
+- **Friction detection** -- pre-reasoning scan for user correction signals with severity-ordered response
+- **4 decision models** -- root cause analysis, API-first design, technology selection, cross-repo contracts
+- **10 anti-pattern seeds** -- universal "never do this" patterns learned from real engineering mistakes
+- **AFK pattern** -- autonomous task execution when user steps away, respecting trust zones
+- **8 rule templates** -- definition of done, trust zones, file versioning, schema, tests, coverage, deployment, components
+- **Templates** -- brainstem CLAUDE.md (with Cognitive Identity + Divergent Thinking), bundle/engram examples, owner persona template, context manifest
 - **Install scripts** -- `install.sh` (bash) and `install.ps1` (PowerShell)
-- **Docs** -- [setup guide](docs/setup-guide.md), [commands reference](docs/commands-reference.md), [hooks guide](docs/hooks-guide.md), [concepts](docs/concepts.md), [architecture](docs/architecture.md), [enterprise security](docs/enterprise-security.md)
+- **Docs** -- [setup guide](docs/setup-guide.md), [commands reference](docs/commands-reference.md), [hooks guide](docs/hooks-guide.md), [customization guide](docs/customization-guide.md), [AFK pattern](docs/afk-pattern.md), [concepts](docs/concepts.md), [architecture](docs/architecture.md), [enterprise security](docs/enterprise-security.md)
 
 ## Roadmap
 
-### v0.1.3 (Current) -- Session Management
-Consolidated session lifecycle: /session (current) and /sessions (all).
-Subcommands: new, save, load, pulse, switch, rename, dashboard.
-Numbered session lists, .current tracking, shortcut preference system,
-session tag rule for cross-terminal awareness.
+### v0.2.0 (Current) -- Cognition Layer
+Phase 2 adds structured decision-making on top of the memory layer.
+Claude doesn't just know your projects -- it thinks about them the way you do.
 
-### v0.1.2 -- Memory Layer
+- **16 Personas** -- expert roles that evaluate every request simultaneously
+- **Friction Detection** -- pre-reasoning scan catches user frustration before it escalates
+- **Decision Models** -- structured frameworks for debugging, tech selection, API design, cross-repo contracts
+- **Anti-Patterns** -- learned constraints from real mistakes, grown over time by /learn
+- **AFK Mode** -- autonomous task execution when you step away
+- **Post-Clear Session Picker** -- after /clear, pick up where you left off
+- **Owner Persona** -- personal overlay for business context (gitignored, never ships)
+- **Customization Guide** -- review and modify everything to match your style
+
+### v0.1.x -- Memory Layer
 Bundles, engrams, routing weights, /save, /load, /learn, /health, /enterprise,
-orchestrator, session management, install scripts with auto-configuration.
+orchestrator, session management, install scripts with auto-configuration,
+consolidated /session + /sessions, branch protection hooks.
 
-### Phase 2 -- Decision Frameworks (The Brain)
-Phase 1 solves memory (what to know). Phase 2 adds structured decision-making
-patterns -- teaching Claude not just your project context, but your preferences
-and workflows. The foundation for this already exists in /learn, which
-evaluates sessions and persists patterns to long-term memory. Phase 2 extends
-this into a full cognitive layer:
+### Next -- Autonomous Orchestration (FR-105)
+Claude-driven sessions: scheduled /learn runs, CI/CD-triggered analysis,
+cross-session task delegation, event-driven responses. Claude sessions spawned
+by schedulers, webhooks, and other sessions.
 
-- **Decision Models** -- structured frameworks for how to decide, not what to do
-- **Prediction Rules** -- anticipate what the user wants next
-- **Anti-Patterns** -- learned constraints from corrections
-- **Persona Weights** -- which expert voice for which task type
-- **Governance Rules Engine** -- structured config for branching, trust zones, deploy gates
-
-Note: The author's production instance runs hundreds of additional capabilities
-built on this framework that are not yet in the open-source release. The memory
-and neuro network layers are straightforward to package. The cognitive layer --
-"how to think like me" -- requires more abstraction work to generalize for
-distribution. These capabilities will be pushed as they are packaged.
-
-See [FEATURE-REQUESTS.md](FEATURE-REQUESTS.md) for detailed Phase 2 design.
+See [FEATURE-REQUESTS.md](FEATURE-REQUESTS.md) for the full roadmap.
 
 ## Disclaimer
 

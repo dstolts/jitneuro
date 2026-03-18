@@ -68,9 +68,23 @@ See [commands reference](docs/commands-reference.md) for details on each command
 
 ---
 
+## 5. Make It Yours
+
+JitNeuro ships with opinionated defaults. Review and modify everything to match your engineering style.
+
+See the [Customization Guide](docs/customization-guide.md) for a walkthrough of what to review.
+
+**Quick version:**
+
+1. **Review Cognitive Identity** -- `.claude/CLAUDE-brainstem.md` has 10 engineering principles. Keep what fits, change what doesn't.
+2. **Review Personas** -- `.claude/cognition/personas.md` has 16 expert roles. Adjust biases, add domain-specific checks, remove roles that don't apply.
+3. **Create your Owner Persona** -- copy `.claude/cognition/owner-persona.example.md` to `.claude/cognition/owner-persona.md` and add your business context (revenue targets, compliance requirements, decision style).
+4. **Review Anti-Patterns** -- `.claude/cognition/anti-patterns.md` ships with seed entries. Add your own, remove any that don't apply. Over time, `/learn` proposes new entries from your corrections.
+5. **Review Decision Models** -- `.claude/cognition/decisions/` has structured frameworks. Add models for decisions you make repeatedly.
+
 ## Next Steps (Optional)
 
-Once commands are working, set up the full memory system:
+Once commands are working and customized, set up the full memory system:
 
 1. **Slim your CLAUDE.md** -- use `templates/CLAUDE-brainstem.md` as a starting point (30-40 lines max)
 2. **Onboard repos** -- run `/onboard <repo>` to generate context for your projects

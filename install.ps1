@@ -73,7 +73,7 @@ if ($PrevVersion) {
 Write-Host ""
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\.current.d", "rules", "hooks")
+$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\.current.d", "rules", "hooks", "cognition", "cognition\decisions", "scripts")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -156,6 +156,37 @@ if ((Get-ChildItem $rulesDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
     Write-Host "Created rules\scoped-rule-example.md (template)"
 } else {
     Write-Host "Skipped rules\ (already has files)" -ForegroundColor Yellow
+}
+
+# Install cognition layer (Phase 2)
+Write-Host "Installing cognition layer..." -ForegroundColor Green
+$cogDir = Join-Path $Target "cognition"
+$cogDecDir = Join-Path $cogDir "decisions"
+foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
+    Copy-Item $f.FullName (Join-Path $cogDir $f.Name) -Force
+}
+foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
+    Copy-Item $f.FullName (Join-Path $cogDecDir $f.Name) -Force
+}
+Write-Host "  cognition\personas.md (16 personas)"
+Write-Host "  cognition\friction-detection.md"
+Write-Host "  cognition\anti-patterns.md (seed entries)"
+$decCount = (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue).Count
+Write-Host "  cognition\decisions\ ($decCount models)"
+$ownerPersona = Join-Path $cogDir "owner-persona.md"
+if (-not (Test-Path $ownerPersona)) {
+    Copy-Item (Join-Path $Templates "cognition\owner-persona.example.md") $ownerPersona
+    Write-Host "  cognition\owner-persona.md (created from template -- customize this)"
+} else {
+    Write-Host "  Skipped owner-persona.md (already exists)" -ForegroundColor Yellow
+}
+
+# Install scripts
+Write-Host "Installing scripts..." -ForegroundColor Green
+$scriptsDir = Join-Path $Target "scripts"
+foreach ($f in (Get-ChildItem (Join-Path $Templates "scripts") -Filter "*.sh" -File -ErrorAction SilentlyContinue)) {
+    Copy-Item $f.FullName (Join-Path $scriptsDir $f.Name) -Force
+    Write-Host "  scripts\$($f.Name)"
 }
 
 # Install hooks
@@ -252,6 +283,12 @@ $hooksConfig = @{
                 matcher = "compact"
                 hooks = @(
                     @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-recovery.sh`""; timeout = 10 }
+                )
+            }
+            @{
+                matcher = "clear"
+                hooks = @(
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-post-clear.sh`""; timeout = 10 }
                 )
             }
         )
