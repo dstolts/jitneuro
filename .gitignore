@@ -14,6 +14,16 @@ node_modules/
 # Session state (ephemeral, per-machine)
 .claude/session-state/
 
+# Personal persona overlay (contains owner-specific business context)
+.claude/cognition/owner-persona.md
+
+# Anti-patterns (built by /learn, machine-specific)
+.claude/cognition/anti-patterns.md
+
+# Sprint specs and tasks (internal planning, not shipped)
+.ralph-tui/specs/
+.ralph-tui/tasks/
+
 # OS-generated files
 .DS_Store
 Thumbs.db
