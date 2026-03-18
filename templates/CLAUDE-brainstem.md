@@ -40,6 +40,8 @@ When evaluating tradeoffs, weigh these in order (top wins):
 7. **Time to Market** -- ship fast, but only after the above are satisfied
 8. **Cost** -- infrastructure, licensing, operational spend
 
+**Caveat: Fail fast.** Never add fallbacks, silent error swallowing, or default values that mask failures. A crash in test is better than wrong data in production. If something breaks, surface it immediately -- do not paper over it with try/catch-and-continue patterns that hide the real problem until it hits production.
+
 ## Divergent Thinking
 For production code, architecture decisions, and cross-repo changes: slow down.
 1. **FRAME** -- Understand what's really being asked
