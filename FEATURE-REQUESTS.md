@@ -66,12 +66,13 @@ enterprise features, get started CTA to GitHub. Deploy to Vercel. See LAUNCH-TOD
 
 ## FR-006: /health Command (Standalone Diagnostic)
 **Priority:** High
-**Status:** Done (v0.1.1) -- deployed to .claude/commands/health.md
+**Status:** Done (v0.1.1), Enhanced (v0.2.1) -- Hub.md drift/staleness checks, rules line budget, detail-index sync, runs in subagent
 
 Standalone memory system diagnostic extracted from /learn. Checks MEMORY.md line count,
 bundle sizes, engram coverage, stale sessions, routing integrity, manifest sync.
-Read-only by default, fixes only with approval. Faster than /learn when you just
-want a quick system check without evaluating session learnings.
+v0.2.1: Added Hub.md age/drift/completeness checks, rules total line budget (400/600),
+detail-index orphan/unindexed detection. All data gathering dispatched to subagent
+to prevent MemoryExhaustion. Read-only by default, fixes only with approval.
 
 ## FR-007: /enterprise Command (Governance Quick-Reference)
 **Priority:** High
@@ -336,6 +337,66 @@ Create visual identity for JitNeuro:
 Options: generate in Lovable with landing page, or commission separately.
 Not a launch blocker -- many respected dev tools ship text-only.
 
+## FR-024: Subagent-Based Command Execution
+**Priority:** High
+**Status:** Done (v0.2.1) -- /health, /audit, /gitstatus, /learn (Step 0), /onboard all dispatch data gathering to subagents
+
+Commands that read 25+ files now dispatch data gathering to a subagent to prevent MemoryExhaustion crashes. Master receives only a summary table, then handles fix approval and execution. Motivated by two crashes in two days during 89-file memory audit.
+
+## FR-025: Deploy Monitoring (Auto-Detect + Monitor After Every Push)
+**Priority:** High
+**Status:** Done (v0.2.1) -- templates/rules/deploy-monitoring.md
+
+After any `git push` (any branch), automatically spawns a background subagent to monitor the CI/CD pipeline. Auto-detects deploy method from repo config files (GitHub Actions, Vercel, Azure Pipelines, etc.). Displays results in ASCII box. Supports CLAUDE.md `## Deployment` override for custom CI/CD. 12 provider reference table for customization.
+
+## FR-026: Pending Questions Queue
+**Priority:** High
+**Status:** Done (v0.2.1) -- templates/rules/pending-questions.md
+
+Tracks unanswered questions during a session. Surfaces them at the end of every response. Persists to Hub.md on /save. Reloads on /load. Connects to subagent communication protocol (BLOCKED agents become visible questions for the user).
+
+## FR-027: Memory Detail-Index Pattern
+**Priority:** High
+**Status:** Done (v0.2.1) -- templates/memory/detail-index.md, templates/memory/README.md
+
+MEMORY.md gets one pointer line to detail-index.md instead of one line per feedback/project/reference file. Saved 78 lines in a real deployment. Documented in docs/memory-maintenance.md with 5 remediation strategies for MEMORY.md overflow.
+
+## FR-028: Feedback Classification (Personal vs Publishable)
+**Priority:** Medium
+**Status:** Done (v0.2.1) -- docs/feedback-classification.md
+
+Decision tree for /learn to classify feedback as personal (stays in memory/) vs publishable (jitneuro feature request). Includes auto-submit flow via `gh issue create` with structured issue template. Enables jitneuro to self-improve from daily usage.
+
+## FR-029: Ralph Headless + Named Terminal Integration
+**Priority:** High
+**Status:** Done (v0.2.1) -- docs/ralph-integration.md
+
+Verified `ralph-tui run --headless --no-setup --prd prd.json` works for Claude Code automation. Documented 4 launch modes (TUI automated, headless, parallel, headless+parallel). Claude Code can launch ralph in named Windows Terminal tabs (`wt new-tab --title`) or tmux sessions that auto-close on completion.
+
+## FR-030: Subagent Communication Protocol
+**Priority:** High
+**Status:** Done (v0.2.1) -- docs/multi-agent-orchestration-01.md
+
+Structured return schema (OK/BLOCKED/PARTIAL) for subagent-to-master communication. SendMessage relay for continuing BLOCKED agents. Dashboard JSON integration for real-time agent status. Connects to pending questions queue for user escalation.
+
+## FR-031: Terminal Best Practices Documentation
+**Priority:** Medium
+**Status:** Done (v0.2.1) -- docs/terminal-best-practices.md
+
+Multi-session workflow guide: 5 layout options with ASCII diagrams, Windows Terminal / tmux / VS Code comparison, CPU and resource management (per-session costs, hardware guidelines, WSL2 optimization), ralph launch patterns from Claude Code. Covers the "how to actually use multi-agent in practice" gap.
+
+## FR-032: Hub.md Mandatory Sync on /save
+**Priority:** High
+**Status:** Done (v0.2.1) -- templates/commands/session.md
+
+Fixed bug where /save didn't update Hub.md despite template instructions. Hub.md sync now mandatory step with verification output. Stale Hub.md flagged in /session status and /session dashboard. Documented as #1 reliability issue in the template.
+
+## FR-033: Rule Templates (Enterprise)
+**Priority:** High
+**Status:** Done (v0.2.1) -- 7 new templates in templates/rules/
+
+New rule templates shipped: context-safety, security-guardrails, proactive-quality, code-reuse, deploy-monitoring, pending-questions, plus 5 remediation strategies in memory-maintenance.md. All generic, no owner-specific content.
+
 ---
 
 # Possible Integrations
@@ -512,7 +573,7 @@ Default: enabled (current behavior).
 
 ## FR-105: Autonomous Orchestration
 **Priority:** High (next release)
-**Status:** Planned -- coming after Phase 2 ships
+**Status:** In Progress -- foundation shipped in v0.2.1 (subagent protocol, deploy monitoring, ralph CLI, dashboard JSON, pending questions). Remaining: scheduled execution, event-driven triggers, cross-session spawn API.
 
 Letting Claude drive the discussions with full autonomous orchestration, including
 running Claude from schedulers and spawning sessions from other sessions.

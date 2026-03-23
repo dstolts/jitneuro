@@ -3,7 +3,10 @@
 # Safety net for forgotten /save. Detects whether a /save happened during
 # the session and writes a useful breadcrumb if not.
 #
-# The file is overwritten each time (it's a "last known state" marker, not a log).
+# Reads session name from heartbeats/<session-id>, then removes the heartbeat
+# file (clean exit signal).
+#
+# The autosave file is overwritten each time (it's a "last known state" marker, not a log).
 
 set +e  # never abort on errors
 
@@ -11,8 +14,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG="$CLAUDE_DIR/jitneuro.json"
 SESSION_DIR="$CLAUDE_DIR/session-state"
+HEARTBEATS_DIR="$SESSION_DIR/heartbeats"
 AUTOSAVE_FILE="$SESSION_DIR/_autosave.md"
-CURRENT_FILE="$SESSION_DIR/.current"
 LOG="/tmp/jitneuro-session-end.log"
 
 # Check if autosave is disabled in config
@@ -60,10 +63,19 @@ mkdir -p "$SESSION_DIR" 2>/dev/null
 # Get current timestamp
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
 
-# Detect active session name from .current
+# Detect active session name from heartbeats/<session-id>
 CURRENT_SESSION=""
-if [ -f "$CURRENT_FILE" ]; then
-  CURRENT_SESSION=$(cat "$CURRENT_FILE" 2>/dev/null | tr -d '[:space:]')
+HEARTBEAT_FILE=""
+if [ -n "$SESSION_ID" ]; then
+  HEARTBEAT_FILE="$HEARTBEATS_DIR/$SESSION_ID"
+  if [ -f "$HEARTBEAT_FILE" ]; then
+    CURRENT_SESSION=$(cat "$HEARTBEAT_FILE" 2>/dev/null | tr -d '[:space:]')
+  fi
+fi
+
+# Treat "none" as empty (no session was ever loaded)
+if [ "$CURRENT_SESSION" = "none" ]; then
+  CURRENT_SESSION=""
 fi
 
 # Check if the active session file was updated during this session
@@ -99,6 +111,11 @@ if [ -n "$CURRENT_SESSION" ] && [ -f "$SESSION_DIR/$CURRENT_SESSION.md" ]; then
 fi
 
 echo "[$(date 2>/dev/null)] SessionEnd save_detected=$SAVE_DETECTED session=$CURRENT_SESSION" >> "$LOG" 2>/dev/null
+
+# Clean up heartbeat file (clean exit signal)
+if [ -n "$HEARTBEAT_FILE" ] && [ -f "$HEARTBEAT_FILE" ]; then
+  rm -f "$HEARTBEAT_FILE" 2>/dev/null
+fi
 
 # If save was detected during this session, write minimal breadcrumb
 if [ "$SAVE_DETECTED" = "yes" ]; then

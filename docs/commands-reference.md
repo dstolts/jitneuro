@@ -18,7 +18,7 @@ Manage the current session. Default (no subcommand) shows current session status
   - `rename <new-name>` -- rename current session
   - `dashboard` -- current session's blockers and NEEDS OWNER items
 
-- **Tracking:** Active session resolved from `.claude/session-state/.session-id` + `.current.d/<id>` when set (per-session), else `.claude/session-state/.current` (legacy). See session.md "Resolve my current".
+- **Tracking:** Active session resolved from `heartbeats/<session-id>` in `.claude/session-state/`. The session-id is injected into Claude's context by the SessionStart hook. The heartbeat file's content holds the JitNeuro session name; its mtime is the last heartbeat timestamp.
 - **Tag rule:** Every response ends with `[session: <name>]`
 
 Examples:

@@ -65,8 +65,55 @@ After install:
 | Fresh install, no repos | Run installer. Create bundles + engrams after. |
 | Fresh install, existing repos | Run installer in workspace mode. Run `/onboard` for each repo. |
 | Multi-machine sync | Clone repos, run installer. `/onboard` detects existing context from git. |
-| Upgrade from older version | Re-run installer. It detects previous version and upgrades. |
+| Upgrade from older version | Re-run installer for EVERY scope where commands exist (see "Update ALL Installed Scopes" below). |
 | Existing commands you want to keep | Installer backs up differing commands to `.backup/` before overwrite. |
+| Commands loading old version | Stale copy at another scope is overriding. Check user + workspace + project levels. |
+
+### Upgrading: Update ALL Installed Scopes
+
+**This is the #1 install gotcha.** Claude Code loads commands from multiple scopes and the most specific scope wins:
+
+```
+User level:      ~/.claude/commands/         (always loaded)
+Project level:   <repo>/.claude/commands/    (loaded for that repo)
+Workspace level: <parent>/.claude/commands/  (loaded when launched from parent)
+```
+
+If you installed commands at **user level** AND **workspace level**, upgrading only one leaves the other stale. The stale copy overrides the updated one depending on where you launch Claude Code.
+
+**How to check where your commands are installed:**
+```bash
+# Check user level
+ls ~/.claude/commands/*.md
+
+# Check workspace level
+ls <workspace>/.claude/commands/*.md
+
+# Check project level (from inside a repo)
+ls .claude/commands/*.md
+```
+
+**Upgrade all locations:**
+```bash
+# Re-run the installer for each scope where commands exist
+./install.sh user        # updates ~/.claude/commands/
+./install.sh workspace   # updates <workspace>/.claude/commands/
+```
+
+Or have Claude Code do it for you:
+```
+> "install jitneuro updates to all scopes where commands exist"
+```
+
+Claude Code can detect which scopes have JitNeuro commands and copy the latest templates to all of them.
+
+**Symptoms of stale commands at another scope:**
+- `/health` runs the old version (missing subagent dispatch, wrong thresholds)
+- `/save` doesn't sync Hub.md (the new mandatory step)
+- `/learn` doesn't dispatch health check to subagent
+- Commands show outdated formatting or missing sections
+
+**Prevention:** Pick ONE scope (user mode recommended) and remove commands from other scopes. Claude Code merges scopes, but maintaining one source is simpler.
 
 ### Windows Notes
 

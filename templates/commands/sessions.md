@@ -29,7 +29,7 @@ Anywhere a `<name>` is accepted, a `<number>` from the last list works too.
    - Current Task line
    - Repos Involved
 4. Assign sequential numbers starting at 1
-5. **Resolve "my current"** (see session.md — uses .session-id + .current.d/<id> or .current). Mark that session with `*` in the table (current for this conversation).
+5. **Resolve "my current"** (see session.md -- read `heartbeats/<session-id>` where session-id comes from the `[JitNeuro] session-id: ...` line in your context). Mark that session with `*` in the table (current for this conversation).
 6. Display as numbered table:
 
 ```
@@ -84,7 +84,7 @@ The user's next message will be a number or command. Never skip this prompt.
 2. Show each number, name, and task
 3. Ask confirmation: "Delete these N stale sessions? (yes/no)"
 4. On yes, delete the files
-5. If the deleted session was **"my current"** (resolve "my current" from session.md), **clear "my current"** (remove .current.d/<id> if used; clear .current if that session was the one in .current).
+5. If the deleted session was **"my current"** (resolve "my current" from session.md), **clear "my current"** (remove `heartbeats/<session-id>` if it exists).
 6. Report what was deleted
 
 ### sessions archive <name|number>

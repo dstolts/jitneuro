@@ -13,134 +13,88 @@ for every active repo. One table, one glance, full picture.
 
 When invoked as `/gitstatus`:
 
-### Step 1: Get Repo List
+### Step 1: Determine Scope and Args
 
-Read MEMORY.md project table. Collect all repos with status "Active Dev", "Active",
-or "Prod". Skip "Maintenance" and "Active Docs" unless user asks for them.
+- `/gitstatus` -- all active repos, local only
+- `/gitstatus fetch` -- all active repos + fetch from remotes
+- `/gitstatus [repo]` -- single repo, detailed view (can run in master)
+- `/gitstatus dirty` -- only repos with uncommitted changes
+- `/gitstatus behind` -- only repos where uat is behind main
+- `/gitstatus unpushed` -- only repos with unpushed commits (implies fetch)
 
-If MEMORY.md is not available, dynamically discover repos by scanning the workspace
-root directory for subdirectories containing a `.git` folder. Example:
+### Step 2: Write Dashboard Entry + Dispatch to Subagent
 
+**Before dispatching**, write dashboard JSON:
 ```bash
-# Find all git repos under the workspace root
-for dir in /path/to/workspace/*/; do
-  if [ -d "$dir/.git" ]; then
-    echo "$dir"
-  fi
-done
+RUN_ID="gitstatus--$(date -u +%Y-%m-%dT%H-%M-%S)"
+DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
+echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
+echo '{"id":"git-001","name":"Cross-Repo Git Status","status":"running","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/git-001.json"
 ```
+**After subagent returns**, update agent JSON with `"status":"completed"`, `"finished":"[ISO]"`, `"result":"[summary]"`. Use forward slashes in all paths.
 
-### Step 2: For Each Repo, Gather Git State
+**CRITICAL:** GitStatus runs 10+ git commands per repo across all active repos. For a 15+ repo workspace, that's 150+ shell commands. Always dispatch to a subagent.
 
-Run these commands (use git -C to avoid cd):
+**Exception:** `/gitstatus [single-repo]` is lightweight enough to run in master -- skip to Step 3.
 
-```bash
-# Current branch
-git -C [repo] branch --show-current
-
-# Dirty files count
-git -C [repo] status --short | wc -l
-
-# Check if branches exist
-git -C [repo] rev-parse --verify uat 2>/dev/null
-git -C [repo] rev-parse --verify main 2>/dev/null
-git -C [repo] rev-parse --verify master 2>/dev/null
-
-# Commits ahead/behind between branches (if they exist)
-# local branch vs uat
-git -C [repo] rev-list --left-right --count HEAD...uat 2>/dev/null
-
-# local branch vs main (or master)
-git -C [repo] rev-list --left-right --count HEAD...main 2>/dev/null
-
-# uat vs main
-git -C [repo] rev-list --left-right --count uat...main 2>/dev/null
-
-# Last commit on each branch
-git -C [repo] log --oneline -1 HEAD
-git -C [repo] log --oneline -1 uat 2>/dev/null
-git -C [repo] log --oneline -1 main 2>/dev/null
-
-# Remote/upstream comparison (only with --fetch or /gitstatus fetch)
-git -C [repo] remote -v  # check if remote exists
-git -C [repo] fetch --all --quiet  # only if fetch flag is set
-git -C [repo] rev-list --left-right --count HEAD...@{upstream} 2>/dev/null
-git -C [repo] rev-list --left-right --count main...origin/main 2>/dev/null
-git -C [repo] rev-list --left-right --count uat...origin/uat 2>/dev/null
-```
-
-### Step 3: Present Cross-Repo Table
+Read MEMORY.md project table to get the repo list. Launch a **general-purpose** Agent with this prompt:
 
 ```
-== Git Status Across Repos == [date]
+You are running a JitNeuro cross-repo git status check. Run git commands for each repo and return ONLY a summary table. Do NOT return raw git output.
 
+Repos to scan: [list repo paths here]
+Fetch flag: [yes/no]
+Filter: [all/dirty/behind/unpushed]
+
+For each repo, run these git commands (use git -C [repo]):
+- git branch --show-current
+- git status --short | wc -l
+- git rev-parse --verify uat 2>/dev/null
+- git rev-parse --verify main 2>/dev/null
+- git rev-list --left-right --count HEAD...uat 2>/dev/null
+- git rev-list --left-right --count HEAD...main 2>/dev/null
+- git rev-list --left-right --count uat...main 2>/dev/null
+- git log --oneline -1 HEAD
+
+If fetch flag is yes, also run:
+- git fetch --all --quiet
+- git rev-list --left-right --count HEAD...@{upstream} 2>/dev/null
+- git rev-list --left-right --count main...origin/main 2>/dev/null
+
+Return format:
+
+GIT_TABLE:
 | Repo | Branch | Dirty | Local vs UAT | UAT vs Main | Last Commit |
 |------|--------|-------|-------------|-------------|-------------|
-| my-app | uat | 3 | -- | 5 ahead | abc1234 feat: comments |
-| my-api | sprint-blog | 0 | 2 ahead | 3 ahead | def5678 fix: auth |
-| my-tools | master | 5 | no uat | -- | ghi9012 docs: hooks |
-| my-site | main | 1 | no uat | -- | jkl3456 add: feature |
-| my-auth | main | 0 | no uat | -- | mno7890 v1.0.1 |
-| ... | | | | | |
+(one row per repo)
 
-With `fetch` flag, add upstream columns:
-| Repo | Branch | Dirty | Local vs UAT | UAT vs Main | Local vs Remote | Last Commit |
-|------|--------|-------|-------------|-------------|-----------------|-------------|
-| my-app | uat | 3 | -- | 5 ahead | 2 ahead | abc1234 feat: comments |
-| my-api | sprint-blog | 0 | 2 ahead | 3 ahead | in sync | def5678 fix: auth |
-| my-tools | master | 5 | no uat | -- | no remote | ghi9012 docs: hooks |
+If fetch flag, add column: | Local vs Remote |
+
+Format ahead/behind as: "2 ahead", "1 behind", "2 ahead, 1 behind", "--" (equal), "no uat"/"no main"
+
+FLAGS:
+[!] [repo]: [issue] (needs attention: dirty on main, diverged)
+[i] [repo]: [info] (informational: ahead of main, no uat)
+
+SUMMARY: [N] repos, [M] dirty, [X] ahead of main, [Y] behind
 ```
 
-Column meanings:
-- **Branch**: current checked-out branch
-- **Dirty**: number of uncommitted changes
-- **Local vs UAT**: commits ahead/behind between current branch and uat
-- **UAT vs Main**: commits ahead/behind between uat and main
-- **Last Commit**: most recent commit on current branch (short hash + message)
+### Step 3: Present Results
 
-Format ahead/behind as:
-- "2 ahead" = local has 2 commits not in target
-- "1 behind" = target has 1 commit not in local
-- "2 ahead, 1 behind" = diverged
-- "--" = same branch or branches are equal
-- "no uat" / "no main" = branch doesn't exist
+Take the subagent's table and present it. After the table, list flags.
 
-### Step 4: Flag Issues
+For single-repo mode (ran in master), gather the same data directly and present.
 
-After the table, list any concerns:
-
-```
-Flags:
-  [!] my-app: 3 dirty files on uat (should commit or stash)
-  [!] my-site: 1 dirty file on main (should be on feature branch)
-  [i] my-api: uat is 3 ahead of main (push to main when ready)
-  [i] my-tools: no uat branch (single-branch repo, OK)
-```
-
-Flag types:
-- [!] = needs attention (dirty on main, diverged branches)
-- [i] = informational (ahead of main, no uat)
-
-### Step 5: Offer Actions
+### Step 4: Offer Actions
 
 "Pick a repo for details, or:"
 - `/diff [repo]` -- see full changes for one repo
 - `/audit` -- full hygiene check
-- "push uat" -- I can push all clean repos to uat (with approval)
-
-## Arguments
-
-- `/gitstatus` -- all active repos, local branches only (no network)
-- `/gitstatus fetch` -- all active repos + fetch from remotes (shows local vs remote)
-- `/gitstatus [repo]` -- single repo, detailed view with full branch comparison
-- `/gitstatus dirty` -- only repos with uncommitted changes
-- `/gitstatus behind` -- only repos where uat is behind main
-- `/gitstatus unpushed` -- only repos with commits not pushed to remote (implies fetch)
+- "push uat" -- push all clean repos to uat (with approval)
 
 ## Important
+- Data gathering runs in a subagent to protect master context (except single-repo).
 - This is READ-ONLY. Never modifies any files or git state.
-- Run git commands in parallel where possible for speed.
-- If a repo directory doesn't exist, skip it with a note.
-- If git fetch is needed for accurate remote comparison, ask first (network operation).
+- Git fetch is a network operation -- only when user passes fetch flag.
 - Keep the table compact. Detail on demand.
-- This replaces the need to cd into each repo and run git status manually.
