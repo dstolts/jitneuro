@@ -20,8 +20,9 @@ The master agent acts as a **dispatcher and aggregator only**. It never reads fi
 1. Master never reads file content -- only dispatches and aggregates
 2. Each subagent gets a self-contained prompt with everything it needs (file paths, what to check, expected values)
 3. Subagents return short structured results (pass/fail + issues found, under 15 lines)
-4. All independent agents run in parallel (background)
-5. Master consolidates into one report when all complete
+4. Subagents include paths to any files created or modified, plus a link to any summary document with full context. Master does not need to read these unless it needs detail beyond the status and file list.
+5. All independent agents run in parallel (background)
+6. Master consolidates into one report when all complete
 
 ## How to Split Work
 
