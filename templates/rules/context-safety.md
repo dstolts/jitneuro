@@ -14,3 +14,6 @@ The crash occurs in `JavaScriptCore/heap/LocalAllocator.cpp` -- the JS heap in C
 
 ## Connection to Multi-Agent Orchestration
 Single-agent operations hit memory ceilings on real workloads. Multi-agent orchestration distributes work across isolated processes, each with its own heap, making bulk operations safe by design. Every scan, audit, review, and sprint execution benefits from orchestrated subagents rather than single-agent accumulation.
+
+## Subagent Return Protocol
+All subagents MUST follow the return protocol in rules/subagent-communication.md: STATUS line, FILES_CHANGED paths, optional SUMMARY_DOC reference, and a result under 15 lines. Master reads file paths for scope but does NOT read file contents or summary docs unless it needs more detail. This is the mechanism that keeps master context thin.

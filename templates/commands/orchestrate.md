@@ -52,14 +52,21 @@ When a task is received:
 
    Task: [clear task description]
 
-   Return: [what the main context needs back -- keep it concise]
+   Return format:
+   - First line: STATUS: OK, BLOCKED, or PARTIAL
+   - List any files created or modified (full paths)
+   - If you write a detailed report, include its path as SUMMARY_DOC
+   - Keep the result under 15 lines
    ```
 
 4. **Process results:**
-   - Receive agent summary (automatically compressed)
+   - Read status line first (OK / BLOCKED / PARTIAL)
+   - Collect file paths from FILES_CHANGED for commit/PR scope
+   - Only read SUMMARY_DOC if you need detail beyond the status and file list
+   - If BLOCKED: answer the question and re-dispatch via SendMessage
    - Update session-state.md with results
    - If new routing patterns discovered, note for MEMORY.md update
-   - Report to user: what was done, what's next
+   - Report to user: what was done, files changed, what's next
 
 5. **Update routing weights** if a new pattern emerged:
    - "Task type X needed bundles [A, B] -- adding to routing weights"
