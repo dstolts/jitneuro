@@ -90,12 +90,12 @@ Rename/standardize agent swept codebase for terminology consistency.
 
 ## How to Think About It
 
-1. **Start with the full scope.** What needs to be validated, fixed, or built?
-2. **Map the file dependencies.** Which tasks touch which files?
-3. **Group by independence.** Tasks with no file overlap = parallel. Same files = combine or sequence.
-4. **Write self-contained prompts.** Each agent needs: exact file paths, what to look for, expected values, and a report format.
-5. **Cap the return.** Tell agents to keep reports under 10-15 lines. Master context is the bottleneck.
-6. **Consolidate and decide.** Master builds one report, identifies patterns, prioritizes next wave.
+1. **Start with outcomes, not steps.** Define WHAT needs to happen, not HOW. A subagent prompt is like a Ralph story: "Make the login page handle expired tokens gracefully" -- not a 20-step implementation plan. The agent figures out HOW using its own context, the codebase, and the guardrails.
+2. **Let guardrails define HOW.** Rules like "no new tech", "fix root cause", "reuse existing components" constrain the agent's approach without the master needing to micromanage. The agent reads the rules, reads the code, and makes implementation decisions within those boundaries.
+3. **Map the file dependencies.** Which outcomes touch which files? Outcomes with no file overlap = parallel. Same files = combine or sequence.
+4. **Write outcome-driven prompts.** Each agent needs: the desired outcome, the scope (which files/modules are in play), the guardrails to follow, and the return format. It does NOT need exact steps -- it builds its own plan.
+5. **Cap the return.** Tell agents to keep reports under 10-15 lines. Master context is the bottleneck. File paths and status come back; the agent keeps the detailed reasoning.
+6. **Consolidate and decide.** Master collects results, identifies patterns, prioritizes next wave. Only digs into SUMMARY_DOC if a result needs deeper review.
 7. **Repeat.** Validation -> Fix -> Validation is the loop.
 
 ## Anti-Patterns

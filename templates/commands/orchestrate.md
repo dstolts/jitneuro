@@ -43,14 +43,15 @@ When a task is received:
       - Load bundle directly into main context (only if small and essential)
       - Use for tasks that need back-and-forth with the user
 
-3. **Launch agent(s)** with this prompt pattern:
+3. **Launch agent(s)** with outcome-driven prompts:
    ```
-   Read the following context files:
+   Context:
    - [path/to/bundle1.md]
    - [path/to/bundle2.md]
-   - [any additional context files needed]
 
-   Task: [clear task description]
+   Outcome: [what should be true when you're done -- not how to get there]
+   Scope: [which files/modules are in play]
+   Guardrails: Follow all rules in .claude/rules/. Key constraints: [any specific ones]
 
    Return format:
    - First line: STATUS: OK, BLOCKED, or PARTIAL
@@ -58,6 +59,8 @@ When a task is received:
    - If you write a detailed report, include its path as SUMMARY_DOC
    - Keep the result under 15 lines
    ```
+   The agent decides HOW to achieve the outcome. Guardrails (no new tech, reuse components,
+   fix root cause, etc.) constrain the approach without micromanaging implementation.
 
 4. **Process results:**
    - Read status line first (OK / BLOCKED / PARTIAL)
