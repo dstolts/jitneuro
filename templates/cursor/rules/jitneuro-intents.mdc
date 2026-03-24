@@ -52,7 +52,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    If the session involves repos with `.HUB/Hub-*.md`, find or create a section headed `## <session-name>` and sync TodoWrite items there (add new, update status). Each session owns its own section. If there are todos and no Hub file, consider creating one.
 
 5. **Update current**
-   Write the session name to `.claude/session-state/heartbeats/<session-id>` (session-id from context). Create the `heartbeats/` directory if it does not exist.
+   Use a shell command to write the session name: `echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"`. Never use Write/Edit tools for heartbeat files -- the PostToolUse hook touches them constantly, causing "file modified since read" errors.
 
 6. **Confirm**  
    Say something like: “Saved `<name>`. Safe to clear context. Use load to restore.” If the session had learnings, suggest running **learn** next.
