@@ -81,31 +81,37 @@ Workspace level: <parent>/.claude/commands/  (loaded when launched from parent)
 
 If you installed commands at **user level** AND **workspace level**, upgrading only one leaves the other stale. The stale copy overrides the updated one depending on where you launch Claude Code.
 
-**How to check where your commands are installed:**
-```bash
-# Check user level
-ls ~/.claude/commands/*.md
+**Easiest upgrade: Ask Claude Code to do it.**
 
-# Check workspace level
-ls <workspace>/.claude/commands/*.md
-
-# Check project level (from inside a repo)
-ls .claude/commands/*.md
+Just tell Claude Code:
+```
+> "Pull the latest jitneuro repo and install updates to all scopes where commands exist"
 ```
 
-**Upgrade all locations:**
+Claude Code will:
+1. Pull the latest templates from your jitneuro repo
+2. Detect which scopes have JitNeuro commands installed
+3. Copy updated templates to all of them
+4. Report what changed
+
+This is the recommended approach -- let the AI handle the file operations. You focus on reviewing what changed, not running shell commands.
+
+**Manual upgrade (if you prefer):**
 ```bash
-# Re-run the installer for each scope where commands exist
 ./install.sh user        # updates ~/.claude/commands/
 ./install.sh workspace   # updates <workspace>/.claude/commands/
 ```
 
-Or have Claude Code do it for you:
+**Checking where commands are installed:**
 ```
-> "install jitneuro updates to all scopes where commands exist"
+> "Show me which scopes have JitNeuro commands installed and whether any are stale"
 ```
-
-Claude Code can detect which scopes have JitNeuro commands and copy the latest templates to all of them.
+Or manually:
+```bash
+ls ~/.claude/commands/*.md           # user level
+ls <workspace>/.claude/commands/*.md # workspace level
+ls .claude/commands/*.md             # project level (from inside a repo)
+```
 
 **Symptoms of stale commands at another scope:**
 - `/health` runs the old version (missing subagent dispatch, wrong thresholds)
