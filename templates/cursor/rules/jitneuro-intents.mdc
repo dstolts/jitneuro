@@ -48,8 +48,8 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    - `## Key Findings` — discoveries worth keeping across context reset  
    Target 30–60 lines.
 
-4. **Sync todos**  
-   If the session involves repos with `.HUB/Hub-*.md`, align current TodoWrite-style items with the “ACTIVE TODO” section (add new, update status). If there are todos and no Hub file, consider creating one.
+4. **Sync todos**
+   If the session involves repos with `.HUB/Hub-*.md`, find or create a section headed `## <session-name>` and sync TodoWrite items there (add new, update status). Each session owns its own section. If there are todos and no Hub file, consider creating one.
 
 5. **Update current**
    Write the session name to `.claude/session-state/heartbeats/<session-id>` (session-id from context). Create the `heartbeats/` directory if it does not exist.
