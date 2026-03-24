@@ -392,6 +392,8 @@ Owner writes PRD with dependency info
 
 **Context staleness:** If instance A updates an engram, instance B doesn't see it. Each instance snapshots context at launch. Post-sprint /learn reconciles.
 
+**Monitoring:** Use `/pulse` from the master session to check status of all active sessions and agents. The dashboard (http://localhost:9847) shows real-time agent lifecycle -- running, completed, or blocked. For parallel ralph instances, each appears as a separate agent under the parent session. If an instance goes silent, `/pulse` surfaces it before the owner needs to investigate.
+
 **Merge strategy:** After parallel instances complete on separate branches, auto-merge to uat if tests passed (GREEN zone). Owner reviews + merges to main (RED zone).
 
 ## Why Ralph Exists (The Testing Argument)
