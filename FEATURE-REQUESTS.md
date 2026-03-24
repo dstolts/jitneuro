@@ -637,6 +637,47 @@ Claude sessions can be triggered by events, schedules, and other sessions.
 - Session state system stable (cross-session communication via files)
 - Claude Code CLI supports headless invocation
 
+## FR-106: Modular Component Setup (Install/Uninstall by Feature)
+**Priority:** Medium
+**Status:** Idea -- community feedback requested
+
+Today JitNeuro installs everything: 17 commands, 9 hooks, dashboard, cognition layer, rules, scripts. Some users may want a subset -- lightweight session management without the dashboard, or commands without the cognition layer.
+
+### Context (from v0.3.0 development)
+
+Performance benchmarking showed dashboard hooks (heartbeat, agent-register, agent-complete) add ~60s of wall time across a 200-tool-call session on Windows. This is non-blocking and invisible to the user, but some teams on constrained environments may prefer to opt out of dashboard tracking while keeping session management and branch protection.
+
+Currently the workaround is manual: edit settings.local.json to remove specific hook entries. This works but isn't discoverable.
+
+### Proposed Components
+
+| Component | Includes | Default |
+|-----------|----------|---------|
+| Commands | 17 slash commands + 5 shortcuts | ON |
+| Session management | save/load hooks (session-start, session-end, pre-compact) | ON |
+| Branch protection | PreToolUse(Bash) hook | ON |
+| Dashboard + agent tracking | 3 hooks (heartbeat, pre-agent-register, post-agent-complete) + server.js + dashboard.html | ON |
+| Cognition layer | Personas, anti-patterns, decision models, owner-persona | ON |
+| Rules templates | 8+ rule files for common patterns | ON |
+| Cursor integration | .mdc rules for Cursor IDE | OFF (opt-in) |
+
+### UX Options
+
+**Option A: Interactive installer** -- installer prompts "Enable dashboard? [Y/n]" for each component.
+
+**Option B: Feature flags in jitneuro.json** -- `"features": { "dashboard": true, "cognition": true }` and hooks/files are installed based on flags.
+
+**Option C: /setup command** -- Claude Code reads jitneuro.json flags, adds/removes hooks and files, reports what changed.
+
+**Option D: Per-feature install/uninstall commands** -- `/dashboard install`, `/dashboard uninstall`, `/cognition install`, etc.
+
+### Community Input Welcome
+
+If this feature would be valuable to you, comment on the issue with:
+- Which components you would disable and why
+- Whether you prefer interactive installer, feature flags, or per-command install/uninstall
+- Your environment (team size, OS, constrained hardware?)
+
 ---
 
 ## Neural Network Mapping (Phase 2 -- Conceptual Analogy)
