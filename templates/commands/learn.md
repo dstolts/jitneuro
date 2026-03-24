@@ -115,8 +115,9 @@ You are running a JitNeuro memory system health check. Read every file listed be
 - Resolve current session: read `.claude/session-state/heartbeats/<session-id>` (session-id from the `[JitNeuro] session-id: ...` line in context). Content = session name.
 - Read the session state file to find repos involved.
 - For each repo: check if <repo>/.HUB/Hub-*.md exists. If yes, extract "Last Updated" date. Compare vs session checkpoint date. Flag STALE if Hub.md is older.
-- Check for sections: ACTIVE TODO, Key Decisions, Modified Files. Flag INCOMPLETE if missing.
+- Check for current session's section (## <session-name>). Flag INCOMPLETE if session section missing or has no tasks/decisions/files.
 - If no Hub.md and session has tasks: flag MISSING.
+- Flag orphaned session sections (no matching active session).
 
 **Rules** (~/.claude/rules/)
 - Count total files and total lines across all rule files.

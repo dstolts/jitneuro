@@ -23,7 +23,7 @@ Answer by number (e.g., "Q1: yes"), or "clear Q1" to dismiss.
 
 4. **Dismiss stale questions:** If the user says "clear Q1" or "clear all", remove without answering. Some questions become irrelevant as work progresses.
 
-5. **Persist on /save:** When /save runs, write any unanswered questions to Hub.md under a "PENDING QUESTIONS" section. This way questions survive context reset. On /load, read them back from Hub.md and re-populate the queue.
+5. **Persist on /save:** When /save runs, write any unanswered questions to Hub.md under the current session's section. This way questions survive context reset. On /load, read them back from Hub.md's session section and re-populate the queue.
 
 6. **Don't duplicate:** Before adding a question, check if the same question (or close equivalent) is already in the queue.
 

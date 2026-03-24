@@ -82,10 +82,11 @@ You are running a JitNeuro memory system health check. Read every file listed be
 - Read the session state file to find repos involved.
 - For each repo:
   a. Check if <repo>/.HUB/Hub-*.md exists.
-  b. If exists: extract "Last Updated" date and "ACTIVE TODO" section.
+  b. If exists: extract "Last Updated" date. Look for session-named sections (## <session-name>).
   c. Age check: compare Hub.md date vs session checkpoint date. If Hub.md older, flag STALE.
-  d. Completeness: check for sections ACTIVE TODO, Key Decisions, Modified Files. Flag missing as INCOMPLETE.
+  d. Completeness: check current session's section has tasks, decisions, files. Flag INCOMPLETE if missing.
   e. If no Hub.md and session has tasks: flag MISSING.
+  f. Multi-session: list all session sections found. Flag orphaned sections (no matching active session).
 - Scan workspace for Hub.md files older than 14 days (abandoned work).
 
 **Rules** (~/.claude/rules/)
@@ -148,9 +149,10 @@ Use these remediation patterns:
 | More than 10 sessions | List all, ask user to clean up |
 | Manifest out of sync | Update to match actual files on disk |
 | Hub.md STALE | Run /save to sync session state to Hub.md |
-| Hub.md DRIFT | TodoWrite items missing from Hub.md -- /save syncs them |
-| Hub.md MISSING | Create `<repo>/.HUB/Hub-01.md` with active tasks on next /save |
-| Hub.md INCOMPLETE | Add missing sections (ACTIVE TODO, Key Decisions, Modified Files) |
+| Hub.md DRIFT | TodoWrite items missing from Hub.md session section -- /save syncs them |
+| Hub.md MISSING | Create `<repo>/.HUB/Hub-01.md` with session section on next /save |
+| Hub.md INCOMPLETE | Session section missing tasks, decisions, or files |
+| Hub.md ORPHANED section | Session section exists but no matching active session -- ask user to clean up |
 | Hub.md abandoned (14d+) | Ask user: still active? Archive or delete if done |
 | Rules over 600 total lines | Review for duplicates, consolidate small files, consider path-scoping |
 | Rule file over 60 lines | Split into focused concerns or extract examples to docs |

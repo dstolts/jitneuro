@@ -217,14 +217,26 @@ BLOCKED: [count] items needing attention
    For each repo involved in this session:
    a. Check if `<repo>/.HUB/` exists. If not, create it.
    b. Find or create `Hub-<NN>.md` (use next available number if creating).
-   c. Sync ALL of the following (not just TodoWrite):
-      - **Active tasks:** All TodoWrite items -> "ACTIVE TODO" section
+   c. Find or create a **session section** using the session name as the heading:
+      ```markdown
+      ## <session-name> (sync)          <-- session name + brief focus area
+      **Last Updated:** 2026-03-23
+      - [ ] Fix sync retry logic
+      - [x] Add timeout handling (2026-03-23)
+      **Decisions:** Use exponential backoff (matches existing pattern)
+      **Files:** src/sync/retry.ts, src/sync/config.ts
+      ```
+      Multiple sessions in the same repo get their own sections. Each session only
+      reads/writes its own section -- never touch another session's section.
+   d. Sync ALL of the following into the session's section:
+      - **Active tasks:** All TodoWrite items as checkboxes
       - **Completed tasks:** Mark completed items as DONE with date
       - **Session status:** Current sprint name, phase, blockers
       - **Key decisions:** Any decisions made this session that affect the project
       - **Modified files:** List of files changed (brief, not full paths for every line)
-   d. Update the "Last Updated" date at the top of Hub.md
-   e. If Hub.md hasn't been touched in 3+ days, flag it in save confirmation
+   e. Update the "Last Updated" date in the session's section header
+   f. If Hub.md hasn't been touched in 3+ days, flag it in save confirmation
+   g. Leave a top-level "Last Updated" date at the file header for quick staleness checks
 
    **Verification:** After writing, read Hub.md back and confirm in output:
    ```
@@ -351,6 +363,7 @@ Closed sessions appear in the "Closed" section on the dashboard (collapsed, grey
 
 ## Important
 - **Hub.md sync is MANDATORY on every save.** Do not skip it. Do not say "saved" without syncing Hub.md. This is the #1 reliability issue -- if you skip it, task state rots silently for weeks.
+- **Session isolation in Hub.md:** Each session writes ONLY to its own section (## <session-name>). Never touch another session's section. Multiple sessions can safely work in the same repo because their Hub.md sections are independent.
 - Do NOT update MEMORY.md, bundles, or engrams during save (that's /learn's job)
 - Do NOT modify code files from any session subcommand
 - Session names are cross-repo by design
