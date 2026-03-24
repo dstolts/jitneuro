@@ -187,7 +187,7 @@ After (1 row in project table):
 
 Example -- a monolithic workspace:
 ```
-D:\Code\                    <-- one workspace, one MEMORY.md for 20 repos
+~/Projects/                 <-- one workspace, one MEMORY.md for 20 repos
   ├── frontend-app/
   ├── backend-api/
   ├── auth-service/
@@ -199,17 +199,17 @@ D:\Code\                    <-- one workspace, one MEMORY.md for 20 repos
 
 Split into work areas:
 ```
-D:\Code\Product\            <-- workspace 1: MEMORY.md covers 5 repos
+~/Projects/Product/         <-- workspace 1: MEMORY.md covers 5 repos
   ├── frontend-app/
   ├── backend-api/
   └── auth-service/
 
-D:\Code\Marketing\          <-- workspace 2: MEMORY.md covers 4 repos
+~/Projects/Marketing/       <-- workspace 2: MEMORY.md covers 4 repos
   ├── marketing-site/
   ├── blog/
   └── crm-integration/
 
-D:\Code\Infrastructure\     <-- workspace 3: MEMORY.md covers 3 repos
+~/Projects/Infrastructure/  <-- workspace 3: MEMORY.md covers 3 repos
   ├── automation/
   ├── deploy-scripts/
   └── monitoring/

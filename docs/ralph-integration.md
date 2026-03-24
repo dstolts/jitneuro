@@ -171,13 +171,13 @@ Opens a named tab. Ralph runs with TUI. Tab auto-closes when ralph completes.
 
 Multiple instances:
 ```bash
-wt new-tab --title "Ralph: API" -- bash -c "cd /d/Code/backend && ralph-tui run --no-setup --prd .ralph-tui/prd.json"
-wt new-tab --title "Ralph: FE" -- bash -c "cd /d/Code/frontend && ralph-tui run --no-setup --prd .ralph-tui/prd.json"
+wt new-tab --title "Ralph: API" -- bash -c "cd ~/projects/backend && ralph-tui run --no-setup --prd .ralph-tui/prd.json"
+wt new-tab --title "Ralph: FE" -- bash -c "cd ~/projects/frontend && ralph-tui run --no-setup --prd .ralph-tui/prd.json"
 ```
 
 **PowerShell** (works everywhere, opens a new console window):
 ```powershell
-Start-Process cmd -ArgumentList '/c title Ralph: sprint-api && cd /d D:\Code\my-api && ralph-tui run --no-setup --prd .ralph-tui\prd.json' -WindowStyle Normal
+Start-Process cmd -ArgumentList '/c title Ralph: sprint-api && cd /d C:\Projects\my-api && ralph-tui run --no-setup --prd .ralph-tui\prd.json' -WindowStyle Normal
 ```
 Opens a new window titled "Ralph: sprint-api". Window auto-closes when ralph completes (`/c` flag).
 

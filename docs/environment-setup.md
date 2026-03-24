@@ -6,13 +6,13 @@ How to set environment variables for the JitNeuro dashboard across all platforms
 
 | Variable | Purpose | Default | Example |
 |----------|---------|---------|---------|
-| JITDASH_DIR | Dashboard data directory (runs, HTML) | ~/.claude/dashboard | D:\Code\.claude\dashboard |
-| JITDASH_SESSIONS | Session state directory (heartbeats, checkpoints) | ~/.claude/session-state | D:\Code\.claude\session-state |
+| JITDASH_DIR | Dashboard data directory (runs, HTML) | ~/.claude/dashboard | <workspace>\.claude\dashboard |
+| JITDASH_SESSIONS | Session state directory (heartbeats, checkpoints) | ~/.claude/session-state | <workspace>\.claude\session-state |
 | JITDASH_PORT | Dashboard server port | 9847 | 9847 |
 
 ## When to Set
 
-- If your workspace `.claude/` is NOT under your home directory (e.g., `D:\Code\.claude\` instead of `~/.claude/`)
+- If your workspace `.claude/` is NOT under your home directory (e.g., `C:\Projects\.claude\` instead of `~/.claude/`)
 - Multi-workspace setups where dashboard should point to a specific workspace
 
 ## Windows
@@ -22,8 +22,8 @@ How to set environment variables for the JitNeuro dashboard across all platforms
 PowerShell (run as your user, not admin):
 
 ```powershell
-[Environment]::SetEnvironmentVariable('JITDASH_DIR','D:\Code\.claude\dashboard','User')
-[Environment]::SetEnvironmentVariable('JITDASH_SESSIONS','D:\Code\.claude\session-state','User')
+[Environment]::SetEnvironmentVariable('JITDASH_DIR','<workspace>\.claude\dashboard','User')
+[Environment]::SetEnvironmentVariable('JITDASH_SESSIONS','<workspace>\.claude\session-state','User')
 ```
 
 ### Verify

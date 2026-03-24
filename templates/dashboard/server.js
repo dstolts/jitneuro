@@ -2,7 +2,7 @@
 // Zero-dependency Node.js HTTP server for live agent monitoring.
 //
 // Usage: node server.js [--port=9847] [--no-open]
-// Env:   JITDASH_PORT=9847  JITDASH_DIR=D:\Code\.claude\dashboard
+// Env:   JITDASH_PORT=9847  JITDASH_DIR=<workspace>/.claude/dashboard
 
 const http = require('http');
 const fs = require('fs');
@@ -126,7 +126,7 @@ function readJsonSafe(filePath) {
   try {
     var raw = fs.readFileSync(filePath, 'utf8');
     // Normalize Windows backslashes in JSON values before parsing
-    // Handles paths like D:\Code that break JSON.parse
+    // Handles Windows backslash paths that break JSON.parse
     raw = raw.replace(/\\([^"\\\/bfnrtu])/g, '/$1');
     return JSON.parse(raw);
   }
