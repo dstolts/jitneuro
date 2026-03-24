@@ -100,6 +100,18 @@ Analyzed all hook combinations for concurrent execution risks. **No data corrupt
 
 **No file locking is used or needed.** Scripts are fast (<1s), touch distinct files in most cases, and failure modes are all recoverable. Adding flock would introduce more risk (deadlocks, stale locks) than the races themselves.
 
+### Parallel Agent Spawns (Stress Test)
+
+A common pattern is spawning 5+ research agents simultaneously (find files, search code, explore codebase). This is the heaviest concurrency scenario for the hooks. We analyzed it and **there is nothing to be concerned about:**
+
+- **PreToolUse(Agent) fires 5 times in rapid succession.** Each invocation of pre-agent-register.sh gets a unique nanosecond timestamp (`date +%s%N`). Tested on Windows (100ns granularity): back-to-back calls produce distinct values. 5 parallel spawns get 5 unique IDs.
+- **Run directory creation.** All 5 scan for an existing run directory. If none exists, all try to create it. `mkdir -p` is idempotent -- safe regardless of ordering. All 5 write identical `meta.json` content (same session), so even interleaved writes produce correct output.
+- **Tracker files.** Each agent gets its own tracker file keyed by `<session-id>-<nanosecond-stamp>`. No collision possible with distinct timestamps.
+- **Post-completion.** As agents return, PostToolUse(Agent) fires for each. FIFO ordering (oldest tracker first) means completions generally match the right agent. If agents finish out of order, dashboard labels may swap (agent A shows B's description) -- purely cosmetic, no data loss.
+- **Total overhead.** 5 agent spawns add ~4 seconds of hook time total. Each completes in <1s and they run between tool calls, not blocking work.
+
+**Portability note:** The `date +%s%N` nanosecond timestamp falls back to `date +%s` (seconds) on systems where `%N` is unsupported (older macOS/BSD). On those systems, 5 agents spawned within the same second WOULD collide. This is a known limitation -- if you hit it, the worst case is one agent appearing stuck as "running" in the dashboard until manual cleanup.
+
 **Portability note:** The `date +%s%N` nanosecond timestamp in pre-agent-register.sh falls back to `date +%s` (seconds) if `%N` is unsupported. On such systems, two agents spawned within the same second would collide. This is a known limitation on older macOS/BSD systems.
 
 ## Hook Recursion
