@@ -2,7 +2,7 @@
 
 ## The Problem
 
-Complex validation, refactoring, and build tasks across large codebases consume master context fast. A single agent reading 50+ files, analyzing them, and making fixes will hit context limits before finishing -- losing all progress.
+Complex validation, refactoring, and build tasks across large codebases consume master context fast. A single agent reading 50+ files, analyzing them, and making fixes will hit context limits before finishing -- forcing a session reset and costing the owner a few minutes of recovery time.
 
 ## The Pattern: Thin Master, Fat Agents
 
@@ -101,7 +101,7 @@ Rename/standardize agent swept codebase for terminology consistency.
 ## Anti-Patterns
 
 - **Master reads files "to understand context"** -- this is the #1 context killer. Let agents read files.
-- **One mega-agent for everything** -- if it runs out of context, all progress is lost.
+- **One mega-agent for everything** -- if it runs out of context, it forces a session reset and recovery cycle (session state is preserved, but the owner loses a few minutes reloading).
 - **Agents with overlapping file writes** -- race conditions and overwrites.
 - **No report format specified** -- agents return 200-line analyses that bloat master context.
 - **Sequential when parallel is possible** -- if tasks are independent, run them together.
