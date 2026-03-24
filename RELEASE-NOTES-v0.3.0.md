@@ -75,12 +75,56 @@ This appears before the session list, making it trivial to reload the active ses
 - **Dashboard JSON writing** -- instructions added to all subagent-capable commands
 - **Previous Claude Session ID** -- save/load now tracks session-id chain across restarts
 
+### Session-Scoped Hub.md Sections
+
+Multiple sessions working in the same repo now get their own sections in Hub.md:
+
+```markdown
+## AIFieldSupport-HE (sync)
+- [ ] Fix sync retry logic
+- [x] Add timeout handling (2026-03-23)
+
+## AIFS-marine-analysis
+- [ ] Marine scoring criteria update
+```
+
+Each session reads/writes only its own section. No conflicts when sync, marine analysis, and automotive analysis all work in the same repo simultaneously. Commands updated: session.md (save), health.md, learn.md, pending-questions.md, Cursor rules.
+
+### Subagent Communication Protocol
+
+New rule (`rules/subagent-communication.md`) enforcing structured returns from all subagents:
+
+- **STATUS line** (first line): OK, BLOCKED, or PARTIAL
+- **FILES_CHANGED**: paths to created/modified files
+- **SUMMARY_DOC**: reference to detailed output (master reads only if needed)
+- **Result**: under 15 lines
+
+Orchestration shifted from step-driven ("exact file paths, what to look for") to outcome-driven ("define WHAT, guardrails define HOW"). Matches Ralph story patterns.
+
+### Hook Performance Analysis
+
+New doc (`docs/hook-performance.md`) with benchmarks, race condition audit, and safety proofs:
+
+- **Benchmarks:** heartbeat ~290ms, branch-protection ~770ms per call (Windows/MSYS2; Linux ~3x faster)
+- **Session cost:** ~2 min across 200 tool calls -- non-blocking, invisible to user
+- **Race conditions:** All analyzed, no data corruption risks. Parallel 5-agent spawns stress-tested.
+- **Hook recursion:** Impossible -- hooks are bash scripts, not Claude Code tool calls
+- **Conclusion:** No performance concerns. Value (live tracking, safety) far exceeds cost.
+
+### Documentation Overhaul
+
+- **AI-first patterns** -- setup guide, environment config, memory maintenance, customization guide all lead with "ask Claude Code to do it" instead of shell commands
+- **Context-loss language corrected** -- "forces a session reset and recovery cycle" not "all progress is lost"
+- **Open-source sanitization** -- all D:\Code\ hardcoded paths replaced with generic placeholders
+
 ### Infrastructure
 
 - **Deploy monitoring rule** -- auto-detect CI/CD after any `git push`, spawn background subagent, ASCII box results
 - **Pending questions queue** -- track unanswered questions, surface at end of every response
 - **Context safety rule** -- batch file analysis to 25 max, use subagents for bulk reads (prevents JS heap crash)
+- **Testing method rule** -- every test result must state the method used (curl, npm test, code review, etc.)
 - **Environment setup docs** -- Windows, macOS, Linux env var configuration (JITDASH_DIR, JITDASH_SESSIONS)
+- **FR-106: Modular component setup** -- feature request for install/uninstall by feature (community feedback requested)
 
 ---
 
@@ -94,6 +138,10 @@ This appears before the session list, making it trivial to reload the active ses
 | Dashboard architecture | HTTP server + polling | WebSocket | Zero-dependency; polling at 2s is sufficient for human monitoring |
 | Archive strategy | In-place flag in JSON | File move to .archive/ | Simpler, fewer filesystem operations |
 | Install scope | workspace + project + user modes | Single mode | Different teams have different needs; workspace covers multi-repo |
+| Hub.md multi-session | Session-named sections (## name) | Separate Hub files per session | One file = full picture, humans can scan easily |
+| Orchestration model | Outcome-driven (WHAT not HOW) | Step-driven prompts | Matches Ralph story pattern; guardrails constrain approach |
+| Subagent returns | STATUS + FILES_CHANGED + SUMMARY_DOC | Unstructured text | Master stays thin; only digs into detail when needed |
+| Hook file locking | No locking | flock | Scripts are fast (<1s), all races are benign; locking adds deadlock risk |
 
 ---
 
@@ -129,33 +177,51 @@ This appears before the session list, making it trivial to reload the active ses
 - templates/hooks/post-agent-complete.sh
 - templates/dashboard/server.js
 - templates/dashboard/dashboard.html
-- templates/dashboard/bin/jitdash.cmd
-- templates/dashboard/bin/jitdash.ps1
-- templates/dashboard/bin/jitdash.sh
-- templates/scripts/dashboard.sh
-- templates/scripts/sessions.sh
+- templates/dashboard/bin/jitdash.cmd, jitdash.ps1, jitdash.sh
+- templates/scripts/dashboard.sh, sessions.sh
+- templates/rules/subagent-communication.md
+- templates/rules/testing-method.md
+- templates/rules/code-reuse.md, context-safety.md, deploy-monitoring.md
+- templates/rules/pending-questions.md, proactive-quality.md, security-guardrails.md
+- templates/memory/README.md, detail-index.md
+- docs/hook-performance.md
 - docs/environment-setup.md
 - docs/deploy-monitoring-reference.md
 - docs/feedback-classification.md
 - docs/memory-maintenance.md
 - docs/multi-agent-orchestration-01.md
+- docs/terminal-best-practices.md
+- RELEASE-NOTES-v0.3.0.md
+- FEATURE-REQUESTS.md (FR-106 added)
 
 ### Modified Files
 - templates/hooks/session-start-write-id.sh -- heartbeat creation, removed subagent self-registration
 - templates/hooks/session-start-post-clear.sh -- heartbeat-based session detection, clear reload hint
 - templates/hooks/session-end-autosave.sh -- heartbeat cleanup, removed subagent self-completion
-- templates/commands/session.md -- heartbeat read/write, Previous Claude Session ID chain
+- templates/commands/session.md -- heartbeat, session-scoped Hub.md sections, session isolation rule
 - templates/commands/sessions.md -- heartbeat scan for active detection
-- templates/commands/health.md -- heartbeat-based session resolution
-- templates/commands/learn.md -- heartbeat-based session resolution, quick mode
+- templates/commands/health.md -- session sections, orphaned section detection
+- templates/commands/learn.md -- session sections, quick mode
+- templates/commands/orchestrate.md -- outcome-driven prompts, subagent return format
+- templates/cursor/rules/jitneuro-intents.mdc -- session-scoped Hub.md sections
 - templates/jitneuro.json -- added 3 new hook events (heartbeat, pre-agent, post-agent)
 - install.sh -- heartbeats/ dir, dashboard install, 3 new hook configs
 - install.ps1 -- heartbeats/ dir, dashboard install, 3 new hook configs
+- docs/setup-guide.md -- AI-first patterns, manual install in collapsible sections
+- docs/customization-guide.md -- AI-first persona/anti-pattern customization
+- docs/ralph-integration.md -- /pulse monitoring, generic paths
+- CLAUDE.md -- version bump
 
 ---
 
 ## Upgrade Instructions
 
+**Easiest:** Ask Claude Code:
+```
+> "Pull the latest jitneuro repo and install updates to all scopes where commands exist"
+```
+
+**Manual:**
 1. Pull latest jitneuro repo
 2. Run `./install.sh workspace` (or `.\install.ps1 -Mode workspace` on Windows)
 3. Restart Claude Code (hooks load at session start)
