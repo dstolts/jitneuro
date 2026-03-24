@@ -1,6 +1,6 @@
 # Commands Reference
 
-JitNeuro ships 12 commands and 5 shortcuts organized into 5 categories. All commands are read-only unless explicitly noted.
+JitNeuro ships 14 commands and 5 shortcuts organized into 6 categories. All commands are read-only unless explicitly noted.
 
 ---
 
@@ -201,6 +201,53 @@ Example:
 /conversation-log on
 ```
 Enables conversation logging with timestamped filenames.
+
+---
+
+## Diagnostics
+
+### /test-tools
+Smoke-test every available Claude Code tool and MCP server. Auto-discovers connected MCP servers and runs one safe read-only operation per server. Reports PASS/FAIL/SKIP for each tool.
+
+- **Core tools tested:** Bash, Read, Write, Edit, Glob, Grep, Agent, WebFetch, WebSearch, TaskCreate
+- **MCP servers:** Auto-discovered via ToolSearch -- no hardcoded list
+- **Side effects:** Creates one temp file (cleaned up), creates one temp task (deleted)
+- **Output:** ASCII table with PASS/FAIL/SKIP counts and remediation hints for failures
+
+Example:
+```
+/test-tools
+```
+
+---
+
+## Automation
+
+### /schedule [list|start|stop|add|remove]
+Manage scheduled agents -- background timer agents that periodically interrupt master with housekeeping instructions.
+
+- **Subcommands:**
+  - `list` (default) -- show all agents with status (RUNNING/STOPPED/DISABLED)
+  - `start <name>` -- spawn the timer agent now
+  - `stop <name>` -- stop re-spawning after current timer expires
+  - `add <name> <interval> <instruction> [description]` -- add new agent to config
+  - `remove <name>` -- remove from config
+
+- **Default agents (ship with jitneuro):**
+  - `autosave` (30m) -- runs /save every 30 minutes
+  - `hub-sync` (10m) -- checks TodoWrite vs Hub.md drift every 10 minutes
+
+- **Architecture:** Timer agent pattern. Agent sleeps for interval, returns instruction, dies. Master executes instruction and re-spawns. Agent context never grows. Runs indefinitely.
+
+- **Guardrail:** Scheduled agent interrupts are MANDATORY. Master stops current work immediately and executes the instruction before resuming. See `rules/scheduled-agent-interrupts.md`.
+
+Examples:
+```
+/schedule                    -- list all agents and status
+/schedule start autosave     -- start the autosave timer
+/schedule stop hub-sync      -- stop hub-sync after current cycle
+/schedule add deploy-mon 5 NONE "Poll deploy pipeline"
+```
 
 ---
 
