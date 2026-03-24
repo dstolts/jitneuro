@@ -80,11 +80,12 @@ mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/bundles"
 mkdir -p "$TARGET/engrams"
 mkdir -p "$TARGET/session-state"
-mkdir -p "$TARGET/session-state/.current.d"
+mkdir -p "$TARGET/session-state/heartbeats"
 mkdir -p "$TARGET/rules"
 mkdir -p "$TARGET/hooks"
 mkdir -p "$TARGET/cognition/decisions"
 mkdir -p "$TARGET/scripts"
+mkdir -p "$TARGET/dashboard/runs"
 
 # --- Backup existing commands before overwrite (US-002) ---
 BACKUP_COUNT=0
@@ -187,6 +188,23 @@ for script_file in "$TEMPLATES/scripts/"*.sh; do
   echo "  scripts/$script_name"
 done
 
+# Install dashboard
+echo "Installing dashboard..."
+for dash_file in "$TEMPLATES/dashboard/"*.html "$TEMPLATES/dashboard/"*.js; do
+  [ -f "$dash_file" ] || continue
+  dash_name="$(basename "$dash_file")"
+  cp "$dash_file" "$TARGET/dashboard/$dash_name"
+  echo "  dashboard/$dash_name"
+done
+if [ -d "$TEMPLATES/dashboard/bin" ]; then
+  mkdir -p "$TARGET/dashboard/bin"
+  for bin_file in "$TEMPLATES/dashboard/bin/"*; do
+    [ -f "$bin_file" ] || continue
+    cp "$bin_file" "$TARGET/dashboard/bin/$(basename "$bin_file")"
+  done
+  echo "  dashboard/bin/ (launcher scripts)"
+fi
+
 # Install hooks
 echo "Installing hooks..."
 for hook_file in "$TEMPLATES/hooks/"*.sh; do
@@ -222,11 +240,18 @@ build_hooks_json() {
   "hooks": {
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-compact-save.sh\"", "timeout": 10 }] }],
     "SessionStart": [
-    { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 10 }] },
-    { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] },
-    { "matcher": "clear", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-post-clear.sh\"", "timeout": 10 }] }
-  ],
-    "PreToolUse": [{ "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 10 }] }],
+      { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-write-id.sh\"", "timeout": 10 }] },
+      { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-post-clear.sh\"", "timeout": 10 }] },
+      { "matcher": "compact", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-start-recovery.sh\"", "timeout": 10 }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/branch-protection.sh\"", "timeout": 10 }] },
+      { "matcher": "Agent", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/pre-agent-register.sh\"", "timeout": 5 }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/heartbeat.sh\"", "timeout": 5 }] },
+      { "matcher": "Agent", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/post-agent-complete.sh\"", "timeout": 5 }] }
+    ],
     "SessionEnd": [{ "matcher": "", "hooks": [{ "type": "command", "command": "bash \"${HOOKS_PATH_FWD}/session-end-autosave.sh\"", "timeout": 10 }] }]
   }
 }

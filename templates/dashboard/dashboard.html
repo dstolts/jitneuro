@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JitNeuro Agent Dashboard</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.5;
+    }
+
+    /* -- Header -- */
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 16px; font-weight: 600; color: #f0f6fc; }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    .conn-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .conn-dot.ok { background: #238636; }
+    .conn-dot.err { background: #da3633; }
+
+    /* -- Summary bar -- */
+    .summary-bar {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 8px 24px;
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    .stat { display: flex; align-items: center; gap: 6px; }
+    .stat-val { color: #c9d1d9; font-weight: 600; }
+
+    /* -- Main -- */
+    main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+    /* -- Section headers -- */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    /* -- Run section -- */
+    .run { margin-bottom: 32px; }
+    .run-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+      flex-wrap: wrap;
+    }
+    .run-header h2 { font-size: 15px; font-weight: 600; color: #f0f6fc; }
+    .run-meta { font-size: 12px; color: #8b949e; }
+    .run-badge {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: auto;
+    }
+    .run-badge.st-running   { background: #1f6feb22; color: #58a6ff; }
+    .run-badge.st-completed { background: #23863622; color: #3fb950; }
+    .run-badge.st-failed    { background: #da363322; color: #f85149; }
+    .run-badge.st-waiting   { background: #6e768122; color: #8b949e; }
+
+    /* -- Grids -- */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+    }
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+    }
+
+    /* -- Agent card -- */
+    .agent-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 14px;
+      border-left: 3px solid #30363d;
+    }
+    .agent-card.st-running   { border-left-color: #1f6feb; }
+    .agent-card.st-completed { border-left-color: #238636; }
+    .agent-card.st-failed    { border-left-color: #da3633; }
+    .agent-card.st-waiting   { border-left-color: #6e7681; }
+
+    .agent-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .agent-status {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+    .agent-status.st-running   { background: #1f6feb33; color: #58a6ff; }
+    .agent-status.st-completed { background: #23863633; color: #3fb950; }
+    .agent-status.st-failed    { background: #da363333; color: #f85149; }
+    .agent-status.st-waiting   { background: #6e768133; color: #8b949e; }
+
+    .agent-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f0f6fc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .agent-meta { font-size: 11px; color: #8b949e; margin-bottom: 2px; }
+    .agent-elapsed { font-size: 12px; color: #8b949e; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+
+    .progress-log {
+      font-size: 11px;
+      color: #8b949e;
+      margin-top: 8px;
+      border-top: 1px solid #21262d;
+      padding-top: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .prog-entry { margin-bottom: 2px; line-height: 1.4; }
+    .prog-time { color: #6e7681; margin-right: 6px; }
+
+    .agent-result {
+      margin-top: 8px;
+      padding: 6px 8px;
+      background: #23863615;
+      border: 1px solid #23863633;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #3fb950;
+    }
+    .agent-error {
+      margin-top: 8px;
+      padding: 6px 8px;
+      background: #da363315;
+      border: 1px solid #da363333;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #f85149;
+    }
+
+    /* -- Session card -- */
+    .session-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .session-card:hover { border-color: #58a6ff; }
+    .session-card.expanded { border-color: #58a6ff; }
+
+    .session-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .session-name { font-size: 13px; font-weight: 600; color: #f0f6fc; }
+    .session-age {
+      font-size: 11px;
+      color: #8b949e;
+      background: #21262d;
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+    .session-age.stale { color: #d29922; }
+    .session-popout { font-size: 11px; color: #6e7681; cursor: pointer; margin-left: 8px; padding: 2px 4px; border-radius: 3px; }
+    .session-popout:hover { color: #58a6ff; background: #1c2128; }
+    .session-task {
+      font-size: 11px;
+      color: #8b949e;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .session-repos { font-size: 10px; color: #6e7681; }
+    .session-status-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+    .session-status-badge.complete { background: #23863633; color: #3fb950; }
+
+    /* -- Session detail (expanded) -- */
+    .session-detail {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #21262d;
+      font-size: 11px;
+      color: #8b949e;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .session-file {
+      font-size: 10px;
+      color: #6e7681;
+      margin-top: 6px;
+    }
+
+    /* -- Empty state -- */
+    .empty {
+      text-align: center;
+      color: #6e7681;
+      padding: 60px 20px;
+      font-size: 14px;
+      line-height: 2.2;
+    }
+    .empty code {
+      background: #161b22;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid #30363d;
+      font-size: 13px;
+    }
+
+    /* -- Divider -- */
+    .section-divider { margin: 32px 0 24px 0; border: none; border-top: 1px solid #21262d; }
+
+    /* -- Footer -- */
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: #484f58;
+      border-top: 1px solid #21262d;
+      margin-top: 40px;
+    }
+
+    /* -- Settings panel (slides from right) -- */
+    .gear-btn {
+      background: none;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .gear-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+    .gear-btn.active { border-color: #58a6ff; color: #58a6ff; }
+
+    .settings-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .settings-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: -380px;
+      width: 360px;
+      height: 100%;
+      background: #161b22;
+      border-left: 1px solid #30363d;
+      z-index: 200;
+      padding: 0;
+      overflow-y: auto;
+      transition: right 0.3s ease;
+    }
+    .settings-panel.open { right: 0; }
+
+    .settings-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: #161b22;
+    }
+    .settings-header h2 { font-size: 14px; font-weight: 600; color: #f0f6fc; }
+    .settings-close {
+      background: none;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: inherit;
+      padding: 2px 6px;
+    }
+    .settings-close:hover { color: #f0f6fc; }
+
+    .settings-body { padding: 18px; }
+
+    .settings-section {
+      margin-bottom: 20px;
+    }
+    .settings-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #21262d;
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-size: 12px; color: #c9d1d9; }
+    .setting-desc { font-size: 10px; color: #6e7681; margin-top: 2px; }
+    .setting-value {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .setting-value.on { background: #23863633; color: #3fb950; }
+    .setting-value.off { background: #da363322; color: #8b949e; }
+    .setting-value.neutral { background: #21262d; color: #c9d1d9; }
+
+    .settings-paths {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #21262d;
+    }
+    .path-row {
+      margin-bottom: 6px;
+      font-size: 10px;
+    }
+    .path-label { color: #6e7681; }
+    .path-value { color: #8b949e; word-break: break-all; }
+
+    /* -- Pulse for running -- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .agent-card.st-running .agent-status { animation: pulse 2s ease-in-out infinite; }
+
+    /* -- Scrollbar -- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JitNeuro Agent Dashboard</h1>
+    <div class="header-right">
+      <span><span class="conn-dot" id="conn-dot"></span><span id="conn-text">Connecting...</span></span>
+      <span id="last-update"></span>
+      <button class="gear-btn" id="gear-btn" onclick="toggleSettings()">[=]</button>
+    </div>
+  </header>
+  <div class="summary-bar" id="summary-bar"></div>
+  <div style="padding:4px 16px;display:flex;gap:16px;font-size:12px;color:#8b949e;border-bottom:1px solid #21262d;">
+    <label style="cursor:pointer;display:flex;align-items:center;gap:4px;">
+      <input type="checkbox" id="show-completed-cb" onchange="renderFromCache()"> Show completed agents
+    </label>
+    <label style="cursor:pointer;display:flex;align-items:center;gap:4px;">
+      <input type="checkbox" id="show-archived-cb" onchange="renderFromCache()"> Show archived runs
+    </label>
+  </div>
+  <main id="dashboard">
+    <div class="empty">Connecting to dashboard server...</div>
+  </main>
+  <div class="settings-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button class="settings-close" onclick="toggleSettings()">x</button>
+    </div>
+    <div class="settings-body" id="settings-body">
+      <div class="settings-section">
+        <div class="settings-section-title">Dashboard</div>
+        <div id="settings-list"></div>
+      </div>
+      <div class="settings-paths" id="settings-paths"></div>
+    </div>
+  </div>
+  <footer id="footer">JitNeuro Agent Dashboard -- polling every 2s</footer>
+
+  <script>
+    var POLL_MS = 2000;
+    var expandedSession = null;
+    var sessionContents = {};
+
+    // -- Helpers --
+
+    function esc(s) {
+      if (!s) return '';
+      var d = document.createElement('div');
+      d.textContent = String(s);
+      return d.innerHTML;
+    }
+
+    function fmtElapsed(seconds) {
+      if (seconds < 0 || isNaN(seconds)) return '--:--';
+      var h = Math.floor(seconds / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = seconds % 60;
+      var ms = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      return h > 0 ? h + ':' + ms : ms;
+    }
+
+    function fmtTime(iso) {
+      if (!iso) return '';
+      try { return new Date(iso).toLocaleTimeString(); }
+      catch (e) { return ''; }
+    }
+
+    function daysAgo(dateIso) {
+      if (!dateIso) return null;
+      try {
+        var d = new Date(dateIso);
+        var now = new Date();
+        return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+      } catch (e) { return null; }
+    }
+
+    function smartAge(dateIso) {
+      if (!dateIso) return '?';
+      try {
+        var d = new Date(dateIso);
+        var now = new Date();
+        var diffMs = now - d;
+        var mins = Math.floor(diffMs / 60000);
+        var hours = Math.floor(diffMs / 3600000);
+        var days = Math.floor(diffMs / 86400000);
+        if (days > 0) return days + 'd';
+        if (hours > 0) return hours + 'h ' + (mins % 60) + 'm';
+        return mins + 'm';
+      } catch (e) { return '?'; }
+    }
+
+    function truncate(s, len) {
+      if (!s) return '';
+      return s.length > len ? s.substring(0, len) + '...' : s;
+    }
+
+    var STATUS_LABELS = { running: 'RUN', completed: 'DONE', failed: 'FAIL', waiting: 'WAIT' };
+
+    // -- Connection indicator --
+
+    function setConn(ok) {
+      document.getElementById('conn-dot').className = 'conn-dot ' + (ok ? 'ok' : 'err');
+      document.getElementById('conn-text').textContent = ok ? 'Connected' : 'Disconnected';
+    }
+
+    // -- Summary bar --
+
+    function renderSummary(data) {
+      var bar = document.getElementById('summary-bar');
+      var allAgents = [];
+      for (var i = 0; i < (data.runs || []).length; i++) {
+        allAgents = allAgents.concat(data.runs[i].agents || []);
+      }
+      var running = allAgents.filter(function(a) { return a.status === 'running'; }).length;
+      var done = allAgents.filter(function(a) { return a.status === 'completed'; }).length;
+      var failed = allAgents.filter(function(a) { return a.status === 'failed'; }).length;
+      var sessionCount = (data.sessions || []).length;
+      var activeCount = (data.sessions || []).filter(function(s) { return s.isActive; }).length;
+
+      var h = '';
+      if (sessionCount > 0) {
+        h += '<span class="stat">Sessions: <span class="stat-val">' + sessionCount + '</span></span>';
+        if (activeCount > 0) h += '<span class="stat">Active: <span class="stat-val" style="color:#3fb950">' + activeCount + '</span></span>';
+      }
+      if (allAgents.length > 0) {
+        h += '<span class="stat">Agents: <span class="stat-val">' + allAgents.length + '</span></span>';
+        if (running) h += '<span class="stat">Running: <span class="stat-val" style="color:#58a6ff">' + running + '</span></span>';
+        if (done) h += '<span class="stat">Done: <span class="stat-val" style="color:#3fb950">' + done + '</span></span>';
+        if (failed) h += '<span class="stat">Failed: <span class="stat-val" style="color:#f85149">' + failed + '</span></span>';
+      }
+      if (false) {
+      }
+      if (!h) h = '<span class="stat">No data</span>';
+      bar.innerHTML = h;
+    }
+
+    // -- Agent card --
+
+    function renderAgent(agent) {
+      var st = agent.status || 'waiting';
+      var showCompleted = document.getElementById('show-completed-cb') && document.getElementById('show-completed-cb').checked;
+      if ((st === 'completed' || st === 'failed') && !showCompleted) return '';
+      var label = STATUS_LABELS[st] || st.toUpperCase();
+      var elapsed = '--:--';
+      if (agent.started) {
+        var endTime = (agent.finished && (st === 'completed' || st === 'failed')) ? new Date(agent.finished).getTime() : Date.now();
+        elapsed = fmtElapsed(Math.floor((endTime - new Date(agent.started).getTime()) / 1000));
+      }
+
+      var h = '<div class="agent-card st-' + esc(st) + '" data-started="' + esc(agent.started || '') + '" data-finished="' + esc(agent.finished || '') + '" data-status="' + esc(st) + '">';
+      h += '<div class="agent-head">';
+      h += '<span class="agent-status st-' + esc(st) + '">' + label + '</span>';
+      h += '<span class="agent-name">' + esc(agent.name || agent.id) + '</span>';
+      h += '</div>';
+
+      if (agent.repo) h += '<div class="agent-meta">Repo: ' + esc(agent.repo) + '</div>';
+      if (agent.bundles && agent.bundles.length) h += '<div class="agent-meta">Bundles: ' + esc(agent.bundles.join(', ')) + '</div>';
+      h += '<div class="agent-elapsed"><span class="elapsed">' + elapsed + '</span></div>';
+
+      if (agent.progress && agent.progress.length > 0) {
+        h += '<div class="progress-log">';
+        var entries = agent.progress.slice(-6);
+        for (var i = 0; i < entries.length; i++) {
+          var p = entries[i];
+          h += '<div class="prog-entry"><span class="prog-time">' + esc(p.time || '') + '</span>' + esc(p.msg || '') + '</div>';
+        }
+        h += '</div>';
+      }
+
+      if (agent.result) {
+        var rtxt = typeof agent.result === 'string' ? agent.result : (agent.result.summary || JSON.stringify(agent.result));
+        h += '<div class="agent-result">' + esc(rtxt) + '</div>';
+      }
+      if (agent.error) {
+        h += '<div class="agent-error">' + esc(agent.error) + '</div>';
+      }
+
+      h += '</div>';
+      return h;
+    }
+
+    // -- Session card --
+
+    function renderSessionCard(session) {
+      var timeRef = session.mtime || session.dateIso;
+      var age = daysAgo(timeRef);
+      var ageText = smartAge(timeRef);
+      var isStale = age !== null && age > 3;
+      var isExpanded = expandedSession === session.name;
+      var isClosed = session.status && session.status.toUpperCase() === 'COMPLETE';
+
+      var h = '<div class="session-card' + (isExpanded ? ' expanded' : '') + '" data-session="' + esc(session.name) + '" data-toggle-session="' + esc(session.name) + '">';
+      h += '<div class="session-head">';
+      h += '<span class="session-name">' + esc(session.name);
+      if (session.isActive) h += '<span style="font-size:10px;color:#3fb950;background:#1b3826;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:normal;">ACTIVE</span>';
+      if (isClosed) h += '<span class="session-status-badge complete">DONE</span>';
+      h += '</span>';
+      h += '<span class="session-popout" onclick="event.stopPropagation();window.open(\'/session/' + encodeURIComponent(session.name) + '\',\'_blank\')" title="Open in new tab">[^]</span>';
+      h += '<span class="session-age' + (isStale ? ' stale' : '') + '">' + ageText + '</span>';
+      h += '</div>';
+      if (session.task) h += '<div class="session-task">' + esc(truncate(session.task, 80)) + '</div>';
+      if (session.engrams && session.engrams.length > 0) {
+        h += '<div class="session-repos" style="font-size:11px;color:#8b949e;">Engrams: ' + esc(session.engrams.join(', ')) + '</div>';
+      }
+      if (session.bundles && session.bundles.length > 0) {
+        h += '<div class="session-repos" style="font-size:11px;color:#8b949e;">Bundles: ' + esc(session.bundles.join(', ')) + '</div>';
+      }
+      var updRef = session.mtime || session.dateIso;
+      if (updRef) h += '<div class="session-repos" style="font-size:11px;color:#6e7681;">Updated: ' + fmtTime(updRef) + ' ' + new Date(updRef).toLocaleDateString() + '</div>';
+      if (session.repos && session.repos.length > 0) {
+        var repoNames = session.repos.map(function(r) {
+          var parts = r.replace(/\\/g, '/').split('/');
+          return parts[parts.length - 1] || parts[parts.length - 2] || r;
+        });
+        h += '<div class="session-repos" style="font-size:11px;color:#8b949e;">Repos: ' + esc(repoNames.join(', ')) + '</div>';
+      }
+
+      if (isExpanded) {
+        h += '<div style="text-align:right;margin-top:4px;"><span style="cursor:pointer;font-size:11px;color:#6e7681;padding:2px 8px;border:1px solid #30363d;border-radius:4px;" onclick="event.stopPropagation();" data-toggle-session="' + esc(session.name) + '">Close [x]</span></div>';
+        h += '<div class="session-detail" id="detail-' + esc(session.name) + '">';
+        if (sessionContents[session.name]) {
+          h += esc(sessionContents[session.name]);
+        } else {
+          h += 'Loading...';
+        }
+        h += '</div>';
+        h += '<div class="session-file">' + esc(session.file) + '</div>';
+      }
+
+      h += '</div>';
+      return h;
+    }
+
+    function renderSessionWithAgents(session) {
+      var timeRef = session.mtime || session.dateIso;
+      var age = daysAgo(timeRef);
+      var ageText = smartAge(timeRef);
+      var isStale = age !== null && age > 3;
+      var isExpanded = expandedSession === session.name;
+      var runs = session.agents || [];
+
+      // Count all agents across all runs
+      var totalAgents = 0;
+      var runningAgents = 0;
+      var doneAgents = 0;
+      var failedAgents = 0;
+      for (var r = 0; r < runs.length; r++) {
+        var agents = runs[r].agents || [];
+        totalAgents += agents.length;
+        for (var a = 0; a < agents.length; a++) {
+          if (agents[a].status === 'running') runningAgents++;
+          else if (agents[a].status === 'completed') doneAgents++;
+          else if (agents[a].status === 'failed') failedAgents++;
+        }
+      }
+
+      var h = '<section class="run" style="margin-bottom:16px;border:1px solid #30363d;border-radius:8px;padding:8px;">';
+      h += '<div class="run-header" style="cursor:pointer" data-toggle-session="' + esc(session.name) + '">';
+      h += '<h2>' + esc(session.name);
+      if (session.isActive) h += '<span style="font-size:10px;color:#3fb950;background:#1b3826;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:normal;">ACTIVE</span>';
+      h += '<span class="session-popout" onclick="event.stopPropagation();window.open(\'/session/' + encodeURIComponent(session.name) + '\',\'_blank\')" title="Open in new tab">[^]</span>';
+      h += '</h2>';
+      h += '<span class="run-meta">';
+      h += ageText;
+      if (session.task) h += ' | ' + esc(truncate(session.task, 50));
+      var showComp = document.getElementById('show-completed-cb') && document.getElementById('show-completed-cb').checked;
+      if (showComp || totalAgents === 0) {
+        h += ' | ' + doneAgents + '/' + totalAgents + ' agents done';
+      } else {
+        if (runningAgents > 0) h += ' | ' + runningAgents + ' running';
+        if (doneAgents > 0) h += ' | <span style="color:#3fb950">(' + doneAgents + ' done)</span>';
+        if (failedAgents > 0) h += ' | <span style="color:#f85149">(' + failedAgents + ' failed)</span>';
+      }
+      h += '</span>';
+      var sessionSt = session.isActive ? 'running' : (runningAgents > 0 ? 'running' : failedAgents > 0 ? 'failed' : 'completed');
+      var sessionLabel = session.isActive ? 'ACTIVE' : sessionSt;
+      h += '<span class="run-badge st-' + sessionSt + '">' + sessionLabel + '</span>';
+      h += '<span class="session-age' + (isStale ? ' stale' : '') + '" style="margin-left:8px">' + ageText + '</span>';
+      h += '</div>';
+
+      // Session metadata
+      if (session.engrams && session.engrams.length > 0) {
+        h += '<div style="font-size:11px;color:#8b949e;padding:4px 12px;">Engrams: ' + esc(session.engrams.join(', ')) + '</div>';
+      }
+      if (session.bundles && session.bundles.length > 0) {
+        h += '<div style="font-size:11px;color:#8b949e;padding:0 12px 4px;">Bundles: ' + esc(session.bundles.join(', ')) + '</div>';
+      }
+
+      // Agent cards nested under session
+      for (var ri = 0; ri < runs.length; ri++) {
+        var run = runs[ri];
+        var ragents = run.agents || [];
+        if (ragents.length > 0) {
+          if (runs.length > 1) {
+            h += '<div style="font-size:11px;color:#6e7681;padding:4px 12px;border-top:1px solid #21262d;">Wave ' + (run.wave || (ri + 1)) + '</div>';
+          }
+          h += '<div class="agents-grid">';
+          for (var ai = 0; ai < ragents.length; ai++) {
+            h += renderAgent(ragents[ai]);
+          }
+          h += '</div>';
+        }
+      }
+
+      // nothing here -- completed count shown inline in header
+
+      // Expandable session detail
+      if (isExpanded) {
+        h += '<div style="text-align:right;margin:4px 12px;"><span style="cursor:pointer;font-size:11px;color:#6e7681;padding:2px 8px;border:1px solid #30363d;border-radius:4px;" onclick="event.stopPropagation();" data-toggle-session="' + esc(session.name) + '">Close [x]</span></div>';
+        h += '<div class="session-detail" id="detail-' + esc(session.name) + '" style="margin:0 12px 12px">';
+        if (sessionContents[session.name]) {
+          h += esc(sessionContents[session.name]);
+        } else {
+          h += 'Loading...';
+        }
+        h += '</div>';
+      }
+
+      h += '</section>';
+      return h;
+    }
+
+    function toggleSession(name) {
+      if (expandedSession === name) {
+        expandedSession = null;
+      } else {
+        expandedSession = name;
+        if (!sessionContents[name]) {
+          fetch('/api/sessions/' + encodeURIComponent(name))
+            .then(function(res) { return res.ok ? res.text() : '(could not load)'; })
+            .then(function(text) {
+              sessionContents[name] = text;
+              var el = document.getElementById('detail-' + name);
+              if (el) el.textContent = text;
+            })
+            .catch(function() {
+              sessionContents[name] = '(error loading session)';
+            });
+        }
+      }
+      renderFromCache();
+    }
+
+    // -- Full render --
+
+    var lastData = null;
+
+    function renderFromCache() {
+      if (lastData) render(lastData);
+    }
+
+    function render(data) {
+      lastData = data;
+      var main = document.getElementById('dashboard');
+      renderSummary(data);
+
+      var hasSessions = data.sessions && data.sessions.length > 0;
+
+      if (!hasSessions) {
+        main.innerHTML = '<div class="empty">'
+          + 'No sessions found.<br><br>'
+          + 'Sessions appear from <code>session-state/</code> directory.<br>'
+          + 'Subagents appear under their parent session when commands write dashboard JSON.'
+          + '</div>';
+        return;
+      }
+
+      var h = '';
+
+      // Group sessions by time bucket
+      var todaySessions = [];
+      var yesterdaySessions = [];
+      var thisWeekSessions = [];
+      var olderSessions = [];
+      var closedSessions = [];
+
+      for (var gi = 0; gi < data.sessions.length; gi++) {
+        var gs = data.sessions[gi];
+        if (gs.status && gs.status.toUpperCase() === 'CLOSED') {
+          closedSessions.push(gs);
+          continue;
+        }
+        var age = daysAgo(gs.dateIso);
+        if (age === null || age === 0) todaySessions.push(gs);
+        else if (age === 1) yesterdaySessions.push(gs);
+        else if (age <= 6) thisWeekSessions.push(gs);
+        else olderSessions.push(gs);
+      }
+
+      // Sort: active instances first, then sessions with agents, then by mtime
+      function sortSessions(arr) {
+        arr.sort(function(a, b) {
+          var aActive = a.isActive ? 0 : 1;
+          var bActive = b.isActive ? 0 : 1;
+          if (aActive !== bActive) return aActive - bActive;
+          var aHasAgents = (a.agents && a.agents.length > 0) ? 0 : 1;
+          var bHasAgents = (b.agents && b.agents.length > 0) ? 0 : 1;
+          if (aHasAgents !== bHasAgents) return aHasAgents - bHasAgents;
+          return (b.mtime || b.dateIso || '').localeCompare(a.mtime || a.dateIso || '');
+        });
+      }
+
+      sortSessions(todaySessions);
+      sortSessions(yesterdaySessions);
+      sortSessions(thisWeekSessions);
+
+      // Helper to render a session group
+      function renderSessionGroup(sessions) {
+        var gh = '';
+        for (var sg = 0; sg < sessions.length; sg++) {
+          var sess = sessions[sg];
+          if (sess.agents && sess.agents.length > 0) {
+            gh += renderSessionWithAgents(sess);
+          } else {
+            gh += renderSessionCard(sess);
+          }
+        }
+        return gh;
+      }
+
+      // Today
+      if (todaySessions.length > 0) {
+        h += '<div class="section-title">Today (' + todaySessions.length + ')</div>';
+        h += renderSessionGroup(todaySessions);
+      }
+
+      // Yesterday
+      if (yesterdaySessions.length > 0) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title">Yesterday (' + yesterdaySessions.length + ')</div>';
+        h += '<div class="sessions-grid">';
+        for (var ys = 0; ys < yesterdaySessions.length; ys++) { h += renderSessionCard(yesterdaySessions[ys]); }
+        h += '</div>';
+      }
+
+      // This Week
+      if (thisWeekSessions.length > 0) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title">This Week (' + thisWeekSessions.length + ')</div>';
+        h += '<div class="sessions-grid">';
+        for (var ws = 0; ws < thisWeekSessions.length; ws++) { h += renderSessionCard(thisWeekSessions[ws]); }
+        h += '</div>';
+      }
+
+      // Older (collapsed)
+      if (olderSessions.length > 0) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title" style="cursor:pointer;user-select:none;" onclick="var el=document.getElementById(\'older-section\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.toggle\').textContent=el.style.display===\'none\'?\'[+]\':\'[-]\'">';
+        h += '<span class="toggle">[+]</span> Older (' + olderSessions.length + ')';
+        h += '</div>';
+        h += '<div id="older-section" style="display:none;opacity:0.7"><div class="sessions-grid">';
+        for (var os2 = 0; os2 < olderSessions.length; os2++) { h += renderSessionCard(olderSessions[os2]); }
+        h += '</div></div>';
+      }
+
+      // Closed (collapsed)
+      if (closedSessions.length > 0) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title" style="cursor:pointer;user-select:none;" onclick="var el=document.getElementById(\'closed-section\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.toggle\').textContent=el.style.display===\'none\'?\'[+]\':\'[-]\'">';
+        h += '<span class="toggle">[+]</span> Closed (' + closedSessions.length + ')';
+        h += '</div>';
+        h += '<div id="closed-section" style="display:none;opacity:0.5"><div class="sessions-grid">';
+        for (var cs = 0; cs < closedSessions.length; cs++) { h += renderSessionCard(closedSessions[cs]); }
+        h += '</div></div>';
+      }
+
+      // Orphaned runs (agents with no matching session)
+      var hasOrphans = data.orphanedRuns && data.orphanedRuns.length > 0;
+      if (hasOrphans) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title">Unlinked Agent Runs (' + data.orphanedRuns.length + ')</div>';
+        for (var or2 = 0; or2 < data.orphanedRuns.length; or2++) {
+          var orun = data.orphanedRuns[or2];
+          var oagents = orun.agents || [];
+          h += '<div class="agents-grid">';
+          for (var oa = 0; oa < oagents.length; oa++) { h += renderAgent(oagents[oa]); }
+          h += '</div>';
+        }
+      }
+
+      // Archived runs -- shown when "Show archived runs" checkbox is checked
+      var hasArchived = data.archivedRuns && data.archivedRuns.length > 0;
+      var showArchived = document.getElementById('show-archived-cb') && document.getElementById('show-archived-cb').checked;
+      if (hasArchived && showArchived) {
+        h += '<hr class="section-divider">';
+        h += '<div class="section-title">Archived Runs (' + data.archivedRuns.length + ')</div>';
+        h += '<div style="opacity:0.5">';
+        for (var ar = 0; ar < data.archivedRuns.length; ar++) {
+          var arun = data.archivedRuns[ar];
+          var aagents = arun.agents || [];
+          h += '<div style="font-size:11px;color:#6e7681;padding:4px 0;">' + esc(arun.session) + ' | ' + aagents.length + ' agents | archived ' + (arun.archivedAt ? smartAge(arun.archivedAt) + ' ago' : '') + '</div>';
+          h += '<div class="agents-grid">';
+          // Force show completed agents in archive view
+          for (var aa = 0; aa < aagents.length; aa++) {
+            var ast = aagents[aa].status || 'waiting';
+            var alabel = (STATUS_LABELS || {})[ast] || ast.toUpperCase();
+            var aelapsed = '--:--';
+            if (aagents[aa].started) {
+              var aend = aagents[aa].finished ? new Date(aagents[aa].finished).getTime() : Date.now();
+              aelapsed = fmtElapsed(Math.floor((aend - new Date(aagents[aa].started).getTime()) / 1000));
+            }
+            h += '<div class="agent-card st-' + esc(ast) + '">';
+            h += '<div class="agent-head"><span class="agent-status st-' + esc(ast) + '">' + alabel + '</span>';
+            h += '<span class="agent-name">' + esc(aagents[aa].name || aagents[aa].id) + '</span></div>';
+            h += '<div class="agent-elapsed">' + aelapsed + '</div>';
+            if (aagents[aa].result) h += '<div class="agent-result">' + esc(aagents[aa].result) + '</div>';
+            h += '</div>';
+          }
+          h += '</div>';
+        }
+        h += '</div>';
+      }
+
+      main.innerHTML = h;
+    }
+
+    // -- Polling --
+
+    function poll() {
+      fetch('/api/status')
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(data) {
+          render(data);
+          renderSettings(data);
+          setConn(true);
+          document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+        })
+        .catch(function() {
+          setConn(false);
+        });
+    }
+
+    // -- Delegated click handler for session toggle --
+    document.addEventListener('click', function(e) {
+      var el = e.target.closest('[data-toggle-session]');
+      if (el) {
+        var name = el.getAttribute('data-toggle-session');
+        if (name) toggleSession(name);
+      }
+    });
+
+    // -- Elapsed time ticker --
+
+    setInterval(function() {
+      var cards = document.querySelectorAll('.agent-card[data-status="running"][data-started]');
+      for (var i = 0; i < cards.length; i++) {
+        var started = cards[i].dataset.started;
+        if (!started) continue;
+        var elapsed = Math.floor((Date.now() - new Date(started).getTime()) / 1000);
+        var el = cards[i].querySelector('.elapsed');
+        if (el) el.textContent = fmtElapsed(elapsed);
+      }
+    }, 1000);
+
+    // -- Settings panel --
+
+    var settingsOpen = false;
+
+    function toggleSettings() {
+      settingsOpen = !settingsOpen;
+      document.getElementById('settings-panel').className = 'settings-panel' + (settingsOpen ? ' open' : '');
+      document.getElementById('settings-overlay').className = 'settings-overlay' + (settingsOpen ? ' open' : '');
+      document.getElementById('gear-btn').className = 'gear-btn' + (settingsOpen ? ' active' : '');
+    }
+
+    function renderSettings(data) {
+      if (!data || !data.settings) return;
+      var s = data.settings;
+      var list = document.getElementById('settings-list');
+      var h = '';
+
+      // Dashboard settings
+      var reporting = s.dashboard && s.dashboard.reporting;
+      var pollingMs = (s.dashboard && s.dashboard.pollingMs) || 2000;
+
+      h += '<div class="setting-row">';
+      h += '<div><div class="setting-label">Agent Reporting</div>';
+      h += '<div class="setting-desc">Agents write progress JSON during orchestration</div></div>';
+      h += '<span class="setting-value ' + (reporting ? 'on' : 'off') + '">' + (reporting ? 'ON' : 'OFF') + '</span>';
+      h += '</div>';
+
+      h += '<div class="setting-row">';
+      h += '<div><div class="setting-label">Poll Interval</div>';
+      h += '<div class="setting-desc">How often dashboard checks for updates</div></div>';
+      h += '<span class="setting-value neutral">' + (pollingMs / 1000) + 's</span>';
+      h += '</div>';
+
+      list.innerHTML = h;
+
+      // Config paths
+      if (data.config) {
+        var p = '';
+        p += '<div class="path-row"><span class="path-label">Data: </span><span class="path-value">' + esc(data.config.dataDir || '') + '</span></div>';
+        p += '<div class="path-row"><span class="path-label">Sessions: </span><span class="path-value">' + esc(data.config.sessionsDir || '') + '</span></div>';
+        if (data.config.settingsFile) {
+          p += '<div class="path-row"><span class="path-label">Settings: </span><span class="path-value">' + esc(data.config.settingsFile) + '</span></div>';
+        }
+        document.getElementById('settings-paths').innerHTML = p;
+      }
+    }
+
+    // -- Start --
+
+    poll();
+    setInterval(poll, POLL_MS);
+  </script>
+</body>
+</html>

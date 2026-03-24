@@ -29,7 +29,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
 **What to do:**
 
 1. **Session name**  
-   If the user gave a name, use it (lowercase, hyphens). Otherwise read `.claude/session-state/.current`; if there’s an active session, use that name. If none, suggest a short task-based name and confirm.
+   If the user gave a name, use it (lowercase, hyphens). Otherwise read `.claude/session-state/heartbeats/<session-id>` (session-id from context); if there’s an active session name (not "none"), use that name. If none, suggest a short task-based name and confirm.
 
 2. **Gather state**  
    From current context: current task, repos involved, active bundles, modified files, key decisions, pending/unresolved items, next steps, key findings. If you need what to preserve on compact or project rules, **read CLAUDE.md** (and `.claude/CLAUDE.md` if in scope) — do not rely on a copy; those files change constantly.
@@ -48,16 +48,16 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    - `## Key Findings` — discoveries worth keeping across context reset  
    Target 30–60 lines.
 
-4. **Sync todos**  
-   If the session involves repos with `.HUB/Hub-*.md`, align current TodoWrite-style items with the “ACTIVE TODO” section (add new, update status). If there are todos and no Hub file, consider creating one.
+4. **Sync todos**
+   If the session involves repos with `.HUB/Hub-*.md`, find or create a section headed `## <session-name>` and sync TodoWrite items there (add new, update status). Each session owns its own section. If there are todos and no Hub file, consider creating one.
 
-5. **Update current**  
-   Write the session name to `.claude/session-state/.current`. If `.session-id` exists and is non-empty, also write to `.claude/session-state/.current.d/<id>` (create `.current.d` if needed).
+5. **Update current**
+   Write the session name to `.claude/session-state/heartbeats/<session-id>` (session-id from context). Create the `heartbeats/` directory if it does not exist.
 
 6. **Confirm**  
    Say something like: “Saved `<name>`. Safe to clear context. Use load to restore.” If the session had learnings, suggest running **learn** next.
 
-**Current (per-session):** To get "my" active session name: read `.claude/session-state/.session-id`; if non-empty, read `.claude/session-state/.current.d/<id>` (content = session name); else read `.claude/session-state/.current`. To **update current** after save: write session name to `.current`; if `.session-id` exists, also write session name to `.current.d/<id>` (create `.current.d` if needed).
+**Current (per-session):** To get "my" active session name: read `.claude/session-state/heartbeats/<session-id>` (session-id from context). Content = session name. To **update current** after save: write session name to `heartbeats/<session-id>`.
 
 **Paths:** Resolve `.claude/` from workspace root or project root (whichever holds `session-state/`).
 
@@ -70,7 +70,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
 **What to do:**
 
 1. **Which session**  
-   If the user gave a name or number, use it. If not, resolve "my current" (`.session-id` → `.current.d/<id>` or `.current`) and load that session if it exists. If no name and no current, list sessions (excluding `archive/`, `_autosave.md`, `.current`, `.current.d/`, `.session-id`, `.preferences`) and ask which to load. A number refers to the Nth session in that list.
+   If the user gave a name or number, use it. If not, resolve "my current" from `heartbeats/<session-id>` and load that session if it exists. If no name and no current, list sessions (excluding `archive/`, `_autosave.md`, `heartbeats/`, `.preferences`) and ask which to load. A number refers to the Nth session in that list.
 
 2. **Read**  
    Read the session file `.claude/session-state/<name>.md`.
@@ -82,7 +82,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    Read `.claude/context-manifest.md` for bundle index. Read **MEMORY.md** for current routing weights and project index (it changes constantly — always read the file).
 
 5. **Update current**  
-   Write the session name to `.claude/session-state/.current`. If `.session-id` exists and is non-empty, also write the session name to `.claude/session-state/.current.d/<id>` (create `.current.d` if needed).
+   Write the session name to `.claude/session-state/heartbeats/<session-id>` (session-id from context).
 
 6. **Report**  
    Summarize: “Loaded: &lt;name&gt; (checkpointed &lt;date&gt;). Task: … Repos: … Loaded bundles: … Next steps: 1. …”  

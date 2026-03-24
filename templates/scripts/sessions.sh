@@ -2,17 +2,45 @@
 # sessions.sh -- Deterministic session listing with numbered output
 # Called by /sessions skill. Guarantees consistent formatting.
 # Usage: sessions.sh [list|show|stale] [name_or_number]
+#
+# Uses heartbeats/ directory for active session detection (not .current).
+# Pass --current <name> to override current session marker.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SESSION_DIR="$CLAUDE_DIR/session-state"
-CURRENT_FILE="$SESSION_DIR/.current"
+HEARTBEAT_DIR="$SESSION_DIR/heartbeats"
 ACTIVE_WORK="$CLAUDE_DIR/bundles/active-work.md"
 
-# Read current session name
+# Build list of active session names from heartbeats/
+active_sessions=()
+if [[ -d "$HEARTBEAT_DIR" ]]; then
+    for hb in "$HEARTBEAT_DIR"/*; do
+        [[ ! -f "$hb" ]] && continue
+        local_name=$(head -1 "$hb" 2>/dev/null | tr -d '\r\n[:space:]')
+        if [[ -n "$local_name" ]] && [[ "$local_name" != "none" ]]; then
+            active_sessions+=("$local_name")
+        fi
+    done
+fi
+
+# Check for --current override from caller
 current_session=""
-if [[ -f "$CURRENT_FILE" ]]; then
-    current_session=$(head -1 "$CURRENT_FILE" | tr -d '\r\n')
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --current)
+            current_session="$2"
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# If no --current override, use first active session from heartbeats
+if [[ -z "$current_session" ]] && [[ ${#active_sessions[@]} -gt 0 ]]; then
+    current_session="${active_sessions[0]}"
 fi
 
 # Get today's date as epoch
@@ -21,7 +49,6 @@ today_epoch=$(date +%s)
 # Calculate age string from a date string (YYYY-MM-DD or similar)
 calc_age() {
     local datestr="$1"
-    # Extract YYYY-MM-DD from various formats
     local ymd=$(echo "$datestr" | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
     if [[ -z "$ymd" ]]; then
         echo "??d"
@@ -90,15 +117,11 @@ build_list() {
                 fi
             fi
             # Repos -- extract repo names from lines containing path patterns
-            # Detects workspace-relative paths like /path/to/RepoName or D:\Path\RepoName
             local rname=""
-            # Try common path separators (forward slash, backslash, double backslash)
             for sep_pattern in '/' '\\' '\\\\'; do
                 if [[ -n "$rname" ]]; then break; fi
-                # Extract last path component before common suffixes
                 rname=$(echo "$line" | grep -oP "(?<=${sep_pattern})[A-Za-z][\w-]*(?=${sep_pattern}|\s|$)" | head -1)
             done
-            # Also try "- RepoName\" or "- RepoName/" patterns from Repos Involved section
             if [[ -z "$rname" ]] && [[ "$line" =~ ^-\ +([A-Za-z][\w-]+) ]]; then
                 rname="${BASH_REMATCH[1]}"
             fi
@@ -278,7 +301,7 @@ show_needs_owner() {
     fi
 }
 
-# Main dispatch
+# Main dispatch -- parse --current before positional args
 cmd="${1:-list}"
 arg="${2:-}"
 

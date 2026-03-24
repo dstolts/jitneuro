@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -20,14 +20,14 @@
       },
       {
         "event": "SessionStart",
-        "matcher": "compact",
-        "script": "session-start-recovery.sh",
+        "matcher": "",
+        "script": "session-start-post-clear.sh",
         "timeout": 10
       },
       {
         "event": "SessionStart",
-        "matcher": "clear",
-        "script": "session-start-post-clear.sh",
+        "matcher": "compact",
+        "script": "session-start-recovery.sh",
         "timeout": 10
       },
       {
@@ -35,6 +35,24 @@
         "matcher": "Bash",
         "script": "branch-protection.sh",
         "timeout": 10
+      },
+      {
+        "event": "PreToolUse",
+        "matcher": "Agent",
+        "script": "pre-agent-register.sh",
+        "timeout": 5
+      },
+      {
+        "event": "PostToolUse",
+        "matcher": "",
+        "script": "heartbeat.sh",
+        "timeout": 5
+      },
+      {
+        "event": "PostToolUse",
+        "matcher": "Agent",
+        "script": "post-agent-complete.sh",
+        "timeout": 5
       },
       {
         "event": "SessionEnd",

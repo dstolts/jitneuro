@@ -2,7 +2,7 @@
 
 ## Why Hooks Matter
 
-Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 5 hooks that protect your work and enforce governance automatically.
+Hooks automate what you'd otherwise forget. They fire on Claude Code lifecycle events -- before compaction, before dangerous git commands, when sessions end. JitNeuro ships 6 hooks that protect your work and enforce governance automatically.
 
 Hooks are the safety net that ensures context is never silently lost. When compaction fires, your session state is preserved. When you accidentally try to push to a protected branch, the hook catches it. They run automatically on Claude Code lifecycle events with no manual intervention required.
 
@@ -25,17 +25,31 @@ Prompts Claude to offer `/save` before context gets compressed. Claude will ask 
 
 **Why this matters:** Context compaction is the #1 cause of lost work. After compaction, Claude forgets active tasks, loaded bundles, file positions, and next steps. This hook catches it before it happens.
 
-### 2. Session Start — Write Session ID (per-session .current)
+### 2. Session Start -- Write Session ID (Heartbeat)
 
-- **Event:** SessionStart (matcher: `""` — all session starts)
+- **Event:** SessionStart (matcher: `""` -- all session starts)
 - **Script:** session-start-write-id.sh
 - **Timeout:** 5s
 
-Parses `session_id` from the hook JSON and writes it to `.claude/session-state/.session-id`. Commands then resolve "my current" from `.current.d/<id>` so multiple conversations can each have their own active session. No stdout; exit 0.
+Parses `session_id` from the hook JSON and creates `heartbeats/<session-id>` in the session-state directory. If the heartbeat file already exists (resume or compact), reads the existing JitNeuro session name from it; otherwise writes "none" as the initial content. Echoes `[JitNeuro] session-id: <session-id>` to stdout, which Claude Code injects into the conversation context. This is how Claude knows its own session ID for the rest of the conversation -- including after compaction, when SessionStart fires again with source "compact" and re-injects it.
 
-**Why this matters:** Without this, only one conversation per workspace could have a "current" session; the single `.current` file was shared. With it, each Claude Code (or Cursor) chat can track its own current session.
+**Why this matters:** Each Claude Code instance gets its own heartbeat file, enabling per-instance liveness tracking. The dashboard reads heartbeat file mtimes to show which sessions are actively running. Multiple conversations in the same workspace each have independent heartbeat files with no risk of overwriting each other.
 
-### 3. Post-Compact Context Recovery
+### 3. Heartbeat
+
+- **Event:** PostToolUse (matcher: `""` -- all tool calls)
+- **Script:** heartbeat.sh
+- **Timeout:** 5s
+
+Parses `session_id` from the hook JSON and touches `heartbeats/<session-id>` to update its modification time. No stdout; exit 0.
+
+Cost is minimal -- approximately 10-20ms per invocation (stdin read + grep + touch). Over 50 tool calls that adds up to roughly 500ms total, spread across minutes of active work.
+
+**Why PostToolUse:** It fires during active work after every tool call, includes the session_id in its payload, and catches long autonomous runs (e.g., ralph executing stories) that a UserPromptSubmit hook would miss.
+
+**Why this matters:** The dashboard reads heartbeat file mtimes to determine which sessions are actively running in real time. Without this hook, the dashboard would only know a session existed at startup -- not whether it is still alive and working.
+
+### 4. Post-Compact Context Recovery
 
 - **Event:** SessionStart (matcher: `compact`)
 - **Script:** session-start-recovery.sh
@@ -47,7 +61,7 @@ stdout from this hook goes directly into Claude's context -- no user action need
 
 **Why this matters:** After compaction, Claude forgets what it was doing. This hook restores the last checkpoint automatically so you can pick up where you left off without manually re-explaining context.
 
-### 4. Branch Protection
+### 5. Branch Protection
 
 - **Event:** PreToolUse (matcher: `Bash`)
 - **Script:** branch-protection.sh
@@ -68,30 +82,30 @@ When a command is blocked, Claude receives the reason via stderr and will inform
 
 **Why this matters:** Governance rules written in CLAUDE.md are "prose rules" -- Claude follows them most of the time, but can still slip. This hook enforces RED zone protections programmatically. The dangerous command never executes.
 
-### 5. Session End Auto-Save
+### 6. Session End Auto-Save
 
 - **Event:** SessionEnd
 - **Script:** session-end-autosave.sh
 - **Timeout:** 10s
 
-Safety net for forgotten `/save`. When a session ends, this hook checks whether a `/save` was called during the session by comparing the active session file's modification time against the session duration.
+Safety net for forgotten `/save`. When a session ends, this hook reads the session name from `heartbeats/<session-id>` (before removing the heartbeat file), then checks whether a `/save` was called during the session by comparing the active session file's modification time against the session duration. After the check, the heartbeat file is removed to signal the instance is no longer active.
 
 **If /save was detected:** Writes a minimal "all clear" breadcrumb -- no action needed.
 
 **If /save was NOT detected:** Writes a warning breadcrumb with recovery info:
-- The active session name (from `.current`)
+- The active session name (read from `heartbeats/<session-id>`)
 - How long ago the last save was
 - The last known task and repos (extracted from the session file)
 - A `/load` command to restore the last checkpoint
 
 Written to `.claude/session-state/_autosave.md` (overwritten each time). Excluded from `/sessions` dashboard output.
 
-**Why this matters:** The most common way to lose context is forgetting to `/save` before closing the terminal. This hook detects that gap and tells the next session exactly what to recover.
+**Why this matters:** The most common way to lose context is forgetting to `/save` before closing the terminal. This hook detects that gap and tells the next session exactly what to recover. Removing the heartbeat file on exit ensures the dashboard stops showing the session as active.
 
 **Limitations:**
 - The SessionEnd event provides only 4 fields: reason, duration, cwd, session_id. It has NO access to conversation context. The hook cannot capture what you were actually working on -- only what the last `/save` recorded.
 - Save detection relies on file modification timestamps. If the system clock is wrong or the filesystem doesn't update mtime, detection may be inaccurate.
-- If no `/save` was ever called (no `.current` file, no session files), the breadcrumb can only report "none" for session name, task, and repos.
+- If no `/save` was ever called (no session files), the breadcrumb can only report "none" for session name, task, and repos.
 - The hook reads the first 15 lines of the session file to extract task/repos. If the session file format changes or those fields are beyond line 15, extraction will miss them.
 - On Windows, `stat -c %Y` may not work depending on the bash environment. The hook falls back to `stat -f %m` (BSD/macOS), but if both fail, save detection defaults to "no" (safe fallback -- always warns).
 
@@ -118,6 +132,16 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
     ],
     "SessionStart": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/session-start-write-id.sh\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
         "matcher": "compact",
         "hooks": [
           {
@@ -135,6 +159,18 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
           {
             "type": "command",
             "command": "bash \"/path/to/.claude/hooks/branch-protection.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/path/to/.claude/hooks/heartbeat.sh\"",
             "timeout": 5
           }
         ]

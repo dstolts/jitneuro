@@ -1,18 +1,38 @@
 #!/usr/bin/env bash
 # dashboard.sh -- Deterministic dashboard display
-# Usage: dashboard.sh [session|sessions]
+# Usage: dashboard.sh [session|sessions] [--current <name>]
 #   session  -- current session dashboard (blockers for active session)
 #   sessions -- all sessions aggregate dashboard (default)
+#
+# Uses heartbeats/ directory for active session detection (not .current).
+# Pass --current <name> to specify which session is current.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SESSION_DIR="$CLAUDE_DIR/session-state"
-CURRENT_FILE="$SESSION_DIR/.current"
+HEARTBEAT_DIR="$SESSION_DIR/heartbeats"
 ACTIVE_WORK="$CLAUDE_DIR/bundles/active-work.md"
 PREFS_FILE="$SESSION_DIR/.preferences"
 
+# Parse args
+scope=""
+current_session=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --current)
+            current_session="$2"
+            shift 2
+            ;;
+        *)
+            if [[ -z "$scope" ]]; then
+                scope="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
 # Determine scope from .preferences if no arg given
-scope="${1:-}"
 if [[ -z "$scope" ]]; then
     if [[ -f "$PREFS_FILE" ]]; then
         pref=$(grep -oP '(?<=shortcut_scope:\s)\w+' "$PREFS_FILE" 2>/dev/null)
@@ -22,10 +42,16 @@ if [[ -z "$scope" ]]; then
     fi
 fi
 
-# Read current session
-current_session=""
-if [[ -f "$CURRENT_FILE" ]]; then
-    current_session=$(head -1 "$CURRENT_FILE" | tr -d '\r\n')
+# If no --current override, scan heartbeats/ for active session names
+if [[ -z "$current_session" ]] && [[ -d "$HEARTBEAT_DIR" ]]; then
+    for hb in "$HEARTBEAT_DIR"/*; do
+        [[ ! -f "$hb" ]] && continue
+        local_name=$(head -1 "$hb" 2>/dev/null | tr -d '\r\n[:space:]')
+        if [[ -n "$local_name" ]] && [[ "$local_name" != "none" ]]; then
+            current_session="$local_name"
+            break  # use first active session found
+        fi
+    done
 fi
 
 # Extract NEEDS OWNER items from active-work.md
@@ -158,8 +184,12 @@ sessions_dashboard() {
     echo "== All Sessions Dashboard =="
     echo ""
 
-    # Run sessions list
-    bash "$(dirname "$0")/sessions.sh" list 2>/dev/null
+    # Run sessions list, passing --current if we have it
+    local args="list"
+    if [[ -n "$current_session" ]]; then
+        args="--current $current_session list"
+    fi
+    bash "$(dirname "$0")/sessions.sh" $args 2>/dev/null
     if [[ $? -ne 0 ]]; then
         # Fallback: just show NEEDS OWNER
         extract_needs_owner
@@ -177,6 +207,6 @@ case "$scope" in
         sessions_dashboard
         ;;
     *)
-        echo "Usage: dashboard.sh [session|sessions]"
+        echo "Usage: dashboard.sh [session|sessions] [--current <name>]"
         ;;
 esac

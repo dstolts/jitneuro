@@ -39,7 +39,15 @@ everything else builds on.
 - **"Thinks about"** -- checklist items this persona always evaluates
 - **Bias** -- this persona's default leaning when there's a tradeoff
 
-**What to customize:**
+**Easiest way to customize:** Ask Claude Code:
+```
+> "Review my personas and remove the ones that don't apply to my work.
+   I focus on [your domain]. Suggest domain-specific additions."
+```
+
+Claude Code will read personas.md, identify irrelevant entries, suggest additions based on your domain, and make the edits.
+
+**Manual customization options:**
 - **Remove personas you don't need.** If you never write content, remove Content Strategist.
   If you don't use sprint automation, simplify Scrum Lead.
 - **Adjust biases.** The Security Engineer defaults to "deny by default." If your context
@@ -78,7 +86,13 @@ engineering mistakes:
 - Always strip markdown fences from LLM API JSON
 - Don't re-verify configs that already passed
 
-**What to customize:**
+**Easiest way to customize:** Ask Claude Code:
+```
+> "Review my anti-patterns and remove entries that don't apply to my stack.
+   Add anti-patterns based on our codebase patterns and past issues."
+```
+
+**Manual customization:**
 - **Remove entries that don't apply.** If you don't use LLM APIs, remove the JSON fence entry.
 - **Add your own.** Every team has hard-won lessons. Add them here.
 - **Let /learn grow it.** Over time, when you correct Claude's behavior, `/learn`

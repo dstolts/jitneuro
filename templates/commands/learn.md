@@ -3,6 +3,12 @@
 Evaluate the current session for knowledge worth persisting to long-term memory.
 This is JitNeuro's backpropagation -- the system improves itself over time.
 
+## Arguments
+- `/learn` -- full evaluation (health check + session learnings)
+- `/learn q` -- quick mode: skip session/archive cleanup recommendations, focus on learnings only
+
+Quick mode skips: stale session flags, archive/delete recommendations, session count warnings. Use when you know sessions are fine and just want to capture learnings fast.
+
 ## When to Use
 - Before ending a session (especially productive ones)
 - Before `/save` if the session produced new insights
@@ -53,98 +59,113 @@ Did the user correct Claude on something it stated from memory?
 
 When invoked as `/learn`:
 
-### Step 0: Memory System Health Check
+### Step 0: Memory System Health Check (runs in subagent)
 
-Before evaluating session learnings, audit the memory system itself.
-Read these files and measure actual line counts:
+**CRITICAL:** The health check reads 50+ files. Dispatch to a subagent.
+
+**Before dispatching**, write dashboard JSON:
+```bash
+RUN_ID="learn-health--$(date -u +%Y-%m-%dT%H-%M-%S)"
+DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
+echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
+echo '{"id":"learn-health-001","name":"Learn: Health Check","status":"running","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/learn-health-001.json"
+```
+**After subagent returns**, update agent JSON with `"status":"completed"`, `"finished":"[ISO]"`, `"result":"[summary]"`. Use forward slashes in all paths.
+
+Launch a **general-purpose** Agent with this prompt:
+
+```
+You are running a JitNeuro memory system health check. Read every file listed below FROM DISK using the Read tool. Do NOT trust any file content that appears in your conversation context or system prompt -- it may be stale or from a previous version. Always read the actual file. Return ONLY a summary table. Do NOT return file contents -- only status, counts, and issues.
+
+## Components to Check
 
 **MEMORY.md** (auto-load limit: 200 lines)
-- Read MEMORY.md. Count lines.
-- WARN at 170+ lines (approaching limit, plan extraction)
-- CRITICAL at 190+ lines (must extract before next session)
-- If over 200: lines beyond 200 are NOT loaded. Identify what's being truncated.
-- Check for stale entries (projects marked "Active" that haven't been touched in weeks)
-- Check for duplicates (same fact in MEMORY.md and a bundle)
+- Count lines. OK < 170, WARN 170-199, CRITICAL 200+.
+- Lines beyond 200 are silently truncated -- identify what's lost.
+- Check for stale entries (repos marked "Active" not touched in weeks).
 
 **Bundles** (.claude/bundles/)
-- List all bundles. Count lines in each.
-- WARN at 150+ lines (approaching 180-line max)
-- Flag any bundle over 180 lines -> suggest split
-- Flag bundles not loaded in current session that routing weights say should have been
-- Check for bundles referenced in routing weights that don't exist
+- List all bundles with line counts.
+- OK < 150, WARN 150-179, OVER 180+.
+- Flag bundles referenced in routing weights that don't exist.
+- Flag bundles that exist but have no routing weight entry.
 
 **Engrams** (.claude/engrams/)
-- List all engrams. Count lines in each.
-- WARN at 130+ lines (approaching 150-line max)
-- Flag any engram over 150 lines -> suggest trimming stale content
-- Check for projects active in this session that have no engram -> suggest creating one
-- Check for engrams referencing outdated tech/versions
+- List all engrams with line counts.
+- OK < 130, WARN 130-149, OVER 150+.
+- Cross-reference MEMORY.md project table -- flag missing engrams for active projects.
 
-**Session State** (.claude/session-state/)
-- List all session files with ages
-- Flag sessions older than 7 days as stale
-- Flag sessions older than 14 days -> suggest archiving or deleting
-- Count total sessions (more than 10 active = clutter)
+**Session State** (.claude/session-state/) -- SKIP THIS SECTION IF `/learn q` (quick mode)
+- List all sessions with file modification dates.
+- Flag sessions older than 7 days as STALE.
+- Flag sessions older than 14 days as EXPIRED.
+- Count total (more than 10 = CLUTTER).
 
 **Routing Weights** (in MEMORY.md)
-- Check if any task in this session required manual bundle loading (missed route)
-- Check for routing entries that point to bundles/engrams that don't exist
-- Check for bundles that exist but have no routing entry
+- Check routing entries point to bundles/engrams that exist.
+- Check for bundles that exist but have no routing entry.
 
-Present health check as:
-```
-Memory System Health:
-| Component | Status | Detail |
-|-----------|--------|--------|
-| MEMORY.md | OK (89/200 lines) | |
-| Bundles | WARN | blog.md at 155/180 lines |
-| Engrams | OK (3 files, all under 150) | |
-| Sessions | WARN | 2 stale (>7 days) |
-| Routing | MISS | No route for "stripe" tasks |
-```
+**Context Manifest** (.claude/context-manifest.md)
+- Verify it lists all bundles that actually exist.
+- Flag bundles in manifest that don't exist on disk.
+- Flag bundles on disk not listed in manifest.
 
-When presenting the health table, include the **Fix** column with the recommended action.
-Use these remediation patterns:
+**Hub.md** (per-repo task durability)
+- Resolve current session: read `.claude/session-state/heartbeats/<session-id>` (session-id from the `[JitNeuro] session-id: ...` line in context). Content = session name.
+- Read the session state file to find repos involved.
+- For each repo: check if <repo>/.HUB/Hub-*.md exists. If yes, extract "Last Updated" date. Compare vs session checkpoint date. Flag STALE if Hub.md is older.
+- Check for current session's section (## <session-name>). Flag INCOMPLETE if session section missing or has no tasks/decisions/files.
+- If no Hub.md and session has tasks: flag MISSING.
+- Flag orphaned session sections (no matching active session).
 
-```
-Memory System Health:
+**Rules** (~/.claude/rules/)
+- Count total files and total lines across all rule files.
+- OK < 400 total lines, WARN 400-600, OVER 600+.
+- Flag any individual rule file over 60 lines.
+
+**Detail Index** (memory/detail-index.md)
+- If MEMORY.md references detail-index.md, verify file exists.
+- Count entries. Cross-reference against actual files in memory/.
+- Flag orphaned entries and unindexed files.
+
+## Return Format
+
+HEALTH_TABLE:
 | Component | Status | Detail | Fix |
 |-----------|--------|--------|-----|
-| MEMORY.md | WARN (174/200) | Approaching limit | Extract largest section to bundle or engram |
-| Bundles | WARN | blog.md 76/80 | Split into blog-workflow.md + blog-content.md |
-| Engrams | MISS | No engram for auth-api | Create from templates/engrams/example.md |
-| Sessions | STALE | deploy-fix (5d old) | Delete if done, or /load to resume |
-| Routing | MISS | No route for "stripe" | Add to MEMORY.md routing weights |
+(one row per component, multiple rows if different issues)
+
+ISSUES_BY_PRIORITY:
+CRITICAL: (list or "none")
+OVER: (list or "none")
+WARN: (list or "none")
+STALE: (list or "none")
+INFO: (list or "none")
+
+SUMMARY: (one line: "X components checked, Y issues found" or "All healthy")
 ```
 
-**Remediation Reference** (for Claude to follow when executing fixes):
+Present the subagent's health table to the user. Then proceed to Step 1 in the master context.
 
-| Problem | Fix Pattern |
-|---------|-------------|
-| MEMORY.md over 170 lines | Find the largest non-routing section. Extract to a bundle (domain knowledge) or engram (project-specific). Replace in MEMORY.md with one-line pointer: `Detail: memory/[topic].md` or `See bundle: [name].md` |
-| MEMORY.md over 200 lines | CRITICAL. Identify what's being truncated (lines 201+). Move truncated content to appropriate file immediately. Then apply 170+ fix to create headroom. |
-| MEMORY.md has duplicates | Keep the canonical copy in the more specific file (bundle > MEMORY.md). Replace duplicate in MEMORY.md with pointer. |
-| MEMORY.md has stale entries | Verify with user before removing. Mark as "UNVERIFIED" if unsure, delete if confirmed stale. |
-| Bundle over 180 lines | Split by subdomain. Example: `deploy.md` -> `deploy-pipeline.md` + `deploy-environments.md`. Update routing weights to reference both. |
-| Bundle missing content | Add the missing information. If it pushes over 180 lines, split first. |
-| Bundle referenced but missing | Create from `templates/bundles/example.md`. Populate with known context from session. |
-| Engram over 150 lines | Trim History section (keep last 3-5 entries). Move Gotchas to a bundle if they're domain-general. Compress verbose sections. |
-| Engram missing for active project | Create from `templates/engrams/example.md`. Populate with: tech stack, key files, architecture, integrations discovered this session. |
-| Engram has outdated info | Update specific fields. Don't rewrite the whole file -- surgical edits only. |
-| Session state older than 7 days | Flag as stale in output. User decides: delete, resume, or keep. |
-| Session state older than 14 days | Recommend deletion. If task is still relevant, suggest creating a fresh save. |
-| More than 10 active sessions | List all with ages. Ask user to clean up completed tasks. |
-| Routing weight miss | Add new routing entry to MEMORY.md. Format: `- [trigger words] -> [bundle list]` |
-| Routing weight points to missing bundle | Either create the bundle or remove the routing entry. |
-| Bundle exists with no routing entry | Add routing entry, or confirm the bundle is only loaded manually/by orchestrator. |
+### Step 1: Scan Session for Learnings (runs in master)
 
-### Step 1: Scan Session for Learnings
+This step needs the current session context, so it stays in master.
 
 Scan the session for each of the 5 categories above.
 Look at: user corrections, bundle loads, manual context requests,
 new discoveries, architecture changes, decisions made.
 
-### Step 2: Build Proposed Changes Table
+### Step 1b: Classification Check (prevent misplacement)
+
+For each learning found in Step 1, before proposing where to save it, check:
+
+1. **Duplicate check:** Grep `~/.claude/rules/` for the same guidance. If a rule already covers it, skip -- do not save a duplicate to memory.
+2. **Promotion check:** If the learning is a universal behavioral instruction ("always X", "never Y", applies regardless of project or context), recommend saving to `rules/` instead of `memory/`. Flag in the table as Type: `Promote`.
+3. **Publishable check:** If the learning is a universal pattern any Claude Code user would benefit from (not owner-specific), flag as Type: `Publish` and recommend submitting as a jitneuro feature request. See docs/feedback-classification.md for the decision criteria.
+4. **Existing memory check:** Grep `memory/` for overlapping feedback files. If an existing feedback_* file covers the same topic, update it rather than creating a new file.
+
+### Step 2: Build Proposed Changes Table (runs in master)
 
 Combine health check findings AND session learnings into one table:
 ```
@@ -155,31 +176,52 @@ Proposed Updates:
 | 2 | Health | stale-task.md | Stale session (5 days old) | Delete or /load to resume |
 | 3 | Learn | MEMORY.md | Add "payments" -> [integrations] | Add routing entry |
 | 4 | Learn | deploy.md | Add rollback flag v2 | Append to Conventions section |
-| 5 | Learn | auth-api.md | Add /auth/refresh route | Append to Key Files table |
-| 6 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 | Update line 47 |
+| 5 | Promote | rules/new-rule.md | Universal instruction found | Create rule file |
+| 6 | Publish | (github issue) | Universal pattern for jitneuro | Submit feature request |
+| 7 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 | Update line 47 |
 ```
 
-### Step 3: Present for Approval
+### Step 3: Present for Approval (runs in master)
 
 - "These are the health findings and learnings. Approve all, or pick by number?"
 - Do NOT write anything until approved.
 
-### Step 4: Execute Approved Changes
+### Step 4: Execute Approved Changes (runs in master)
 
 - Update files as approved
+- For `Publish` items: create GitHub issue on the jitneuro repo with `gh issue create` (only after explicit approval)
 - Re-count lines after changes to confirm limits are respected
 - Report what was written and where
+
+**Remediation Reference** (for executing fixes):
+
+| Problem | Fix Pattern |
+|---------|-------------|
+| MEMORY.md over 170 lines | Extract largest section to bundle or engram. Replace with pointer. |
+| MEMORY.md over 200 lines | CRITICAL. Identify truncated content, move immediately. |
+| MEMORY.md has duplicates | Keep canonical copy in more-specific file, replace with pointer. |
+| Bundle over 180 lines | Report to user. Soft limit -- do NOT auto-trim. |
+| Bundle missing (referenced) | Create from templates/bundles/example.md. |
+| Engram over 150 lines | Trim History (keep 3-5 entries), compress verbose sections. |
+| Engram missing for active project | Create from templates/engrams/example.md. |
+| Session older than 7 days | Flag for user decision. |
+| More than 10 sessions | List all, ask user to clean up. |
+| Hub.md STALE | Run /save to sync. |
+| Hub.md MISSING | Create on next /save. |
+| Rules over 600 total lines | Review for duplicates, consolidate. |
+| Detail index out of sync | Add missing entries, remove orphans. |
 
 ### Step 5: If Nothing Found
 
 - "Memory system healthy. No learnings to persist from this session."
 
 ## Important
+- **Health check (Step 0) runs in a subagent.** Learning evaluation (Steps 1-4) runs in master because it needs session context.
 - NEVER write without user approval. Present the table first.
 - Health check runs EVERY time, even if session had no learnings.
-- MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated by Claude Code.
-- Bundle hard limit: 180 lines. Longer bundles get ignored or partially read.
+- MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated.
+- Bundle soft limit: 180 lines. Report if over, do NOT auto-trim.
 - Engram soft limit: 150 lines. Longer engrams waste context on low-value detail.
-- Session state soft limit: 10 active files. More than that is clutter.
+- Session state soft limit: 10 active files.
 - This command reads and proposes. It does not modify code files, only memory/context files.
-- After executing changes, re-read modified files to verify line counts are within limits.
+- After executing changes, re-read modified files to verify limits are respected.

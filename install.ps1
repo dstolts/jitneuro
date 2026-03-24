@@ -73,7 +73,7 @@ if ($PrevVersion) {
 Write-Host ""
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\.current.d", "rules", "hooks", "cognition", "cognition\decisions", "scripts")
+$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -189,6 +189,25 @@ foreach ($f in (Get-ChildItem (Join-Path $Templates "scripts") -Filter "*.sh" -F
     Write-Host "  scripts\$($f.Name)"
 }
 
+# Install dashboard
+Write-Host "Installing dashboard..." -ForegroundColor Green
+$dashDir = Join-Path $Target "dashboard"
+foreach ($ext in @("*.html", "*.js")) {
+    foreach ($f in (Get-ChildItem (Join-Path $Templates "dashboard") -Filter $ext -File -ErrorAction SilentlyContinue)) {
+        Copy-Item $f.FullName (Join-Path $dashDir $f.Name) -Force
+        Write-Host "  dashboard\$($f.Name)"
+    }
+}
+$dashBinSrc = Join-Path $Templates "dashboard\bin"
+if (Test-Path $dashBinSrc) {
+    $dashBinDir = Join-Path $dashDir "bin"
+    if (-not (Test-Path $dashBinDir)) { New-Item -ItemType Directory -Path $dashBinDir -Force | Out-Null }
+    foreach ($f in (Get-ChildItem $dashBinSrc -File -ErrorAction SilentlyContinue)) {
+        Copy-Item $f.FullName (Join-Path $dashBinDir $f.Name) -Force
+    }
+    Write-Host "  dashboard\bin\ (launcher scripts)"
+}
+
 # Install hooks
 Write-Host "Installing hooks..." -ForegroundColor Green
 $hookFiles = Get-ChildItem (Join-Path $Templates "hooks") -Filter "*.sh" -File -ErrorAction SilentlyContinue
@@ -280,15 +299,15 @@ $hooksConfig = @{
                 )
             }
             @{
-                matcher = "compact"
+                matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-recovery.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-post-clear.sh`""; timeout = 10 }
                 )
             }
             @{
-                matcher = "clear"
+                matcher = "compact"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-post-clear.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-recovery.sh`""; timeout = 10 }
                 )
             }
         )
@@ -297,6 +316,26 @@ $hooksConfig = @{
                 matcher = "Bash"
                 hooks = @(
                     @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/branch-protection.sh`""; timeout = 10 }
+                )
+            }
+            @{
+                matcher = "Agent"
+                hooks = @(
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/pre-agent-register.sh`""; timeout = 5 }
+                )
+            }
+        )
+        PostToolUse = @(
+            @{
+                matcher = ""
+                hooks = @(
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/heartbeat.sh`""; timeout = 5 }
+                )
+            }
+            @{
+                matcher = "Agent"
+                hooks = @(
+                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/post-agent-complete.sh`""; timeout = 5 }
                 )
             }
         )
