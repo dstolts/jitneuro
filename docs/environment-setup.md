@@ -1,6 +1,13 @@
 # Environment Setup
 
-How to set environment variables for the JitNeuro dashboard across all platforms Claude Code runs on. The dashboard server needs `JITDASH_DIR` and `JITDASH_SESSIONS` env vars to find the right directories.
+The dashboard server needs `JITDASH_DIR` and `JITDASH_SESSIONS` env vars to find the right directories. The easiest way to configure them:
+
+```
+> "Set up the JITDASH_DIR and JITDASH_SESSIONS environment variables permanently
+   for my workspace at [path]. Make them survive reboots."
+```
+
+Claude Code will detect your OS, set the variables at the right scope, and verify they work.
 
 ## Required Variables
 
@@ -14,6 +21,8 @@ How to set environment variables for the JitNeuro dashboard across all platforms
 
 - If your workspace `.claude/` is NOT under your home directory (e.g., `C:\Projects\.claude\` instead of `~/.claude/`)
 - Multi-workspace setups where dashboard should point to a specific workspace
+
+## Platform-Specific Commands (Reference)
 
 ## Windows
 

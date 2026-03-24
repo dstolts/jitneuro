@@ -114,7 +114,17 @@ The install script does NOT touch:
 
 ## MEMORY.md Remediation (When It Gets Too Big)
 
-MEMORY.md has a hard 200-line limit. Beyond that, Claude Code silently truncates -- content is lost with no warning. These strategies scale from quick fixes to architectural changes.
+MEMORY.md has a hard 200-line limit. Beyond that, Claude Code silently truncates -- content is lost with no warning.
+
+**Fastest fix:** Ask Claude Code to optimize it for you:
+```
+> "My MEMORY.md is getting large. Analyze it and apply the best remediation strategy.
+   Offload detail files, extract bundles, or consolidate -- whatever saves the most lines."
+```
+
+Claude Code will read MEMORY.md, pick the right strategy, create any new files, and verify the result is under the limit.
+
+**The strategies below** explain what Claude Code does under the hood, or you can apply them manually.
 
 ### Strategy 1: Offload detail lines to an index file
 

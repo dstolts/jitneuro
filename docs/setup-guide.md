@@ -130,107 +130,87 @@ ls .claude/commands/*.md             # project level (from inside a repo)
 
 ## Manual Install
 
-If you prefer manual setup or need to customize:
+If the install script doesn't fit your needs, ask Claude Code to do it:
 
-### Step 1: Copy Commands
-
-```bash
-mkdir -p .claude/commands
-cp templates/commands/*.md .claude/commands/
+```
+> "Copy all JitNeuro command templates from templates/commands/ to .claude/commands/,
+   hook scripts to .claude/hooks/, jitneuro.json to .claude/, and set up
+   settings.local.json with the hook configuration. Install at [user/workspace/project] scope."
 ```
 
-**Three scopes:**
+Claude Code will create directories, copy files, set permissions, and configure hooks in one pass.
+
+**Understanding scopes** (Claude Code merges all levels, most specific wins):
 - **User:** `~/.claude/commands/` -- all projects on this machine (recommended)
 - **Project:** `<repo>/.claude/commands/` -- single repo only
 - **Workspace:** `<workspace>/.claude/commands/` -- only works when launched from workspace root
 
-Claude Code merges user + project levels; project-level takes priority if both define the
-same command. Workspace mode only works when Claude Code is launched from the workspace
-root directory itself -- commands are NOT inherited by child repos.
-
-### Step 2: Copy Hooks
-
-```bash
-mkdir -p .claude/hooks
-cp templates/hooks/*.sh .claude/hooks/
-chmod +x .claude/hooks/*.sh
+**Config customization** -- after install, ask Claude Code:
+```
+> "Show me jitneuro.json and explain what I can customize"
 ```
 
-### Step 3: Copy Config
+Key options: `preCompactBehavior` (block vs warn), `autosave` (true/false), `protectedBranches`.
+
+<details>
+<summary>Shell commands (if you prefer manual)</summary>
 
 ```bash
+# Step 1: Copy commands
+mkdir -p .claude/commands && cp templates/commands/*.md .claude/commands/
+
+# Step 2: Copy hooks
+mkdir -p .claude/hooks && cp templates/hooks/*.sh .claude/hooks/ && chmod +x .claude/hooks/*.sh
+
+# Step 3: Copy config
 cp templates/jitneuro.json .claude/jitneuro.json
+
+# Step 4: Configure hooks in settings.local.json (see jitneuro.json hookEvents for reference)
 ```
-
-Edit `.claude/jitneuro.json` to customize:
-- `hooks.preCompactBehavior`: "block" (default, safer) or "warn"
-- `hooks.autosave`: true (default) or false
-- `hooks.protectedBranches`: branches that require explicit permission to push
-
-### Step 4: Configure settings.local.json
-
-Create `.claude/settings.local.json` with hooks configuration. The install script
-generates this automatically, but for manual setup see the hooks entries in
-`jitneuro.json` hookEvents array.
+</details>
 
 **IMPORTANT:** Close and reopen Claude Code after setup.
 
 ## Post-Install Configuration
 
+The fastest way to configure JitNeuro is to tell Claude Code what you need. It already has the templates and knows the patterns.
+
 ### Create Your Brainstem
 
-Replace or slim down your existing CLAUDE.md using `CLAUDE-brainstem.md` as a template.
+```
+> "Create a brainstem CLAUDE.md for this repo using the CLAUDE-brainstem.md template.
+   Keep it under 40 lines. Move deployment, API, and testing instructions to bundles."
+```
 
-**Goal:** 30-40 lines max. Only rules that apply to every single task.
+Claude Code will read the template, extract domain-specific content from your existing CLAUDE.md, create bundles for each domain, and slim down CLAUDE.md to core rules only.
 
-**Move everything else to bundles:**
-- Deployment instructions -> `.claude/bundles/deploy.md`
-- API conventions -> `.claude/bundles/api.md`
-- Sprint/task protocol -> `.claude/bundles/sprint.md`
-- Testing strategy -> `.claude/bundles/testing.md`
+**Goal:** 30-40 lines max. Only rules that apply to every single task. Everything else lives in bundles.
 
 ### Create Your First Bundle
 
-Copy `templates/bundles/example.md` and fill in your domain:
-
-```bash
-cp templates/bundles/example.md .claude/bundles/deploy.md
+```
+> "Create a bundle for [your domain] based on the example template.
+   I'll tell you what to include."
 ```
 
-Edit with your actual deployment context. Keep under 180 lines.
-Include: key files, commands, conventions, gotchas.
-Exclude: anything Claude can infer from reading the code.
+Claude Code will copy the template, rename it, and walk you through what to add. Keep under 180 lines. Include: key files, commands, conventions, gotchas. Exclude: anything Claude can infer from reading the code.
 
-### Update the Manifest
+### Update the Manifest and Routing
 
-Edit `.claude/context-manifest.md`:
-
-1. Add your bundles to the "Available Bundles" table
-2. Add routing weights for your common task types
-3. Verify the "Always Load" section matches your setup
-
-### Add Routing Weights to MEMORY.md
-
-In your MEMORY.md (auto-memory), add a routing section:
-
-```markdown
-## JitNeuro Routing Weights
-- Deploy tasks -> bundles: [deploy]
-- API work -> bundles: [api, testing]
-- Sprint execution -> bundles: [sprint]
-- Bug investigation -> bundles: [api, testing, deploy]
 ```
+> "Add my new bundles to the context manifest and set up routing weights in MEMORY.md
+   so they load automatically for the right tasks."
+```
+
+Claude Code will update context-manifest.md with your bundles and add routing weights to MEMORY.md based on the task patterns you describe.
 
 ### Add Compact Instructions to CLAUDE.md
 
-```markdown
-## Compact Instructions
-When compacting, always preserve:
-- Active bundle list from session-state.md
-- All modified file paths with line numbers
-- Current task name and status
-- Pending decisions awaiting user input
 ```
+> "Add compact instructions to my CLAUDE.md so session state is preserved during compaction"
+```
+
+This tells Claude Code what to keep when context gets compressed: active bundles, modified file paths, current task, pending decisions.
 
 ### Test the Cycle
 
