@@ -121,3 +121,11 @@ A common pattern is spawning 5+ research agents simultaneously (find files, sear
 The chain is: **Claude tool call -> hook fires -> bash runs -> bash exits -> Claude continues.** The bash execution is invisible to the hook dispatcher. No recursion is possible.
 
 The only way to create hook recursion would be writing a hook that invokes the `claude` CLI itself (spawning a new Claude Code instance). That would start a separate process with its own session-id and hooks -- not recursion, but an independent session. JitNeuro's hooks never do this.
+
+## Known Gotcha: Write/Edit vs Heartbeat Hook
+
+**Never use Claude Code's Write or Edit tools to modify heartbeat files.** The PostToolUse heartbeat hook touches `heartbeats/<session-id>` after every tool call. If Claude reads the file, then any tool fires (triggering the heartbeat touch), then Claude tries Write/Edit -- it fails with "file modified since read."
+
+**Fix:** All heartbeat writes use Bash `echo -n "<value>" > path` which is atomic and has no read-before-write check. This is documented in session.md's "Write my current" instruction.
+
+This affects: `/load`, `/save`, `/session new`, `/session switch`, `/session rename` -- any command that sets the active session name.
