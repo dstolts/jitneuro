@@ -27,7 +27,8 @@ Session identity is stored in `.claude/session-state/heartbeats/<session-id>` --
 3. If the file is missing or empty: no active session.
 
 **Write "my current" (set active session name to `<name>`):**
-1. Write `<name>` (one line) to `.claude/session-state/heartbeats/<session-id>` (session-id from context). Create the `heartbeats/` directory if it does not exist.
+1. Use Bash to write the session name: `echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"` (session-id from context). Create the `heartbeats/` directory with `mkdir -p` if it does not exist.
+   **IMPORTANT:** Always use Bash for heartbeat writes, never Write/Edit tools. The PostToolUse heartbeat hook touches this file after every tool call, so Write/Edit will fail with "file modified since read." Bash echo is atomic and avoids the race.
 
 **Clear "my current" (e.g. active session was deleted/archived):**
 1. Remove `.claude/session-state/heartbeats/<session-id>` if it exists (session-id from context).
