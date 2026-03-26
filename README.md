@@ -77,7 +77,7 @@ cd jitneuro
 **Having trouble with the install?** Just tell Claude:
 
 ```
-> "Install JitNeuro at user level from the jitneuro repo"
+> "Clone https://github.com/dstolts/jitneuro.git and install at user level"
 ```
 
 Claude reads the install script, copies the files, configures the hooks, and verifies it worked. You don't need to run shell commands yourself.
