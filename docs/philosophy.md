@@ -12,11 +12,12 @@ JitNeuro exists because the person using Claude Code shouldn't have to be the me
 
 **If you use Claude Code for more than one session, you need this.**
 
-- You lose work when context compacts or you `/clear` -- JitNeuro saves and restores automatically
-- You re-explain your project every session -- JitNeuro loads the right context before you ask
-- You manage multiple repos and lose track of state -- JitNeuro tracks cross-repo sessions
-- You forget to update docs, save state, sync task lists -- JitNeuro's agents enforce discipline
-- You want Claude to get better at YOUR work over time -- /learn persists patterns across sessions
+- **Do more, faster.** Stop re-explaining your project every session. JitNeuro loads the right context before you ask. You start working in seconds, not minutes.
+- **Improve security without extra effort.** Trust zones, branch protection, and approval workflows are active from install. Rules are created on the fly -- tell Claude "never push to main without approval" and it becomes a permanent guardrail. No YAML to write. No CI config to maintain.
+- **Low risk, high reward.** JitNeuro is markdown files and bash scripts. It doesn't modify Claude Code, doesn't require admin access, doesn't touch your production systems. Install it, try it, remove it if you don't like it. Nothing breaks.
+- **Capture the opportunity.** Every session where Claude re-discovers your codebase from scratch is wasted time and tokens. JitNeuro compounds knowledge -- each session builds on the last. What Claude learns on Monday is available Tuesday without you doing anything.
+- **Rules created on the fly.** Say "always use UTC timestamps in this repo" and it becomes a rule. Say "never use emojis in commit messages" and it's enforced. No config files. No PR to a shared linter config. Just tell Claude and it persists via /learn.
+- **Claude gets better at YOUR work over time.** /learn evaluates each session and persists patterns, conventions, and decisions to long-term memory. Day 1 Claude knows nothing about your project. Day 30 Claude knows your stack, your patterns, your preferences, your team's quirks.
 
 The alternative is doing all of this manually. Re-typing. Re-explaining. Re-loading. Every day.
 
@@ -34,7 +35,7 @@ The system learns what you need by watching what you do. Features activate when 
 
 ### Day 1
 
-You install. You work. Claude saves your session when you say `/save`. Loads it when you say `/load`. That's the whole system on day 1.
+You install. You work. `/save` saves your session. `/load` restores it. `/learn` evaluates what happened and persists useful patterns to long-term memory. Three commands -- save, load, learn. That's the whole system on day 1. By the end of day 1, Claude already knows more about your project than it did this morning.
 
 ### Day 3
 
