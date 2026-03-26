@@ -53,6 +53,16 @@ When you say "save my work every 30 minutes," Claude understands that means: add
 
 The complexity exists in the system so it doesn't have to exist in your head.
 
+### Claude Learns to Think Like You
+
+Every correction you make becomes a permanent rule. Every preference becomes a pattern. You say it once -- Claude follows it forever.
+
+Say "don't mock the database in tests" and it becomes a testing rule. Say "blog posts need a FAQ section" and it becomes a content quality gate. Say "never deploy on Fridays" and it becomes a deployment guardrail. You didn't write config files. You had a conversation. `/learn` persisted it.
+
+By day 30, Claude handles your code style, content voice, security posture, and team conventions -- all from corrections you made naturally while working. Your style guide writes itself.
+
+See [Philosophy](docs/philosophy.md) for the full design principles.
+
 ## Quick Start
 
 ```bash

@@ -72,6 +72,62 @@ When you say "save my work every 30 minutes," Claude understands that means:
 
 You said one sentence. Claude did four things. That's the design.
 
+## Claude Learns to Think Like You
+
+The most powerful part of JitNeuro isn't saving sessions or loading bundles. It's that Claude stops being a generic assistant and starts thinking the way you think.
+
+### How It Happens
+
+Every correction you make is a lesson. Every preference you express becomes permanent. JitNeuro captures these through `/learn` and turns them into durable rules, not just memories.
+
+**You say it once. Claude follows it forever.**
+
+| What you say | What JitNeuro creates | Where it lives |
+|-------------|----------------------|----------------|
+| "Don't mock the database in tests" | Rule: integration tests hit real DB | `.claude/rules/testing.md` |
+| "Always use UTC timestamps" | Rule: UTC in all date handling | `.claude/rules/conventions.md` |
+| "Blog posts need a FAQ section" | Content quality gate | `.claude/rules/content.md` or bundle |
+| "Security review before any API change" | Approval workflow gate | `.claude/rules/api.md` |
+| "I prefer one bundled PR over many small ones" | Style preference | MEMORY.md (feedback) |
+| "Never deploy on Fridays" | Deployment guardrail | `.claude/rules/deploy.md` |
+
+You didn't write those rules. You said something in conversation. `/learn` evaluated the session, identified the pattern, and persisted it to the right place. Next session, Claude already knows.
+
+### The Learning Loop
+
+```
+Day 1:  You correct Claude -- "no, use snake_case in this repo"
+        /learn captures it as a rule
+Day 2:  Claude uses snake_case without being told
+Day 5:  You say "blog posts should lead with reader value, not what I built"
+        /learn captures it as a content style guide rule
+Day 10: Claude drafts a post. It leads with reader value. You didn't remind it.
+Day 30: Claude has 20+ rules, all from natural conversation. It handles your
+        code style, content voice, security posture, deployment preferences,
+        and team conventions -- without a single config file you wrote by hand.
+```
+
+### Style Guides Without Writing Style Guides
+
+Traditional approach: spend a day writing a style guide, hope everyone reads it, enforce it in PR reviews.
+
+JitNeuro approach: work normally. When Claude does something wrong, correct it. `/learn` turns the correction into a rule. Next time, Claude follows the rule AND enforces it in code review. Your style guide writes itself from your actual preferences, not from what you think you should document.
+
+This works for:
+- **Code style** -- naming, patterns, error handling, test structure
+- **Content voice** -- tone, structure, audience targeting, quality bars
+- **Security posture** -- what needs auth, what needs approval, what's blocked
+- **Workflow preferences** -- PR size, commit style, branch strategy, deploy cadence
+- **Priorities** -- what matters most, what can wait, what gets skipped
+
+### No More Repeating Yourself
+
+The #1 frustration with AI assistants: you tell it something, it forgets, you tell it again. And again. And again.
+
+JitNeuro breaks that cycle. Rules persist in `.claude/rules/`. Patterns persist in MEMORY.md. Engrams persist project-specific context. Bundles persist domain knowledge. None of it lives in the conversation context that gets wiped on `/clear`.
+
+When Claude follows a rule you set three weeks ago without being reminded -- that's JitNeuro working. When Claude applies your content style guide to a new post without you referencing it -- that's `/learn` having done its job.
+
 ## The Docs Are Reference, Not Prerequisites
 
 The 300-line configuration reference exists so that when you WANT to understand what's under the hood, you can. The scheduled agents doc exists so that when you're ready to build complex automation, the patterns are documented.
