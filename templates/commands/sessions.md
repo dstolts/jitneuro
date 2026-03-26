@@ -110,4 +110,4 @@ The user's next message will be a number or command. Never skip this prompt.
 - Number assignments are ephemeral -- they reset each time list runs
 - When user provides just a number (e.g., `sessions 3`), treat as `sessions show 3`
 - Active session marked with `*` in list output
-- Always end every response with `[session: <name>]`
+- Always end every response with `[session: <name> | DIV: <MODE>]`

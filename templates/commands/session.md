@@ -38,9 +38,9 @@ Read by: default view, `pulse`, `dashboard`, and the session tag rule.
 
 ## Session Tag Rule
 
-**Every response must end with `[session: <name>]`** where `<name>` comes from **resolving "my current"** (see above).
-If no active session: `[session: none]`.
-This is non-negotiable -- it prevents context confusion across terminals.
+**Every response must end with `[session: <name> | DIV: <MODE>]`** where `<name>` comes from **resolving "my current"** (see above) and `<MODE>` is the resolved divergent thinking mode (AUTO, ALWAYS, or NEVER) from toggles.json (see /divergent command and divergent-thinking rule).
+If no active session: `[session: none | DIV: <MODE>]`.
+This is non-negotiable -- it prevents context confusion across terminals and provides constant visibility into the reasoning mode.
 
 ## Shortcut Preference
 
@@ -370,4 +370,4 @@ Closed sessions appear in the "Closed" section on the dashboard (collapsed, grey
 - Session names are cross-repo by design
 - If session file already exists on save, UPDATE it (preserve previous context)
 - Use **resolve "my current"** / **write "my current"** via `heartbeats/<session-id>` (session-id from context).
-- Always end every response with `[session: <name>]`
+- Always end every response with `[session: <name> | DIV: <MODE>]`

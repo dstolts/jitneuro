@@ -3,7 +3,7 @@
 > This started because reloading context after every /clear got old.
 > If it helps you, share what you learn.
 
-**Status: v0.4.0 -- 14 commands, 5 shortcuts, 7 hooks, 16 personas, 4 decision models, cognition layer, scheduled agents**
+**Status: v0.4.0 -- 15 commands, 5 shortcuts, 7 hooks, 16 personas, 4 decision models, cognition layer, scheduled agents, divergent thinking toggle**
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
 **JIT = Just In Time.** A framework for managing short-term and long-term memory
@@ -125,7 +125,7 @@ repos, use **user** mode so commands are available everywhere.
 
 ## What's Included
 
-- **14 commands + 5 shortcuts** -- session (/session, /sessions), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
+- **15 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
 - **Scheduled agents** -- timer agents that interrupt master with housekeeping instructions on a configurable interval. Ships with autosave (30m) and hub-sync (10m) by default.
 - **6 hooks** -- pre-compact save, session recovery, post-clear session picker, branch protection, auto-save, session ID tracking
 - **16 personas** -- expert roles that evaluate every request (Security Engineer, DBA, Content Strategist, QA, etc.)

@@ -1,6 +1,6 @@
 # Commands Reference
 
-JitNeuro ships 14 commands and 5 shortcuts organized into 6 categories. All commands are read-only unless explicitly noted.
+JitNeuro ships 15 commands and 5 shortcuts organized into 7 categories. All commands are read-only unless explicitly noted.
 
 ---
 
@@ -19,7 +19,7 @@ Manage the current session. Default (no subcommand) shows current session status
   - `dashboard` -- current session's blockers and NEEDS OWNER items
 
 - **Tracking:** Active session resolved from `heartbeats/<session-id>` in `.claude/session-state/`. The session-id is injected into Claude's context by the SessionStart hook. The heartbeat file's content holds the JitNeuro session name; its mtime is the last heartbeat timestamp.
-- **Tag rule:** Every response ends with `[session: <name>]`
+- **Tag rule:** Every response ends with `[session: <name> | DIV: <MODE>]`
 
 Examples:
 ```
@@ -55,6 +55,36 @@ Examples:
 /sessions archive 4          -- archive session #4
 /sessions stale              -- which sessions are >7 days old
 /sessions clean              -- delete all stale (confirms first)
+```
+
+---
+
+## Reasoning
+
+### /divergent [auto|always|never|repo|workspace]
+Toggle divergent thinking mode. Controls whether Claude evaluates multiple approaches (divergent) or takes the first reasonable path (serial).
+
+- **Modes:**
+  - `auto` (default) -- smart routing: diverge on production code, architecture, new features, tradeoffs. Serial on research, fixes, docs.
+  - `always` -- force multi-path evaluation on every response
+  - `never` -- force serial (first-fit) on every response
+
+- **Hierarchy:** Repo-level overrides workspace-level. Both stored in `toggles.json`.
+  - `divergent repo always` -- set at repo level
+  - `divergent workspace auto` -- set at workspace level
+  - `divergent repo clear` -- remove repo override
+
+- **Agent inheritance:** Plan, discovery, analysis, and design agents inherit the mode. Explore, lookup, and monitor agents stay serial.
+- **Session tag:** Mode appears on every response: `[session: <name> | DIV: <MODE>]`
+- **Persistence:** Survives /clear (stored in toggles.json on disk)
+
+Examples:
+```
+/divergent                   -- show current mode and source
+/divergent always            -- force divergent (infers repo or workspace from cwd)
+/divergent repo always       -- force divergent at repo level
+/divergent workspace auto    -- reset workspace to auto
+/divergent repo clear        -- remove repo override, fall back to workspace
 ```
 
 ---

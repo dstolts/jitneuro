@@ -228,3 +228,5 @@ A master agent with 200K context can handle roughly:
 - Leaves ~150K for owner interaction, decisions, and follow-up dispatches
 
 If you need more than 30 agents, run in waves (dispatch 15, collect, dispatch 15 more).
+
+For workloads exceeding 30 tasks or requiring complex batch management with logging, consider the **sub-orchestrator pattern** -- master delegates orchestration itself to an agent that manages workers in batches. See [sub-orchestrator-pattern.md](sub-orchestrator-pattern.md).

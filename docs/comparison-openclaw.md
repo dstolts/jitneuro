@@ -21,7 +21,7 @@
 ### JitNeuro
 
 - **What:** Claude Code memory management and enterprise security framework. Adds structured memory persistence, cognition layers, session management, lifecycle hooks, and security guardrails specifically for Claude Code workflows.
-- **Creator:** Dan Stolts / Just In Time AI, Inc.
+- **Creator:** Just In Time AI, Inc.
 - **License:** MIT
 - **Language:** Shell (bash + PowerShell install scripts), Markdown configuration
 - **GitHub:** github.com/dstolts/jitneuro -- 2 stars, 0 forks, 2 open issues (as of March 18, 2026)
