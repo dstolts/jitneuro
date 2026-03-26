@@ -188,6 +188,9 @@ All agent types live in the `scheduledAgents` array:
 | `type` | string | Yes | X | X | X | X | `timer`, `enforcer`, `cron`, or `batch` |
 | `enabled` | boolean | Yes | X | X | X | X | Whether the agent is active |
 | `description` | string | No | X | X | X | X | Human-readable description |
+| `selfLoop` | boolean | No | X | X | -- | -- | Agent self-loops on NONE results instead of returning to master. Default: false for timer, true for enforcer with prompt. |
+| `maxLoops` | number | No | X | X | -- | -- | Max evaluation cycles before agent returns for re-spawn. Default: 50. Only applies when selfLoop is true. |
+| `maxHours` | number | No | X | X | -- | -- | Max hours before agent returns for re-spawn. Default: 8. Only applies when selfLoop is true. |
 | `interval` | number | -- | X | X | -- | -- | Minutes between executions (internal agents) |
 | `instruction` | string | -- | X | X | X | -- | What to execute when triggered |
 | `prompt` | string | No | X | X | X | -- | Evaluation prompt (smart agents) or full task prompt (cron) |
@@ -202,19 +205,70 @@ All agent types live in the `scheduledAgents` array:
 
 ## Internal Agent Execution (timer + enforcer)
 
-Internal agents run INSIDE a live Claude Code session. Master spawns them, they interrupt master, master re-spawns them.
+Internal agents run INSIDE a live Claude Code session.
 
-### The Interrupt Cycle
+### Execution Models
+
+There are two models for how internal agents cycle. The right choice depends on whether the agent needs master to act or can evaluate independently.
+
+**Model 1: Return to master (simple timer agents)**
+
+For agents with a fixed instruction that master must execute (e.g., `/save` requires master's session context):
 
 ```
-1. Master spawns timer agent (background)
+1. Master spawns agent (background)
 2. Agent sleeps for <interval> minutes
-3. Agent wakes, returns: SCHEDULED: <name> / INSTRUCTION: <instruction>
+3. Agent wakes, returns: SCHEDULED: <name> / INSTRUCTION: /save
 4. Master STOPS current work
 5. Master executes the instruction
-6. Master re-spawns the timer agent
+6. Master re-spawns the agent
 7. Master resumes previous work
 ```
+
+Master re-spawns the agent each cycle. The agent is stateless -- it sleeps once, returns once, dies.
+
+**Model 2: Self-looping (smart agents)**
+
+For agents with a `prompt` field that can evaluate independently, the agent loops internally and only returns to master when action is actually needed:
+
+```
+1. Master spawns agent (background)
+2. Agent sleeps for <interval> minutes
+3. Agent wakes, evaluates prompt (reads 2-3 files)
+4. If no action needed: agent sleeps again (back to step 2)
+5. If action needed: agent returns to master with instruction
+6. Master executes the instruction
+7. Master re-spawns the agent
+```
+
+The agent handles its own sleep/evaluate cycle. Master is only interrupted when there is real work to do. This eliminates unnecessary `INSTRUCTION: NONE` interrupts that break master's flow for no reason.
+
+**When to use which:**
+
+| Situation | Model | Why |
+|-----------|-------|-----|
+| Fixed instruction (`/save`, `/health`) | Return to master | Master must execute the instruction |
+| Smart evaluation with frequent NONE results | Self-loop | Avoids interrupting master when nothing is wrong |
+| Instruction requires master context (TodoWrite, session state) | Return to master | Agent can't access master's in-memory state |
+| Instruction is file-based (write a log, check a file) | Self-loop | Agent can do it without master |
+
+**Self-loop lifespan:** Self-looping agents accumulate context over cycles. They need a termination condition to avoid running until they crash. Two strategies:
+
+| Strategy | How | Use when |
+|----------|-----|----------|
+| **Time-boxed** | Agent runs an "8-hour shift" -- loops for N hours, then returns to master for re-spawn with fresh context | Long-running monitors, steady-state ops |
+| **Context-aware** | Agent tracks its own context usage. When approaching ~90% capacity (e.g., after N evaluations), returns to master for re-spawn | Variable workloads, unpredictable evaluation sizes |
+
+Both are valid. Time-boxing is simpler and predictable. Context-aware is more efficient but requires the agent to estimate its own context consumption. In practice, tell the agent: "Loop for up to 8 hours or 50 evaluation cycles, whichever comes first. Then return to master for re-spawn."
+
+The agent's return should include a status note so master knows why it returned:
+```
+SCHEDULED: hub-enforcer
+INSTRUCTION: RESPAWN
+REASON: shift complete (8h / 47 cycles, 0 actions taken)
+```
+
+Master re-spawns with fresh context. No work lost -- the agent is stateless between evaluations.
 
 ### Priority Rules
 
@@ -225,18 +279,6 @@ User input > Enforcer interrupt > Timer interrupt > Current task
 - **User input** always wins. If the user types while an agent returns, handle user first.
 - **Enforcer** beats timer. If both return simultaneously, enforcer executes first.
 - **Timer** beats current work. Master stops what it's doing, handles the instruction, resumes.
-
-### Smart Agents (prompt field)
-
-When an agent has a `prompt` field, the agent evaluates BEFORE returning an instruction. This avoids unnecessary interrupts:
-
-```
-Agent wakes -> reads 2-3 files -> evaluates prompt -> returns:
-  INSTRUCTION: UPDATE_HUB  (if drift detected)
-  INSTRUCTION: NONE        (if everything is in sync)
-```
-
-Master still handles the return, but `INSTRUCTION: NONE` means no work -- just re-spawn.
 
 ### Managing Internal Agents
 
