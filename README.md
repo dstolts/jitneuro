@@ -11,7 +11,7 @@ Claude Code forgets everything every time you clear context. Every `/clear` is a
 
 You shouldn't be the memory. The system should remember, load what's relevant, and learn over time. That's what JitNeuro does.
 
-- **Do more, faster** -- stop re-explaining, start working in seconds
+- **Do more, faster** -- stop re-explaining, start working in seconds. Multi-agent parallelism delivers 10x+ throughput on real workloads
 - **Security without effort** -- trust zones and branch protection from install, rules created on the fly
 - **Low risk** -- markdown files and bash scripts, nothing to break, remove it anytime
 - **Compounds over time** -- /learn makes Claude better at YOUR work every day

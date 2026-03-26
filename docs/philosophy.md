@@ -12,7 +12,7 @@ JitNeuro exists because the person using Claude Code shouldn't have to be the me
 
 **If you use Claude Code for more than one session, you need this.**
 
-- **Do more, faster.** Stop re-explaining your project every session. JitNeuro loads the right context before you ask. You start working in seconds, not minutes.
+- **Do more, faster.** Stop re-explaining your project every session. JitNeuro loads the right context before you ask. You start working in seconds, not minutes. Multi-agent orchestration runs 10+ tasks in parallel -- what takes one agent an hour, ten agents finish in minutes. Real-world users report 10x or higher throughput on batch operations.
 - **Improve security without extra effort.** Trust zones, branch protection, and approval workflows are active from install. Rules are created on the fly -- tell Claude "never push to main without approval" and it becomes a permanent guardrail. No YAML to write. No CI config to maintain.
 - **Low risk, high reward.** JitNeuro is markdown files and bash scripts. It doesn't modify Claude Code, doesn't require admin access, doesn't touch your production systems. Install it, try it, remove it if you don't like it. Nothing breaks.
 - **Capture the opportunity.** Every session where Claude re-discovers your codebase from scratch is wasted time and tokens. JitNeuro compounds knowledge -- each session builds on the last. What Claude learns on Monday is available Tuesday without you doing anything.
