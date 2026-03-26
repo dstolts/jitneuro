@@ -3,167 +3,106 @@
 > This started because reloading context after every /clear got old.
 > If it helps you, share what you learn.
 
-**Status: v0.4.0 -- 15 commands, 5 shortcuts, 7 hooks, 16 personas, 4 decision models, cognition layer, scheduled agents, divergent thinking toggle**
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
-**JIT = Just In Time.** A framework for managing short-term and long-term memory
-in Claude Code sessions, inspired by neural network architecture. Stop losing context.
-Stop reloading everything. Load only what you need, when you need it -- just in time.
+## Simple But Powerful
 
-## Blog & Articles
+JitNeuro has 15 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
 
-- [Deep Dive: Building a Brain for Your AI Coding Assistant](https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/) -- how JitNeuro works and why it exists
+You don't need any of that to start.
 
-## The Problem
+You install JitNeuro. You start working. That's it.
 
-Claude Code loads CLAUDE.md files at session start and keeps everything in a fixed-size
-context window. As conversations grow, older context gets compressed or lost. You can't
-selectively unload context, and `/clear` wipes everything. There's no middle ground.
+The system learns what you need by watching what you do. Features activate when you call for them, not before. No setup wizard. No config files to fill out. No "read the docs first."
 
-**Result:** Long sessions degrade. Task switching wastes tokens reloading irrelevant context.
-Critical instructions get compressed away. You manually type reload commands after every `/clear`.
+### How It Grows With You
 
-## The Solution
+**Day 1** -- You install. You work. `/save` saves your session. `/load` restores it. Three commands. That's enough.
 
-JitNeuro adds a memory management layer using Claude Code's existing primitives:
-- **Context Bundles** -- modular knowledge files loaded on-demand (like neural network layers)
-- **Engrams** -- per-project deep context, strengthened over time by /learn (like long-term potentiation)
-- **Context Manifest** -- tracks what's available and what's active (like an attention mechanism)
-- **Session State** -- save/load across `/clear` cycles (like working memory)
-- **Routing Weights** -- learned patterns for which bundles to co-activate (in MEMORY.md)
-- **Orchestrator** -- automated context routing via subagents (no manual typing)
-- **/learn** -- backpropagation: evaluate sessions and persist learnings to long-term memory
-- **Holistic Review** -- 4-persona pre/post execution gates for enterprise-grade code quality
+**Day 3** -- You lose work after a context reset. You say "I wish this would auto-save." Claude sets up an autosave agent. Now it does. You didn't edit a config file. You told Claude what you needed.
 
-For deeper explanation of these concepts, see [docs/concepts.md](docs/concepts.md).
-For architecture diagrams and the neural network mapping, see [docs/architecture.md](docs/architecture.md).
+**Day 7** -- You're working across two repos. You say "keep Hub.md updated." Claude creates an enforcer agent. It syncs automatically. You still haven't opened jitneuro.json.
 
-## Architecture
+**Day 14** -- You say "show me what's happening across all my sessions." The dashboard appears. It didn't exist until you needed it.
 
-```
-LONG-TERM MEMORY (disk -- survives all sessions)
-  |-- MEMORY.md            learned patterns + routing weights
-  |-- bundles/             domain knowledge, loaded on-demand
-  |-- engrams/             per-project deep context (updated by /learn)
+**Day 30** -- You're running nightly audits, monitoring Stripe, triaging support emails, and scoring content weekly. All configured through conversations, not config files.
 
-WORKING MEMORY (context window -- limited capacity)
-  |-- CLAUDE.md            core rules (always loaded, minimal)
-  |-- active bundles       task-relevant knowledge only
+### The Principle
 
-SHORT-TERM MEMORY (checkpoint files -- survives /clear)
-  |-- session-state.md     task, modified files, next steps
-```
+**Features are activated by need, not by setup.**
+
+| Traditional tool | JitNeuro |
+|-----------------|----------|
+| Read the docs, configure everything, then start | Start working, features appear as you need them |
+| Edit YAML/JSON to enable features | Tell Claude what you need in plain English |
+| Break something because you misconfigured a field | Claude knows the schema and writes it correctly |
+| Features sit unused because nobody knew they existed | Features don't exist until you ask for them |
+
+When you say "save my work every 30 minutes," Claude understands that means: add a scheduled agent, set the interval, start the agent, confirm it's running. You said one sentence. Claude did four things.
+
+The complexity exists in the system so it doesn't have to exist in your head.
 
 ## Quick Start
 
 ```bash
-# Clone the repo
 git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
 
 # Install (pick your level)
-./install.sh workspace   # parent directory -- only works when launched from there
-./install.sh project     # current repo only
 ./install.sh user        # global -- commands available in ALL repos (recommended)
+./install.sh workspace   # parent directory only
+./install.sh project     # current repo only
 
 # Windows (PowerShell)
 .\install.ps1 -Mode user
 ```
 
-**Close and reopen Claude Code after installing.** Commands load at session start.
+**Close and reopen Claude Code after installing.**
 
 Then:
 1. Run `/verify` to confirm installation
-2. Review and customize -- see [Customization Guide](docs/customization-guide.md)
-3. Slim your CLAUDE.md using `templates/CLAUDE-brainstem.md`
-4. Create bundles for your domains in `.claude/bundles/`
-5. Run `/onboard <repo>` to set up context for your repos
-6. Use `/save` before `/clear`, `/load` after, `/learn` to persist knowledge
+2. Start working -- JitNeuro grows with you
+3. `/save` before `/clear`, `/load` after
+4. Everything else activates when you need it
 
 See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
 
-### Using JitNeuro with Cursor
+## What's Under the Hood
 
-Cursor doesn't use slash commands. To get **guardrails**, **save**, **load**, and **learn** in Cursor: copy the intent rule so the agent knows what to do when it sees those intents. The agent will **read** CLAUDE.md and MEMORY.md (they change constantly) instead of using copied text.
+JitNeuro adds a memory management layer inspired by neural network architecture:
 
-1. Install JitNeuro as above so your workspace or project has `.claude/` (commands, session-state, bundles, engrams, etc.).
-2. Copy the Cursor rule:  
-   `cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/`  
-   (create `.cursor/rules/` if needed).
-3. Use the same `.claude/` layout; the rule tells the agent to read CLAUDE.md and MEMORY.md when needed.
-
-See [templates/cursor/README.md](templates/cursor/README.md) and [docs/cursor-and-cross-vendor.md](docs/cursor-and-cross-vendor.md) for details. What we ship for Cursor is defined in [docs/cursor-enablement-context.md](docs/cursor-enablement-context.md).
-
-## File Structure
-
-```
-workspace-root/
-  |-- .claude/
-  |   |-- commands/           slash commands (installed by JitNeuro)
-  |   |-- bundles/            domain knowledge, loaded on-demand
-  |   |-- engrams/            per-project deep context
-  |   |-- cognition/          personas, decisions, anti-patterns, friction detection
-  |   |-- scripts/            deterministic bash scripts (dashboard, sessions)
-  |   |-- hooks/              hook scripts (6 lifecycle hooks)
-  |   |-- rules/              path-scoped rules (optional)
-  |   |-- session-state/      session checkpoints
-  |   |-- context-manifest.md bundle index + routing
-  |   |-- jitneuro.json       version, hooks config, settings
-  |   |-- settings.local.json Claude Code hooks configuration
-  |-- repo-a/
-  |-- repo-b/
-```
-
-Commands can be installed at three levels (user, workspace, project).
-Claude Code merges all levels; more specific scopes take priority.
-
-**Important:** Claude Code only resolves commands from the **user** level (`~/.claude/commands/`)
-and the **project** level (`<git-root>/.claude/commands/`). It does NOT walk up parent directories.
-Workspace mode installs to a parent `.claude/` folder, which is only visible when Claude Code is
-launched directly from that parent folder -- not from any child repo. If you work inside individual
-repos, use **user** mode so commands are available everywhere.
-
-## What's Included
-
-- **15 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
-- **Scheduled agents** -- timer agents that interrupt master with housekeeping instructions on a configurable interval. Ships with autosave (30m) and hub-sync (10m) by default.
-- **6 hooks** -- pre-compact save, session recovery, post-clear session picker, branch protection, auto-save, session ID tracking
-- **16 personas** -- expert roles that evaluate every request (Security Engineer, DBA, Content Strategist, QA, etc.)
-- **Friction detection** -- pre-reasoning scan for user correction signals with severity-ordered response
-- **4 decision models** -- root cause analysis, API-first design, technology selection, cross-repo contracts
-- **10 anti-pattern seeds** -- universal "never do this" patterns learned from real engineering mistakes
-- **AFK pattern** -- autonomous task execution when user steps away, respecting trust zones
-- **8 rule templates** -- definition of done, trust zones, file versioning, schema, tests, coverage, deployment, components
-- **Templates** -- brainstem CLAUDE.md (with Cognitive Identity + Divergent Thinking), bundle/engram examples, owner persona template, context manifest
-- **Install scripts** -- `install.sh` (bash) and `install.ps1` (PowerShell)
-- **Docs** -- [setup guide](docs/setup-guide.md), [commands reference](docs/commands-reference.md), [hooks guide](docs/hooks-guide.md), [customization guide](docs/customization-guide.md), [AFK pattern](docs/afk-pattern.md), [concepts](docs/concepts.md), [architecture](docs/architecture.md), [enterprise security](docs/enterprise-security.md)
-
-## Roadmap
-
-### v0.2.0 (Current) -- Cognition Layer
-Phase 2 adds structured decision-making on top of the memory layer.
-Claude doesn't just know your projects -- it thinks about them the way you do.
-
+- **Context Bundles** -- domain knowledge loaded on-demand (like network layers)
+- **Engrams** -- per-project deep context, strengthened by /learn (like long-term potentiation)
+- **Session State** -- save/load across /clear cycles (like working memory)
+- **Routing Weights** -- learned patterns for which bundles to co-activate
+- **Scheduled Agents** -- timer, enforcer, cron, and batch agents for automated work
+- **Sub-Orchestrators** -- manage 30+ tasks with rolling worker pools
+- **Divergent Thinking** -- toggle multi-path reasoning (auto/always/never)
 - **16 Personas** -- expert roles that evaluate every request simultaneously
-- **Friction Detection** -- pre-reasoning scan catches user frustration before it escalates
-- **Decision Models** -- structured frameworks for debugging, tech selection, API design, cross-repo contracts
-- **Anti-Patterns** -- learned constraints from real mistakes, grown over time by /learn
-- **AFK Mode** -- autonomous task execution when you step away
-- **Post-Clear Session Picker** -- after /clear, pick up where you left off
-- **Owner Persona** -- personal overlay for business context (gitignored, never ships)
-- **Customization Guide** -- review and modify everything to match your style
+- **/learn** -- evaluate sessions and persist learnings to long-term memory
 
-### v0.1.x -- Memory Layer
-Bundles, engrams, routing weights, /save, /load, /learn, /health, /enterprise,
-orchestrator, session management, install scripts with auto-configuration,
-consolidated /session + /sessions, branch protection hooks.
+You don't configure these. They activate as you work. When you want to understand the details: [Technical Overview](docs/technical-overview.md).
 
-### Next -- Autonomous Orchestration (FR-105)
-Claude-driven sessions: scheduled /learn runs, CI/CD-triggered analysis,
-cross-session task delegation, event-driven responses. Claude sessions spawned
-by schedulers, webhooks, and other sessions.
+## Blog & Articles
 
-See [FEATURE-REQUESTS.md](FEATURE-REQUESTS.md) for the full roadmap.
+- [Deep Dive: Building a Brain for Your AI Coding Assistant](https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/) -- how JitNeuro works and why it exists
+
+## Docs
+
+All docs are reference, not prerequisites. Read them when you're curious, not before you start.
+
+| Doc | What it covers |
+|-----|---------------|
+| [Philosophy](docs/philosophy.md) | Design principles -- why JitNeuro works the way it does |
+| [Setup Guide](docs/setup-guide.md) | Installation, post-install, troubleshooting |
+| [Technical Overview](docs/technical-overview.md) | Architecture, file structure, full feature list, roadmap |
+| [Commands Reference](docs/commands-reference.md) | All 15 commands + 5 shortcuts |
+| [Configuration Reference](docs/configuration-reference.md) | Every config file and setting |
+| [Scheduled Agents](docs/scheduled-agents.md) | Timer, enforcer, cron, batch agents + business automation |
+| [Sub-Orchestrator Pattern](docs/sub-orchestrator-pattern.md) | Managing large-scale operations with worker pools |
+| [Customization Guide](docs/customization-guide.md) | Personas, rules, cognitive identity |
+| [Hooks Guide](docs/hooks-guide.md) | Lifecycle hooks and custom hooks |
+| [Enterprise Security](docs/enterprise-security.md) | Trust model and securing hooks for teams |
 
 ## Disclaimer
 
