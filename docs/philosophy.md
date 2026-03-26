@@ -1,5 +1,27 @@
 # Simple But Powerful
 
+## Why JitNeuro Exists
+
+Claude Code is the most capable AI coding assistant available. But it forgets everything every time you clear context. It loses track of what you were doing. It reloads the same instructions over and over. It doesn't learn from yesterday's session.
+
+That's not a Claude Code problem -- it's a memory problem. Claude Code has no persistence layer between sessions. Every `/clear` is amnesia. Every new terminal is a stranger.
+
+JitNeuro exists because the person using Claude Code shouldn't have to be the memory. You shouldn't re-explain your project, your tech stack, your conventions, your sprint status every time context resets. The system should remember. The system should load what's relevant. The system should learn over time.
+
+## Why You Should Use It
+
+**If you use Claude Code for more than one session, you need this.**
+
+- You lose work when context compacts or you `/clear` -- JitNeuro saves and restores automatically
+- You re-explain your project every session -- JitNeuro loads the right context before you ask
+- You manage multiple repos and lose track of state -- JitNeuro tracks cross-repo sessions
+- You forget to update docs, save state, sync task lists -- JitNeuro's agents enforce discipline
+- You want Claude to get better at YOUR work over time -- /learn persists patterns across sessions
+
+The alternative is doing all of this manually. Re-typing. Re-explaining. Re-loading. Every day.
+
+## Simple But Powerful
+
 JitNeuro has 15 commands, 4 agent types, bundles, engrams, routing weights, divergent thinking modes, sub-orchestrators, and a configuration reference that's 300+ lines long.
 
 You don't need any of that to start.

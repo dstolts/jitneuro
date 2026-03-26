@@ -5,6 +5,12 @@
 
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
+## Why
+
+Claude Code forgets everything every time you clear context. Every `/clear` is amnesia. Every new terminal is a stranger. You re-explain your project, your stack, your sprint status -- every session.
+
+You shouldn't be the memory. The system should remember, load what's relevant, and learn over time. That's what JitNeuro does.
+
 ## Simple But Powerful
 
 JitNeuro has 15 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
