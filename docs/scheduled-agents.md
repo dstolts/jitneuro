@@ -402,6 +402,24 @@ JitNeuro handles the vast majority of scheduled automation natively. External wo
 
 Everything else -- monitoring APIs, drafting responses, scoring content, triaging requests, sending notifications -- Claude handles directly with markdown instructions and zero custom code.
 
+### Example: Working Together
+
+A real-time Stripe webhook needs instant acknowledgment (workflow engine handles that). But the smart follow-up work is Claude's strength:
+
+```
+1. Workflow engine receives Stripe webhook (real-time, < 1 second)
+2. Engine validates the event, stores it, sends 200 OK to Stripe
+3. Engine triggers Claude:
+   claude --print --prompt "New subscription: {customer_name}, {plan}, {amount}.
+   Read their history from Salesforce. Draft a personalized onboarding
+   email that references their industry and use case. Write to
+   .claude/drafts/onboard-{customer_id}.md. Update .logs/revenue-{date}.md."
+4. Claude drafts the email with real context (not a template)
+5. Owner reviews draft, approves send
+```
+
+The workflow engine does what it's good at: instant webhook receipt, payload validation, reliable delivery. Claude does what it's good at: reading context across systems, understanding the customer, writing something a human would actually send. Neither tries to do the other's job.
+
 ---
 
 ## Real-World Business Automation
