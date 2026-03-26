@@ -107,3 +107,25 @@ All docs: https://github.com/dstolts/jitneuro/tree/main/docs
 | configuration-reference.md | Every config file and setting |
 | scheduled-agents.md | Timer, enforcer, cron, batch agents |
 | sub-orchestrator-pattern.md | Managing 30+ tasks at scale |
+
+## "I Wish..." -> JitNeuro Already Does That
+
+| What you say | What to do |
+|-------------|-----------|
+| "I wish this would auto-save" | `/schedule add autosave 30 /save` |
+| "I keep forgetting to update Hub.md" | `/schedule add hub-sync 15 UPDATE_HUB` |
+| "Can we save before context resets?" | Already active -- PreCompact hook |
+| "I want Claude to remember this rule" | Say the rule, then run `/learn` |
+| "Show me what I'm working on" | `/status` or `/sessions` |
+| "What changed since last push?" | `/diff` or `/gitstatus` |
+| "I need to work across multiple repos" | `/session new <name>` -- sessions are cross-repo |
+| "Can Claude evaluate multiple approaches?" | `/divergent always` |
+| "I need to score 50 blog posts" | Describe the task -- Claude uses sub-orchestrator pattern |
+| "Run an audit every night" | `/schedule add nightly-audit ...` with cron schedule |
+| "I don't want anyone pushing to main" | Already active -- branch protection hook |
+| "What tools do we have?" | `/help` (this file) |
+| "How do I set up a new repo?" | `/onboard <repo>` |
+| "Claude keeps forgetting my preferences" | Run `/learn` after each session -- it persists patterns |
+| "I want a style guide for content" | State your preferences, `/learn` persists them as rules |
+| "Check if everything is healthy" | `/health` |
+| "Test all my tools and MCP servers" | `/test-tools` |
