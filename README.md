@@ -18,7 +18,7 @@ You shouldn't be the memory. The system should remember, load what's relevant, a
 
 ## Simple But Powerful
 
-JitNeuro has 15 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
+JitNeuro has 16 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
 
 You don't need any of that to start.
 
