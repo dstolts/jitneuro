@@ -447,6 +447,120 @@ JitNeuro batch agent scores content weekly
 
 ---
 
+## Real-World Business Automation
+
+The power of scheduled agents is that Claude understands context. Traditional automation tools need rigid schemas, API mappings, and custom code for every trigger. A Claude agent gets markdown instructions and figures out the rest. No webhook parsers, no schema transforms, no glue code.
+
+### Why This Works Without Dedicated Tooling
+
+Traditional approach to "monitor Stripe for new purchases and onboard the customer":
+- Build a Stripe webhook endpoint (code, deploy, SSL, monitoring)
+- Parse the webhook payload (schema mapping, error handling)
+- Write onboarding logic (CRM update, email, access provisioning)
+- Handle retries, failures, idempotency
+- Maintain all of it as APIs change
+
+JitNeuro approach:
+- Cron agent checks Stripe API every 15 minutes
+- Prompt says: "Check for new purchases since last run. For each, create onboarding task, update CRM, draft welcome email."
+- Claude reads the Stripe API, understands the data, takes action
+- If the Stripe API changes fields, Claude adapts -- no code to update
+
+The tradeoff: cron polling instead of real-time webhooks. For most business operations, 5-15 minute latency is fine. When real-time matters, use webhooks (N8N, direct endpoints) to trigger Claude -- the hybrid model.
+
+### Inbound Marketing Monitor
+
+```json
+{
+  "name": "inbound-monitor",
+  "type": "cron",
+  "schedule": "*/15 * * * *",
+  "enabled": true,
+  "session": "inbound-ops",
+  "prompt": "Check for new inbound activity since last run. Sources: (1) Salesforce -- new leads, updated lead scores, form submissions. (2) Website -- new contact form entries via Ghost webhook log. (3) LinkedIn -- new connection requests and messages via Graph API. For each new item: classify priority (hot/warm/cold), draft appropriate response, write to .logs/inbound-{date}.md. Hot leads get immediate draft email in .claude/drafts/. Update .claude/state/inbound-last-run.md with current timestamp.",
+  "timeout": 300,
+  "description": "Monitor all inbound channels every 15 min"
+}
+```
+
+No webhook infrastructure. No Zapier. No custom integration code. Claude reads the APIs directly, classifies with AI judgment (not rigid rules), and drafts responses that sound human.
+
+### Stripe Purchase Monitor
+
+```json
+{
+  "name": "stripe-monitor",
+  "type": "cron",
+  "schedule": "*/10 * * * *",
+  "enabled": true,
+  "session": "revenue-ops",
+  "prompt": "Check Stripe for events since last run (read timestamp from .claude/state/stripe-last-run.md). Look for: payment_intent.succeeded, customer.subscription.created, customer.subscription.deleted, invoice.payment_failed. For each event: (1) Log to .logs/stripe-{date}.md. (2) If new subscription: create onboarding checklist in .claude/tasks/onboard-{customer}.md, draft welcome email to .claude/drafts/. (3) If payment failed: draft follow-up email, flag in .claude/alerts/. (4) If subscription cancelled: log churn reason, draft win-back sequence. Update last-run timestamp.",
+  "timeout": 180,
+  "description": "Monitor Stripe purchases, subscriptions, and churn"
+}
+```
+
+Claude understands what a subscription cancellation MEANS. It can draft a win-back email that references what the customer was using, not just "we're sorry to see you go." No workflow tool can do that without custom code.
+
+### Internal Support Request Handler
+
+```json
+{
+  "name": "support-triage",
+  "type": "cron",
+  "schedule": "*/20 * * * *",
+  "enabled": true,
+  "session": "support-ops",
+  "prompt": "Check for new support requests. Sources: (1) Shared mailbox via M365 Graph API -- unread emails in Support inbox. (2) GitHub issues labeled 'support' across all repos. For each request: (1) Read the full content. (2) Classify: bug report, feature request, how-to question, account issue. (3) For bug reports: search codebase for related code, draft initial diagnosis. (4) For how-to questions: search docs and write a draft answer. (5) Write all results to .logs/support-{date}.md. (6) For urgent items (production down, security): write to .claude/alerts/.",
+  "timeout": 300,
+  "description": "Triage support requests from email and GitHub"
+}
+```
+
+The agent reads the support email, searches the codebase for relevant code, and drafts a response with actual technical context. A traditional triage tool just categorizes and routes.
+
+### Multi-Channel Content Pipeline
+
+```json
+{
+  "name": "content-pipeline",
+  "type": "batch",
+  "schedule": "0 6 * * 1",
+  "enabled": true,
+  "session": "content-ops",
+  "taskFile": ".claude/batch-tasks/weekly-content.json",
+  "maxConcurrent": 3,
+  "logFile": ".logs/content-pipeline-{date}.md",
+  "timeout": 3600,
+  "description": "Weekly content pipeline: score, fix, schedule, repurpose"
+}
+```
+
+Task file defines the pipeline stages:
+1. Score all draft posts against quality rubric
+2. Auto-fix posts below 85
+3. Generate social media snippets from approved posts
+4. Draft newsletter section from top 3 posts
+5. Write publish schedule to .claude/state/publish-calendar.md
+
+Each stage is a worker agent. The batch sub-orchestrator manages the flow.
+
+### The Pattern: State Files Replace Databases
+
+Notice the pattern across all examples: `.claude/state/<name>.md` files track last-run timestamps, current status, and running tallies. These are simple markdown files that Claude reads and writes naturally.
+
+```
+.claude/state/
+  inbound-last-run.md       -- "2026-03-26T14:30:00Z"
+  stripe-last-run.md        -- "2026-03-26T14:20:00Z"
+  publish-calendar.md       -- upcoming publish dates and assignments
+  support-queue.md          -- open items being tracked
+```
+
+No database. No ORM. No migrations. Claude reads a markdown file, updates it, writes it back. For business automation at this scale, it's enough. When you outgrow it, promote specific state to a real database -- but start here.
+
+---
+
 ## Examples
 
 ### Minimal: Save and sync only (default)
