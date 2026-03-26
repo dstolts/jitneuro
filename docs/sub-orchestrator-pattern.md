@@ -35,13 +35,13 @@ MASTER (thin -- routes, approves, reviews)
 
 ### Role Separation
 
-| Role | Reads files? | Writes code? | Manages agents? | Talks to owner? |
-|------|-------------|-------------|----------------|----------------|
-| Master | No (summaries only) | No | Yes (dispatches sub-orchestrators) | Yes |
-| Sub-orchestrator | No (summaries only) | No | Yes (dispatches workers in batches) | No (returns to master) |
-| Worker agent | Yes | Yes (if needed) | No | No (returns to sub-orchestrator) |
+| Role | Reads files? | Writes code? | Manages agents? | Talks to owner? | Heavy lifting? |
+|------|-------------|-------------|----------------|----------------|---------------|
+| Master | No (summaries only) | No | Yes (dispatches sub-orchestrators) | Yes | None -- routes and approves |
+| Sub-orchestrator | Index file only | No | Yes (manages worker pool) | No (returns to master) | Aggregation only |
+| Worker agent | Yes (all of them) | Yes (if needed) | No | No (returns to orchestrator) | ALL of it |
 
-Master never reads file content. Sub-orchestrator never reads file content. Only workers touch actual files. This keeps both master and sub-orchestrator context thin enough to handle large-scale operations.
+**The deeper you go, the more work is assigned.** Master decides WHAT. Sub-orchestrator manages WHEN and HOW MANY. Workers do ALL the actual work -- reading, analyzing, fixing, writing reports, building summaries. Results flow up as thin pointers and executive summaries. Detail stays at the bottom in files on disk.
 
 ## The Pattern in Detail
 
@@ -126,10 +126,12 @@ This is a **rolling pool, not batch-and-wait.** The sub-orchestrator launches 10
 The right pool size depends on the machine's resources and the work each agent does:
 - **CPU/memory:** Each agent consumes runtime memory. Monitor system resources and reduce pool size if the machine is under pressure.
 - **Agent weight:** Lightweight agents (score one file, return 10 lines) can run 10-15 concurrently. Heavy agents (read 20+ files, write code, run tests) may need a pool of 3-5.
-- **Claude Code heap:** The sub-orchestrator's own context grows with each result it processes. If managing 50+ workers, keep return summaries under 10 lines each.
+- **Claude Code heap:** The sub-orchestrator's own context grows with each result it processes. Workers should write heavy output to files and return only a pointer + executive summary (see "Write to File, Return the Pointer" below).
 - **Start conservative:** Begin with 5, observe resource usage, scale up. Better to run 8 smoothly than 15 with thrashing.
 
 ### 3. Worker Agents Do the Actual Work
+
+**Core principle: the deeper you go, the more work is assigned.** Workers do ALL the heavy lifting -- reading files, analyzing, fixing, writing reports, building summaries. The orchestrator layer above them should never have to dig into details to make routing decisions.
 
 Each worker gets a self-contained prompt:
 
@@ -142,18 +144,53 @@ RUBRIC:
   AEO: [criteria]
   Quality: [criteria]
 
-Return:
+Write your full analysis to: D:\Code\Automation\blog\.logs\scores\ai-security-basics.md
+Start the file with an EXECUTIVE SUMMARY section (scores, pass/fail, issues -- everything
+the orchestrator needs to act without reading the rest of the file).
+Append the log index file: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+
+Return to orchestrator (keep under 5 lines):
 STATUS: OK
 SCORES: SEO=87 AEO=91 Quality=83
 PASS: false (Quality below 85)
-ISSUES:
-  - Quality: Missing FAQ section
-  - Quality: CTA uses wrong cal.com link
+DETAIL: .logs/scores/ai-security-basics.md
 ```
 
-Workers are disposable. They read one file, score it, return 10 lines. Their context is fully consumed and freed.
+Workers are disposable. They read files, do the analysis, write the output to disk, update the shared log, and return a minimal pointer. Their context is fully consumed and freed.
+
+### Write to File, Return the Pointer
+
+**This is the most important pattern for keeping orchestrator context thin.**
+
+Workers and sub-orchestrators should never pass heavy output up the chain. Instead:
+
+1. **Worker writes full results to an .md file** -- analysis, findings, fix details, everything
+2. **Worker writes an executive summary as the FIRST section** of that file -- scores, pass/fail, action needed. The orchestrator can read just this section if it needs more than the return line.
+3. **Worker appends a one-line entry to a shared index/log file** -- the sub-orchestrator reads this file for aggregate status without collecting individual returns
+4. **Worker returns to orchestrator: status + scores + file path** -- 3-5 lines max
+
+```
+Output hierarchy (worker produces all three):
+
+1. Full report:    .logs/scores/ai-security-basics.md     (owner reads later)
+   [EXECUTIVE SUMMARY at top -> full analysis below]
+
+2. Index entry:    .logs/quality-audit-2026-03-26.md       (orchestrator reads for aggregate)
+   | ai-security-basics.md | SEO=87 | AEO=91 | Quality=83 | FAIL | .logs/scores/ai-security-basics.md |
+
+3. Return message: STATUS: OK / SCORES / PASS / DETAIL path  (orchestrator receives directly)
+   [3-5 lines, just enough to route]
+```
+
+**Why the executive summary matters:** If the sub-orchestrator needs to make a decision about a worker's output (retry? escalate? skip?), it reads the executive summary section of the output file -- NOT the full report, and NOT a verbose return message. The worker already did the thinking and distilled it. The orchestrator just acts on the distillation.
+
+**Why the index file matters:** The sub-orchestrator doesn't need to collect and assemble results from 77 individual returns. Workers append to a shared log as they complete. When all workers finish, the log IS the aggregate report. The sub-orchestrator reads it once, builds the final summary for master, done.
+
+This pattern scales to any depth. A sub-orchestrator returning to master follows the same rule: write the detailed aggregate to a file, return the pointer + executive summary.
 
 ### 4. Sub-Orchestrator Returns to Master
+
+The sub-orchestrator follows the same "write to file, return the pointer" pattern. Workers already built the index file as they ran. The sub-orchestrator reads that index, builds an executive summary, writes the detailed aggregate report to disk, and returns a thin summary to master.
 
 After all 77 posts are processed:
 
