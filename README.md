@@ -66,25 +66,23 @@ By day 30, Claude handles your code style, content voice, security posture, and 
 ```bash
 git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
-
-# Install (pick your level)
-./install.sh user        # global -- commands available in ALL repos (recommended)
-./install.sh workspace   # parent directory only
-./install.sh project     # current repo only
+./install.sh user    # recommended -- works in any repo, any folder, even non-repos
 
 # Windows (PowerShell)
 .\install.ps1 -Mode user
 ```
 
-**Close and reopen Claude Code after installing.**
+**Close and reopen Claude Code after installing.** Then: `/save`, `/learn`, `/load`. That's it.
 
-Then:
-1. Run `/verify` to confirm installation
-2. Start working
-3. `/save` to checkpoint, `/learn` to persist what Claude learned, `/load` to restore
-4. Everything else activates when you need it
+**Having trouble with the install?** Just tell Claude:
 
-See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
+```
+> "Install JitNeuro at user level from the jitneuro repo"
+```
+
+Claude reads the install script, copies the files, configures the hooks, and verifies it worked. You don't need to run shell commands yourself.
+
+See [Setup Guide](docs/setup-guide.md) for other install modes and troubleshooting.
 
 ## What's Under the Hood
 
