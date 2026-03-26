@@ -273,35 +273,7 @@ shortcut_scope: session
 
 ## Environment Variables
 
-### Dashboard Server (JITDASH_*)
-
-Required only if your workspace `.claude/` is not under `~/.claude/` or you run multi-workspace setups.
-
-| Variable | Purpose | Default | Example |
-|----------|---------|---------|---------|
-| `JITDASH_DIR` | Dashboard data directory | `~/.claude/dashboard` | `D:\Code\.claude\dashboard` |
-| `JITDASH_SESSIONS` | Session state directory | `~/.claude/session-state` | `D:\Code\.claude\session-state` |
-| `JITDASH_PORT` | Dashboard server port | `9847` | `9847` |
-
-**Setting permanently:**
-
-Windows (PowerShell):
-```powershell
-[Environment]::SetEnvironmentVariable('JITDASH_DIR','<workspace>\.claude\dashboard','User')
-[Environment]::SetEnvironmentVariable('JITDASH_SESSIONS','<workspace>\.claude\session-state','User')
-```
-
-macOS/Linux (add to `~/.bashrc` or `~/.zshrc`):
-```bash
-export JITDASH_DIR="$HOME/.claude/dashboard"
-export JITDASH_SESSIONS="$HOME/.claude/session-state"
-```
-
-The dashboard server also accepts `--dir` and `--sessions` CLI flags as overrides.
-
-### JitNeuro Core
-
-JitNeuro core (commands, hooks, bundles) does not use environment variables. All configuration is file-based (jitneuro.json, toggles.json, settings.local.json). This is intentional -- file-based config is auditable, versionable, and visible to Claude Code without shell access.
+JitNeuro does not use environment variables. All configuration is file-based (jitneuro.json, toggles.json, settings.local.json). This is intentional -- file-based config is auditable, versionable, and visible to Claude Code without shell access.
 
 ---
 
@@ -353,7 +325,6 @@ The #1 install issue. If you installed commands at BOTH user level and workspace
 | Change divergent thinking mode | `.claude/toggles.json` | `divergent` (or use `/divergent`) |
 | Disable an engram | `.claude/toggles.json` | `engrams.<name>: false` |
 | Add a custom hook | `.claude/settings.local.json` | `hooks.<EventName>` array |
-| Change dashboard port | Environment variable | `JITDASH_PORT` |
 | Change shortcut routing | `.claude/session-state/.preferences` | `shortcut_scope` |
 
 ---
@@ -362,6 +333,5 @@ The #1 install issue. If you installed commands at BOTH user level and workspace
 
 - [Setup Guide](setup-guide.md) -- Installation and post-install configuration
 - [Hooks Guide](hooks-guide.md) -- How hooks work, adding custom hooks, lifecycle details
-- [Environment Setup](environment-setup.md) -- Dashboard environment variables (platform-specific)
 - [Enterprise Security](enterprise-security.md) -- Trust model, securing hooks for teams
 - [Customization Guide](customization-guide.md) -- Customizing personas, rules, and cognitive identity
