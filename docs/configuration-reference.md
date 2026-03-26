@@ -277,6 +277,42 @@ JitNeuro does not use environment variables. All configuration is file-based (ji
 
 ---
 
+## Log File Conventions
+
+All logs go to `.logs/` at the repo or workspace root. This directory is gitignored by default (may contain sensitive prompts).
+
+### Naming Convention
+
+```
+.logs/<purpose>-{date}.md       -- structured logs (one per day, appended)
+.logs/<purpose>/<name>.md       -- detailed reports (one per item)
+.logs/<purpose>-stdout.log      -- raw shell output capture (debugging only)
+```
+
+`{date}` is replaced with `YYYY-MM-DD` at runtime.
+
+### Standard Log Paths
+
+| Path | Purpose | Created by |
+|------|---------|------------|
+| `.logs/YYYYMMDD-HHMMSS-<session>.md` | Conversation log (every prompt + response) | /conversation-log |
+| `.logs/cron-{date}.md` | Cron launcher execution summary (structured) | jitneuro-cron launcher |
+| `.logs/cron-stdout.log` | Raw cron shell output (debugging) | System cron redirect |
+| `.logs/nightly-audit-{date}.md` | Nightly audit results | Cron agent |
+| `.logs/content-scoring-{date}.md` | Content scoring progress/results | Batch agent |
+| `.logs/audit-{date}.md` | Tool call audit trail | Async PostToolUse hook |
+| `.logs/scores/<name>.md` | Detailed per-item scoring reports | Worker agents |
+
+### Rules
+
+- **Format:** Use `.md` for structured logs that humans or Claude will read. Use `.log` only for raw stdout capture.
+- **Date in filename:** Use `{date}` placeholder for logs that rotate daily. Never hardcode dates in config.
+- **Subdirectories:** Use when a log generates per-item detail files (e.g., `.logs/scores/`). Keep the index file at `.logs/` root level.
+- **Append, don't overwrite:** Daily logs append throughout the day. Each entry includes a timestamp.
+- **Gitignore:** `.logs/` is always gitignored. Logs may contain user prompts, file contents, or sensitive data.
+
+---
+
 ## Multi-Level Configuration
 
 JitNeuro and Claude Code both support configuration at multiple levels. Understanding precedence prevents "it works on my machine" surprises.

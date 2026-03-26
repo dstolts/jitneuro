@@ -194,7 +194,7 @@ Three additional hooks deployed alongside FR-014:
    Must check stop_hook_active to prevent infinite loops.
 
 3. **Async Audit Trail** (PostToolUse, async)
-   Log every tool call to .logs/audit-YYYYMMDD.log. Async so zero latency impact.
+   Log every tool call to .logs/audit-{date}.md. Async so zero latency impact.
    Captures: timestamp, tool name, input summary, success/failure.
    Useful for debugging "what happened in that session" after the fact.
 

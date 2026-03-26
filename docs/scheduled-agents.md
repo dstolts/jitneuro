@@ -309,15 +309,17 @@ The launcher (`jitneuro-cron.sh` / `jitneuro-cron.ps1`) is a thin shell script t
    - Spawns Claude Code: `claude --print --prompt "<prompt>" --max-turns 50`
    - Captures output to the log file
    - Enforces timeout (kill after N seconds)
-5. Writes execution summary to `.logs/cron-runs.md`
+5. Writes structured execution summary to `.logs/cron-{date}.md` (one per day, appended)
 
 ### System Cron Setup
 
 **Linux/Mac:**
 ```bash
 # Run the launcher every 5 minutes. It checks which agents are actually due.
-*/5 * * * * cd /path/to/workspace && bash .claude/scripts/jitneuro-cron.sh >> .logs/cron.log 2>&1
+*/5 * * * * cd /path/to/workspace && bash .claude/scripts/jitneuro-cron.sh >> .logs/cron-stdout.log 2>&1
 ```
+
+Note: `cron-stdout.log` captures raw shell output (for debugging cron issues). The launcher writes its own structured summary to `.logs/cron-{date}.md`.
 
 **Windows Task Scheduler:**
 ```powershell
