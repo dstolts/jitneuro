@@ -99,7 +99,7 @@ See [templates/cursor/README.md](../templates/cursor/README.md) and [cursor-and-
 
 ## Roadmap
 
-### v0.5.0 (Current) -- Scheduled Agents, Divergent Thinking, Philosophy-First
+### v0.4.0 (Current) -- Scheduled Agents, Divergent Thinking, Philosophy-First
 - **4 scheduled agent types** -- timer, enforcer, cron, batch with self-looping and shift-based lifespans
 - **Divergent thinking toggle** -- /divergent auto/always/never with workspace/repo hierarchy
 - **/help command** -- zero-token static quick reference with feature discovery
