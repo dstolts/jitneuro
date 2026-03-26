@@ -24,7 +24,7 @@ Central JitNeuro configuration. Located at `.claude/jitneuro.json`. Hook scripts
 
 ```json
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "scheduledAgents": [...],
   "hooks": {
     "preCompactBehavior": "block",
