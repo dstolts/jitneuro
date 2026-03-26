@@ -13,7 +13,7 @@ Scheduled agents live in two fundamentally different execution contexts:
 | **Internal** | SessionStart hook or master agent | No -- auto-started by config | Already running | Save every 30m, sync Hub.md, enforce discipline |
 | **External** | System cron / Task Scheduler | No -- auto-started by schedule | Launches one | Nightly audit, batch scoring, content pipeline |
 
-Internal agents run INSIDE a live session. They are auto-configured -- the SessionStart hook reads jitneuro.json and presents enabled agents for launch. No human reminder needed. The human configured them once; from then on they are agent-enforced rules.
+Internal agents run INSIDE a live session. They can be started two ways: automatically by the SessionStart hook (reads jitneuro.json, presents enabled agents for launch) or manually at any time via `/schedule start <name>`. Most are configured once in jitneuro.json and auto-started every session -- agent-enforced rules that need no human reminder. But the human can also add, start, or stop agents mid-session whenever needed.
 
 External agents START a session, do work, and exit. Both live in `jitneuro.json`, both follow the same schema, but their lifecycles are different.
 
