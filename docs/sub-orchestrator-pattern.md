@@ -85,32 +85,49 @@ FILES_CHANGED: [list of modified post files]
 
 ### 2. Sub-Orchestrator Manages Batches
 
-The sub-orchestrator runs a loop:
+The sub-orchestrator maintains a **rolling pool** of concurrent workers:
 
 ```
 remaining = [all 77 posts]
-while remaining is not empty:
-    batch = remaining[0:10]
-    remaining = remaining[10:]
+active = []
+max_concurrent = 10
 
-    dispatch 10 workers (background, parallel)
-    wait for all to complete
+# Initial fill -- launch up to max_concurrent
+while len(active) < max_concurrent and remaining is not empty:
+    task = remaining.pop(0)
+    agent = dispatch worker (background)
+    active.append(agent)
 
-    for each result:
-        log to .md file
-        if failed:
-            dispatch fix agent
-            re-score
-            log fix result
+# Rolling loop -- as each completes, backfill immediately
+while active is not empty:
+    completed = wait for any one agent to complete
 
-    continue to next batch
+    log result to .md file
+    if failed:
+        dispatch fix agent, re-score, log fix result
+
+    active.remove(completed)
+
+    if remaining is not empty:
+        task = remaining.pop(0)
+        agent = dispatch worker (background)
+        active.append(agent)
 ```
 
+This is a **rolling pool, not batch-and-wait.** The sub-orchestrator launches 10 workers initially. When worker #1 finishes, worker #11 launches immediately -- there are always 10 running (until the remaining queue empties). This maximizes throughput because fast workers don't wait for slow ones in the same batch.
+
 **Key behaviors:**
-- Never exceeds batch size (prevents memory exhaustion)
+- Maintains max_concurrent active workers at all times (rolling, not batch-and-wait)
 - Logs results as they arrive (progress is visible even if sub-orchestrator crashes)
-- Fix-and-rescore happens within the batch cycle, not as a separate pass
+- Fix-and-rescore happens inline when a worker completes, before backfilling the slot
 - Sub-orchestrator itself stays thin -- it reads worker summaries, not file content
+
+**Sizing max_concurrent:**
+The right pool size depends on the machine's resources and the work each agent does:
+- **CPU/memory:** Each agent consumes runtime memory. Monitor system resources and reduce pool size if the machine is under pressure.
+- **Agent weight:** Lightweight agents (score one file, return 10 lines) can run 10-15 concurrently. Heavy agents (read 20+ files, write code, run tests) may need a pool of 3-5.
+- **Claude Code heap:** The sub-orchestrator's own context grows with each result it processes. If managing 50+ workers, keep return summaries under 10 lines each.
+- **Start conservative:** Begin with 5, observe resource usage, scale up. Better to run 8 smoothly than 15 with thrashing.
 
 ### 3. Worker Agents Do the Actual Work
 
