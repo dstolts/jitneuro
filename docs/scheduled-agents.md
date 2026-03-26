@@ -360,90 +360,47 @@ The batch agent reads this file, spawns workers per the sub-orchestrator rolling
 
 ---
 
-## Hybrid Architecture: Why Not N8N (or Any External Tool) as Primary
+## Hybrid Architecture: Why No External Tool Dependency
 
 ### The Decision
 
-JitNeuro does not depend on N8N, Temporal, Airflow, or any external workflow engine for scheduling. The scheduler is native -- jitneuro.json + a launcher script + system cron.
+JitNeuro does not depend on any external workflow engine for scheduling. The scheduler is native -- jitneuro.json + a launcher script + system cron.
 
 ### Why
 
-1. **Adoption barrier.** Every external dependency is a reason not to adopt. JitNeuro is a markdown framework. Adding "also install and configure N8N" kills the 10-minute setup promise.
+1. **Zero dependencies.** JitNeuro is markdown + bash. Adding "also install and configure [workflow tool]" kills the 10-minute setup promise. Every dependency is a reason not to adopt.
 
-2. **Tight coupling creates fragility.** If N8N is down, scheduled agents don't run. If N8N changes its webhook format, the integration breaks. If the user switches from N8N to Temporal, all schedules need rewriting. Native scheduling has zero external dependencies.
+2. **Claude Code is already the runtime.** It can spawn agents, manage context, read/write files, call APIs, and execute commands. The only thing it can't do natively is fire on a wall-clock schedule -- that's what system cron handles. One thin launcher script bridges the gap.
 
-3. **Claude Code is already the runtime.** Claude Code can spawn agents, manage context, read/write files, and execute commands. The only thing it can't do is fire on a wall-clock schedule -- that's what system cron handles. One thin launcher script bridges the gap.
+3. **Config portability.** jitneuro.json travels with the repo. `git clone` + `install.sh` gives you working schedules. External workflow configs live in external tools, not in git.
 
-4. **Config portability.** jitneuro.json travels with the repo. `git clone` + `install.sh` gives you working schedules. N8N workflows live in N8N, not in git.
+4. **No fragility.** If an external tool is down, misconfigured, or gets replaced, JitNeuro schedules keep running. Zero coupling means zero breakage.
 
-### The Hybrid Model (Best of Both Worlds)
+### The Hybrid Model
 
-JitNeuro and external workflow tools are peers, not dependencies. Either can trigger the other:
+JitNeuro and external tools are peers, not dependencies. The integration is simple and bidirectional:
 
 ```
-JITNEURO -> N8N:
-  Claude agent makes an HTTP call to N8N webhook
-  Use case: "After nightly audit, trigger N8N workflow to send Slack summary"
+JITNEURO -> ANY EXTERNAL TOOL:
+  Claude agent calls any API, webhook, or CLI as part of its prompt.
+  No integration code. Just: "after finishing, curl this webhook" or "send this email via Resend API."
 
-N8N -> JITNEURO:
-  N8N runs a CLI command: claude --print --prompt "..."
-  Use case: "When a new lead arrives in CRM, trigger Claude to draft a response"
-
-JITNEURO -> ANY TOOL:
-  Claude agent calls any API, webhook, or CLI
-  Use case: Trigger GitHub Actions, send email via Resend, post to Slack
-
-ANY TOOL -> JITNEURO:
-  Any tool that can run a shell command can trigger Claude
-  Use case: CI/CD pipeline triggers Claude for post-deploy validation
+ANY EXTERNAL TOOL -> JITNEURO:
+  Any tool that can run a shell command can trigger Claude:
+  claude --print --prompt "Load session X, do Y"
 ```
 
-**Neither depends on the other.** JitNeuro schedules work natively. If you ALSO have N8N, you can wire them together. If you don't have N8N, nothing breaks. If you replace N8N with Temporal tomorrow, JitNeuro schedules keep running.
+**Neither depends on the other.** JitNeuro schedules and executes work natively. If you also use a workflow engine, you can wire them together. If you don't, nothing breaks.
 
-### When to Use Each
+### When to Use an External Workflow Engine
 
-| Scenario | Use | Why |
-|----------|-----|-----|
-| Save context every 30 minutes | JitNeuro timer | Internal to Claude session, no external tool needed |
-| Nightly repo audit | JitNeuro cron | Claude does the work, no orchestration tool needed |
-| Score 77 blog posts weekly | JitNeuro batch | Sub-orchestrator pattern handles this natively |
-| Send Slack notification after audit | JitNeuro cron + webhook call | Claude makes the HTTP call as part of the prompt |
-| New CRM lead triggers response draft | N8N -> Claude CLI | N8N watches the CRM, Claude does the writing |
-| Complex multi-system workflow (CRM -> draft -> approve -> send -> log) | N8N orchestrates, Claude executes | N8N handles the multi-step routing, Claude handles the AI work |
-| ETL pipeline with retries and backoff | N8N or Airflow | Workflow engines are built for this; Claude is not |
+JitNeuro handles the vast majority of scheduled automation natively. External workflow engines (N8N, Temporal, Airflow) are only needed for:
 
-**Rule of thumb:** If the work is "Claude does AI things on a schedule," use JitNeuro. If the work is "route data between 5 systems with retry logic," use a workflow engine. If it's both, wire them together as peers.
+- **Real-time event-driven triggers** where 5-15 minute polling latency is unacceptable
+- **Complex multi-system ETL** with retry logic, backoff, and transactional guarantees
+- **Visual workflow design** where non-technical users build the routing
 
-### Integration Patterns
-
-**Pattern 1: Claude triggers N8N at the end of scheduled work**
-```
-JitNeuro cron agent runs nightly audit
--> Audit completes, writes .md report
--> Agent's prompt includes: "curl -X POST https://auto.example.com/webhook/audit-complete -d @report.json"
--> N8N receives webhook, sends Slack message, updates dashboard
-```
-
-**Pattern 2: N8N triggers Claude for AI-specific work**
-```
-N8N watches Salesforce for new leads (every 15 min)
--> New lead detected
--> N8N runs: claude --print --prompt "Draft a response for this lead: {lead_data}"
--> Claude drafts response, writes to file
--> N8N picks up the draft, routes to approval queue
-```
-
-**Pattern 3: Bidirectional handoff**
-```
-JitNeuro batch agent scores content weekly
--> Finds 3 posts below threshold
--> Writes fix instructions to a task file
--> Calls N8N webhook: "3 posts need fixing, task file at X"
--> N8N creates tickets in task management
--> Owner reviews tickets, approves
--> Owner triggers: claude --print --prompt "Load session content-scoring, execute fixes from task file X"
--> Claude fixes the posts
-```
+Everything else -- monitoring APIs, drafting responses, scoring content, triaging requests, sending notifications -- Claude handles directly with markdown instructions and zero custom code.
 
 ---
 
@@ -466,7 +423,7 @@ JitNeuro approach:
 - Claude reads the Stripe API, understands the data, takes action
 - If the Stripe API changes fields, Claude adapts -- no code to update
 
-The tradeoff: cron polling instead of real-time webhooks. For most business operations, 5-15 minute latency is fine. When real-time matters, use webhooks (N8N, direct endpoints) to trigger Claude -- the hybrid model.
+The tradeoff: cron polling instead of real-time webhooks. For most business operations, 5-15 minute latency is fine. When sub-second response matters, any tool that can run a shell command can trigger Claude directly.
 
 ### Inbound Marketing Monitor
 
