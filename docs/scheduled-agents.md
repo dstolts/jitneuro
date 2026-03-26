@@ -135,7 +135,7 @@ All agent types live in the `scheduledAgents` array:
 
 ```json
 {
-  "version": "0.5.0",
+  "version": "0.4.0",
   "scheduledAgents": [
     {
       "name": "autosave",
