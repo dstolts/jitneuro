@@ -8,12 +8,14 @@ How JitNeuro handles recurring work -- from housekeeping interrupts inside a liv
 
 Scheduled agents live in two fundamentally different execution contexts:
 
-| Context | Who starts it | Human present? | Claude session | Examples |
+| Context | Who starts it | Human trigger? | Claude session | Examples |
 |---------|--------------|----------------|----------------|----------|
-| **Internal** | Master agent | Yes | Already running | Save every 30m, sync Hub.md, enforce discipline |
-| **External** | System cron / Task Scheduler | No | Launches one | Nightly audit, batch scoring, content pipeline |
+| **Internal** | SessionStart hook or master agent | No -- auto-started by config | Already running | Save every 30m, sync Hub.md, enforce discipline |
+| **External** | System cron / Task Scheduler | No -- auto-started by schedule | Launches one | Nightly audit, batch scoring, content pipeline |
 
-Internal agents interrupt a running session. External agents START a session, do work, and exit. Both are configured in `jitneuro.json`, both follow the same schema, but their lifecycles are different.
+Internal agents run INSIDE a live session. They are auto-configured -- the SessionStart hook reads jitneuro.json and presents enabled agents for launch. No human reminder needed. The human configured them once; from then on they are agent-enforced rules.
+
+External agents START a session, do work, and exit. Both live in `jitneuro.json`, both follow the same schema, but their lifecycles are different.
 
 ---
 
