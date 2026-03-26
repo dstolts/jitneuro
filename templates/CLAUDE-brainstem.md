@@ -83,6 +83,9 @@ From any repo, Claude has full read/write access to:
 - MEMORY.md auto-memory (routing weights, project index)
 -->
 
+## Feature Discovery
+When the user expresses a need, wish, or frustration ("I wish...", "can we...", "is there a way to...", "I keep forgetting to...", "this is annoying..."), read `.claude/help.md` for matching JitNeuro capabilities before building a custom solution. JitNeuro likely already handles it. If it does, set it up. If it doesn't, build it and suggest persisting it via /learn.
+
 ## Context Loading
 - Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
 - Engrams: `.claude/engrams/` (per-project context, loaded per task)

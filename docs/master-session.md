@@ -151,3 +151,14 @@ Sprint-Comments-001 -- API complete, FE complete, needs review
 3. **Branch names match** across repos (e.g., `sprint-comments-001` in both)
 4. **API before FE** -- always. FE can't test against undeployed API changes.
 5. **Summaries flow up, context flows down** -- master gets summaries, agents get bundles
+
+## Scaling Beyond Flat Dispatch
+
+When the number of tasks exceeds what flat master->agent dispatch can handle (30+ tasks, complex batching, progress logging), master can delegate orchestration itself to a **sub-orchestrator** -- an agent whose job is to manage other agents.
+
+See [sub-orchestrator-pattern.md](sub-orchestrator-pattern.md) for the full pattern, including:
+- Batch management (groups of 10 workers)
+- Progress log files for mid-run visibility
+- Fix-and-retry cycles within batches
+- Aggregate result reporting with category breakdowns
+- Real-world example: scoring and fixing 77 blog posts across 6 business verticals

@@ -25,7 +25,7 @@ Examples:
 - "SF Composite API limited to 25 ops/request" -- your SF edition, personal
 - "Never publish to Ghost without approval" -- your workflow, personal
 - "N8N httpRequest truncates at 17K chars" -- N8N gotcha, personal (unless it's a universal N8N limitation)
-- "Dan is Founder & Chief Innovation Officer" -- personal identity
+- "Owner is Founder & Chief Innovation Officer" -- personal identity
 
 ## Publishable Patterns (jitneuro feature request)
 
