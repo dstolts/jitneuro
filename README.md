@@ -61,8 +61,6 @@ Say "don't mock the database in tests" and it becomes a testing rule. Say "blog 
 
 By day 30, Claude handles your code style, content voice, security posture, and team conventions -- all from corrections you made naturally while working. Your style guide writes itself.
 
-See [Philosophy](docs/philosophy.md) for the full design principles.
-
 ## Quick Start
 
 ```bash
@@ -82,8 +80,8 @@ cd jitneuro
 
 Then:
 1. Run `/verify` to confirm installation
-2. Start working -- JitNeuro grows with you
-3. `/save` before `/clear`, `/load` after
+2. Start working
+3. `/save` to checkpoint, `/learn` to persist what Claude learned, `/load` to restore
 4. Everything else activates when you need it
 
 See [Setup Guide](docs/setup-guide.md) for detailed walkthrough.
@@ -114,7 +112,6 @@ All docs are reference, not prerequisites. Read them when you're curious, not be
 
 | Doc | What it covers |
 |-----|---------------|
-| [Philosophy](docs/philosophy.md) | Design principles -- why JitNeuro works the way it does |
 | [Setup Guide](docs/setup-guide.md) | Installation, post-install, troubleshooting |
 | [Technical Overview](docs/technical-overview.md) | Architecture, file structure, full feature list, roadmap |
 | [Commands Reference](docs/commands-reference.md) | All 15 commands + 5 shortcuts |

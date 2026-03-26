@@ -3,11 +3,10 @@
 ## Getting Started
 ```
 /save              save current session
+/learn             persist what Claude learned this session (the memory engine)
 /load              restore a session
-/learn             persist what Claude learned this session
-/status            where am I, what's dirty, what's next
 ```
-That's it for day 1. Everything else activates when you need it.
+Three commands. /save checkpoints your work. /learn makes Claude smarter about YOUR project -- run it at the end of every session. /load restores where you left off. Everything else activates when you need it.
 
 ## All Commands
 
@@ -101,7 +100,6 @@ All docs: https://github.com/dstolts/jitneuro/tree/main/docs
 
 | Start here | For depth |
 |-----------|-----------|
-| philosophy.md | Why JitNeuro works the way it does |
 | setup-guide.md | Installation + troubleshooting |
 | commands-reference.md | Full command details |
 | configuration-reference.md | Every config file and setting |

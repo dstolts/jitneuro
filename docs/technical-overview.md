@@ -99,35 +99,36 @@ See [templates/cursor/README.md](../templates/cursor/README.md) and [cursor-and-
 
 ## Roadmap
 
-### v0.2.0 (Current) -- Cognition Layer
-Phase 2 adds structured decision-making on top of the memory layer.
-Claude doesn't just know your projects -- it thinks about them the way you do.
+### v0.5.0 (Current) -- Scheduled Agents, Divergent Thinking, Philosophy-First
+- **4 scheduled agent types** -- timer, enforcer, cron, batch with self-looping and shift-based lifespans
+- **Divergent thinking toggle** -- /divergent auto/always/never with workspace/repo hierarchy
+- **/help command** -- zero-token static quick reference with feature discovery
+- **Sub-orchestrator pattern** -- rolling worker pools, write-to-file-return-pointer, executive summaries
+- **Business automation examples** -- Stripe monitoring, inbound marketing, support triage
+- **Configuration reference** -- single source of truth for all config files
+- **README rewrite** -- philosophy-first (why, simple but powerful, Claude learns to think like you)
+- **Dan->Owner scrub** -- open-source ready
 
-- **16 Personas** -- expert roles that evaluate every request simultaneously
-- **Friction Detection** -- pre-reasoning scan catches user frustration before it escalates
-- **Decision Models** -- structured frameworks for debugging, tech selection, API design, cross-repo contracts
-- **Anti-Patterns** -- learned constraints from real mistakes, grown over time by /learn
-- **AFK Mode** -- autonomous task execution when you step away
-- **Post-Clear Session Picker** -- after /clear, pick up where you left off
-- **Owner Persona** -- personal overlay for business context (gitignored, never ships)
-- **Customization Guide** -- review and modify everything to match your style
+### v0.2.0 -- Cognition Layer
+- 16 personas, friction detection, 4 decision models, 10 anti-pattern seeds
+- AFK mode, post-clear session picker, owner persona, customization guide
 
 ### v0.1.x -- Memory Layer
 Bundles, engrams, routing weights, /save, /load, /learn, /health, /enterprise,
-orchestrator, session management, install scripts with auto-configuration,
-consolidated /session + /sessions, branch protection hooks.
+orchestrator, session management, install scripts, branch protection hooks.
 
-### Next -- Autonomous Orchestration (FR-105)
-Claude-driven sessions: scheduled /learn runs, CI/CD-triggered analysis,
-cross-session task delegation, event-driven responses. Claude sessions spawned
-by schedulers, webhooks, and other sessions.
+### Next
+- Complete autonomous orchestration (FR-105) -- cross-session spawn, event-driven triggers
+- External cron launcher script (bash + PowerShell)
+- Batch task file format and runner
+- Context % threshold alerting (FR-016)
 
 See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 
 ## Related Docs
 
 - [Setup Guide](setup-guide.md) -- Detailed installation walkthrough
-- [Commands Reference](commands-reference.md) -- All 15 commands + 5 shortcuts
+- [Commands Reference](commands-reference.md) -- All 16 commands + 5 shortcuts
 - [Hooks Guide](hooks-guide.md) -- Lifecycle hooks and custom hook development
 - [Configuration Reference](configuration-reference.md) -- All config files and settings
 - [Scheduled Agents](scheduled-agents.md) -- Timer, enforcer, cron, and batch agents
@@ -136,4 +137,3 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 - [Concepts](concepts.md) -- Core concepts explained
 - [Architecture](architecture.md) -- Neural network mapping and diagrams
 - [Enterprise Security](enterprise-security.md) -- Trust model and hook enforcement
-- [Philosophy](philosophy.md) -- Design principles: simple but powerful
