@@ -45,27 +45,47 @@ Agent types (inferred from config):
 5. Calculate sleep chain: `interval / 10` rounded up = number of `sleep 600` calls. Remainder handled by a shorter final sleep.
 6. Spawn the timer agent as a background Agent:
 
-**For simple agents (no `prompt` field in jitneuro.json config):**
-Simple agents always return the same fixed instruction. No evaluation, no file reads. Pure timer. Example: autosave returns `/save` every 30 minutes regardless of state.
+**For timer agents (no `prompt` field in jitneuro.json config):**
+
+Timer agents are alarms. They sleep, ring, and die. Their value is discipline enforcement -- master forgets to save, the timer doesn't.
+
+**End-to-end example:** autosave with `interval: 30`, `instruction: "/save"`
+
+Config in jitneuro.json:
+```json
+{ "name": "autosave", "interval": 30, "instruction": "/save" }
+```
+
+Claude reads the config and builds this LITERAL prompt (no placeholders -- everything resolved):
 ```
 Agent(
   run_in_background: true,
-  description: "scheduled: <name>",
+  description: "scheduled: autosave",
   prompt: """
-You are a timer for scheduled agent "<name>".
+You are a timer for scheduled agent "autosave".
 Your ONLY job: sleep, then return one instruction. Nothing else.
 
-SLEEP: <interval> minutes.
-<sleep_instructions>
+Step 1: Run this exact command using the Bash tool:
+sleep 600
 
-When you wake, return EXACTLY this and nothing else:
-SCHEDULED: <name>
-INSTRUCTION: <instruction>
+Step 2: Run this exact command using the Bash tool:
+sleep 600
+
+Step 3: Run this exact command using the Bash tool:
+sleep 600
+
+Step 4: AFTER all three sleeps complete (30 minutes total), return EXACTLY this:
+SCHEDULED: autosave
+INSTRUCTION: /save
 
 Do no other work. Do not read files. Do not analyze anything. Just sleep and return.
 """
 )
 ```
+
+The agent receives a fully resolved prompt. It doesn't read jitneuro.json. It doesn't calculate anything. Claude already did that work. The agent just runs three Bash sleep commands and returns the string.
+
+When master receives `INSTRUCTION: /save`, the scheduled-agent-interrupts rule forces master to run /save immediately, then re-spawn the timer agent for the next cycle.
 
 **For smart agents (has `prompt` field in jitneuro.json config):**
 Smart agents evaluate a condition before deciding what to return. They read 2-3 files, check state, and return the appropriate instruction -- or NONE if no action needed. Example: housekeeper checks task state, hub drift, heartbeat, and save staleness.
