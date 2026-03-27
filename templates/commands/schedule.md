@@ -37,8 +37,13 @@ Agent types (inferred from config):
 1. Find the agent config by name in scheduledAgents
 2. If not found: "No scheduled agent named '<name>'. Use /schedule add to create one."
 3. If already running: "Agent '<name>' is already running."
-4. Calculate sleep chain: `interval / 10` rounded up = number of `sleep 600` calls. Remainder handled by a shorter final sleep.
-5. Spawn the timer agent as a background Agent:
+4. **Build the agent prompt from jitneuro.json config:**
+   The agent itself never reads jitneuro.json. Claude reads the config, translates it into a literal prompt, and spawns the agent with that prompt. The translation:
+   - `interval` → calculate sleep chain (see below) → write as literal Bash sleep steps
+   - `instruction` → write as the exact string the agent returns after sleeping
+   - `prompt` (if present) → insert as evaluation instructions between sleep and return
+5. Calculate sleep chain: `interval / 10` rounded up = number of `sleep 600` calls. Remainder handled by a shorter final sleep.
+6. Spawn the timer agent as a background Agent:
 
 **For simple agents (no `prompt` field in jitneuro.json config):**
 Simple agents always return the same fixed instruction. No evaluation, no file reads. Pure timer. Example: autosave returns `/save` every 30 minutes regardless of state.
