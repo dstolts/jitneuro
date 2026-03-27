@@ -176,6 +176,110 @@ SUMMARY: [N] repos, [M] need onboarding, [X] stale
 
 Present the table. Then: "Onboard a repo: `/onboard <repo-path>`"
 
+## With `--all` flag (`/onboard --all`)
+
+Scan every repo in the workspace and onboard them all in one pass.
+Populates MEMORY.md project table and creates engrams for repos that lack them.
+This is the "day 1 bootstrap" -- a new team member runs this once and gets
+cross-repo knowledge immediately.
+
+**CRITICAL:** 20+ repos requires batched subagents. Never scan more than 8 repos per agent.
+
+### Step 1: Discover repos
+
+```bash
+# Find all git repos in workspace (1 level deep)
+ls -d [workspace]/*/.git 2>/dev/null | sed 's/\/.git$//'
+```
+
+Skip: `.claude/`, `node_modules/`, `.archive/`, `jitneuro/` (the framework itself).
+
+### Step 2: Batch and dispatch
+
+Split repos into batches of 8. For each batch, dispatch a **general-purpose** agent:
+
+```
+You are onboarding multiple repos for JitNeuro. For each repo below, analyze it
+and return a structured result. Do NOT write any files -- return data only.
+
+Repos: [list of repo paths]
+
+For each repo:
+1. Check existing state:
+   - Does [repo]/CLAUDE.md exist? Read first 5 lines for identity.
+   - Does [repo]/.claude/CLAUDE.md exist?
+   - Does an engram exist at [workspace]/.claude/engrams/[repo-name]-context.md?
+2. If no engram exists, analyze the repo:
+   - Read package.json, requirements.txt, go.mod, *.csproj, or equivalent for tech stack
+   - Read [repo]/CLAUDE.md if it exists for project identity
+   - Check git remote: git -C [repo] remote get-url origin 2>/dev/null
+   - Get last commit: git -C [repo] log -1 --format="%ci %s"
+   - List top-level directories and key files
+3. Return per-repo:
+   - name, tech_stack, status (Active/Maintenance/Deployed/Unknown), remote_url
+   - has_claude_md, has_brainstem, has_engram
+   - If no engram: proposed engram content (50-100 lines, project identity + architecture)
+
+Return format:
+STATUS: OK
+REPOS:
+  - name: RepoName
+    tech: Node/Express/TypeScript
+    status: Active Dev
+    remote: https://github.com/org/repo
+    has_claude: true
+    has_brainstem: true
+    has_engram: false
+    proposed_engram: |
+      [engram content if missing]
+```
+
+Run batches in parallel (up to 3 concurrent agents).
+
+### Step 3: Merge results and present
+
+Collect all agent results. Build two tables:
+
+**MEMORY.md Project Table (proposed):**
+```
+| Repo | Tech | Status | Engram |
+|------|------|--------|--------|
+| AIFieldSupport-API | Node/Express, Azure SQL | Active Dev | aifs-core + split engrams |
+| jitai | Next.js 16/React 19/TS | Active Dev | jitai-context.md |
+...
+```
+
+Compare against existing MEMORY.md project table:
+- NEW: repos not in MEMORY.md yet
+- UPDATE: repos where tech or status changed
+- UNCHANGED: repos that match current MEMORY.md
+- MISSING: repos in MEMORY.md but not found on disk
+
+**Engrams to create:**
+```
+| # | Repo | Lines | Path |
+|---|------|-------|------|
+| 1 | NewRepo | 65 | .claude/engrams/newrepo-context.md |
+| 2 | OtherRepo | 80 | .claude/engrams/otherrepo-context.md |
+```
+
+Present: "Found [N] repos. [M] new, [X] updated, [Y] need engrams. Approve? (all / pick by # / skip)"
+
+### Step 4: Write (after approval)
+
+Dispatch a write agent with the approved list:
+- Update MEMORY.md project table (merge, don't replace -- preserve existing notes)
+- Create missing engrams at [workspace]/.claude/engrams/[repo-name]-context.md
+- Do NOT overwrite existing engrams -- only create missing ones
+
+Report: "[N] repos indexed in MEMORY.md, [M] engrams created."
+
+### Options
+
+- `/onboard --all` -- full scan + engram creation + MEMORY.md update
+- `/onboard --all --dry-run` -- scan only, show what would change, don't write
+- `/onboard --all --refresh` -- re-analyze ALL repos (even those with engrams), propose updates
+
 ## With `--team` flag (`/onboard --team`)
 
 Creates `.jitneuro/` team folder structure in the current repo. This enables
