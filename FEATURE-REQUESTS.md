@@ -678,6 +678,43 @@ If this feature would be valuable to you, comment on the issue with:
 - Whether you prefer interactive installer, feature flags, or per-command install/uninstall
 - Your environment (team size, OS, constrained hardware?)
 
+## FR-107: Effort Level Inheritance for Subagents
+**Priority:** Low
+**Status:** Idea -- community feedback requested
+
+Currently, subagents inherit the master's `effortLevel` setting. This means a high-effort master spawns high-effort workers, even when the worker's task is simple (file lookup, grep, score one item).
+
+### Question
+
+Should JitNeuro add rules that adjust effort level based on agent type?
+
+| Agent Type | Current (inherited) | Proposed |
+|-----------|-------------------|----------|
+| Explore / lookup | Master's level | Low (always -- focused, scoped) |
+| Plan / discovery / analysis | Master's level | Inherit master (these need depth) |
+| Workers (batch) | Master's level | Low-medium (focused single task) |
+| Sub-orchestrator | Master's level | Low (routing only, no deep thinking) |
+| Housekeeper / enforcer | Master's level | Low (quick checks, not analysis) |
+
+This parallels the divergent thinking inheritance model (divergent-thinking.md) where some agent types inherit the mode and others are always serial.
+
+### Tradeoffs
+
+**Keep inheritance (current):**
+- Simple. No new rules. Master controls everything.
+- If master is on high effort, all work gets thorough treatment.
+
+**Add type-based rules:**
+- Token savings: low-effort workers use fewer tokens per task.
+- Speed: batch operations with 10 workers finish faster at low effort.
+- Risk: a worker that needed high effort but got low might miss something.
+
+### Community Input Welcome
+
+- Do you notice token/speed differences between effort levels in subagents?
+- Would you want per-agent effort control, or is master inheritance sufficient?
+- Should this be configurable in jitneuro.json or automatic based on agent type?
+
 ---
 
 ## Neural Network Mapping (Phase 2 -- Conceptual Analogy)
