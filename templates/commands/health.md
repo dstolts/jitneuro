@@ -122,6 +122,17 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 **Hook Scripts** (.claude/hooks/)
 - For each hookEvents entry, check script file exists.
 
+**Team Knowledge** (.jitneuro/) -- SKIP if .jitneuro/ does not exist
+- Check .jitneuro/TEAM.md exists and has at least one member
+- Count team rules (.jitneuro/rules/) with line counts
+- Count team engrams (.jitneuro/engrams/) with line counts
+- Count team bundles (.jitneuro/bundles/) with line counts
+- List users in .jitneuro/users/ -- check each has active-work.md
+- Check for stale lessons (pending > 7 days in any users/*/lessons.md)
+- Check .jitneuro/context-manifest.md exists and references existing bundles
+- If .jitneuro/jitneuro.json exists, validate schema matches personal jitneuro.json format
+- Flag conflicts: same rule name in .jitneuro/rules/ and .claude/rules/
+
 ## Return Format
 
 HEALTH_TABLE:

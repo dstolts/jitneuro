@@ -4,10 +4,11 @@ Evaluate the current session for knowledge worth persisting to long-term memory.
 This is JitNeuro's backpropagation -- the system improves itself over time.
 
 ## Arguments
-- `/learn` -- full evaluation (health check + session learnings)
+- `/learn` -- full evaluation (health check + session learnings + team queue if TeamApprover)
 - `/learn q` -- quick mode: skip health check, focus on learnings only (session scan + Hub.md check still run)
+- `/learn --team` -- team-only: skip personal learnings, show team lessons queue + team health (TeamApprover only)
 
-Quick mode skips: stale session flags, archive/delete recommendations, session count warnings. Use when you know sessions are fine and just want to capture learnings fast.
+Quick mode skips: stale session flags, archive/delete recommendations, session count warnings, team queue. Use when you know sessions are fine and just want to capture learnings fast.
 
 ## When to Use
 - Before ending a session (especially productive ones)
@@ -63,11 +64,14 @@ When invoked as `/learn`:
 
 Three things happen simultaneously:
 
-**Master (needs conversation context):**
+**Master (needs conversation context, skip if `/learn --team`):**
 Scan the session for each of the 5 categories above.
 Look at: user corrections, bundle loads, manual context requests,
 new discoveries, architecture changes, decisions made.
 Produce a raw findings list (one line per finding).
+If `.jitneuro/` exists, classify each finding as TEAM or PERSONAL:
+- TEAM: conventions, quality gates, architecture decisions, testing rules (benefits all devs)
+- PERSONAL: editor preferences, workflow habits, personal shortcuts (only benefits you)
 
 **Health Agent (background, skip if `/learn q`):**
 Dispatch a background agent to run `/health` (quick mode). Agent returns the health table. Master includes health findings in the Phase 2 table if any issues found. If all healthy, no health rows in the output.
@@ -87,6 +91,33 @@ Return all findings. Do not truncate or limit -- every lesson matters.
 ```
 
 Agent A runs even in `/learn q` (quick mode) -- Hub.md lessons must always be checked. Quick mode only skips the health check (Step 0).
+
+**Team Agent (background, only if `.jitneuro/` exists AND not `/learn q`):**
+Dispatch a background agent with this prompt:
+```
+Read .jitneuro/TEAM.md to determine team members and roles.
+Get current username: git config user.name
+Determine if this user is a TeamApprover (or if TEAM.md is missing = everyone is approver).
+
+If TeamApprover:
+  Read all .jitneuro/users/*/lessons.md files.
+  Collect PENDING lessons from all users.
+  For each pending lesson:
+    - Check if .jitneuro/rules/ already has a rule covering this -> mark DUPLICATE
+    - If not duplicate, include in the team queue
+  Read .jitneuro/users/*/active-work.md timestamps for active dev status.
+  Count .jitneuro/rules/ files and check for conflicts.
+  Count .jitneuro/engrams/ files and check line counts.
+  Check for stale lessons (pending > 7 days).
+
+Return:
+  TEAM_ROLE: <role from TEAM.md or "approver (no TEAM.md)">
+  IS_APPROVER: true/false
+  TEAM_QUEUE: list of pending lessons (author, date, content)
+  TEAM_HEALTH: rules count, engram stats, active devs, stale lessons, conflicts
+```
+
+If `/learn --team`: only run Team Agent + Health Agent (skip Master scan and Agent A).
 
 ### Phase 2: Merge + Present (master only)
 
@@ -110,6 +141,40 @@ Proposed Updates:
 Present: "These are the session learnings. Approve all, or pick by number?"
 Do NOT write anything until approved.
 
+**Team output (if `.jitneuro/` exists and Team Agent returned):**
+
+For any user (TeamApprover or not), TEAM-classified findings are shown with scope:
+```
+| # | Scope | Target | Change |
+|---|-------|--------|--------|
+| 1 | TEAM (Rec) | .jitneuro/users/<you>/lessons.md | No DB mocking in tests |
+| 2 | PERSONAL | .jitneuro/users/<you>/rules/prefs.md | Prefer small PRs |
+| 3 | Learn | MEMORY.md | Add routing weight |
+```
+TEAM items write to YOUR lessons.md (staging area). PERSONAL items write to YOUR rules/.
+
+For TeamApprovers, also show:
+```
+== Team Lessons Queue ==
+| # | Author | Date | Proposed Rule |
+|---|--------|------|---------------|
+| T1 | dev03 | 2026-03-27 | No DB mocking in integration tests |
+| T2 | dev02 | 2026-03-26 | Always use UTC timestamps |
+
+Promote to team? (all / pick by # / skip)
+
+== Team Health ==
+| Component | Status | Detail |
+|-----------|--------|--------|
+| Team rules (12) | OK | No conflicts |
+| Team engrams (3) | WARN | api-context.md 160 lines (cap 150) |
+| Active devs (3) | OK | dev01: active, dev02: AFK 2h, dev03: active |
+| Stale lessons | INFO | 2 lessons >7 days without review |
+| Conflicts | OK | No file overlap between active branches |
+```
+
+Team health runs automatically when reviewing team lessons. No extra cost.
+
 ### Phase 3: Write (agent, after approval)
 
 Dispatch Agent B with the approved list:
@@ -126,6 +191,27 @@ After writing all files:
 
 Master receives confirmation. Reports what was written and where.
 
+**Team writes (if `.jitneuro/` exists):**
+
+For TEAM-scoped lessons (any user):
+- Write to `.jitneuro/users/<username>/lessons.md` under `## Pending`
+- Include date and one-line description
+
+For PERSONAL-scoped lessons (any user):
+- Write to `.jitneuro/users/<username>/rules/<topic>.md`
+
+For promotions (TeamApprover approved T# items):
+- Read the lesson from the author's `users/<author>/lessons.md`
+- Write to `.jitneuro/rules/<topic>.md` as a team rule
+- Move the lesson from `## Pending` to `## Promoted` in the author's lessons.md
+- Add: `-> .jitneuro/rules/<topic>.md` after the lesson text
+
+For rejections (TeamApprover rejects T# items):
+- Move the lesson from `## Pending` to `## Rejected` in the author's lessons.md
+- Add the rejection reason
+
+All team file writes go to Agent B alongside personal writes.
+
 ### If Nothing Found
 
 - "No learnings to persist from this session."
@@ -137,16 +223,20 @@ Master receives confirmation. Reports what was written and where.
 | 1 (scan session) | Master | Medium | Must read conversation context |
 | 1 (Hub.md + dedup) | Agent A | Low | File reads only, returns findings list |
 | 1 (health check) | Health Agent | Low | 5 file reads, returns table (skipped in -q) |
+| 1 (team queue) | Team Agent | Low | File reads only, returns queue + health (skipped in -q) |
 | 2 (merge + present) | Master | Low | Combine lists, display table |
 | 3 (write files) | Agent B | Low | File writes, returns file list |
 
-Master never reads memory/ files, Hub.md, or rules/ directly. Agents handle all file I/O.
+Master never reads memory/ files, Hub.md, rules/, or team files directly. Agents handle all file I/O.
 
 ## Important
-- Phase 1 runs in PARALLEL (master scans conversation while agent reads Hub.md)
+- Phase 1 runs in PARALLEL (master scans conversation while agents read Hub.md + team files)
 - NEVER write without user approval. Present the table first.
 - Health runs separately via /health (as agent). /learn does not run health.
 - MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated.
 - Bundle soft limit: 280 lines. Report if over, do NOT auto-trim. Offer to trim, default no.
 - Engram soft limit: 180 lines. Report if over, do NOT auto-trim. Offer to trim, default no.
 - This command reads and proposes. It does not modify code files, only memory/context files.
+- Team features are additive: no .jitneuro/ = solo mode, identical to v0.x behavior.
+- `/learn --team` is TeamApprover-only. If user is not a TeamApprover, say so and suggest `/learn` instead.
+- Team lesson promotion requires explicit approval per item (promote T1, promote all, skip).

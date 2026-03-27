@@ -8,16 +8,22 @@ When invoked as `/schedule`:
 
 ### /schedule or /schedule list (default)
 
-1. Read `scheduledAgents` from `.claude/jitneuro.json`
-2. Check which agents are currently running (check for active background agents by name)
-3. Display status table:
+1. Read `scheduledAgents` from `.claude/jitneuro.json` (personal)
+2. If `.jitneuro/jitneuro.json` exists, also read its `scheduledAgents` (team)
+3. Merge:
+   - If only personal config exists: use personal agents only
+   - If only team config exists: use team agents only
+   - If both exist: personal overrides team by name (same name = personal wins)
+   - If neither exists: no scheduled agents
+4. Check which agents are currently running (check for active background agents by name)
+5. Display status table:
 
 ```
 Scheduled Agents:
-  #  Name        Interval  Status    Instruction         Description
-  1  autosave    30m       RUNNING   /save               Auto-save session state
-  2  hub-sync    10m       STOPPED   UPDATE_HUB          Keep TodoWrite and Hub.md current
-  3  deploy-mon  5m        DISABLED  NONE (monitoring)    Poll deploy pipeline
+  #  Name          Source    Interval  Status    Instruction         Description
+  1  housekeeper   personal 15m       RUNNING   NONE                Session housekeeper
+  2  repo-watcher  team     30m       STOPPED   NONE                Repo health watcher
+  3  deploy-mon    personal 5m        DISABLED  NONE (monitoring)   Poll deploy pipeline
 
 Tip: /schedule start|stop <name>, /schedule add|remove <name>
 ```

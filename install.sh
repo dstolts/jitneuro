@@ -367,6 +367,17 @@ if [ -f "$GITIGNORE" ]; then
   fi
 fi
 
+# --- Leave onboard marker for SessionStart hook ---
+if [ "$MODE" = "workspace" ] && [ -n "$WORKSPACE_ROOT" ]; then
+  MARKER="$TARGET/.needs-onboard"
+  echo "installed=$(date -u +%Y-%m-%dT%H:%M:%S)" > "$MARKER"
+  echo "mode=$MODE" >> "$MARKER"
+  echo "workspace=$WORKSPACE_ROOT" >> "$MARKER"
+  echo ""
+  echo "  On next Claude Code session start, you will be prompted to scan"
+  echo "  and onboard all repos in the workspace automatically."
+fi
+
 # --- Summary ---
 echo ""
 echo "---"
@@ -374,8 +385,8 @@ echo "JitNeuro v$VERSION installed to: $TARGET"
 echo ""
 echo "Next steps:"
 echo "  1. CLOSE AND REOPEN Claude Code (commands load at session start)"
-echo "  2. Run /verify to confirm everything is working"
-echo "  3. Run /onboard <repo> to set up context for your repos"
+echo "  2. Claude will prompt to onboard all repos in the workspace"
+echo "  3. Run /verify to confirm everything is working"
 echo "  4. Create bundles for your domains in $TARGET/bundles/"
 echo ""
 echo "*** You MUST restart Claude Code for slash commands to take effect. ***"

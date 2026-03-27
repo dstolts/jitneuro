@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "1.0.0",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -23,6 +23,12 @@
         "matcher": "",
         "script": "session-start-post-clear.sh",
         "timeout": 10
+      },
+      {
+        "event": "SessionStart",
+        "matcher": "",
+        "script": "session-start-onboard.sh",
+        "timeout": 5
       },
       {
         "event": "SessionStart",
