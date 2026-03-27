@@ -289,5 +289,9 @@ All valid instructions that scheduled agents can return:
 - `/save` -- run /save command
 - `UPDATE_HUB` -- sync TodoWrite state to Hub.md
 - `RESUME_TASKS` -- master checks Hub.md for pending tasks and resumes the highest-priority one
+- `SURFACE_QUESTIONS` -- display the pending questions queue immediately
 - `ASK_USER <message>` -- surface a message to the user immediately
+- `BASH <command>` -- run a bash command via Bash tool
+- `PWSH <command>` -- run a PowerShell command via Bash tool (pwsh -Command "...")
 - `/<command>` -- run any slash command
+- `REMINDER: <text>` -- appended to any instruction, master executes alongside the main instruction
