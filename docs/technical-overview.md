@@ -2,6 +2,16 @@
 
 Detailed technical reference for JitNeuro internals. For the quick version, see the [README](../README.md).
 
+## DOE Framework
+
+JitNeuro implements the **DOE (Directive Orchestration Execution)** framework -- a three-layer pattern for AI-assisted development:
+
+- **Directive** -- Owner gives short, high-level instructions. "Score all blog posts." "Audit the repos." "Fix the auth bug." No step-by-step hand-holding.
+- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads routing weights, context manifests, and session state to make these decisions.
+- **Execution** -- Agents do the work. Workers read files, write code, run tests, score content, draft responses. Results flow up as thin summaries. Detail stays in files on disk.
+
+The owner does the $10K/hr work (judgment, priorities, approval). The AI does the $10/hr work (research, coding, analysis, content drafting, task execution). JitNeuro is the memory and orchestration layer that makes this possible across sessions, repos, and teams.
+
 ## The Problem
 
 Claude Code loads CLAUDE.md files at session start and keeps everything in a fixed-size
