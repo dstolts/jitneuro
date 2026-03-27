@@ -678,6 +678,76 @@ If this feature would be valuable to you, comment on the issue with:
 - Whether you prefer interactive installer, feature flags, or per-command install/uninstall
 - Your environment (team size, OS, constrained hardware?)
 
+## FR-108: Cold Start Routing -- Auto-Discover Dependencies at Install
+**Priority:** High
+**Status:** Idea -- design needed
+
+JitNeuro's routing weights require time to build up via /learn. New adopters start with empty routing and must manually /bundle load context. Semantic search frameworks solve this by embedding everything -- but at the cost of heavy dependencies.
+
+**Better approach:** Scan repos at install/onboard time and auto-generate routing weights from what's already in the code.
+
+### What to Scan
+
+| Source | What it reveals | Example |
+|--------|----------------|---------|
+| `.env` files | Service dependencies | `AUTH_API_URL=https://auth.example.com` -> links to auth service |
+| `package.json` dependencies | Tech stack | `express`, `firebase-admin`, `stripe` -> load API, auth, payments bundles |
+| Import statements | Cross-repo references | `import { auth } from '../AuthFirebase'` -> repo dependency |
+| `docker-compose.yml` | Service graph | `depends_on: [api, redis]` -> infrastructure bundle |
+| API endpoint definitions | Integration points | Routes referencing external services |
+| `CLAUDE.md` / `README.md` | Project identity | Tech stack, purpose, key paths |
+| `.env.*.example` files | Environment configs | Which services per environment |
+
+### How It Works
+
+```
+/onboard <repo>
+  1. Scan the repo for dependency signals (above table)
+  2. Generate initial routing weights: keyword -> bundle mappings
+  3. Generate initial engram: tech stack, key files, architecture
+  4. Write to .claude/context-manifest.md (or .jitneuro/ in team mode)
+  5. Present to user: "I found these dependencies. Correct?"
+```
+
+For workspace-level install:
+```
+install.sh --scan-repos
+  1. For each repo under workspace: run the dependency scan
+  2. Build a cross-repo integration map
+  3. Generate routing weights that include cross-repo patterns
+  4. Example: "auth" -> [api-patterns, auth-service engram]
+```
+
+### Cross-Repo Discovery
+
+The real power: scanning ACROSS repos reveals the integration graph.
+- Repo A's .env references Repo B's URL -> A depends on B
+- Repo B's package.json has firebase-admin -> B is the auth service
+- Repo C's imports reference Repo A's API client -> C is a frontend for A
+
+This graph becomes routing weights automatically:
+```
+- auth / login / token         -> [auth-service engram, api-patterns]
+- payments / stripe / subscribe -> [payments engram, api-patterns]
+- frontend / app / UI          -> [frontend engram, api-patterns]
+```
+
+### Keeps Getting Better
+
+Initial scan provides day-1 routing. /learn refines it over time. The cold start is solved without semantic search, without embeddings, without any external dependency.
+
+### Commands
+
+- `/onboard <repo>` -- already exists, add dependency scanning
+- `/onboard --scan-all` -- scan all repos in workspace
+- `/verify --routing` -- verify routing weights match current repo state (detect drift)
+
+### Community Input Welcome
+
+- What dependency signals does your stack expose? (package.json, go.mod, requirements.txt, etc.)
+- Would you trust auto-generated routing weights or want to review first?
+- Should the scan run on every /verify or only on /onboard?
+
 ## FR-107: Effort Level Inheritance for Subagents
 **Priority:** Low
 **Status:** Idea -- community feedback requested
