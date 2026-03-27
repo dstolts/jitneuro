@@ -238,19 +238,21 @@ This creates a loop:
 
 ```
 1.  User says: "Research Node.js security and implement the top findings"
-2.  Master creates research agent (background, Level 7)
-3.  Master continues working on current sprint tasks
+2.  Master dispatches research agent (background, Level 7)
+3.  Master continues dispatching other sprint agents
 4.  Research agent reads docs, evaluates, writes 10 tasks to TodoWrite
 5.  Research agent returns: STATUS: OK, 10 tasks added
-6.  Master finishes current work, checks TodoWrite -- 10 new tasks
-7.  Master starts executing task 1
-8.  Watcher enforcer (Level 6) monitors -- tasks remain, master is working
-9.  Master completes task 5, starts task 6
-10. Watcher enforcer checks again -- 4 tasks remain, master still working
-11. Master completes all 10 tasks
+6.  Master checks TodoWrite -- 10 new tasks
+7.  Master dispatches agent for task 1 (background)
+8.  Master dispatches agent for task 2 (background, no file overlap with task 1)
+9.  Watcher enforcer (Level 6) monitors -- tasks remain, agents working
+10. Agents complete and return, master dispatches next tasks from queue
+11. All 10 tasks complete (agents did the work, master orchestrated)
 12. Watcher sees empty queue, returns INSTRUCTION: NONE
 13. Master reports: "All 10 security tasks complete."
 ```
+
+Master orchestrates -- it dispatches agents and collects results. It does not execute tasks directly. The deeper the work, the more it belongs to an agent.
 
 No human intervention between steps 1 and 13. The research agent generated the work. The watcher enforcer ensured completion. The structured returns kept everything coordinated. Fire-and-forget could handle step 2 -- and nothing after it.
 
