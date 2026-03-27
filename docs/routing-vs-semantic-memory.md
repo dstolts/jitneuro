@@ -108,20 +108,34 @@ The `/learn` loop means routing weights get better every day. Semantic search st
 
 ## Cold Start and How JitNeuro Solves It
 
-Cold start is routing weights' genuine weakness. On day one, the routing rules file is sparse. The user must manually load bundles with `/bundle <name>` or accept that some context will be missing.
+Cold start is routing weights' original weakness -- but JitNeuro solves it without semantic search.
 
-JitNeuro addresses this progressively:
+### Auto-Discovery at Install (FR-108)
+
+`/onboard` scans the repo and auto-generates initial routing weights from signals already in your code:
+
+| Source | What it reveals | Routing generated |
+|--------|----------------|-------------------|
+| `.env` files | Service dependencies | `AUTH_API_URL` -> links to auth service bundle |
+| `package.json` | Tech stack | `express`, `stripe`, `firebase-admin` -> API, payments, auth bundles |
+| Import statements | Cross-repo references | `import { auth } from '../AuthFirebase'` -> repo dependency mapping |
+| `docker-compose.yml` | Service graph | `depends_on: [api, redis]` -> infrastructure bundle |
+| `CLAUDE.md` / `README.md` | Project identity | Tech stack, purpose, key paths -> engram |
+
+For workspace installs, scanning ACROSS repos reveals the integration graph automatically. Repo A's .env references Repo B's URL -- that's a dependency Claude should know about.
+
+### Progressive Refinement
 
 | Timeline | Experience |
 |----------|-----------|
-| **Day 1** | Few routing weights. User loads bundles manually with `/bundle`. Claude works, but context loading is manual. |
-| **Day 3** | `/learn` has run several times. Common task patterns (deploy, blog, sprint) are auto-routed. Manual loads are occasional. |
-| **Day 7** | Most daily work patterns have routing rules. Manual bundle loading is rare. |
-| **Day 30** | Routing is comprehensive. Almost nothing needs manual loading. The system knows the owner's vocabulary and work patterns better than any embedding model could infer. |
+| **Day 0** | `/onboard` scans code, generates initial routing weights and engram. Claude knows your tech stack, dependencies, and service graph from the first prompt. |
+| **Day 3** | `/learn` refines from corrections. "When I say deploy, I mean Azure not AWS." |
+| **Day 7** | Most daily patterns auto-routed. Manual bundle loading is rare. |
+| **Day 30** | Routing is comprehensive. The system knows your vocabulary and patterns better than any embedding model could infer. |
 
-Semantic search solves cold start immediately -- it works on day one with zero configuration. But it never gets more precise than day one. The embedding model's understanding of your content is static. It doesn't learn that when YOU say "pub" you mean "publish to Ghost" not "public access."
+Semantic search solves cold start immediately -- but it never gets more precise than day one. The embedding model's understanding is static. It doesn't learn that when YOU say "pub" you mean "publish to Ghost" not "public access."
 
-The cold start disadvantage is real but temporary. The precision advantage is permanent.
+JitNeuro solves cold start at install AND gets more precise every day. No embeddings required.
 
 ## Could They Work Together?
 
