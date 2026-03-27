@@ -11,30 +11,31 @@ Health is not context-dependent -- it reads files on disk, not conversation stat
 
 ## Quick Health (`/health`)
 
-Dispatch to subagent. Read at most 5 files. No conversation context needed.
-
-### Checks
-
-1. **MEMORY.md** -- Read file, count lines. OK < 170, WARN 170-199, CRITICAL 200+.
-2. **Sessions** -- Count files in `.claude/session-state/` (exclude archive/, heartbeats/, .preferences, README.md, _autosave.md). OK < 10, WARN 10+. Flag any >7 days as STALE.
-3. **Bundles** -- Count files in `.claude/bundles/`. Report count only (no line counts).
-4. **Engrams** -- Count files in `.claude/engrams/`. Report count only.
-5. **jitneuro.json** -- Check file exists and `version` field is present.
-
-### Output
+Launch a background **general-purpose** Agent with this prompt:
 
 ```
-Quick Health:
+You are running a JitNeuro quick health check. Read these 5 things and return a table.
+
+1. Read MEMORY.md (the auto-memory file). Count lines. OK < 170, WARN 170-199, CRITICAL 200+.
+2. Count .md files in .claude/session-state/ (exclude archive/, heartbeats/, .preferences, README.md, _autosave.md). OK < 10, WARN 10+. Check file dates -- flag any >7 days as STALE.
+3. Count .md files in .claude/bundles/. Report count only.
+4. Count .md files in .claude/engrams/. Report count only.
+5. Read .claude/jitneuro.json. Check it exists and has a version field.
+
+Return EXACTLY this format:
+QUICK_HEALTH:
 | Component | Status | Detail |
 |-----------|--------|--------|
-| MEMORY.md | OK | 79/200 lines |
-| Sessions | WARN | 12 sessions (10 limit), 2 stale |
-| Bundles | OK | 15 bundles |
-| Engrams | OK | 27 engrams |
-| jitneuro.json | OK | v0.4.0 |
+| MEMORY.md | OK/WARN/CRITICAL | X/200 lines |
+| Sessions | OK/WARN | X sessions, Y stale |
+| Bundles | OK | X bundles |
+| Engrams | OK | X engrams |
+| jitneuro.json | OK/FAIL | vX.X.X or missing |
+
+SUMMARY: X components checked, Y issues
 ```
 
-If any CRITICAL or FAIL: recommend `/health --deep` for details.
+When the agent returns, display the table. If any CRITICAL or FAIL: recommend `/health --deep` for details.
 
 ## Deep Health (`/health --deep`)
 
