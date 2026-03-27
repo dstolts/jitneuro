@@ -273,4 +273,6 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | /load loads stale state | Check session date with `/sessions`. |
 | Interrupted install | No `jitneuro.json` in `.claude/` = incomplete. Re-run installer. |
 
+| Why .claude/ not .jitneuro/? | Claude Code only looks in `.claude/` for commands, hooks, and rules. If JitNeuro used its own folder, nothing would load. See [technical-overview.md](technical-overview.md) for details. In v1.0, `.jitneuro/` will be the team-shared folder (committed to git) while `.claude/` stays personal. |
+
 For enterprise deployment and security considerations, see [enterprise-security.md](enterprise-security.md).
