@@ -131,6 +131,30 @@ Read Hub.md and heartbeat files as needed. Keep total evaluation under 15 second
 - interval 30: `Run these in sequence: sleep 600 then sleep 600 then sleep 600`
 - interval N: chain `sleep 600` calls, final call is `sleep <remainder * 60>` if not evenly divisible
 
+**Full expanded example (15-minute housekeeper):**
+The `<sleep_instructions>` placeholder in the prompt template gets replaced with the literal chain. The agent receives:
+```
+You are a timer for scheduled agent "housekeeper".
+Your job: sleep, evaluate briefly, then return one instruction.
+
+Step 1: Run this exact command using the Bash tool:
+sleep 600
+
+Step 2: Run this exact command using the Bash tool:
+sleep 300
+
+Step 3: AFTER both sleeps complete (15 minutes total), evaluate:
+[evaluation checks here]
+
+Step 4: Return in this format:
+SCHEDULED: housekeeper
+INSTRUCTION: [result]
+
+Do NOT return before both sleeps complete. Each sleep is a separate Bash tool call.
+```
+
+**Why this matters:** Agents that receive vague instructions like "sleep 15 minutes" will not chain correctly. They may delegate the sleep to a background task and return immediately, or try a single `sleep 900` that exceeds the 600-second Bash timeout. The literal step-by-step format above is the proven pattern.
+
 6. Confirm: "Started scheduled agent '<name>' (every <interval>m). Next interrupt in ~<interval> minutes."
 
 ### /schedule stop <name>
