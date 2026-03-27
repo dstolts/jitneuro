@@ -80,7 +80,7 @@ For each Hub.md lesson:
   - Check if rules/ already has a rule covering this -> mark DUPLICATE
   - Check if the lesson is universal (applies to any project) -> mark PROMOTE
 Return: clean list of NEW lessons (not duplicated), with classification.
-Keep under 15 lines.
+Return all findings. Do not truncate or limit -- every lesson matters.
 ```
 
 Skip Phase 1 Agent A if `/learn q` (quick mode -- session scan only, no Hub.md check).
@@ -132,7 +132,7 @@ Master receives confirmation. Reports what was written and where.
 | Phase | Who | Token cost | Why |
 |-------|-----|-----------|-----|
 | 1 (scan session) | Master | Medium | Must read conversation context |
-| 1 (Hub.md + dedup) | Agent A | Low | File reads only, returns 15 lines |
+| 1 (Hub.md + dedup) | Agent A | Low | File reads only, returns findings list |
 | 2 (merge + present) | Master | Low | Combine two lists, display table |
 | 3 (write files) | Agent B | Low | File writes, returns file list |
 
