@@ -106,6 +106,14 @@ Semantic search has no equivalent mechanism. There is no "teach the embeddings" 
 
 The `/learn` loop means routing weights get better every day. Semantic search stays the same quality forever (unless you swap embedding models or re-architect your indexing pipeline).
 
+### Crash-Safe Learning Pipeline
+
+Lessons don't have to wait for `/learn` to run. As Claude identifies corrections, patterns, and discoveries during normal work, it writes them to Hub.md in real-time under a `## Lessons Learned` section. This is a simple append -- one line per candidate, zero overhead.
+
+If the session crashes, context compacts, or the user forgets to run `/learn`, the lessons survive in Hub.md. Next session, `/learn` reads Hub.md, processes the staged candidates, and persists them to the right locations (rules, engrams, routing weights).
+
+Semantic search has no equivalent. If a session crashes before re-embedding, any context the model saw during that session is gone. There is no staging area, no durable pipeline between "something was learned" and "the system improved."
+
 ## Cold Start and How JitNeuro Solves It
 
 Cold start is routing weights' original weakness -- but JitNeuro solves it without semantic search.
