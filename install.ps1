@@ -442,6 +442,15 @@ if (Test-Path $gitignore) {
     }
 }
 
+# --- Leave onboard marker for SessionStart hook ---
+if ($Mode -eq "workspace" -and $WorkspaceRoot) {
+    $markerPath = Join-Path $Target ".needs-onboard"
+    Set-Content -Path $markerPath -Value "installed=$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')`nmode=$Mode`nworkspace=$WorkspaceRoot"
+    Write-Host ""
+    Write-Host "  On next Claude Code session start, you will be prompted to scan" -ForegroundColor Cyan
+    Write-Host "  and onboard all repos in the workspace automatically." -ForegroundColor Cyan
+}
+
 # --- Summary ---
 Write-Host ""
 Write-Host "---" -ForegroundColor DarkGray
@@ -449,8 +458,8 @@ Write-Host "JitNeuro v$Version installed to: $Target" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. CLOSE AND REOPEN Claude Code (commands load at session start)" -ForegroundColor Yellow
-Write-Host "  2. Run /verify to confirm everything is working"
-Write-Host "  3. Run /onboard <repo> to set up context for your repos"
+Write-Host "  2. Claude will prompt to onboard all repos in the workspace"
+Write-Host "  3. Run /verify to confirm everything is working"
 Write-Host "  4. Create bundles for your domains in $Target\bundles\"
 Write-Host ""
 Write-Host "*** You MUST restart Claude Code for slash commands to take effect. ***" -ForegroundColor Red
