@@ -766,6 +766,8 @@ Auto-learn would run /learn automatically after every session (or on a schedule)
 - Housekeeper agent reminds to run /learn (but never runs it automatically)
 - The approval step IS the quality control
 
+**The deeper point:** AI is not perfect. The rules and routing weights that govern how Claude thinks about YOUR projects are too important to leave to AI 100%. Human judgment at the /learn approval step is not overhead -- it's the quality control that makes the entire system trustworthy.
+
 If you think auto-learn should be reconsidered, open an issue with a specific use case where the approval gate adds friction without value.
 
 ## FR-107: Effort Level Inheritance for Subagents
