@@ -176,6 +176,74 @@ SUMMARY: [N] repos, [M] need onboarding, [X] stale
 
 Present the table. Then: "Onboard a repo: `/onboard <repo-path>`"
 
+## With `--team` flag (`/onboard --team`)
+
+Creates `.jitneuro/` team folder structure in the current repo. This enables
+team-aware features: shared rules, lesson promotion, active-work tracking.
+
+### Step 1: Check Prerequisites
+
+- Verify `.jitneuro/` does not already exist (if it does, report and stop)
+- Get username: `git config user.name`
+- Check if repo already has JitNeuro solo setup (.claude/CLAUDE.md etc.)
+
+### Step 2: Create .jitneuro/ Structure
+
+Copy template structure from JitNeuro templates:
+```
+.jitneuro/
+  rules/README.md
+  engrams/README.md
+  bundles/README.md
+  cognition/README.md
+  users/<username>/active-work.md  (from template, with username filled in)
+  users/README.md
+  TEAM.md                          (with current user as first TeamApprover)
+  context-manifest.md              (empty team manifest)
+  README.md
+```
+
+### Step 3: Classify Existing Knowledge (migration from v0.x)
+
+If `.claude/` has existing JitNeuro knowledge:
+a. Read `.claude/engrams/` -- engrams that describe THIS repo are team knowledge
+b. Read `.claude/bundles/` -- bundles specific to this repo are team candidates
+c. Read `.claude/cognition/` -- team personas and decisions
+d. Present classification table:
+```
+| # | File | Current Location | Recommended | Reason |
+|---|------|-----------------|-------------|--------|
+| 1 | api-context.md | .claude/engrams/ | TEAM (.jitneuro/engrams/) | Project architecture |
+| 2 | deploy.md | .claude/bundles/ | TEAM (.jitneuro/bundles/) | Shared CI/CD |
+| 3 | owner-persona.md | .claude/cognition/ | PERSONAL (stay in .claude/) | Individual identity |
+```
+e. Ask: "Move recommended items to .jitneuro/? (all / pick by # / skip)"
+f. Copy (not move) approved items to .jitneuro/ locations
+   - Original files in .claude/ are kept as personal copies
+
+### Step 4: Update .gitignore
+
+Add entries from gitignore-additions.txt if not already present.
+Verify `.jitneuro/` is NOT in .gitignore (it should be committed).
+
+### Step 5: Update CLAUDE-brainstem.md
+
+If `.claude/CLAUDE.md` exists, update the JitNeuro Mode section:
+- Comment out the current mode (A or B)
+- Uncomment Option C (Team Mode)
+
+### Step 6: Present Summary
+
+```
+Team setup complete for <repo-name>:
+  .jitneuro/ created with team structure
+  TEAM.md: <username> as TeamApprover
+  Migrated: <N> files to team knowledge
+  Next: commit .jitneuro/ and push so team members get it on pull
+```
+
+Without `--team`: existing behavior (solo onboarding with CLAUDE.md + engram).
+
 ## Important
 - **Repo analysis and workspace scan run in subagents.** File generation and writing run in master.
 - NEVER overwrite existing files without asking. Always show what would change.
@@ -183,3 +251,4 @@ Present the table. Then: "Onboard a repo: `/onboard <repo-path>`"
 - Engram creation is always safe (new file) but still ask.
 - Keep generated files minimal -- they grow organically via /learn.
 - If the repo has no package.json (e.g., PowerShell, docs-only), adapt analysis.
+- `/onboard --team` copies knowledge to .jitneuro/, never moves. Originals stay in .claude/.

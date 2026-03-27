@@ -60,7 +60,7 @@ For routine work (research, simple fixes, docs): serial thinking is fine.
 - [Rule 3: e.g., ASCII only in all output]
 
 ## JitNeuro Mode
-<!-- Choose ONE mode. Delete the other. -->
+<!-- Choose ONE mode. Delete the others. -->
 
 <!-- OPTION A: SINGLE-REPO MODE (enterprise / isolated)
      All JitNeuro files stay inside this repo. No cross-repo access.
@@ -83,13 +83,41 @@ From any repo, Claude has full read/write access to:
 - MEMORY.md auto-memory (routing weights, project index)
 -->
 
+<!-- OPTION C: TEAM MODE (multi-developer)
+     Team knowledge in .jitneuro/ (committed). Personal state in .claude/ (gitignored).
+     Install with: /onboard --team -->
+<!--
+Team context loading cascade (in order):
+1. `.jitneuro/rules/` -- team rules (everyone, every session)
+2. `.jitneuro/engrams/` -- team project context
+3. `.jitneuro/bundles/` -- team bundles (on-demand via routing)
+4. `.jitneuro/cognition/` -- team personas, decisions
+5. `.jitneuro/context-manifest.md` -- team routing weights
+6. `.jitneuro/users/<YOU>/rules/` -- your personal repo rules
+7. `.claude/` -- your session state, local config (gitignored)
+8. `~/.claude/rules/` -- your global personal rules
+9. `~/.claude/CLAUDE.md` -- your global identity
+10. MEMORY.md -- your personal brain
+
+Team roles defined in `.jitneuro/TEAM.md` (maps git username to role).
+If TEAM.md is missing, everyone is a TeamApprover.
+-->
+
 ## Feature Discovery
 When the user expresses a need, wish, or frustration ("I wish...", "can we...", "is there a way to...", "I keep forgetting to...", "this is annoying..."), read `.claude/help.md` for matching JitNeuro capabilities before building a custom solution. JitNeuro likely already handles it. If it does, set it up. If it doesn't, build it and suggest persisting it via /learn.
 
 ## Context Loading
+<!-- Team mode: .jitneuro/ paths load first (team baseline), then .claude/ (personal) -->
+<!-- If .jitneuro/ exists, load team context first: -->
+<!-- - Team rules: `.jitneuro/rules/` -->
+<!-- - Team engrams: `.jitneuro/engrams/` -->
+<!-- - Team bundles: `.jitneuro/bundles/` (on-demand via `.jitneuro/context-manifest.md`) -->
+<!-- - Team cognition: `.jitneuro/cognition/` -->
+<!-- - Your rules: `.jitneuro/users/<YOU>/rules/` (NOT other users') -->
+<!-- Then personal context: -->
 - Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
 - Engrams: `.claude/engrams/` (per-project context, loaded per task)
-- Cognition: `.claude/cognition/personas.md` (16 expert personas, always active)
+- Cognition: `.claude/cognition/personas.md` (expert personas, always active)
 - Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
 - Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
 - Manifest: `.claude/context-manifest.md` (bundle index + routing)
@@ -117,6 +145,9 @@ When conversation_log is "on" in session-state.md:
 <!-- Only paths Claude needs constantly. Domain paths go in bundles. -->
 | Path | Purpose |
 |------|---------|
+| `.jitneuro/` | Team-shared knowledge (committed, if team mode) |
+| `.jitneuro/TEAM.md` | Team member list, roles, approver flags |
+| `.jitneuro/users/<YOU>/` | Your team-visible workspace |
 | `.claude/context-manifest.md` | Bundle index and routing |
 | `.claude/session-state/` | Session checkpoints (one per task) |
 | `.claude/bundles/` | Domain knowledge bundles |

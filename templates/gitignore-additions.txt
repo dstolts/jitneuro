@@ -6,3 +6,11 @@
 
 # Session state (ephemeral, per-machine)
 .claude/session-state/
+
+# Personal config (credentials, local settings -- never committed)
+.claude/workspace.json
+.claude/jitneuro.json
+.claude/settings.local.json
+
+# NOTE: .jitneuro/ is COMMITTED (team-shared knowledge)
+# Do NOT add .jitneuro/ to .gitignore

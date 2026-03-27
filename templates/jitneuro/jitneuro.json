@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "description": "Repo-level JitNeuro config. Committed to git, shared across the team. Personal config stays in .claude/jitneuro.json (gitignored).",
+  "scheduledAgents": [
+    {
+      "name": "repo-watcher",
+      "interval": 30,
+      "enabled": false,
+      "instruction": "NONE",
+      "prompt": "Repo health watcher. Check: (1) git status for uncommitted changes older than 1 hour. (2) CI/CD status via gh run list --limit 1. (3) Branch drift: compare current branch to main (commits behind). (4) Stale PRs open > 3 days. Report only actionable findings. NONE if all clear.",
+      "description": "Team-shared repo health watcher: git status, CI/CD, branch drift, stale PRs (every 30m)"
+    }
+  ],
+  "_docs": {
+    "merging": "Repo agents (.jitneuro/jitneuro.json) run alongside personal agents (.claude/jitneuro.json). No conflicts -- names must be unique across both files.",
+    "hooks": "Hooks are NOT defined here. Hooks belong in .claude/settings.json (Anthropic namespace). This file only defines scheduledAgents for the team.",
+    "overrides": "To disable a team agent personally, add an entry with the same name and enabled: false in your .claude/jitneuro.json."
+  }
+}
