@@ -59,57 +59,40 @@ Did the user correct Claude on something it stated from memory?
 
 When invoked as `/learn`:
 
-### Step 0: Memory System Health Check
+### Phase 1: Gather (master + agent in PARALLEL)
 
-Run `/health` (quick mode) inline. This is 3-5 file reads, under 10 seconds, no subagent needed.
+Two things happen simultaneously:
 
-If quick health finds CRITICAL or FAIL issues, recommend `/health --deep` for full diagnosis.
-
-Skip this step entirely if `/learn q` (quick mode).
-
-Run the quick health checks inline (see /health command for the 5 checks). Present the table. If CRITICAL or FAIL, recommend `/health --deep`.
-
-Then proceed to Step 0.5 in the master context.
-
-### Step 0.5: Read Hub.md Lessons (runs in master)
-
-Before scanning session context, read durable lessons from Hub.md:
-
-1. Find the current session's Hub.md (resolve from session state).
-2. Read the `## Lessons Learned` section if it exists.
-3. Parse each `- [type] description` line into a candidate list.
-4. These candidates came from real-time capture during work (see rules/lessons-capture.md).
-   They survive crashes and context compaction -- this is the rescue path.
-5. Hold this list for merge with session scan in Step 1.
-
-If no Hub.md exists or no `## Lessons Learned` section is found, skip -- proceed to Step 1.
-If lessons exist from a PREVIOUS session (context was lost), process them -- they were rescued.
-
-### Step 1: Scan Session for Learnings (runs in master)
-
-This step needs the current session context, so it stays in master.
-
+**Master (needs conversation context):**
 Scan the session for each of the 5 categories above.
 Look at: user corrections, bundle loads, manual context requests,
 new discoveries, architecture changes, decisions made.
+Produce a raw findings list (one line per finding).
 
-Merge with Hub.md candidates from Step 0.5:
-- Deduplicate: if a Hub.md lesson matches a session-scanned learning, keep one copy.
-- Hub.md lessons the session scan missed (lost context) are rescued and included.
-- Combined list feeds into Step 1b classification.
+**Agent A (background, no conversation needed):**
+Dispatch a background agent with this prompt:
+```
+Read Hub.md for the active session. Extract ## Lessons Learned entries.
+Read all memory/*.md filenames + frontmatter type fields (NOT full content).
+Read ~/.claude/rules/ filenames (NOT full content).
+For each Hub.md lesson:
+  - Check if memory/ already has a file covering this topic -> mark DUPLICATE
+  - Check if rules/ already has a rule covering this -> mark DUPLICATE
+  - Check if the lesson is universal (applies to any project) -> mark PROMOTE
+Return: clean list of NEW lessons (not duplicated), with classification.
+Keep under 15 lines.
+```
 
-### Step 1b: Classification Check (prevent misplacement)
+Skip Phase 1 Agent A if `/learn q` (quick mode -- session scan only, no Hub.md check).
 
-For each learning found in Step 1, before proposing where to save it, check:
+### Phase 2: Merge + Present (master only)
 
-1. **Duplicate check:** Grep `~/.claude/rules/` for the same guidance. If a rule already covers it, skip -- do not save a duplicate to memory.
-2. **Promotion check:** If the learning is a universal behavioral instruction ("always X", "never Y", applies regardless of project or context), recommend saving to `rules/` instead of `memory/`. Flag in the table as Type: `Promote`.
-3. **Publishable check:** If the learning is a universal pattern any Claude Code user would benefit from (not owner-specific), flag as Type: `Publish` and recommend submitting as a jitneuro feature request. See docs/feedback-classification.md for the decision criteria.
-4. **Existing memory check:** Grep `memory/` for overlapping feedback files. If an existing feedback_* file covers the same topic, update it rather than creating a new file.
+When Agent A returns, merge:
+- Master's session findings + Agent A's Hub.md results
+- Deduplicate: if both found the same lesson, keep one copy
+- Hub.md lessons the session scan missed (lost context) = rescued
 
-### Step 2: Build Proposed Changes Table (runs in master)
-
-Session learnings ONLY. Health issues are handled by /health (runs separately as agent).
+Build the table:
 ```
 Proposed Updates:
 | # | Type | File | Change |
@@ -121,37 +104,45 @@ Proposed Updates:
 | 5 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 |
 ```
 
-### Step 3: Present for Approval (runs in master)
+Present: "These are the session learnings. Approve all, or pick by number?"
+Do NOT write anything until approved.
 
-- "These are the session learnings. Approve all, or pick by number?"
-- Do NOT write anything until approved.
+### Phase 3: Write (agent, after approval)
 
-### Step 4: Execute Approved Changes (runs in master)
+Dispatch Agent B with the approved list:
+```
+Write these approved lessons to the specified files:
+[approved items list with target files and content]
 
-- Update files as approved
-- For `Publish` items: create GitHub issue on the jitneuro repo with `gh issue create` (only after explicit approval)
-- Re-count lines after changes to confirm limits are respected
-- **Clear Hub.md lessons:** After all approved changes are written, replace the
-  `## Lessons Learned` section in Hub.md with a processed marker:
-  ```markdown
+After writing all files:
+- Clear Hub.md ## Lessons Learned section, replace with:
   ## Lessons Learned
   (Processed by /learn on YYYY-MM-DD)
-  ```
-  This prevents re-processing on the next /learn run. New lessons captured after
-  this point will append below the marker, starting a fresh cycle.
-- Report what was written and where
+- Return: FILES_CHANGED list + count
+```
 
-### Step 5: If Nothing Found
+Master receives confirmation. Reports what was written and where.
 
-- "Memory system healthy. No learnings to persist from this session."
+### If Nothing Found
+
+- "No learnings to persist from this session."
+
+## Token Budget
+
+| Phase | Who | Token cost | Why |
+|-------|-----|-----------|-----|
+| 1 (scan session) | Master | Medium | Must read conversation context |
+| 1 (Hub.md + dedup) | Agent A | Low | File reads only, returns 15 lines |
+| 2 (merge + present) | Master | Low | Combine two lists, display table |
+| 3 (write files) | Agent B | Low | File writes, returns file list |
+
+Master never reads memory/ files, Hub.md, or rules/ directly. Agents handle all file I/O.
 
 ## Important
-- **Health check (Step 0) runs in a subagent.** Learning evaluation (Steps 1-4) runs in master because it needs session context.
+- Phase 1 runs in PARALLEL (master scans conversation while agent reads Hub.md)
 - NEVER write without user approval. Present the table first.
-- Health check runs EVERY time, even if session had no learnings.
+- Health runs separately via /health (as agent). /learn does not run health.
 - MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated.
 - Bundle soft limit: 180 lines. Report if over, do NOT auto-trim.
 - Engram soft limit: 150 lines. Longer engrams waste context on low-value detail.
-- Session state soft limit: 10 active files.
 - This command reads and proposes. It does not modify code files, only memory/context files.
-- After executing changes, re-read modified files to verify limits are respected.
