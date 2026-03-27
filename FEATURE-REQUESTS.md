@@ -748,6 +748,26 @@ Initial scan provides day-1 routing. /learn refines it over time. The cold start
 - Would you trust auto-generated routing weights or want to review first?
 - Should the scan run on every /verify or only on /onboard?
 
+## FR-109: Auto-Learn (Intentionally Rejected)
+**Priority:** N/A
+**Status:** Rejected by design
+
+Auto-learn would run /learn automatically after every session (or on a schedule) without owner approval. This has been evaluated and intentionally rejected.
+
+**Why not:**
+- **Precision at risk.** A wrong correction becomes a permanent rule. Wrong rules load wrong context. Wrong context produces more wrong corrections. The feedback loop compounds in the wrong direction.
+- **Security at risk.** A misclassified lesson could weaken a security guardrail, relax a trust zone, or change an approval workflow without the owner noticing.
+- **Performance at risk.** Bad routing weights load irrelevant bundles, wasting tokens and degrading Claude's reasoning quality.
+- **The system's value IS the approval gate.** /learn proposes. Owner decides. That 30-second review prevents weeks of drift.
+
+**What we do instead:**
+- Lessons stage to Hub.md in real-time (crash-safe, zero overhead)
+- /learn presents a table with recommendations (Owner corrects if needed)
+- Housekeeper agent reminds to run /learn (but never runs it automatically)
+- The approval step IS the quality control
+
+If you think auto-learn should be reconsidered, open an issue with a specific use case where the approval gate adds friction without value.
+
 ## FR-107: Effort Level Inheritance for Subagents
 **Priority:** Low
 **Status:** Idea -- community feedback requested
