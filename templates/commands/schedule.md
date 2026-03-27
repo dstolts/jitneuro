@@ -214,6 +214,54 @@ Do NOT return before both sleeps complete. Each sleep is a separate Bash tool ca
 3. Remove from scheduledAgents array in jitneuro.json
 4. Confirm: "Removed scheduled agent '<name>' from config."
 
+## Instruction Types
+
+The `instruction` field supports:
+
+| Instruction | What master does | Example |
+|------------|-----------------|---------|
+| `/save`, `/health`, etc. | Run the slash command | `"instruction": "/save"` |
+| `UPDATE_HUB` | Sync TodoWrite to Hub.md | `"instruction": "UPDATE_HUB"` |
+| `RESUME_TASKS` | Pick next pending task, execute | `"instruction": "RESUME_TASKS"` |
+| `ASK_USER <msg>` | Surface message to user | `"instruction": "ASK_USER Check deploy status"` |
+| `BASH <cmd>` | Run bash command | `"instruction": "BASH git fetch --all"` |
+| `PWSH <cmd>` | Run PowerShell command | `"instruction": "PWSH Get-Process node"` |
+| `NONE` | No action, just re-spawn | Returned by smart agents when no action needed |
+
+**Examples with bash/PowerShell:**
+
+```json
+{
+  "name": "git-fetch",
+  "interval": 60,
+  "enabled": true,
+  "instruction": "BASH git fetch --all --prune",
+  "description": "Keep all remotes fresh every hour"
+}
+```
+
+```json
+{
+  "name": "test-runner",
+  "interval": 30,
+  "enabled": true,
+  "instruction": "BASH cd /path/to/repo && npm test",
+  "description": "Run tests every 30 minutes during development"
+}
+```
+
+Smart agent with bash fallback:
+```json
+{
+  "name": "deploy-check",
+  "interval": 10,
+  "enabled": true,
+  "instruction": "BASH gh run list --limit 1 --json status,conclusion",
+  "prompt": "Check if a deploy is in progress. If the latest GitHub Actions run is 'in_progress', return the BASH instruction. If completed or no runs, return NONE.",
+  "description": "Monitor active deploys"
+}
+```
+
 ## Important
 - Scheduled agents are one-shot timer agents. They sleep once, return once, die. Master re-spawns them per the guardrail rule.
 - The /schedule command manages config and spawns. The guardrail rule in scheduled-agent-interrupts.md handles the interrupt + re-spawn cycle.
