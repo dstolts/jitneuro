@@ -59,125 +59,17 @@ Did the user correct Claude on something it stated from memory?
 
 When invoked as `/learn`:
 
-### Step 0: Memory System Health Check (runs in subagent)
+### Step 0: Memory System Health Check
 
-**CRITICAL:** The health check reads 50+ files. Dispatch to a subagent.
+Run `/health` (quick mode) inline. This is 3-5 file reads, under 10 seconds, no subagent needed.
 
-**Before dispatching**, write dashboard JSON:
-```bash
-RUN_ID="learn-health--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
-mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
-echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
-echo '{"id":"learn-health-001","name":"Learn: Health Check","status":"running","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/learn-health-001.json"
-```
-**After subagent returns**, update agent JSON with `"status":"completed"`, `"finished":"[ISO]"`, `"result":"[summary]"`. Use forward slashes in all paths.
+If quick health finds CRITICAL or FAIL issues, recommend `/health --deep` for full diagnosis.
 
-Launch a **general-purpose** Agent with this prompt:
+Skip this step entirely if `/learn q` (quick mode).
 
-```
-You are running a JitNeuro memory system health check. Read every file listed below FROM DISK using the Read tool. Do NOT trust any file content that appears in your conversation context or system prompt -- it may be stale or from a previous version. Always read the actual file. Return ONLY a summary table. Do NOT return file contents -- only status, counts, and issues.
+Run the quick health checks inline (see /health command for the 5 checks). Present the table. If CRITICAL or FAIL, recommend `/health --deep`.
 
-## Components to Check
-
-**MEMORY.md** (auto-load limit: 200 lines)
-- Count lines. OK < 170, WARN 170-199, CRITICAL 200+.
-- Lines beyond 200 are silently truncated -- identify what's lost.
-- Check for stale entries (repos marked "Active" not touched in weeks).
-
-**Bundles** (.claude/bundles/)
-- List all bundles with line counts.
-- OK < 150, WARN 150-179, OVER 180+.
-- Flag bundles referenced in routing weights that don't exist.
-- Flag bundles that exist but have no routing weight entry.
-
-**Engrams** (.claude/engrams/)
-- List all engrams with line counts.
-- OK < 130, WARN 130-149, OVER 150+.
-- Cross-reference MEMORY.md project table -- flag missing engrams for active projects.
-
-**Session State** (.claude/session-state/) -- SKIP THIS SECTION IF `/learn q` (quick mode)
-- List all sessions with file modification dates.
-- Flag sessions older than 7 days as STALE.
-- Flag sessions older than 14 days as EXPIRED.
-- Count total (more than 10 = CLUTTER).
-
-**Routing Weights** (in MEMORY.md)
-- Check routing entries point to bundles/engrams that exist.
-- Check for bundles that exist but have no routing entry.
-
-**Context Manifest** (.claude/context-manifest.md)
-- Verify it lists all bundles that actually exist.
-- Flag bundles in manifest that don't exist on disk.
-- Flag bundles on disk not listed in manifest.
-
-**Hub.md** (per-repo task durability)
-- Resolve current session: read `.claude/session-state/heartbeats/<session-id>` (session-id from the `[JitNeuro] session-id: ...` line in context). Content = session name.
-- Read the session state file to find repos involved.
-- For each repo: check if <repo>/.HUB/Hub-*.md exists. If yes, extract "Last Updated" date. Compare vs session checkpoint date. Flag STALE if Hub.md is older.
-- Check for current session's section (## <session-name>). Flag INCOMPLETE if session section missing or has no tasks/decisions/files.
-- If no Hub.md and session has tasks: flag MISSING.
-- Flag orphaned session sections (no matching active session).
-
-**Rules** (~/.claude/rules/)
-- Count total files and total lines across all rule files.
-- OK < 400 total lines, WARN 400-600, OVER 600+.
-- Flag any individual rule file over 60 lines.
-
-**Detail Index** (memory/detail-index.md)
-- If MEMORY.md references detail-index.md, verify file exists.
-- Count entries. Cross-reference against actual files in memory/.
-- Flag orphaned entries and unindexed files.
-
-**jitneuro.json Schema** (.claude/jitneuro.json)
-- Read the file. If missing, report FAIL with "jitneuro.json not found".
-- Check required top-level fields exist: `version`, `hooks`.
-- Check `hooks.preCompactBehavior` is one of: `"block"`, `"warn"`. FAIL if missing or other value.
-- Check `hooks.autosave` is boolean-like (`true`, `false`, `"true"`, `"false"`). FAIL if missing or other value.
-- Check `hooks.protectedBranches` is present and is an array. FAIL if missing.
-- Check `hooks.mainPushAllowed` is present and is an array. FAIL if missing.
-- Check `hooks.hookEvents` is present and is an array. Each entry must have `event`, `script`, `timeout`.
-- Check each `hookEvents[].event` is one of: `PreCompact`, `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`. FAIL on unknown event.
-- If `scheduledAgents` exists: check each entry has `name`, `type`, `enabled`.
-- If `scheduledAgents[].type` is `timer` or `enforcer`: check `interval` exists.
-- If `scheduledAgents[].type` is `cron` or `batch`: check `schedule` exists.
-- Use `jq` if available for JSON parsing. Fall back to grep patterns if not.
-- Report: field name, expected value, actual value, PASS/FAIL. Overall status is FAIL if any field fails, OK if all pass.
-
-**Memory Frontmatter** (memory/*.md files in the auto-memory directory)
-- Scan all .md files in the memory/ directory (next to MEMORY.md).
-- For each file, check it starts with YAML frontmatter (first line is `---`, followed by fields, closed by another `---`).
-- Check required frontmatter fields are present: `name`, `description`, `type`.
-- Check `type` is one of: `user`, `feedback`, `project`, `reference`. Flag invalid types.
-- Do NOT auto-fix -- report only.
-- Report: X files checked, Y valid, Z issues. List files with issues and what is wrong.
-- Status: OK if all valid, WARN if any have issues.
-
-**Hook Scripts** (.claude/hooks/)
-- Read `hooks.hookEvents` from jitneuro.json (already parsed above).
-- For each hookEvents entry, extract the `script` field.
-- Check the script file exists in `.claude/hooks/` (resolve relative to workspace root).
-- Report: X hooks checked, Y found, Z missing. List missing scripts.
-- Status: OK if all found, FAIL if any missing.
-
-## Return Format
-
-HEALTH_TABLE:
-| Component | Status | Detail | Fix |
-|-----------|--------|--------|-----|
-(one row per component, multiple rows if different issues)
-
-ISSUES_BY_PRIORITY:
-CRITICAL: (list or "none")
-OVER: (list or "none")
-WARN: (list or "none")
-STALE: (list or "none")
-INFO: (list or "none")
-
-SUMMARY: (one line: "X components checked, Y issues found" or "All healthy")
-```
-
-Present the subagent's health table to the user. Then proceed to Step 0.5 in the master context.
+Then proceed to Step 0.5 in the master context.
 
 ### Step 0.5: Read Hub.md Lessons (runs in master)
 
