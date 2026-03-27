@@ -4,14 +4,14 @@ Memory system diagnostic. Two modes: quick (default, safe for /save) and deep (o
 
 ## Modes
 
-- `/health` -- quick check. 3-5 file reads, under 10 seconds, NO subagent. Runs inline.
+- `/health` -- quick check. 3-5 file reads, under 10 seconds. Runs as background agent when called from /save or housekeeper. Runs inline when called directly.
 - `/health --deep` -- full scan. 50+ file reads, dispatched to subagent. On-demand only.
 
-Quick mode runs with every /save and housekeeper cycle. Deep mode runs when you ask for it or when something feels off.
+Quick health is not context-dependent -- it reads files on disk, not conversation state. When triggered by /save or housekeeper, dispatch as a background agent so master isn't blocked. Only interrupt master if CRITICAL or FAIL found. When run directly by the user (`/health`), run inline and show results immediately.
 
 ## Quick Health (`/health`)
 
-Run inline in master context. NO subagent needed. Read at most 5 files.
+Read at most 5 files. No conversation context needed.
 
 ### Checks
 
