@@ -32,11 +32,12 @@ Agent types (inferred from config):
 - **smart** -- has `prompt` field, short evaluation. Reads 2-3 files max. (e.g., hub-sync)
 - **enforcer** -- has `prompt` field with priority-ordered checks and multiple possible instructions. Reads files, evaluates conditions, returns the highest-priority instruction that fires. (e.g., housekeeper)
 
-### /schedule start <name>
+### /schedule start <name> [interval]
 
 1. Find the agent config by name in scheduledAgents
 2. If not found: "No scheduled agent named '<name>'. Use /schedule add to create one."
 3. If already running: "Agent '<name>' is already running."
+3b. If `[interval]` provided: use it instead of the config value (runtime override, does not change jitneuro.json). Example: `/schedule start autosave 45` runs autosave every 45 minutes this session.
 4. **Build the agent prompt from jitneuro.json config:**
    The agent itself never reads jitneuro.json. Claude reads the config, translates it into a literal prompt, and spawns the agent with that prompt. The translation:
    - `interval` → calculate sleep chain (see below) → write as literal Bash sleep steps
