@@ -70,13 +70,13 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 
 **Bundles** (.claude/bundles/)
 - List all bundles with line counts.
-- OK < 150, WARN 150-179, OVER 180+.
+- OK < 230, WARN 230-279, OVER 280+. Soft limit -- report only, do not auto-trim.
 - Flag bundles referenced in routing weights that don't exist.
 - Flag bundles that exist but have no routing weight entry.
 
 **Engrams** (.claude/engrams/)
 - List all engrams with line counts.
-- OK < 130, WARN 130-149, OVER 150+.
+- OK < 150, WARN 150-179, OVER 180+. Soft limit -- report only, do not auto-trim.
 - Cross-reference MEMORY.md project table -- flag missing engrams for active projects.
 
 **Session State** (.claude/session-state/)
@@ -150,9 +150,9 @@ Fixes run in master context (small, targeted edits).
 |---------|-----|
 | MEMORY.md over 170 | Extract largest section to bundle, replace with pointer |
 | MEMORY.md over 200 | CRITICAL. Identify truncated content, move immediately |
-| Bundle over 180 | Report to user. Soft limit. |
+| Bundle over 280 | Soft limit. Report only. Offer to trim, default no. |
 | Bundle missing (referenced) | Create from template |
-| Engram over 150 | Trim History, compress verbose sections |
+| Engram over 180 | Soft limit. Report only. Offer to trim, default no. |
 | Engram missing for active project | Create from template |
 | Session older than 7 days | Flag for user decision |
 | More than 10 sessions | List all, ask user to clean up |

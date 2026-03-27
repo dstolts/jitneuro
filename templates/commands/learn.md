@@ -29,7 +29,7 @@ Did Claude load the wrong bundle? Did the user have to manually specify context?
 Is any bundle stale, missing information, or too large?
 - New convention established this session -> add to relevant bundle
 - Bundle was loaded but didn't have what Claude needed -> update content
-- Bundle over 180 lines -> suggest split
+- Bundle over 280 lines -> suggest split
 
 ### 3. Engram Updates (.claude/engrams/)
 Did the session reveal new facts about a project's identity or architecture?
@@ -143,6 +143,6 @@ Master never reads memory/ files, Hub.md, or rules/ directly. Agents handle all 
 - NEVER write without user approval. Present the table first.
 - Health runs separately via /health (as agent). /learn does not run health.
 - MEMORY.md hard limit: 200 lines. Lines beyond 200 are silently truncated.
-- Bundle soft limit: 180 lines. Report if over, do NOT auto-trim.
-- Engram soft limit: 150 lines. Longer engrams waste context on low-value detail.
+- Bundle soft limit: 280 lines. Report if over, do NOT auto-trim. Offer to trim, default no.
+- Engram soft limit: 180 lines. Report if over, do NOT auto-trim. Offer to trim, default no.
 - This command reads and proposes. It does not modify code files, only memory/context files.
