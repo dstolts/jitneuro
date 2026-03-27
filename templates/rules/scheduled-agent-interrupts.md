@@ -11,8 +11,13 @@ Scheduled agents are user-configured timer agents that periodically return instr
    - `INSTRUCTION: /health` -- run /health now
    - `INSTRUCTION: UPDATE_HUB` -- sync TodoWrite state to Hub.md now. Read TaskList, compare to Hub.md, update Hub.md to match current task status.
    - `INSTRUCTION: ASK_USER <message>` -- surface the message to the user immediately
+   - `INSTRUCTION: RESUME_TASKS` -- read TaskList, pick next pending task, execute it
+   - `INSTRUCTION: SURFACE_QUESTIONS` -- display the pending questions queue NOW
    - `INSTRUCTION: NONE` -- no action needed this cycle, just re-spawn
    - `INSTRUCTION: <any slash command>` -- run that command now
+   - `INSTRUCTION: BASH <command>` -- run the bash command via Bash tool
+   - `INSTRUCTION: PWSH <command>` -- run the PowerShell command via Bash tool (pwsh -Command "...")
+   - `REMINDER:` lines -- execute alongside the main instruction (e.g., always surface pending questions)
 4. **Re-spawn the timer agent** with the same config (unless user ran `/schedule stop <name>` or the agent's `enabled` is false in jitneuro.json).
 5. **Resume previous work** where you left off.
 

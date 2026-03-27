@@ -109,6 +109,10 @@ Written to `.claude/session-state/_autosave.md` (overwritten each time). Exclude
 - The hook reads the first 15 lines of the session file to extract task/repos. If the session file format changes or those fields are beyond line 15, extraction will miss them.
 - On Windows, `stat -c %Y` may not work depending on the bash environment. The hook falls back to `stat -f %m` (BSD/macOS), but if both fail, save detection defaults to "no" (safe fallback -- always warns).
 
+## Heartbeat System
+
+See [heartbeat.md](heartbeat.md) for the full heartbeat reference -- what it is, how it works, overhead (~5ms/call), value to 6 consumers, why file-based, and write safety rules.
+
 ## Configuration
 
 ### settings.local.json hooks block

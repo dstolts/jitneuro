@@ -72,6 +72,16 @@ workspace-root/
   |-- repo-b/
 ```
 
+### Why .claude/ (not .jitneuro/)
+
+JitNeuro stores everything in `.claude/` because that's where Claude Code looks. Commands must be in `.claude/commands/` for Claude Code to discover them. Hooks must be in `.claude/hooks/` for settings.local.json to reference them. Rules must be in `.claude/rules/` for Claude Code to load them at session start.
+
+If JitNeuro used `.jitneuro/`, Claude Code wouldn't find the commands, hooks, or rules. We'd need a bridge layer to copy or symlink files -- added complexity for zero value.
+
+`.claude/` is Claude Code's namespace. JitNeuro adds content to it (bundles, engrams, cognition, session state) but doesn't own the namespace. This means JitNeuro works alongside any other Claude Code tooling without conflicts.
+
+**In v1.0**, `.jitneuro/` will be introduced as the TEAM knowledge folder -- committed to git, shared across developers. `.claude/` remains personal (gitignored). The two folders have different purposes: `.jitneuro/` = team shared, `.claude/` = personal + platform.
+
 Commands can be installed at three levels (user, workspace, project).
 Claude Code merges all levels; more specific scopes take priority.
 
@@ -146,4 +156,5 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 - [Customization Guide](customization-guide.md) -- Personas, rules, cognitive identity
 - [Concepts](concepts.md) -- Core concepts explained
 - [Architecture](architecture.md) -- Neural network mapping and diagrams
+- [Routing Weights vs Semantic Memory](routing-vs-semantic-memory.md) -- Why explicit routing beats vector search
 - [Enterprise Security](enterprise-security.md) -- Trust model and hook enforcement

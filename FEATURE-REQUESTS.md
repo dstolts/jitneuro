@@ -678,6 +678,154 @@ If this feature would be valuable to you, comment on the issue with:
 - Whether you prefer interactive installer, feature flags, or per-command install/uninstall
 - Your environment (team size, OS, constrained hardware?)
 
+## FR-108: Cold Start Routing -- Auto-Discover Dependencies at Install
+**Priority:** High
+**Status:** Idea -- design needed
+
+JitNeuro's routing weights require time to build up via /learn. New adopters start with empty routing and must manually /bundle load context. Semantic search frameworks solve this by embedding everything -- but at the cost of heavy dependencies.
+
+**Better approach:** Scan repos at install/onboard time and auto-generate routing weights from what's already in the code.
+
+### What to Scan
+
+| Source | What it reveals | Example |
+|--------|----------------|---------|
+| `.env` files | Service dependencies | `AUTH_API_URL=https://auth.example.com` -> links to auth service |
+| `package.json` dependencies | Tech stack | `express`, `firebase-admin`, `stripe` -> load API, auth, payments bundles |
+| Import statements | Cross-repo references | `import { auth } from '../AuthFirebase'` -> repo dependency |
+| `docker-compose.yml` | Service graph | `depends_on: [api, redis]` -> infrastructure bundle |
+| API endpoint definitions | Integration points | Routes referencing external services |
+| `CLAUDE.md` / `README.md` | Project identity | Tech stack, purpose, key paths |
+| `.env.*.example` files | Environment configs | Which services per environment |
+
+### How It Works
+
+```
+/onboard <repo>
+  1. Scan the repo for dependency signals (above table)
+  2. Generate initial routing weights: keyword -> bundle mappings
+  3. Generate initial engram: tech stack, key files, architecture
+  4. Write to .claude/context-manifest.md (or .jitneuro/ in team mode)
+  5. Present to user: "I found these dependencies. Correct?"
+```
+
+For workspace-level install:
+```
+install.sh --scan-repos
+  1. For each repo under workspace: run the dependency scan
+  2. Build a cross-repo integration map
+  3. Generate routing weights that include cross-repo patterns
+  4. Example: "auth" -> [api-patterns, auth-service engram]
+```
+
+### Cross-Repo Discovery
+
+The real power: scanning ACROSS repos reveals the integration graph.
+- Repo A's .env references Repo B's URL -> A depends on B
+- Repo B's package.json has firebase-admin -> B is the auth service
+- Repo C's imports reference Repo A's API client -> C is a frontend for A
+
+This graph becomes routing weights automatically:
+```
+- auth / login / token         -> [auth-service engram, api-patterns]
+- payments / stripe / subscribe -> [payments engram, api-patterns]
+- frontend / app / UI          -> [frontend engram, api-patterns]
+```
+
+### Keeps Getting Better
+
+Initial scan provides day-1 routing. /learn refines it over time. The cold start is solved without semantic search, without embeddings, without any external dependency.
+
+### Commands
+
+- `/onboard <repo>` -- already exists, add dependency scanning
+- `/onboard --scan-all` -- scan all repos in workspace
+- `/verify --routing` -- verify routing weights match current repo state (detect drift)
+
+### Community Input Welcome
+
+- What dependency signals does your stack expose? (package.json, go.mod, requirements.txt, etc.)
+- Would you trust auto-generated routing weights or want to review first?
+- Should the scan run on every /verify or only on /onboard?
+
+## FR-110: Auto-Fix for /health --deep (Intentionally Rejected)
+**Priority:** N/A
+**Status:** Rejected by design
+
+An `--autofix` flag for `/health --deep` would automatically resolve issues (trim engrams, split bundles, clean stale sessions) without owner approval.
+
+**Why not:**
+- **Context matters.** An engram over 150 lines might contain critical architecture context the owner intentionally kept. Auto-trimming loses it.
+- **Limits are guidelines, not laws.** The owner may extend what's allowed for specific files. An auto-fixer doesn't know that the 160-line engram is 160 lines ON PURPOSE.
+- **Same principle as auto-learn.** The system's value IS the human review step. /health presents findings. Owner decides what to fix, what to extend, and what to leave. That 30-second review prevents data loss.
+- **AI judgment is not owner judgment.** Claude might trim history entries the owner considers important, or consolidate rules the owner intentionally separated for readability.
+
+**What we do instead:**
+- /health --deep presents a numbered table of findings
+- Owner says "fix all" or picks by number
+- Owner can also say "extend the engram limit to 180 for this file" -- the system adapts to the owner, not the other way around
+
+## FR-109: Auto-Learn (Intentionally Rejected)
+**Priority:** N/A
+**Status:** Rejected by design
+
+Auto-learn would run /learn automatically after every session (or on a schedule) without owner approval. This has been evaluated and intentionally rejected.
+
+**Why not:**
+- **Precision at risk.** A wrong correction becomes a permanent rule. Wrong rules load wrong context. Wrong context produces more wrong corrections. The feedback loop compounds in the wrong direction.
+- **Security at risk.** A misclassified lesson could weaken a security guardrail, relax a trust zone, or change an approval workflow without the owner noticing.
+- **Performance at risk.** Bad routing weights load irrelevant bundles, wasting tokens and degrading Claude's reasoning quality.
+- **The system's value IS the approval gate.** /learn proposes. Owner decides. That 30-second review prevents weeks of drift.
+
+**What we do instead:**
+- Lessons stage to Hub.md in real-time (crash-safe, zero overhead)
+- /learn presents a table with recommendations (Owner corrects if needed)
+- Housekeeper agent reminds to run /learn (but never runs it automatically)
+- The approval step IS the quality control
+
+**The deeper point:** AI is not perfect. The rules and routing weights that govern how Claude thinks about YOUR projects are too important to leave to AI 100%. Human judgment at the /learn approval step is not overhead -- it's the quality control that makes the entire system trustworthy.
+
+**It's also fast.** /learn presents a numbered table. Say "all" or "go" to approve everything. Say "skip 3" to exclude one. The approval step takes 5 seconds, not 5 minutes. The friction is near-zero but the safety is absolute.
+
+If you think auto-learn should be reconsidered, open an issue with a specific use case where the approval gate adds friction without value.
+
+## FR-107: Effort Level Inheritance for Subagents
+**Priority:** Low
+**Status:** Idea -- community feedback requested
+
+Currently, subagents inherit the master's `effortLevel` setting. This means a high-effort master spawns high-effort workers, even when the worker's task is simple (file lookup, grep, score one item).
+
+### Question
+
+Should JitNeuro add rules that adjust effort level based on agent type?
+
+| Agent Type | Current (inherited) | Proposed |
+|-----------|-------------------|----------|
+| Explore / lookup | Master's level | Low (always -- focused, scoped) |
+| Plan / discovery / analysis | Master's level | Inherit master (these need depth) |
+| Workers (batch) | Master's level | Low-medium (focused single task) |
+| Sub-orchestrator | Master's level | Low (routing only, no deep thinking) |
+| Housekeeper / enforcer | Master's level | Low (quick checks, not analysis) |
+
+This parallels the divergent thinking inheritance model (divergent-thinking.md) where some agent types inherit the mode and others are always serial.
+
+### Tradeoffs
+
+**Keep inheritance (current):**
+- Simple. No new rules. Master controls everything.
+- If master is on high effort, all work gets thorough treatment.
+
+**Add type-based rules:**
+- Token savings: low-effort workers use fewer tokens per task.
+- Speed: batch operations with 10 workers finish faster at low effort.
+- Risk: a worker that needed high effort but got low might miss something.
+
+### Community Input Welcome
+
+- Do you notice token/speed differences between effort levels in subagents?
+- Would you want per-agent effort control, or is master inheritance sufficient?
+- Should this be configurable in jitneuro.json or automatic based on agent type?
+
 ---
 
 ## Neural Network Mapping (Phase 2 -- Conceptual Analogy)

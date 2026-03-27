@@ -149,13 +149,32 @@ if [ ! -f "$TARGET/session-state/README.md" ]; then
   echo "Created session-state/README.md"
 fi
 
-# Copy scoped rule example if rules dir is empty
-if [ -z "$(ls -A "$TARGET/rules/" 2>/dev/null)" ]; then
-  cp "$TEMPLATES/rules/scoped-rule-example.md" "$TARGET/rules/scoped-rule-example.md"
-  echo "Created rules/scoped-rule-example.md (template)"
-else
-  echo "Skipped rules/ (already has files)"
-fi
+# Install rule templates (respect DISABLED marker)
+echo "Installing rule templates..."
+RULE_COUNT=0
+RULE_SKIP=0
+for rule_file in "$TEMPLATES/rules/"*.md; do
+  [ -f "$rule_file" ] || continue
+  rule_name="$(basename "$rule_file")"
+  target_rule="$TARGET/rules/$rule_name"
+  if [ -f "$target_rule" ]; then
+    if head -1 "$target_rule" | grep -q "(DISABLED)" 2>/dev/null; then
+      echo "  SKIP: $rule_name (disabled by user)"
+      RULE_SKIP=$((RULE_SKIP + 1))
+      continue
+    fi
+    if ! diff -q "$rule_file" "$target_rule" >/dev/null 2>&1; then
+      cp "$rule_file" "$target_rule"
+      echo "  UPDATED: $rule_name"
+      RULE_COUNT=$((RULE_COUNT + 1))
+    fi
+  else
+    cp "$rule_file" "$target_rule"
+    echo "  $rule_name"
+    RULE_COUNT=$((RULE_COUNT + 1))
+  fi
+done
+echo "  ($RULE_COUNT rules installed, $RULE_SKIP disabled/skipped)"
 
 # Install cognition layer (Phase 2)
 echo "Installing cognition layer..."

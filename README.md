@@ -134,6 +134,7 @@ All docs are reference, not prerequisites. Read them when you're curious, not be
 | [Sub-Orchestrator Pattern](docs/sub-orchestrator-pattern.md) | Managing large-scale operations with worker pools |
 | [Customization Guide](docs/customization-guide.md) | Personas, rules, cognitive identity |
 | [Hooks Guide](docs/hooks-guide.md) | Lifecycle hooks and custom hooks |
+| [Routing Weights vs Semantic Memory](docs/routing-vs-semantic-memory.md) | Why explicit routing beats vector search for AI context loading |
 | [Enterprise Security](docs/enterprise-security.md) | Trust model and securing hooks for teams |
 
 ## Disclaimer

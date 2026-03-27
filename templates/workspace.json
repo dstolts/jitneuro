@@ -1,0 +1,223 @@
+{
+  "$schema": "workspace-schema.json",
+  "$updated": "2026-01-01",
+  "_description": "JitNeuro workspace registry. Maps credentials, services, and integrations to their storage locations. This file contains ZERO secrets -- only pointers to .env files and vault references. Safe to commit.",
+  "owner": "Owner Name",
+  "company": "Your Company",
+  "vaults": {
+    "_description": "Credential storage systems. Each vault has a type, auth method, and migration status. Credentials reference a vaultTarget to indicate where they should eventually live.",
+    "akv-prod": {
+      "type": "azure-keyvault",
+      "name": "kv-yourcompany-prod",
+      "url": "https://kv-yourcompany-prod.vault.azure.net",
+      "auth": "az CLI (DefaultAzureCredential)",
+      "purpose": "Production secrets (API keys, tokens, connection strings)",
+      "status": "planned"
+    },
+    "akv-dev": {
+      "type": "azure-keyvault",
+      "name": "kv-yourcompany-dev",
+      "url": "https://kv-yourcompany-dev.vault.azure.net",
+      "auth": "az CLI (DefaultAzureCredential)",
+      "purpose": "Dev/UAT secrets",
+      "status": "planned"
+    },
+    "keeper": {
+      "type": "keeper",
+      "purpose": "Personal credentials, PATs, SSH keys, browser-managed secrets",
+      "auth": "Keeper Desktop/CLI",
+      "status": "active"
+    }
+  },
+  "credentials": {
+    "_description": "Each entry points to the .env file and key names where the secret lives. The secret itself is NEVER stored here. Fields: envFile (path to .env), keyNames (array of var names), purpose (what it does), vaultTarget (where it should migrate to), migrated (boolean), expires (ISO date, optional).",
+    "stripe": {
+      "envFile": "${WORKSPACE}/YourApp/.env.prod",
+      "keyNames": [
+        "STRIPE_SECRET_KEY",
+        "STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_WEBHOOK_SECRET"
+      ],
+      "purpose": "Payment processing and subscriptions",
+      "dashboard": "https://dashboard.stripe.com/",
+      "vaultTarget": "akv-prod",
+      "migrated": false
+    },
+    "ghost": {
+      "envFile": "${WORKSPACE}/Automation/.env",
+      "keyNames": [
+        "GHOST_ADMIN_API_KEY",
+        "GHOST_CONTENT_API_KEY",
+        "GHOST_URL"
+      ],
+      "purpose": "CMS publishing (blog posts, pages)",
+      "vaultTarget": "akv-prod",
+      "migrated": false
+    },
+    "github_pat": {
+      "method": "gh CLI (PAT auth)",
+      "expires": "2026-12-31",
+      "purpose": "GitHub API access and MCP integration",
+      "vaultTarget": "keeper",
+      "migrated": false
+    },
+    "email_provider": {
+      "envFile": "${WORKSPACE}/Automation/.env",
+      "keyNames": [
+        "EMAIL_API_KEY",
+        "EMAIL_WEBHOOK_SECRET"
+      ],
+      "purpose": "Transactional and outreach email delivery",
+      "vaultTarget": "akv-prod",
+      "migrated": false
+    },
+    "database": {
+      "envFile": "${WORKSPACE}/YourApp/.env",
+      "keyNames": [
+        "DB_HOST",
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASSWORD"
+      ],
+      "purpose": "Application database connection",
+      "notes": "Never use sa or root accounts. Create dedicated service accounts.",
+      "vaultTarget": "akv-dev",
+      "migrated": false
+    },
+    "ai_provider": {
+      "envFile": "${WORKSPACE}/Automation/.env",
+      "keyName": "AI_API_KEY",
+      "purpose": "LLM API access (Claude, GPT, etc.)",
+      "vaultTarget": "akv-prod",
+      "migrated": false
+    },
+    "oauth_example": {
+      "_description": "Example of an OAuth credential with detailed metadata. Include auth flow, scopes, and token refresh notes.",
+      "envFile": "${WORKSPACE}/Automation/.env",
+      "keyNames": [
+        "OAUTH_CLIENT_ID",
+        "OAUTH_CLIENT_SECRET",
+        "OAUTH_REFRESH_TOKEN"
+      ],
+      "purpose": "Third-party OAuth integration",
+      "authFlow": "OAuth2 authorization_code (one-time browser consent, then refresh tokens)",
+      "scopes": ["read", "write"],
+      "notes": "Refresh tokens expire after 90 days of inactivity.",
+      "vaultTarget": "keeper",
+      "migrated": false
+    },
+    "vault_migrated_example": {
+      "_description": "Example of a credential that has been migrated to a vault. Claude reads the vault instead of the .env file when migrated=true.",
+      "envFile": "${WORKSPACE}/Automation/.env",
+      "keyNames": [
+        "LEGACY_API_KEY"
+      ],
+      "purpose": "Example of a fully vault-migrated credential",
+      "vaultTarget": "akv-prod",
+      "vaultKey": "legacy-api-key",
+      "migrated": true
+    }
+  },
+  "envFiles": {
+    "_description": "Maps every .env file location to its purpose. Claude checks this to find the right .env file. The central .env should be checked FIRST for most credentials.",
+    "${WORKSPACE}/Automation/.env": "Central credentials (API keys, tokens). Primary source -- check here FIRST.",
+    "${WORKSPACE}/YourApp/.env": "Application local dev credentials",
+    "${WORKSPACE}/YourApp/.env.uat": "Application UAT environment",
+    "${WORKSPACE}/YourApp/.env.prod": "Application production credentials"
+  },
+  "services": {
+    "_description": "Infrastructure services with per-environment URLs and health check endpoints. Claude uses these to test connectivity and route API calls to the correct environment.",
+    "my-api": {
+      "purpose": "Main application API",
+      "environments": {
+        "local": {
+          "url": "http://localhost:3005",
+          "health": "/health"
+        },
+        "uat": {
+          "url": "https://my-api-uat.example.com",
+          "health": "/health"
+        },
+        "prod": {
+          "url": "https://my-api.example.com",
+          "health": "/health"
+        }
+      }
+    },
+    "auth-service": {
+      "purpose": "Authentication service",
+      "environments": {
+        "local": {
+          "url": "http://localhost:3030",
+          "health": "/health"
+        }
+      }
+    },
+    "automation-host": {
+      "_description": "Example of a non-HTTP service (e.g., a Docker host, VM, or bare-metal server). Include SSH and relevant ports.",
+      "purpose": "Automation and workflow host",
+      "ip": "192.168.1.100",
+      "ssh": {
+        "user": "deploy",
+        "passwordIn": "${WORKSPACE}/Automation/.env"
+      }
+    }
+  },
+  "domains": {
+    "_description": "DNS and hosting configuration. Track which domains exist, where DNS is managed, and any redirect relationships.",
+    "example.com": {
+      "dns": "cloudflare",
+      "primary": true
+    },
+    "app.example.com": {
+      "dns": "cloudflare",
+      "notes": "Application subdomain"
+    },
+    "legacy.example.com": {
+      "dns": "cloudflare",
+      "notes": "Legacy domain, migrating through 2026",
+      "redirectFrom": ["old-domain.com"]
+    }
+  },
+  "sendingDomains": {
+    "_description": "Email sending domain configuration. Each entry maps a sending domain to its provider and purpose.",
+    "domains": [
+      {
+        "domain": "mail.example.com",
+        "provider": "resend",
+        "purpose": "Transactional email"
+      },
+      {
+        "domain": "outreach.example.com",
+        "provider": "resend",
+        "purpose": "Marketing and outreach"
+      }
+    ]
+  },
+  "socialAccounts": {
+    "_description": "Social media and public profile links. No secrets here -- just URLs for reference.",
+    "github": "https://github.com/your-org",
+    "linkedin": "https://www.linkedin.com/company/your-company/",
+    "website": "https://example.com"
+  },
+  "team": {
+    "_description": "Team members with roles. Used for commit attribution and access context.",
+    "members": [
+      {
+        "name": "Owner Name",
+        "role": "Founder",
+        "github": "owner-username"
+      }
+    ]
+  },
+  "tools": {
+    "_description": "Custom scripts and utilities with their paths and dependencies. Claude can invoke these directly when needed.",
+    "example-script": {
+      "path": "${WORKSPACE}/Automation/scripts/example.py",
+      "description": "Example automation script",
+      "language": "python3",
+      "dependencies": "stdlib only",
+      "usage": "python example.py --input data.json --output results.json"
+    }
+  }
+}
