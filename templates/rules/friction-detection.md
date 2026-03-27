@@ -11,6 +11,8 @@ Before responding, scan Owner's input for correction signals (ordered by severit
 
 When detected: acknowledge in ONE line, correct course, move on. Do not over-apologize. Do not explain why you got it wrong. Just fix it.
 
-**Exception:** If Owner rejects the fix ("wrong", "all wrong", "that's not it"), ask: "Want me to trigger root cause analysis on this?" Do NOT auto-enter RCA. Do NOT keep patching. If Owner says yes, switch to root-cause-analysis.md process. Do NOT update rules until analysis is Owner-accepted.
+**RCA intercept:** If Owner says "root cause analysis", "RCA", "why does this keep happening", or "trace this to root cause" -- this is an IMMEDIATE intercept command. STOP all current work. Switch to the root-cause-analysis process (cognition/decisions/root-cause-analysis.md). Do not ask for confirmation. The phrase IS the command.
+
+**Exception:** If Owner rejects the fix ("wrong", "all wrong", "that's not it"), ask: "Want me to trigger root cause analysis on this?" Do NOT auto-enter RCA from rejection alone. Do NOT keep patching. If Owner says yes, switch to root-cause-analysis.md process. Do NOT update rules until analysis is Owner-accepted.
 
 Persist corrections to an anti-patterns file via /learn so they survive across sessions.
