@@ -59,15 +59,18 @@ Did the user correct Claude on something it stated from memory?
 
 When invoked as `/learn`:
 
-### Phase 1: Gather (master + agent in PARALLEL)
+### Phase 1: Gather (master + 2 agents in PARALLEL)
 
-Two things happen simultaneously:
+Three things happen simultaneously:
 
 **Master (needs conversation context):**
 Scan the session for each of the 5 categories above.
 Look at: user corrections, bundle loads, manual context requests,
 new discoveries, architecture changes, decisions made.
 Produce a raw findings list (one line per finding).
+
+**Health Agent (background, skip if `/learn q`):**
+Dispatch a background agent to run `/health` (quick mode). Agent returns the health table. Master includes health findings in the Phase 2 table if any issues found. If all healthy, no health rows in the output.
 
 **Agent A (background, no conversation needed):**
 Dispatch a background agent with this prompt:
@@ -133,7 +136,8 @@ Master receives confirmation. Reports what was written and where.
 |-------|-----|-----------|-----|
 | 1 (scan session) | Master | Medium | Must read conversation context |
 | 1 (Hub.md + dedup) | Agent A | Low | File reads only, returns findings list |
-| 2 (merge + present) | Master | Low | Combine two lists, display table |
+| 1 (health check) | Health Agent | Low | 5 file reads, returns table (skipped in -q) |
+| 2 (merge + present) | Master | Low | Combine lists, display table |
 | 3 (write files) | Agent B | Low | File writes, returns file list |
 
 Master never reads memory/ files, Hub.md, or rules/ directly. Agents handle all file I/O.
