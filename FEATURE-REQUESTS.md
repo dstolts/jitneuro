@@ -748,6 +748,23 @@ Initial scan provides day-1 routing. /learn refines it over time. The cold start
 - Would you trust auto-generated routing weights or want to review first?
 - Should the scan run on every /verify or only on /onboard?
 
+## FR-110: Auto-Fix for /health --deep (Intentionally Rejected)
+**Priority:** N/A
+**Status:** Rejected by design
+
+An `--autofix` flag for `/health --deep` would automatically resolve issues (trim engrams, split bundles, clean stale sessions) without owner approval.
+
+**Why not:**
+- **Context matters.** An engram over 150 lines might contain critical architecture context the owner intentionally kept. Auto-trimming loses it.
+- **Limits are guidelines, not laws.** The owner may extend what's allowed for specific files. An auto-fixer doesn't know that the 160-line engram is 160 lines ON PURPOSE.
+- **Same principle as auto-learn.** The system's value IS the human review step. /health presents findings. Owner decides what to fix, what to extend, and what to leave. That 30-second review prevents data loss.
+- **AI judgment is not owner judgment.** Claude might trim history entries the owner considers important, or consolidate rules the owner intentionally separated for readability.
+
+**What we do instead:**
+- /health --deep presents a numbered table of findings
+- Owner says "fix all" or picks by number
+- Owner can also say "extend the engram limit to 180 for this file" -- the system adapts to the owner, not the other way around
+
 ## FR-109: Auto-Learn (Intentionally Rejected)
 **Priority:** N/A
 **Status:** Rejected by design
