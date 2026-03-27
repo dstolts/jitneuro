@@ -146,4 +146,5 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 - [Customization Guide](customization-guide.md) -- Personas, rules, cognitive identity
 - [Concepts](concepts.md) -- Core concepts explained
 - [Architecture](architecture.md) -- Neural network mapping and diagrams
+- [Routing Weights vs Semantic Memory](routing-vs-semantic-memory.md) -- Why explicit routing beats vector search
 - [Enterprise Security](enterprise-security.md) -- Trust model and hook enforcement

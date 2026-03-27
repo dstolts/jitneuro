@@ -100,6 +100,37 @@ You are running a JitNeuro memory system health check. Read every file listed be
 - Flag orphaned entries (file deleted but row remains).
 - Flag unindexed files (file exists but not in index).
 
+**jitneuro.json Schema** (.claude/jitneuro.json)
+- Read the file. If missing, report FAIL with "jitneuro.json not found".
+- Check required top-level fields exist: `version`, `hooks`.
+- Check `hooks.preCompactBehavior` is one of: `"block"`, `"warn"`. FAIL if missing or other value.
+- Check `hooks.autosave` is boolean-like (`true`, `false`, `"true"`, `"false"`). FAIL if missing or other value.
+- Check `hooks.protectedBranches` is present and is an array. FAIL if missing.
+- Check `hooks.mainPushAllowed` is present and is an array. FAIL if missing.
+- Check `hooks.hookEvents` is present and is an array. Each entry must have `event`, `script`, `timeout`.
+- Check each `hookEvents[].event` is one of: `PreCompact`, `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`. FAIL on unknown event.
+- If `scheduledAgents` exists: check each entry has `name`, `type`, `enabled`.
+- If `scheduledAgents[].type` is `timer` or `enforcer`: check `interval` exists.
+- If `scheduledAgents[].type` is `cron` or `batch`: check `schedule` exists.
+- Use `jq` if available for JSON parsing. Fall back to grep patterns if not.
+- Report: field name, expected value, actual value, PASS/FAIL. Overall status is FAIL if any field fails, OK if all pass.
+
+**Memory Frontmatter** (memory/*.md files in the auto-memory directory)
+- Scan all .md files in the memory/ directory (next to MEMORY.md).
+- For each file, check it starts with YAML frontmatter (first line is `---`, followed by fields, closed by another `---`).
+- Check required frontmatter fields are present: `name`, `description`, `type`.
+- Check `type` is one of: `user`, `feedback`, `project`, `reference`. Flag invalid types.
+- Do NOT auto-fix -- report only.
+- Report: X files checked, Y valid, Z issues. List files with issues and what is wrong.
+- Status: OK if all valid, WARN if any have issues.
+
+**Hook Scripts** (.claude/hooks/)
+- Read `hooks.hookEvents` from jitneuro.json (already parsed above).
+- For each hookEvents entry, extract the `script` field.
+- Check the script file exists in `.claude/hooks/` (resolve relative to workspace root).
+- Report: X hooks checked, Y found, Z missing. List missing scripts.
+- Status: OK if all found, FAIL if any missing.
+
 ## Return Format
 
 Return ONLY this structure (no extra text, no file contents):
@@ -158,6 +189,11 @@ Use these remediation patterns:
 | Rule file over 60 lines | Split into focused concerns or extract examples to docs |
 | Detail index orphan | Remove index entry for deleted file |
 | Detail index unindexed | Add entry to detail-index.md for the untracked memory file |
+| jitneuro.json missing | Create from templates or ask user to run install |
+| jitneuro.json field invalid | Report field, expected value, actual value. User fixes manually |
+| Memory frontmatter missing | Add frontmatter block with name, description, type to the file |
+| Memory frontmatter invalid type | Change type to one of: user, feedback, project, reference |
+| Hook script missing | Create script from templates/hooks/ or remove hookEvents entry |
 
 After fixes, re-read modified files to verify limits are respected.
 

@@ -27,6 +27,11 @@ Status values:
 - `STOPPED` -- enabled in config but not currently spawned (user stopped it, or not yet started)
 - `DISABLED` -- `enabled: false` in config
 
+Agent types (inferred from config):
+- **simple** -- no `prompt` field. Sleeps, returns fixed instruction. (e.g., autosave)
+- **smart** -- has `prompt` field, short evaluation. Reads 2-3 files max. (e.g., hub-sync)
+- **enforcer** -- has `prompt` field with priority-ordered checks and multiple possible instructions. Reads files, evaluates conditions, returns the highest-priority instruction that fires. (e.g., housekeeper)
+
 ### /schedule start <name>
 
 1. Find the agent config by name in scheduledAgents
@@ -56,7 +61,7 @@ Do no other work. Do not read files. Do not analyze anything. Just sleep and ret
 )
 ```
 
-**For smart agents (has prompt field):**
+**For smart agents (has prompt field, short evaluation):**
 ```
 Agent(
   run_in_background: true,
@@ -83,6 +88,39 @@ SCHEDULED: <name>
 INSTRUCTION: NONE
 
 Keep evaluation lightweight. Read at most 2-3 files. Decide in under 10 seconds.
+"""
+)
+```
+
+**For enforcer agents (has prompt field with priority-ordered checks):**
+
+Enforcer agents have a prompt that describes multiple conditions to check in priority order. Each condition maps to a different instruction. The agent evaluates top-down and returns the FIRST instruction that fires.
+
+Valid enforcer instructions include all standard instructions plus:
+- `RESUME_TASKS` -- master should check Hub.md for pending tasks and resume the highest-priority one
+- `ASK_USER <message>` -- surface a message to the user
+
+```
+Agent(
+  run_in_background: true,
+  description: "scheduled: <name>",
+  prompt: """
+You are an enforcer agent for "<name>".
+Your job: sleep, evaluate conditions in priority order, return the highest-priority instruction that fires.
+
+SLEEP: <interval> minutes.
+<sleep_instructions>
+
+When you wake, evaluate these checks IN ORDER (stop at the first that fires):
+<prompt from config>
+
+Return format:
+SCHEDULED: <name>
+INSTRUCTION: <the instruction from the first check that fired, e.g., RESUME_TASKS, UPDATE_HUB, /save, ASK_USER <msg>, or NONE>
+CONTEXT: <one line: which check fired and why>
+REMINDER: Surface pending questions.
+
+Read Hub.md and heartbeat files as needed. Keep total evaluation under 15 seconds.
 """
 )
 ```
@@ -130,4 +168,26 @@ Keep evaluation lightweight. Read at most 2-3 files. Decide in under 10 seconds.
 - Sleep uses chained `sleep 600` (10 min max per bash call). Forward slashes in all paths.
 - Agent descriptions use "scheduled: <name>" prefix so they're identifiable in agent lists.
 - Smart agents (with prompt) should keep evaluation under 10 seconds and read at most 2-3 files.
+- Enforcer agents (with priority-ordered prompt) may read up to 5 files but should complete evaluation in under 15 seconds.
 - Do not spawn agents for disabled entries (enabled: false).
+
+## Sleep Reliability
+
+Sleep instructions MUST be explicit and specific in the agent prompt. The agent must run `sleep <seconds>` via the Bash tool directly -- not delegate to a background task, not use run_in_background for the sleep itself, and not wrap sleep in any other construct.
+
+Rules:
+- Bash `sleep` has a per-call timeout limit (max 600 seconds / 10 minutes).
+- For intervals >10 minutes, chain multiple `sleep 600` calls sequentially. Example: 15 minutes = `sleep 600` then `sleep 300`. 30 minutes = three `sleep 600` calls.
+- The sleep chain must appear as literal instructions in the agent prompt (e.g., "Run: sleep 600 via Bash tool. Then run: sleep 300 via Bash tool."). Do not say "sleep for 15 minutes" -- the agent will not know to chain.
+- Each `sleep` call must be a separate Bash tool invocation, not chained with `&&` or `;` in a single command. This ensures each call stays under the timeout.
+- If a sleep call fails or times out, the agent should return immediately with its evaluation rather than retrying the sleep.
+
+## Instruction Reference
+
+All valid instructions that scheduled agents can return:
+- `NONE` -- no action needed this cycle
+- `/save` -- run /save command
+- `UPDATE_HUB` -- sync TodoWrite state to Hub.md
+- `RESUME_TASKS` -- master checks Hub.md for pending tasks and resumes the highest-priority one
+- `ASK_USER <message>` -- surface a message to the user immediately
+- `/<command>` -- run any slash command

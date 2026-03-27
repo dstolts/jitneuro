@@ -71,5 +71,29 @@
       "mainPushAllowed": "Full git remote URLs whose repos are allowed to push to protected branches without approval. Must match output of git remote get-url origin exactly."
     },
     "_configResolution": "Single-level config for v0.1.x. Future: multi-level with most-secure-wins."
-  }
+  },
+  "scheduledAgents": [
+    {
+      "name": "housekeeper",
+      "interval": 15,
+      "enabled": true,
+      "instruction": "NONE",
+      "prompt": "Session housekeeper. Check priority order: (1) Tasks pending in Hub.md across all repos -> RESUME_TASKS. (2) TodoWrite vs Hub.md drift -> UPDATE_HUB. (3) Heartbeat stale >5min + tasks pending -> RESUME_TASKS. Heartbeat stale + no tasks -> ASK_USER. (4) Session save >30min old -> /save. (5) All clear -> NONE. ALWAYS include REMINDER: Surface pending questions.",
+      "description": "Session housekeeper: task enforcement + hub sync + autosave + heartbeat + pending questions (every 15m)"
+    },
+    {
+      "name": "autosave",
+      "interval": 30,
+      "enabled": false,
+      "instruction": "/save",
+      "description": "LEGACY: replaced by housekeeper. Auto-save session state every 30m."
+    },
+    {
+      "name": "hub-sync",
+      "interval": 10,
+      "enabled": false,
+      "instruction": "UPDATE_HUB",
+      "description": "LEGACY: replaced by housekeeper. Keep TodoWrite and Hub.md in sync every 10m."
+    }
+  ]
 }
