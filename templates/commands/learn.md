@@ -5,7 +5,7 @@ This is JitNeuro's backpropagation -- the system improves itself over time.
 
 ## Arguments
 - `/learn` -- full evaluation (health check + session learnings)
-- `/learn q` -- quick mode: skip session/archive cleanup recommendations, focus on learnings only
+- `/learn q` -- quick mode: skip health check, focus on learnings only (session scan + Hub.md check still run)
 
 Quick mode skips: stale session flags, archive/delete recommendations, session count warnings. Use when you know sessions are fine and just want to capture learnings fast.
 
@@ -83,7 +83,7 @@ Return: clean list of NEW lessons (not duplicated), with classification.
 Return all findings. Do not truncate or limit -- every lesson matters.
 ```
 
-Skip Phase 1 Agent A if `/learn q` (quick mode -- session scan only, no Hub.md check).
+Agent A runs even in `/learn q` (quick mode) -- Hub.md lessons must always be checked. Quick mode only skips the health check (Step 0).
 
 ### Phase 2: Merge + Present (master only)
 
