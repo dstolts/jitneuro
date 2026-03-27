@@ -40,7 +40,8 @@ Agent types (inferred from config):
 4. Calculate sleep chain: `interval / 10` rounded up = number of `sleep 600` calls. Remainder handled by a shorter final sleep.
 5. Spawn the timer agent as a background Agent:
 
-**For simple agents (no prompt field):**
+**For simple agents (no `prompt` field in jitneuro.json config):**
+Simple agents always return the same fixed instruction. No evaluation, no file reads. Pure timer. Example: autosave returns `/save` every 30 minutes regardless of state.
 ```
 Agent(
   run_in_background: true,
@@ -61,7 +62,8 @@ Do no other work. Do not read files. Do not analyze anything. Just sleep and ret
 )
 ```
 
-**For smart agents (has prompt field, short evaluation):**
+**For smart agents (has `prompt` field in jitneuro.json config):**
+Smart agents evaluate a condition before deciding what to return. They read 2-3 files, check state, and return the appropriate instruction -- or NONE if no action needed. Example: housekeeper checks task state, hub drift, heartbeat, and save staleness.
 ```
 Agent(
   run_in_background: true,
