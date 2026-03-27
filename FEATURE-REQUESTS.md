@@ -768,6 +768,8 @@ Auto-learn would run /learn automatically after every session (or on a schedule)
 
 **The deeper point:** AI is not perfect. The rules and routing weights that govern how Claude thinks about YOUR projects are too important to leave to AI 100%. Human judgment at the /learn approval step is not overhead -- it's the quality control that makes the entire system trustworthy.
 
+**It's also fast.** /learn presents a numbered table. Say "all" or "go" to approve everything. Say "skip 3" to exclude one. The approval step takes 5 seconds, not 5 minutes. The friction is near-zero but the safety is absolute.
+
 If you think auto-learn should be reconsidered, open an issue with a specific use case where the approval gate adds friction without value.
 
 ## FR-107: Effort Level Inheritance for Subagents
