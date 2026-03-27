@@ -109,23 +109,21 @@ For each learning found in Step 1, before proposing where to save it, check:
 
 ### Step 2: Build Proposed Changes Table (runs in master)
 
-Combine health check findings AND session learnings into one table:
+Session learnings ONLY. Health issues are handled by /health (runs separately as agent).
 ```
 Proposed Updates:
-| # | Type | File | Change | Fix |
-|---|------|------|--------|-----|
-| 1 | Health | MEMORY.md | Extract deploy detail (174/200 lines) | Move to memory/deploy-workflow.md, replace with pointer |
-| 2 | Health | stale-task.md | Stale session (5 days old) | Delete or /load to resume |
-| 3 | Learn | MEMORY.md | Add "payments" -> [integrations] | Add routing entry |
-| 4 | Learn | deploy.md | Add rollback flag v2 | Append to Conventions section |
-| 5 | Promote | rules/new-rule.md | Universal instruction found | Create rule file |
-| 6 | Publish | (github issue) | Universal pattern for jitneuro | Submit feature request |
-| 7 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 | Update line 47 |
+| # | Type | File | Change |
+|---|------|------|--------|
+| 1 | Learn | MEMORY.md | Add "payments" -> [integrations] routing |
+| 2 | Learn | deploy.md | Add rollback flag v2 to conventions |
+| 3 | Promote | rules/new-rule.md | Universal instruction found |
+| 4 | Publish | (github issue) | Universal pattern for jitneuro |
+| 5 | Fix | MEMORY.md | Port 3002 is wrong, should be 3003 |
 ```
 
 ### Step 3: Present for Approval (runs in master)
 
-- "These are the health findings and learnings. Approve all, or pick by number?"
+- "These are the session learnings. Approve all, or pick by number?"
 - Do NOT write anything until approved.
 
 ### Step 4: Execute Approved Changes (runs in master)
@@ -142,29 +140,6 @@ Proposed Updates:
   This prevents re-processing on the next /learn run. New lessons captured after
   this point will append below the marker, starting a fresh cycle.
 - Report what was written and where
-
-**Remediation Reference** (for executing fixes):
-
-| Problem | Fix Pattern |
-|---------|-------------|
-| MEMORY.md over 170 lines | Extract largest section to bundle or engram. Replace with pointer. |
-| MEMORY.md over 200 lines | CRITICAL. Identify truncated content, move immediately. |
-| MEMORY.md has duplicates | Keep canonical copy in more-specific file, replace with pointer. |
-| Bundle over 180 lines | Report to user. Soft limit -- do NOT auto-trim. |
-| Bundle missing (referenced) | Create from templates/bundles/example.md. |
-| Engram over 150 lines | Trim History (keep 3-5 entries), compress verbose sections. |
-| Engram missing for active project | Create from templates/engrams/example.md. |
-| Session older than 7 days | Flag for user decision. |
-| More than 10 sessions | List all, ask user to clean up. |
-| Hub.md STALE | Run /save to sync. |
-| Hub.md MISSING | Create on next /save. |
-| Rules over 600 total lines | Review for duplicates, consolidate. |
-| Detail index out of sync | Add missing entries, remove orphans. |
-| jitneuro.json missing | Create from templates or ask user to run install |
-| jitneuro.json field invalid | Report field, expected value, actual value. User fixes manually |
-| Memory frontmatter missing | Add frontmatter block with name, description, type to the file |
-| Memory frontmatter invalid type | Change type to one of: user, feedback, project, reference |
-| Hook script missing | Create script from templates/hooks/ or remove hookEvents entry |
 
 ### Step 5: If Nothing Found
 
