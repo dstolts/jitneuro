@@ -19,6 +19,7 @@ Manage the current session. Default (no subcommand) shows current session status
   - `dashboard` -- current session's blockers and NEEDS OWNER items
 
 - **Tracking:** Active session resolved from `heartbeats/<session-id>` in `.claude/session-state/`. The session-id is injected into Claude's context by the SessionStart hook. The heartbeat file's content holds the JitNeuro session name; its mtime is the last heartbeat timestamp.
+- **Watcher agent:** Both `new` and `load` automatically spawn scheduled agents (watcher agents) configured in the project's config file. These agents run in the background and periodically interrupt master for housekeeping (autosave, hub-sync, resume-tasks). If no agents are configured, a warning is displayed. The `session-guardrail` rule provides a backstop: if a session becomes active without going through `new` or `load` (e.g., context reset), the guardrail spawns the watcher.
 - **Tag rule:** Every response ends with `[session: <name> | DIV: <MODE>]`
 
 Examples:
@@ -264,8 +265,9 @@ Manage scheduled agents -- background timer agents that periodically interrupt m
   - `remove <name>` -- remove from config
 
 - **Default agents (ship with jitneuro):**
-  - `autosave` (30m) -- runs /save every 30 minutes
-  - `hub-sync` (10m) -- checks TodoWrite vs Hub.md drift every 10 minutes
+  - `housekeeper` (15m) -- unified agent: task enforcement, hub sync, autosave, heartbeat check, pending questions. Replaces legacy autosave and hub-sync agents.
+
+- **Auto-spawn:** Watcher agents are automatically spawned when a session is created (`/session new`) or loaded (`/session load`). The `session-guardrail` rule provides a backstop for sessions that become active through other paths (context reset, fresh start).
 
 - **Architecture:** Timer agent pattern. Agent sleeps for interval, returns instruction, dies. Master executes instruction and re-spawns. Agent context never grows. Runs indefinitely.
 
