@@ -35,6 +35,12 @@ Thumbs.db
 # Internal project notes (per-machine, not shared)
 .HUB/
 
+# Local planning docs (not shipped)
+PRDs/
+
+# Debug logs
+docs/debug.log
+
 # Ralph task runner runtime files (optional -- only needed if using ralph-tui)
 .ralph-tui/iterations/
 .ralph-tui/reports/
