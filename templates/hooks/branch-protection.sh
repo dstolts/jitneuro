@@ -7,6 +7,9 @@
 
 set +e  # never abort on errors
 
+# Early exit: skip if not in a git repo (avoids unnecessary git calls)
+git rev-parse --git-dir >/dev/null 2>&1 || exit 0
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 CONFIG="$(dirname "$SCRIPT_DIR")/jitneuro.json"
 LOG="/tmp/jitneuro-branch-protection.log"

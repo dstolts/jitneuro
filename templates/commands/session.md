@@ -82,7 +82,7 @@ Next steps:
 BLOCKED: [count] items needing attention
 ```
 
-7. **Hub.md freshness check:** For each repo in the session, check `<repo>/.HUB/Hub-*.md`:
+7. **Hub.md freshness check:** For each repo in the session, check `<repo>/.HUB/Hub.md`:
    - If Hub.md exists: show "Last Updated" date. If older than session checkpoint, flag: "Hub.md STALE -- last updated <date>, session saved <date>. Run /save to sync."
    - If Hub.md missing and session has tasks: flag: "No Hub.md -- task state is volatile only."
 8. Flag issues: repos on main with dirty files, unpushed commits, behind remote
@@ -119,6 +119,7 @@ BLOCKED: [count] items needing attention
    ```
 4. **Write "my current"** (session name).
 5. Confirm: "Session '<name>' created."
+6. **Spawn scheduled agents (mandatory):** Same process as `/session load` step 9. Read the project's config for `scheduledAgents`, spawn enabled agents, display confirmation or warning. New sessions need the interrupt mechanism from the start.
 
 ### session save <name>
 
@@ -217,7 +218,7 @@ BLOCKED: [count] items needing attention
 
    For each repo involved in this session:
    a. Check if `<repo>/.HUB/` exists. If not, create it.
-   b. Find or create `Hub-<NN>.md` (use next available number if creating).
+   b. Find or create `Hub.md` (ONE file per .HUB/ folder -- never versioned, never create Hub-01.md or Hub-v2.md).
    c. Find or create a **session section** using the session name as the heading:
       ```markdown
       ## <session-name> (sync)          <-- session name + brief focus area
@@ -286,6 +287,13 @@ BLOCKED: [count] items needing attention
    ```
 
 8. If session is stale (>7 days), mention it and ask if still relevant
+
+9. **Spawn scheduled agents (mandatory):**
+   a. Read the project's config file for `scheduledAgents`.
+   b. If config is missing or has no `scheduledAgents` key: display `** WARNING: No scheduled agents configured. Session has no watcher. **`
+   c. If all agents have `enabled: false`: display `** WARNING: All scheduled agents disabled. Session has no watcher. **`
+   d. For each agent where `enabled: true`: spawn as background timer agent with configured interval and prompt. Include in the agent prompt: `Your FIRST return to master must be the message: ** Watcher agent [name] running **` -- nothing else on that first return. Master displays this to the user as confirmation.
+   e. After spawning, display: `** Watcher agent [name] spawned -- awaiting first check-in **`
 
 ### session pulse
 
