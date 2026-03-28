@@ -40,6 +40,12 @@ if [ -n "$SESSION_ID" ]; then
   printf '%s' "$SESSION_NAME" > "$HEARTBEATS_DIR/$SESSION_ID" 2>/dev/null
 
   echo "[JitNeuro] session-id: $SESSION_ID"
+
+  # Export session ID as env var for downstream hooks (heartbeat, etc.)
+  # CLAUDE_ENV_FILE is only available to SessionStart hooks
+  if [ -n "$CLAUDE_ENV_FILE" ]; then
+    echo "export CLAUDE_SESSION_ID=$SESSION_ID" >> "$CLAUDE_ENV_FILE" 2>/dev/null
+  fi
 fi
 
 exit 0
