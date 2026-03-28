@@ -36,6 +36,9 @@ All items on this list have been upvoted. Please do the same.
 | 12 | [#32946](https://github.com/anthropics/claude-code/issues/32946) | Rolling asynchronous compaction | Prevents losing work mid-task |
 | 13 | [#17428](https://github.com/anthropics/claude-code/issues/17428) | Enhanced /compact with file-backed summaries | Aligns with our /save checkpoint pattern |
 | 14 | [#28389](https://github.com/anthropics/claude-code/issues/28389) | Effective usable context window reduced by infrastructure overhead | Real constraint on CLAUDE.md + rules/ size |
+| 34 | [#11008](https://github.com/anthropics/claude-code/issues/11008) | Expose token usage + context % in hook inputs (15 upvotes) | Query context usage programmatically -- trigger save/compact at thresholds |
+| 35 | [#38344](https://github.com/anthropics/claude-code/issues/38344) | Expose account usage % to hooks and CLI | Account-level quota visibility for autonomous workflows |
+| 36 | [#40180](https://github.com/anthropics/claude-code/issues/40180) | Queryable context usage + selective context purge (/context, /context drop) | Inspect what consumes context, drop specific items, hook-queryable usage % |
 
 ## Task Management
 
