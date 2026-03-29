@@ -246,14 +246,42 @@ BLOCKED: [count] items needing attention
    ```
    If Hub.md sync fails or is empty, WARN the user -- do not silently skip.
 
-5. **Write "my current"** (session name).
-6. Confirm with Hub.md sync status:
+5. **Team active-work.md sync** (skip if no `.jitneuro/` directory):
+
+   If `.jitneuro/` exists in the current repo:
+   a. Get username: `git config user.name`
+   b. Create `.jitneuro/users/<username>/` if it does not exist
+   c. Write `.jitneuro/users/<username>/active-work.md`:
+      ```markdown
+      # <username>
+      **Updated:** <ISO 8601 timestamp>
+      **Session:** <session-name>
+      **Branch:** <current git branch>
+      **Status:** active
+
+      ## Current Task
+      <one-line description of current work>
+
+      ## In Progress
+      <TodoWrite items as checkboxes>
+
+      ## Blockers
+      <blockers or "(none)">
+
+      ## Files Touched
+      <list of files modified this session>
+      ```
+   d. This file is committed to git -- other team members can see what you're working on.
+
+6. **Write "my current"** (session name).
+7. Confirm with Hub.md sync status:
    ```
    Saved '<name>'.
    Hub.md: [repo1] synced (3 tasks, 1 decision) | [repo2] synced (clean)
+   Team: active-work.md updated for <username>  <!-- only if .jitneuro/ exists -->
    Safe to /clear. Use `/session load <name>` to reload.
    ```
-7. Suggest: "Run `/learn` first if this session had learnings worth persisting."
+8. Suggest: "Run `/learn` first if this session had learnings worth persisting."
 
 **Size guidance:** Target 40-80 lines. Under 30 is missing pickup context. Over 120 is too verbose -- move detail into Hub.md or plan docs and reference them. The PICKUP INSTRUCTIONS section should be 15-30 lines (the most critical part).
 
@@ -369,6 +397,44 @@ Closed sessions appear in the "Closed" section on the dashboard (collapsed, grey
    ```
 7. If no items: "Session '<name>' is clear -- no blockers."
 8. **Hub.md freshness:** Check each repo's Hub.md age. If stale (>3 days or older than session checkpoint), add to BLOCKED section: "Hub.md stale for <repo> -- run /save to sync."
+
+## AFK Tracking (requires .jitneuro/)
+
+When `.jitneuro/` exists in the current repo, track autonomous work during AFK periods.
+
+### AFK Start (user signals AFK: "AFK", "brb", "stepping away", etc.)
+
+1. Get username: `git config user.name`
+2. Snapshot current state:
+   - Timestamp (ISO 8601)
+   - Session name
+   - Count of pending tasks (from TodoWrite / TaskList)
+   - List of pending task subjects
+3. Hold this snapshot in session memory (do not write yet)
+4. Continue autonomous execution per autonomous-execution rule
+
+### AFK End (user returns or session ends/saves)
+
+1. Write an AFK record to `.jitneuro/users/<username>/afk-log.md`:
+   ```markdown
+   ## <start-date> <start-time>-<end-time> (<duration>)
+   **Session:** <session-name>
+   **Tasks before AFK:** <N> pending
+   **Tasks after AFK:** <N> pending (<N> completed)
+   **Completed:**
+   - [x] <task subject>
+   **Blocked:** <blockers or "(none)">
+   **Files changed:** <count>
+   ```
+2. Append to the file (do not overwrite previous records)
+3. Create the file if it does not exist (copy header from afk-log.example.md)
+
+### Rules
+
+- AFK log is append-only. One section per AFK period, newest at top.
+- If user never signaled AFK, do not write a record.
+- If session ends without user returning, write the record with the session end time.
+- Update `.jitneuro/users/<username>/active-work.md` status to "afk" when AFK starts, "active" when user returns.
 
 ## Important
 - **Hub.md sync is MANDATORY on every save.** Do not skip it. Do not say "saved" without syncing Hub.md. This is the #1 reliability issue -- if you skip it, task state rots silently for weeks.
