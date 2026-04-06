@@ -1,0 +1,15 @@
+# JitNeuro CODEOWNERS
+# Routes code review to sys-architect (Dan Stolts)
+# sys-architect must review all changes before merge to main
+
+* @dstolts
+
+# Framework and template changes require architecture review
+templates/ @dstolts
+docs/ @dstolts
+install.sh @dstolts
+install.ps1 @dstolts
+
+# Configuration changes
+jitneuro.json @dstolts
+.claude/ @dstolts

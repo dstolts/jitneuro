@@ -1,0 +1,138 @@
+name: CI (Documentation & Scripts Validation)
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sast-scan:
+    name: SAST Security Scan (Semgrep)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: returntocorp/semgrep-action@v1
+        with:
+          generateSarif: true
+          config: >-
+            p/owasp-top-ten
+            p/cwe-top-25
+            p/secrets
+
+      - name: Upload SARIF report
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+      - name: Check for HIGH/CRITICAL findings on main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          CRITICAL=$(semgrep --config=p/owasp-top-ten --config=p/cwe-top-25 --config=p/secrets --json 2>/dev/null | grep -c '"severity":"CRITICAL"' || echo 0)
+          HIGH=$(semgrep --config=p/owasp-top-ten --config=p/cwe-top-25 --config=p/secrets --json 2>/dev/null | grep -c '"severity":"HIGH"' || echo 0)
+          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+            echo "::error::SAST found $CRITICAL CRITICAL and $HIGH HIGH findings -- merge blocked"
+            exit 1
+          fi
+
+  validate:
+    name: Validate Documentation & Scripts
+    runs-on: ubuntu-latest
+    needs: sast-scan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Markdown Files
+        run: |
+          # Check for common markdown issues
+          echo "Checking markdown files..."
+          find . -name "*.md" -type f ! -path "./node_modules/*" ! -path "./.git/*" | while read file; do
+            # Check file exists and is readable
+            if [ ! -r "$file" ]; then
+              echo "::error::Cannot read markdown file: $file"
+              exit 1
+            fi
+            # Validate markdown structure (basic check)
+            if grep -q '^```' "$file"; then
+              # Check for unmatched code blocks
+              code_blocks=$(grep -c '^```' "$file" || echo 0)
+              if [ $((code_blocks % 2)) -ne 0 ]; then
+                echo "::warning::Potential unmatched code block in $file"
+              fi
+            fi
+          done
+          echo "Markdown validation complete"
+
+      - name: Validate Bash Scripts
+        run: |
+          # Validate bash scripts syntax
+          echo "Checking bash scripts..."
+          find . -name "*.sh" -type f ! -path "./node_modules/*" ! -path "./.git/*" | while read script; do
+            bash -n "$script" || {
+              echo "::error::Bash syntax error in $script"
+              exit 1
+            }
+          done
+          echo "Bash validation complete"
+
+      - name: Check for hardcoded secrets
+        run: |
+          # Additional check for secrets in documentation
+          if grep -r "AZURE_STORAGE_CONNECTION_STRING\|OPENAI_API_KEY\|ANTHROPIC_API_KEY\|DATABASE_URL" --include="*.md" --include="*.sh" . 2>/dev/null | grep -v "PLACEHOLDER\|EXAMPLE\|MOCK"; then
+            echo "::warning::Potential hardcoded secrets found in documentation/scripts"
+          fi
+
+  ci-status:
+    name: CI Status Label
+    if: github.event_name == 'pull_request'
+    needs: [sast-scan, validate]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Apply ci-passed label
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['ci-passed']
+            });
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'ci-failed'
+            }).catch(() => {});
+
+      - name: Apply ci-failed label
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['ci-failed']
+            });
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'ci-passed'
+            }).catch(() => {});
