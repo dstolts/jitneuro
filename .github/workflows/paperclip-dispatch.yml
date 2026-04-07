@@ -1,0 +1,151 @@
+name: Paperclip Dispatch
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, labeled]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    # Only fire on 'labeled' if the label is one we route on
+    if: >-
+      github.event.action == 'opened' ||
+      (github.event.action == 'labeled' && contains(
+        fromJson('["backend","frontend","security","architecture","qa","devops","review","sre","compliance"]'),
+        github.event.label.name
+      ))
+    steps:
+      - name: Dispatch to Paperclip
+        env:
+          PAPERCLIP_URL: ${{ secrets.PAPERCLIP_URL }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          COMPANY_ID: ${{ secrets.PAPERCLIP_COMPANY_ID }}
+        run: |
+          set -euo pipefail
+
+          EVENT_TYPE="${{ github.event_name }}"
+          REPO="${{ github.event.repository.name }}"
+          ACTION="${{ github.event.action }}"
+
+          # --- Determine title, body, URL from event type ---
+          if [ "$EVENT_TYPE" = "issues" ]; then
+            TITLE=$(echo '${{ toJson(github.event.issue.title) }}' | jq -r '.')
+            BODY=$(echo '${{ toJson(github.event.issue.body) }}' | jq -r '. // ""')
+            URL="${{ github.event.issue.html_url }}"
+            LABELS=$(echo '${{ toJson(github.event.issue.labels) }}' | jq -r '.[].name' 2>/dev/null || true)
+          else
+            TITLE=$(echo '${{ toJson(github.event.pull_request.title) }}' | jq -r '.')
+            BODY=$(echo '${{ toJson(github.event.pull_request.body) }}' | jq -r '. // ""')
+            URL="${{ github.event.pull_request.html_url }}"
+            LABELS=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name' 2>/dev/null || true)
+          fi
+
+          # --- Route: repo name -> default agent ---
+          case "$REPO" in
+            AIFieldSupport-API)  DEFAULT_AGENT="repo-aifs-api" ;;
+            AIFieldSupport-App)  DEFAULT_AGENT="repo-aifs-app" ;;
+            jitai-website)       DEFAULT_AGENT="repo-jitai" ;;
+            jit-dash)            DEFAULT_AGENT="repo-jit-dash" ;;
+            Automation)          DEFAULT_AGENT="repo-automation" ;;
+            jITSecure)           DEFAULT_AGENT="repo-jitsecure" ;;
+            CoWork)              DEFAULT_AGENT="repo-cowork" ;;
+            jitneuro)            DEFAULT_AGENT="repo-jitneuro" ;;
+            *)                   DEFAULT_AGENT="sys-orchestrator" ;;
+          esac
+
+          # --- Route: label -> specialized agent (overrides default) ---
+          AGENT="$DEFAULT_AGENT"
+          for LABEL in $LABELS; do
+            case "$LABEL" in
+              backend|api)       AGENT="sys-backend" ;;
+              frontend|ui)       AGENT="sys-frontend" ;;
+              security)          AGENT="sys-security" ;;
+              architecture)      AGENT="sys-architect" ;;
+              qa|testing)        AGENT="sys-qa" ;;
+              devops|infra)      AGENT="sys-devops" ;;
+              review)            AGENT="sys-code-reviewer" ;;
+              sre)               AGENT="sys-sre" ;;
+              compliance)        AGENT="sys-compliance" ;;
+            esac
+          done
+
+          # --- For PRs: default to code-reviewer if no label override ---
+          if [ "$EVENT_TYPE" = "pull_request" ] && [ "$AGENT" = "$DEFAULT_AGENT" ]; then
+            AGENT="sys-code-reviewer"
+          fi
+
+          echo "Routing: repo=$REPO event=$EVENT_TYPE agent=$AGENT"
+
+          # --- Look up project ID by repo name (for workspace access) ---
+          PROJECTS_JSON=$(curl -sf \
+            -H "Authorization: Bearer $PAPERCLIP_API_KEY" \
+            "$PAPERCLIP_URL/api/companies/$COMPANY_ID/projects" || echo '[]')
+
+          # Map repo name to project display name
+          case "$REPO" in
+            AIFieldSupport-API)  PROJECT_NAME="AIFS API" ;;
+            AIFieldSupport-App)  PROJECT_NAME="AIFS App" ;;
+            jitai-website)       PROJECT_NAME="JitAI Website" ;;
+            jit-dash)            PROJECT_NAME="Jit Dash" ;;
+            Automation)          PROJECT_NAME="Automation" ;;
+            jITSecure)           PROJECT_NAME="JITSecure" ;;
+            CoWork)              PROJECT_NAME="CoWork" ;;
+            jitneuro)            PROJECT_NAME="JitNeuro" ;;
+            *)                   PROJECT_NAME="" ;;
+          esac
+
+          PROJECT_ID=""
+          if [ -n "$PROJECT_NAME" ]; then
+            PROJECT_ID=$(echo "$PROJECTS_JSON" | jq -r --arg name "$PROJECT_NAME" \
+              '.data[]? // .[]? | select(.name==$name) | .id' | head -1)
+          fi
+
+          # --- Look up agent ID by name ---
+          AGENTS_JSON=$(curl -sf \
+            -H "Authorization: Bearer $PAPERCLIP_API_KEY" \
+            "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents")
+
+          AGENT_ID=$(echo "$AGENTS_JSON" | jq -r --arg name "$AGENT" \
+            '.data[]? // .[]? | select(.name==$name) | .id' | head -1)
+
+          if [ -z "$AGENT_ID" ] || [ "$AGENT_ID" = "null" ]; then
+            echo "::warning::Agent '$AGENT' not found in Paperclip. Falling back to sys-orchestrator."
+            AGENT_ID=$(echo "$AGENTS_JSON" | jq -r --arg name "sys-orchestrator" \
+              '.data[]? // .[]? | select(.name==$name) | .id' | head -1)
+          fi
+
+          if [ -z "$AGENT_ID" ] || [ "$AGENT_ID" = "null" ]; then
+            echo "::error::No agent found. Cannot dispatch."
+            exit 1
+          fi
+
+          # --- Build description with GitHub link ---
+          DESC="GitHub ${EVENT_TYPE}: ${URL}
+
+          ${BODY}"
+
+          # --- Create Paperclip issue (auto-dispatches agent) ---
+          ISSUE_JSON=$(jq -n \
+            --arg title "$TITLE" \
+            --arg desc "$DESC" \
+            --arg agent "$AGENT_ID" \
+            --arg project "$PROJECT_ID" \
+            '{
+              title: $title,
+              description: $desc,
+              status: "todo",
+              priority: "medium",
+              assigneeAgentId: $agent
+            } + (if $project != "" and $project != "null" then {projectId: $project} else {} end)')
+
+          RESPONSE=$(echo "$ISSUE_JSON" | curl -sf -X POST \
+            -H "Authorization: Bearer $PAPERCLIP_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @- \
+            "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues")
+
+          ISSUE_ID=$(echo "$RESPONSE" | jq -r '.id // .issue.id // "unknown"')
+          ISSUE_NUM=$(echo "$RESPONSE" | jq -r '.issueNumber // .issue.issueNumber // "?"')
+          echo "Created Paperclip issue PAP-${ISSUE_NUM} (${ISSUE_ID}), assigned to ${AGENT}"
