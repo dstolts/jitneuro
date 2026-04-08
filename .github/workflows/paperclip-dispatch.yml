@@ -42,38 +42,38 @@ jobs:
             LABELS=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name' 2>/dev/null || true)
           fi
 
-          # --- Route: repo name -> default agent ---
+          # --- Route: repo name -> default agent (Paperclip display names) ---
           case "$REPO" in
-            AIFieldSupport-API)  DEFAULT_AGENT="repo-aifs-api" ;;
-            AIFieldSupport-App)  DEFAULT_AGENT="repo-aifs-app" ;;
-            jitai-website)       DEFAULT_AGENT="repo-jitai" ;;
-            jit-dash)            DEFAULT_AGENT="repo-jit-dash" ;;
-            Automation)          DEFAULT_AGENT="repo-automation" ;;
-            jITSecure)           DEFAULT_AGENT="repo-jitsecure" ;;
-            CoWork)              DEFAULT_AGENT="repo-cowork" ;;
-            jitneuro)            DEFAULT_AGENT="repo-jitneuro" ;;
-            *)                   DEFAULT_AGENT="sys-orchestrator" ;;
+            AIFieldSupport-API)  DEFAULT_AGENT="Repo AIFS API" ;;
+            AIFieldSupport-App)  DEFAULT_AGENT="Repo AIFS App" ;;
+            jitai-website)       DEFAULT_AGENT="Repo JitAI" ;;
+            jit-dash)            DEFAULT_AGENT="Repo JitDash" ;;
+            Automation)          DEFAULT_AGENT="Repo Automation" ;;
+            jITSecure)           DEFAULT_AGENT="Repo JitSecure" ;;
+            CoWork)              DEFAULT_AGENT="Repo CoWork" ;;
+            jitneuro)            DEFAULT_AGENT="Repo JitNeuro" ;;
+            *)                   DEFAULT_AGENT="Sys Orchestrator" ;;
           esac
 
           # --- Route: label -> specialized agent (overrides default) ---
           AGENT="$DEFAULT_AGENT"
           for LABEL in $LABELS; do
             case "$LABEL" in
-              backend|api)       AGENT="sys-backend" ;;
-              frontend|ui)       AGENT="sys-frontend" ;;
-              security)          AGENT="sys-security" ;;
-              architecture)      AGENT="sys-architect" ;;
-              qa|testing)        AGENT="sys-qa" ;;
-              devops|infra)      AGENT="sys-devops" ;;
-              review)            AGENT="sys-code-reviewer" ;;
-              sre)               AGENT="sys-sre" ;;
-              compliance)        AGENT="sys-compliance" ;;
+              backend|api)       AGENT="Sys Backend" ;;
+              frontend|ui)       AGENT="Sys Frontend" ;;
+              security)          AGENT="Sys Security" ;;
+              architecture)      AGENT="Systems Architect" ;;
+              qa|testing)        AGENT="Sys QA" ;;
+              devops|infra)      AGENT="Sys DevOps" ;;
+              review)            AGENT="Sys Code Reviewer" ;;
+              sre)               AGENT="Sys SRE" ;;
+              compliance)        AGENT="Sys Compliance" ;;
             esac
           done
 
           # --- For PRs: default to code-reviewer if no label override ---
           if [ "$EVENT_TYPE" = "pull_request" ] && [ "$AGENT" = "$DEFAULT_AGENT" ]; then
-            AGENT="sys-code-reviewer"
+            AGENT="Sys Code Reviewer"
           fi
 
           echo "Routing: repo=$REPO event=$EVENT_TYPE agent=$AGENT"
@@ -111,8 +111,8 @@ jobs:
             '.data[]? // .[]? | select(.name==$name) | .id' | head -1)
 
           if [ -z "$AGENT_ID" ] || [ "$AGENT_ID" = "null" ]; then
-            echo "::warning::Agent '$AGENT' not found in Paperclip. Falling back to sys-orchestrator."
-            AGENT_ID=$(echo "$AGENTS_JSON" | jq -r --arg name "sys-orchestrator" \
+            echo "::warning::Agent '$AGENT' not found in Paperclip. Falling back to Sys Orchestrator."
+            AGENT_ID=$(echo "$AGENTS_JSON" | jq -r --arg name "Sys Orchestrator" \
               '.data[]? // .[]? | select(.name==$name) | .id' | head -1)
           fi
 
