@@ -250,11 +250,16 @@ BLOCKED: [count] items needing attention
 
    If `.jitneuro/` exists in the current repo:
    a. Get username: `git config user.name`
-   b. Create `.jitneuro/users/<username>/` if it does not exist
-   c. Write `.jitneuro/users/<username>/active-work.md`:
+   b. Get machineName: read `.claude/jitneuro.json` field `machineName`. If empty or missing, fall back to `hostname -s` (bash).
+   c. Determine write path:
+      - If machineName is set: `.jitneuro/users/<username>/<machineName>/active-work.md`
+      - If no machineName: `.jitneuro/users/<username>/active-work.md` (flat, backward compatible)
+   d. Create the directory if it does not exist
+   e. Write active-work.md:
       ```markdown
       # <username>
       **Updated:** <ISO 8601 timestamp>
+      **Machine:** <machineName>
       **Session:** <session-name>
       **Branch:** <current git branch>
       **Status:** active
@@ -271,7 +276,7 @@ BLOCKED: [count] items needing attention
       ## Files Touched
       <list of files modified this session>
       ```
-   d. This file is committed to git -- other team members can see what you're working on.
+   f. This file is committed to git -- other team members can see what you're working on.
 
 6. **Write "my current"** (session name).
 7. Confirm with Hub.md sync status:
@@ -415,7 +420,8 @@ When `.jitneuro/` exists in the current repo, track autonomous work during AFK p
 
 ### AFK End (user returns or session ends/saves)
 
-1. Write an AFK record to `.jitneuro/users/<username>/afk-log.md`:
+1. Get machineName from `.claude/jitneuro.json` (fall back to `hostname -s`).
+2. Write an AFK record to `.jitneuro/users/<username>/<machineName>/afk-log.md` (or `.jitneuro/users/<username>/afk-log.md` if no machineName):
    ```markdown
    ## <start-date> <start-time>-<end-time> (<duration>)
    **Session:** <session-name>
@@ -434,7 +440,7 @@ When `.jitneuro/` exists in the current repo, track autonomous work during AFK p
 - AFK log is append-only. One section per AFK period, newest at top.
 - If user never signaled AFK, do not write a record.
 - If session ends without user returning, write the record with the session end time.
-- Update `.jitneuro/users/<username>/active-work.md` status to "afk" when AFK starts, "active" when user returns.
+- Update `.jitneuro/users/<username>/<machineName>/active-work.md` status to "afk" when AFK starts, "active" when user returns (use flat path if no machineName).
 
 ## Important
 - **Hub.md sync is MANDATORY on every save.** Do not skip it. Do not say "saved" without syncing Hub.md. This is the #1 reliability issue -- if you skip it, task state rots silently for weeks.

@@ -11,6 +11,7 @@ Trigger on these patterns (case-insensitive):
 - `sessions stale` -- list sessions >7 days old
 - `sessions clean` -- delete stale sessions (confirms first)
 - `sessions archive <name|number>` -- move to session-state/archive/
+- `sessions archived` -- list all archived sessions
 - `sessions delete <name|number>` -- delete (confirms first)
 - `sessions dashboard` -- same as default (all-sessions aggregate view)
 - `sessions status` -- same as default
@@ -93,6 +94,33 @@ The user's next message will be a number or command. Never skip this prompt.
 2. Move `<name>.md` to `archive/<name>.md`
 3. If archived session was **"my current"**, **clear "my current"** (see session.md).
 4. Confirm: "Archived <name>. Still readable at session-state/archive/<name>.md"
+
+### sessions archived
+
+1. List all `.md` files in `.claude/session-state/archive/`
+2. If directory is empty or missing: "No archived sessions."
+3. For each file, read the first 10 lines to extract:
+   - Checkpointed date
+   - Current Task line
+   - Status (usually CLOSED or COMPLETE)
+4. Assign sequential numbers starting at 1 (separate numbering from active sessions)
+5. Display as numbered table:
+
+```
+Archived sessions (3):
+  #  Name                     Archived     Task                              Status
+  1  blog-style-review        2026-03-28   77/77 posts voice-fixed           COMPLETE
+  2  jitneuro-marketing       2026-03-28   CovenAI brand launch prep         CLOSED
+  3  covenai-build            2026-03-24   CovenAI build done, PR #1 open    COMPLETE
+```
+
+6. Offer: "Restore? `sessions restore <#>` moves it back to active."
+
+### sessions restore <name|number>
+
+1. Resolve name from last `sessions archived` list (if number)
+2. Move `archive/<name>.md` back to `.claude/session-state/<name>.md`
+3. Confirm: "Restored <name>. Now visible in active sessions list."
 
 ### sessions delete <name|number>
 

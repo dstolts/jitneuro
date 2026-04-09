@@ -47,7 +47,7 @@ tells you exactly what to fix.
 /sessions        # list all saved sessions
 ```
 
-That's it. You now have 15+ commands, 4 hooks, and a memory management layer.
+That's it. You now have 22 commands, 11 hooks, and a memory management layer.
 
 ---
 
@@ -90,6 +90,8 @@ Once commands are working and customized, set up the full memory system:
 2. **Onboard repos** -- run `/onboard <repo>` to generate context for your projects
 3. **Create bundles** -- add domain knowledge files to `.claude/bundles/`
 4. **Set routing weights** -- add trigger patterns to your MEMORY.md
+
+For team setup, see [docs/team-setup-guide.md](docs/team-setup-guide.md).
 
 See [Setup Guide](docs/setup-guide.md) for a detailed walkthrough.
 

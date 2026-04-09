@@ -36,7 +36,7 @@ Examples:
 
 ---
 
-### /sessions [list|show|stale|clean|archive|delete|dashboard]
+### /sessions [list|show|stale|clean|archive|archived|restore|delete|dashboard]
 Manage all session checkpoints. Default shows a numbered list with NEEDS OWNER summary across all sessions and active work.
 
 - **Subcommands:**
@@ -44,6 +44,8 @@ Manage all session checkpoints. Default shows a numbered list with NEEDS OWNER s
   - `stale` -- list sessions >7 days old
   - `clean` -- delete stale sessions (confirms first)
   - `archive <name|#>` -- move to archive
+  - `archived` -- list all archived sessions
+  - `restore <name|#>` -- move archived session back to active
   - `delete <name|#>` -- delete (confirms first)
   - `dashboard` -- aggregate NEEDS OWNER across all sessions
 
@@ -54,6 +56,8 @@ Examples:
 /sessions                    -- numbered list + NEEDS OWNER summary
 /sessions 3                  -- show detail for session #3
 /sessions archive 4          -- archive session #4
+/sessions archived           -- list all archived sessions
+/sessions restore 2          -- restore archived session #2
 /sessions stale              -- which sessions are >7 days old
 /sessions clean              -- delete all stale (confirms first)
 ```

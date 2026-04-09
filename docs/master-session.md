@@ -146,7 +146,8 @@ Sprint-Comments-001 -- API complete, FE complete, needs review
 
 ## Key Principles
 
-1. **Master never writes code** -- it delegates, tracks, and reports
+1. **Delegate by default** -- master hands off any task it does not specifically need to hold. Only retain work in master when it requires cross-task coordination, direct user interaction, or sequential decision-making. Everything else goes to a subagent. This keeps master context light and prevents memory exhaustion.
+2. **Master never writes code** -- it delegates, tracks, and reports
 2. **One session-state per task** -- not per repo. The task spans repos.
 3. **Branch names match** across repos (e.g., `sprint-comments-001` in both)
 4. **API before FE** -- always. FE can't test against undeployed API changes.

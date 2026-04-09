@@ -259,9 +259,12 @@ if (-not $BashPath) {
 }
 
 if ($BashPath) {
-    # Convert to forward slashes for hooks config
-    $BashPathFwd = $BashPath -replace '\\', '/'
+    # Convert to 8.3 short path to avoid spaces in hook commands (e.g., "Program Files")
+    $fso = New-Object -ComObject Scripting.FileSystemObject
+    $BashShortPath = $fso.GetFile($BashPath).ShortPath
+    $BashPathFwd = $BashShortPath -replace '\\', '/'
     Write-Host "  Found: $BashPath" -ForegroundColor Green
+    Write-Host "  Short path: $BashShortPath"
     Write-Host "  Version: $versionOutput"
 } elseif ($WslBash) {
     Write-Host "  WSL detected but NOT supported for hooks." -ForegroundColor Yellow

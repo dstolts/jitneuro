@@ -8,6 +8,10 @@ node_modules/
 # Claude Code local settings
 .claude/settings.local.json
 
+# Personal config (credentials, local settings -- never committed)
+.claude/workspace.json
+.claude/jitneuro.json
+
 # Conversation logs (may contain sensitive prompts)
 .logs/
 
@@ -42,3 +46,6 @@ Thumbs.db
 .ralph-tui/session.json
 .ralph-tui/session-meta.json
 .ralph-tui/ralph.lock
+
+# Marketing artifacts (per-feature promo briefs, internal strategy)
+.promote/

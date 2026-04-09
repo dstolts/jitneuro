@@ -119,7 +119,15 @@ See [templates/cursor/README.md](../templates/cursor/README.md) and [cursor-and-
 
 ## Roadmap
 
-### v0.4.0 (Current) -- Scheduled Agents, Divergent Thinking, Philosophy-First
+### v1.0.0 (Current) -- Team Mode, Multi-Workstation, machineName
+- **Team mode** -- `.jitneuro/` per-repo for shared team knowledge (TEAM.md, team rules, team engrams)
+- **Multi-workstation** -- machineName label in jitneuro.json, per-machine active-work and afk-log
+- **/onboard --team and --all** -- bootstrap team structure in repos
+- **/learn --team** -- promote personal lessons to team rules (TeamApprover gated)
+- **22 commands** (17 commands + 5 shortcuts), 11 hooks
+- **install.ps1 8.3 path fix** -- prevents hook errors from spaces in bash path
+
+### v0.4.0 -- Scheduled Agents, Divergent Thinking, Philosophy-First
 - **4 scheduled agent types** -- timer, enforcer, cron, batch with self-looping and shift-based lifespans
 - **Divergent thinking toggle** -- /divergent auto/always/never with workspace/repo hierarchy
 - **/help command** -- zero-token static quick reference with feature discovery
