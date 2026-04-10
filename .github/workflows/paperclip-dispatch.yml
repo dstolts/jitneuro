@@ -149,3 +149,17 @@ jobs:
           ISSUE_ID=$(echo "$RESPONSE" | jq -r '.id // .issue.id // "unknown"')
           ISSUE_NUM=$(echo "$RESPONSE" | jq -r '.issueNumber // .issue.issueNumber // "?"')
           echo "Created Paperclip issue PAP-${ISSUE_NUM} (${ISSUE_ID}), assigned to ${AGENT}"
+
+          # --- Checkout the issue to trigger assignment wakeup with workspace context ---
+          if [ "$ISSUE_ID" != "unknown" ] && [ "$ISSUE_ID" != "null" ]; then
+            CHECKOUT_JSON=$(jq -n \
+              --arg agent "$AGENT_ID" \
+              '{agentId: $agent, expectedStatuses: ["todo", "backlog"]}')
+            CHECKOUT_RESPONSE=$(echo "$CHECKOUT_JSON" | curl -sf -X POST \
+              -H "Authorization: Bearer $PAPERCLIP_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d @- \
+              "$PAPERCLIP_URL/api/issues/$ISSUE_ID/checkout" 2>&1 || true)
+            CHECKOUT_STATUS=$(echo "$CHECKOUT_RESPONSE" | jq -r '.status // "error"' 2>/dev/null || echo "error")
+            echo "Checkout: issue=${ISSUE_ID} agent=${AGENT} status=${CHECKOUT_STATUS}"
+          fi
