@@ -13,7 +13,7 @@ jobs:
     if: >-
       github.event.action == 'opened' ||
       (github.event.action == 'labeled' && contains(
-        fromJson('["backend","frontend","security","architecture","qa","devops","review","sre","compliance"]'),
+        fromJson('["backend","frontend","security","architecture","qa","devops","review","sre","compliance","dba-review","schema-change","migration","dba-approved","dba-blocked"]'),
         github.event.label.name
       ))
     steps:
@@ -68,6 +68,7 @@ jobs:
               review)            AGENT="Sys Code Reviewer" ;;
               sre)               AGENT="Sys SRE" ;;
               compliance)        AGENT="Sys Compliance" ;;
+              dba-review|schema-change|migration) AGENT="Database Administrator" ;;
             esac
           done
 
