@@ -34,20 +34,6 @@ The system learns what you need by watching what you do. Features activate when 
 
 **Day 3** -- You lose work after a context reset. You say "I wish this would auto-save." Claude sets up an autosave agent. Now it does. You didn't edit a config file. You told Claude what you needed.
 
-JitNeuro has 16 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
-
-You don't need any of that to start.
-
-You install JitNeuro. You start working. That's it.
-
-The system learns what you need by watching what you do. Features activate when you call for them, not before. No setup wizard. No config files to fill out. No "read the docs first."
-
-### How It Grows With You
-
-**Day 1** -- You install. You work. `/save` saves your session. `/load` restores it. `/learn` persists what Claude learned today. By end of day 1, Claude already knows your project better than it did this morning.
-
-**Day 3** -- You lose work after a context reset. You say "I wish this would auto-save." Claude sets up an autosave agent. Now it does. You didn't edit a config file. You told Claude what you needed.
-
 **Day 7** -- You're working across two repos. You say "keep Hub.md updated." Claude creates an enforcer agent. It syncs automatically. You still haven't opened jitneuro.json.
 
 **Day 14** -- You say "show me what's happening across all my sessions." The dashboard appears. It didn't exist until you needed it.
