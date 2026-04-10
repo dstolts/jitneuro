@@ -2,6 +2,13 @@
 
 Get up and running in 4 steps.
 
+## Prerequisites
+
+- **Claude Code** (CLI, desktop app, or web) — latest version recommended
+  - Requires slash command support (available in all current Claude Code versions)
+  - Hooks require settings.json configuration (available in all current Claude Code versions)
+- **Bash** for hook scripts (macOS/Linux native; Windows needs Git Bash — installer auto-detects)
+
 ## 1. Clone and Install
 
 ```bash

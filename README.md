@@ -79,6 +79,10 @@ By day 30, Claude handles your code style, content voice, security posture, and 
 
 ## Quick Start
 
+**Prerequisites:**
+- Claude Code (CLI, desktop, or web) — latest version recommended
+- Bash for hooks (macOS/Linux native; Windows needs Git Bash — auto-detected)
+
 ```bash
 git clone https://github.com/dstolts/jitneuro.git
 cd jitneuro
