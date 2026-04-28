@@ -15,7 +15,7 @@ JIT memory management framework for Claude Code -- persistent context across ses
 ## Key Paths
 | Path | Purpose |
 |------|---------|
-| templates/commands/ | Slash command templates (22 files: 16 commands + 5 shortcuts + test-tools) |
+| templates/commands/ | Slash command templates (22 files: 17 commands + 5 shortcuts) |
 | templates/hooks/ | Hook script templates (4 hooks) |
 | templates/engrams/ | Engram templates + examples |
 | templates/rules/ | Path-scoped rule templates |
@@ -24,9 +24,9 @@ JIT memory management framework for Claude Code -- persistent context across ses
 | install.sh / install.ps1 | Installation scripts (workspace/project/user modes) |
 
 ## Key Components
-- 16 commands: help, session, sessions, divergent, learn, health, gitstatus, diff, enterprise, audit, bundle, onboard, orchestrate, conversation-log, test-tools, schedule
+- 17 commands: help, session, sessions, divergent, learn, health, gitstatus, diff, enterprise, audit, bundle, onboard, orchestrate, conversation-log, test-tools, schedule, verify
 - 5 shortcuts: save, load, pulse, status, dashboard (delegate to session/sessions based on preference)
-- 4 hooks: PreCompact save, SessionStart recovery, Branch protection, SessionEnd auto-save
+- 10 hook scripts / 9 hook events: PreCompact save, SessionStart (write-id, post-clear, recovery, scheduled-agents), PreToolUse (branch-protection, pre-agent-register), PostToolUse (heartbeat, post-agent-complete), SessionEnd auto-save
 - Engram system: per-project deep context files (50-150 lines each)
 - Bundle system: domain knowledge files loaded on-demand via routing weights
 - Context manifest: bundle index and routing weight definitions
