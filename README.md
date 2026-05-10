@@ -20,7 +20,7 @@ JitNeuro implements the **DOE (Directive Orchestration Execution)** pattern: you
 
 ## Simple But Powerful
 
-JitNeuro has 16 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
+JitNeuro has 17 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
 
 You don't need any of that to start.
 
@@ -118,7 +118,7 @@ All docs are reference, not prerequisites. Read them when you're curious, not be
 |-----|---------------|
 | [Setup Guide](docs/setup-guide.md) | Installation, post-install, troubleshooting |
 | [Technical Overview](docs/technical-overview.md) | Architecture, file structure, full feature list, roadmap |
-| [Commands Reference](docs/commands-reference.md) | All 15 commands + 5 shortcuts |
+| [Commands Reference](docs/commands-reference.md) | All 17 commands + 5 shortcuts |
 | [Configuration Reference](docs/configuration-reference.md) | Every config file and setting |
 | [Scheduled Agents](docs/scheduled-agents.md) | Timer, enforcer, cron, batch agents + business automation |
 | [Sub-Orchestrator Pattern](docs/sub-orchestrator-pattern.md) | Managing large-scale operations with worker pools |

@@ -16,7 +16,7 @@ JIT memory management framework for Claude Code -- persistent context across ses
 | Path | Purpose |
 |------|---------|
 | templates/commands/ | Slash command templates (22 files: 17 commands + 5 shortcuts) |
-| templates/hooks/ | Hook script templates (4 hooks) |
+| templates/hooks/ | Hook script templates (10 hook scripts) |
 | templates/engrams/ | Engram templates + examples |
 | templates/rules/ | Path-scoped rule templates |
 | templates/CLAUDE-brainstem.md | CLAUDE.md template for new repos |

@@ -93,9 +93,9 @@ repos, use **user** mode so commands are available everywhere.
 
 ## What's Included
 
-- **15 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
+- **17 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /help, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
 - **Scheduled agents** -- timer agents that interrupt master with housekeeping instructions on a configurable interval. Ships with autosave (30m) and hub-sync (10m) by default.
-- **6 hooks** -- pre-compact save, session recovery, post-clear session picker, branch protection, auto-save, session ID tracking
+- **10 hook scripts (9 hook events)** -- pre-compact save, session ID write (heartbeat), heartbeat (PostToolUse), post-compact recovery, post-clear session picker, scheduled-agents spawner, branch protection, pre-agent register, post-agent complete, session-end auto-save
 - **16 personas** -- expert roles that evaluate every request (Security Engineer, DBA, Content Strategist, QA, etc.)
 - **Friction detection** -- pre-reasoning scan for user correction signals with severity-ordered response
 - **4 decision models** -- root cause analysis, API-first design, technology selection, cross-repo contracts
@@ -148,7 +148,7 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 ## Related Docs
 
 - [Setup Guide](setup-guide.md) -- Detailed installation walkthrough
-- [Commands Reference](commands-reference.md) -- All 16 commands + 5 shortcuts
+- [Commands Reference](commands-reference.md) -- All 17 commands + 5 shortcuts
 - [Hooks Guide](hooks-guide.md) -- Lifecycle hooks and custom hook development
 - [Configuration Reference](configuration-reference.md) -- All config files and settings
 - [Scheduled Agents](scheduled-agents.md) -- Timer, enforcer, cron, and batch agents

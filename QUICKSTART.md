@@ -54,7 +54,7 @@ tells you exactly what to fix.
 /sessions        # list all saved sessions
 ```
 
-That's it. You now have 15+ commands, 4 hooks, and a memory management layer.
+That's it. You now have 17 commands, 10 hooks, and a memory management layer.
 
 ---
 
