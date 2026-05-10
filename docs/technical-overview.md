@@ -62,7 +62,7 @@ workspace-root/
   |   |-- engrams/            per-project deep context
   |   |-- cognition/          personas, decisions, anti-patterns, friction detection
   |   |-- scripts/            deterministic bash scripts (dashboard, sessions)
-  |   |-- hooks/              hook scripts (6 lifecycle hooks)
+  |   |-- hooks/              hook scripts (10 scripts / 9 hook events)
   |   |-- rules/              path-scoped rules (optional)
   |   |-- session-state/      session checkpoints
   |   |-- context-manifest.md bundle index + routing
