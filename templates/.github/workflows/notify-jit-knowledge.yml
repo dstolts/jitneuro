@@ -7,7 +7,7 @@ name: Notify jit-knowledge of engram/bundle/rules change
 # Posts a repository_dispatch event to jit-knowledge so refresh-index.yml regenerates
 # the Routing Index in INDEX.md.
 #
-# Requires repo secret JIT_KNOWLEDGE_DISPATCH_TOKEN -- fine-grained PAT scoped to
+# Requires repo secret JITAI_OPENCLAW_PROD -- fine-grained PAT scoped to
 # Contents:write on dstolts/jit-knowledge. See
 # https://github.com/dstolts/jit-knowledge/blob/main/projects/dispatch-token-setup.md
 
@@ -29,10 +29,10 @@ jobs:
     steps:
       - name: Dispatch knowledge-changed to jit-knowledge
         env:
-          GH_TOKEN: ${{ secrets.JIT_KNOWLEDGE_DISPATCH_TOKEN }}
+          GH_TOKEN: ${{ secrets.JITAI_OPENCLAW_PROD }}
         run: |
           if [ -z "${GH_TOKEN}" ]; then
-            echo "ERROR: JIT_KNOWLEDGE_DISPATCH_TOKEN secret not set. Distribute via projects/dispatch-token-setup.md loop."
+            echo "ERROR: JITAI_OPENCLAW_PROD secret not set. Distribute via projects/dispatch-token-setup.md loop."
             exit 1
           fi
           gh api -X POST repos/dstolts/jit-knowledge/dispatches \
