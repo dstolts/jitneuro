@@ -1,0 +1,43 @@
+name: Notify jit-knowledge of engram/bundle/rules change
+
+# Installed in every repo subscribed to jit-knowledge per
+# https://github.com/dstolts/jit-knowledge/blob/main/sync/subscribed-repos.json
+#
+# Fires when content under .jitneuro/ changes on the default branch (main or uat).
+# Posts a repository_dispatch event to jit-knowledge so refresh-index.yml regenerates
+# the Routing Index in INDEX.md.
+#
+# Requires repo secret JIT_KNOWLEDGE_DISPATCH_TOKEN -- fine-grained PAT scoped to
+# Contents:write on dstolts/jit-knowledge. See
+# https://github.com/dstolts/jit-knowledge/blob/main/projects/dispatch-token-setup.md
+
+on:
+  push:
+    branches: ['$default-branch']
+    paths:
+      - '.jitneuro/engrams/**'
+      - '.jitneuro/bundles/**'
+      - '.jitneuro/rules/**'
+      - '.jitneuro/cognition/**'
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch knowledge-changed to jit-knowledge
+        env:
+          GH_TOKEN: ${{ secrets.JIT_KNOWLEDGE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "ERROR: JIT_KNOWLEDGE_DISPATCH_TOKEN secret not set. Distribute via projects/dispatch-token-setup.md loop."
+            exit 1
+          fi
+          gh api -X POST repos/dstolts/jit-knowledge/dispatches \
+            -f event_type=knowledge-changed \
+            -f client_payload[repo]=${{ github.repository }} \
+            -f client_payload[branch]=${{ github.ref_name }} \
+            -f client_payload[sha]=${{ github.sha }} \
+            -f client_payload[trigger]=push
