@@ -8,7 +8,7 @@ This doc answers: (1) Can Cursor leverage JitNeuro without change? (2) What chan
 
 | Layer | Cursor as-is? | Cross-vendor approach |
 |-------|----------------|------------------------|
-| **Bundles, engrams, session-state, manifest** | ✅ Yes (read/write same paths) | Use vendor-neutral dir (e.g. `.ai/`) so both read same files |
+| **Bundles, engrams, session-state** | ✅ Yes (read/write same paths) | Use vendor-neutral dir (e.g. `.ai/`) so both read same files |
 | **Brainstem / core rules** | ⚠️ Adapt | Map CLAUDE.md → Cursor rules or AGENTS.md |
 | **Slash commands** | ❌ No | Commands become “intent docs” + one Cursor rule that routes to them |
 | **Hooks** | ❌ No | Claude-only; Cursor gets best-effort or no hooks |
@@ -20,13 +20,14 @@ This doc answers: (1) Can Cursor leverage JitNeuro without change? (2) What chan
 
 - **Content under `.claude/`**  
   Cursor can read and write the same files Claude Code uses:
-  - `context-manifest.md` (bundle index, routing)
   - `bundles/*.md`
   - `engrams/*.md`
   - `session-state/*.md`
   - `jitneuro.json`
+  - `.jit-knowledge/INDEX.md` (routing -- the single source via submodule)
+  - `~/.claude/url-resolver.md` (GitHub URL -> local clone map)
 
-  So the *concepts* (bundles, engrams, session state, routing) work in Cursor; the agent just needs to be told where they live and when to use them.
+  So the *concepts* (bundles, engrams, session state, routing) work in Cursor; the agent just needs to be told where they live and when to use them. Routing comes from INDEX.md, not from a per-repo `context-manifest.md`.
 
 - **Workflows**  
   “Load bundle X for this task”, “save session state”, “read manifest for routing” are all file I/O. Cursor can do that from prompts or rules; no Claude-specific API is required.
@@ -86,9 +87,10 @@ So: **no code change to JitNeuro**; only documentation and, optionally, a separa
   - Or put it in AGENTS.md and point Cursor at that file.  
   No need to change the *content* of the brainstem; only the *injection mechanism* (Claude = CLAUDE.md, Cursor = rule or AGENTS.md).
 
-- **MEMORY.md / routing:**  
-  Treat as a referenced doc: “When deciding which bundles to load, read MEMORY.md (and context-manifest) and use the routing weights.”  
-  Add that to the same Cursor rule or to the “command router” rule so the agent always has the instruction to consult MEMORY + manifest.
+- **MEMORY.md / routing:**
+  Routing is no longer in MEMORY.md or context-manifest.md. It lives exclusively in `jit-knowledge/INDEX.md`.
+  Add one Cursor rule or AGENTS.md block: “When deciding which bundles to load, read `.jit-knowledge/INDEX.md` (resolved via `~/.claude/url-resolver.md`) for the canonical routing table.”
+  MEMORY.md continues to hold project-specific facts and the project index; it has no routing tables.
 
 ---
 
@@ -98,17 +100,17 @@ So: **no code change to JitNeuro**; only documentation and, optionally, a separa
 
 - **Idea:** Keep one set of content that both Claude and Cursor read/write.
 - **Option 1 – Shared under `.claude/`:**  
-  Cursor is told (via rule/AGENTS.md): “JitNeuro context lives under `.claude/`: bundles, engrams, session-state, context-manifest, commands.”  
+  Cursor is told (via rule/AGENTS.md): “JitNeuro context lives under `.claude/`: bundles, engrams, session-state, commands. Routing lives in `.jit-knowledge/INDEX.md`.”
   No move; only document that Cursor uses the same paths.
 
-- **Option 2 – New vendor-neutral root:**  
+- **Option 2 – New vendor-neutral root:**
   Introduce something like `.ai/` (or `ai-context/`) and move (or symlink/copy) there:
-  - `context-manifest.md`
   - `bundles/`
   - `engrams/`
   - `session-state/`
   - `commands/` (intent docs)
   - `jitneuro.json`
+  - Note: routing stays in `.jit-knowledge/INDEX.md` regardless of this choice; do not move it into `.ai/`
 
   Then:
   - **Claude:** Keep using `.claude/` but have install script (or docs) copy/symlink from `.ai/` → `.claude/`, or point Claude at `.ai/` if it ever supports a configurable root.
@@ -122,7 +124,7 @@ Add a Cursor rule (e.g. `.cursor/rules/jitneuro-commands.mdc`) that:
 
 1. **Path:** Assumes JitNeuro root is `.claude/` (or `.ai/` if you adopt that).
 2. **Intents:** On user intent matching a known command (`/save`, `/load`, `/session`, `/bundle`, `/learn`, “checkpoint session”, “load session X”, etc.), read the corresponding `commands/<name>.md` (or the consolidated session.md, save.md, load.md, etc.) and follow its instructions.
-3. **Manifest + MEMORY:** When loading context for a task, read `context-manifest.md` and MEMORY.md (routing weights) and load the suggested bundles.
+3. **Routing + MEMORY:** When loading context for a task, read `.jit-knowledge/INDEX.md` (routing) and MEMORY.md (project facts) and load the suggested bundles. Do not read `context-manifest.md` for routing -- that file is retired.
 
 No change to the existing command markdown; they stay the single source of truth for both Claude and Cursor.
 
@@ -159,7 +161,7 @@ The JitNeuro *design* (bundles, engrams, session state, manifest, command semant
 ## 5. Minimal Checklist for “Cursor + cross-vendor”
 
 - [ ] **Document:** Cursor can use `.claude/` (or `.ai/`) content as-is; no change to bundle/engram/session-state format.
-- [ ] **Add:** One Cursor rule (or AGENTS.md block) that routes user intents to the existing command .md files and tells the agent to use manifest + MEMORY for routing.
+- [ ] **Add:** One Cursor rule (or AGENTS.md block) that routes user intents to the existing command .md files and tells the agent to use `.jit-knowledge/INDEX.md` for routing and MEMORY.md for project facts.
 - [ ] **Add:** Optional Cursor rule that injects brainstem content (from CLAUDE-brainstem.md) so Cursor has the same “always on” rules.
 - [ ] **Document:** Hooks are Claude Code–only; Cursor behavior and mitigations.
 - [ ] **Optional:** Vendor-neutral root (e.g. `.ai/`) and/or install script that writes the Cursor rule(s) so one install works for both.

@@ -4,7 +4,7 @@
 
 ```
 LONG-TERM MEMORY (disk -- survives all sessions)
-  |-- MEMORY.md            learned patterns + routing weights
+  |-- MEMORY.md            project index + business facts
   |-- bundles/             domain knowledge, loaded on-demand
   |-- engrams/             per-project deep context (updated by /learn)
   |-- specs + decisions    procedural + episodic memory
@@ -41,11 +41,11 @@ SHORT-TERM MEMORY (checkpoint files -- survives /clear)
 ```
 SESSION START
   |-- CLAUDE.md loads (brainstem -- always, kept minimal)
-  |-- MEMORY.md loads (routing weights -- first 200 lines)
+  |-- MEMORY.md loads (project index -- first 200 lines)
   |-- Check session-state.md (any prior state to resume?)
   |
   |-- User gives a task
-  |-- Orchestrator reads manifest, picks bundles
+  |-- Orchestrator reads jit-knowledge/INDEX.md (routing), picks bundles
   |-- Launches agent with ONLY those bundles
   |-- Agent works in isolated context, returns summary
   |-- Main context stays thin

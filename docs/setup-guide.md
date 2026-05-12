@@ -195,14 +195,21 @@ Claude Code will read the template, extract domain-specific content from your ex
 
 Claude Code will copy the template, rename it, and walk you through what to add. Keep under 180 lines. Include: key files, commands, conventions, gotchas. Exclude: anything Claude can infer from reading the code.
 
-### Update the Manifest and Routing
+### Register Bundles with the Canonical Router
 
+Routing lives in `jit-knowledge/INDEX.md` -- the single source of truth for all task-keyword to bundle mappings. To make a new bundle load automatically:
+
+1. Open a PR to `dstolts/jit-knowledge` adding a route line to `INDEX.md`:
+   `- <trigger phrase>  -> [your-bundle-name]`
+2. Once merged, your consuming system picks it up on the next `jit-knowledge` submodule pull.
+
+For local-only routes (experimental, not recommended long-term), ask Claude Code:
 ```
-> "Add my new bundles to the context manifest and set up routing weights in MEMORY.md
-   so they load automatically for the right tasks."
+> "Add a temporary routing entry for my-bundle to .jitneuro/engrams/context.md
+   and note it should be promoted to jit-knowledge/INDEX.md via PR."
 ```
 
-Claude Code will update context-manifest.md with your bundles and add routing weights to MEMORY.md based on the task patterns you describe.
+Do NOT add routing entries to `context-manifest.md` or `MEMORY.md`; those surfaces no longer carry routing tables.
 
 ### Add Compact Instructions to CLAUDE.md
 
@@ -268,7 +275,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
 | Claude ignores bundle content | Bundle too long (over 180 lines) or conflicting with CLAUDE.md. |
-| Wrong bundles loaded | Update routing weights in manifest/MEMORY.md. |
+| Wrong bundles loaded | Open a PR to jit-knowledge/INDEX.md to add or correct the route mapping. |
 | Context still fills up | Use agents more aggressively, save/clear more often. |
 | /load loads stale state | Check session date with `/sessions`. |
 | Interrupted install | No `jitneuro.json` in `.claude/` = incomplete. Re-run installer. |

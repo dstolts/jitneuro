@@ -271,7 +271,7 @@ BLOCKED: [count] items needing attention
 
 4. **Read active bundles** listed in session state (only those listed)
 
-5. **Read `.claude/context-manifest.md`** for bundle awareness
+5. **Read `.jit-knowledge/INDEX.md`** (via `~/.claude/url-resolver.md`) for routing and bundle awareness
 
 6. **Write "my current"** (session name).
 

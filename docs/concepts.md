@@ -26,15 +26,24 @@ Bundles and engrams are orthogonal:
 - **Bundles** cut across projects by domain ("how to deploy")
 - **Engrams** cut across domains by project ("everything about this repo")
 
-## Routing Weights
+## Routing
 
-Patterns in MEMORY.md that map task types to bundle combinations:
+Routing maps task keywords to bundle combinations so the right domain knowledge loads automatically.
+
+Routing has a single source of truth: `jit-knowledge/INDEX.md`. All task-keyword to bundle mappings live there. Consuming systems (per-repo installs, Cursor, future agents) reference INDEX.md rather than maintaining their own routing tables.
+
 ```
-- Deploy tasks -> bundles: [deploy, infra]
-- API work -> bundles: [api-design, testing]
-- Sprint execution -> bundles: [sprint, cross-repo]
+# jit-knowledge/INDEX.md (single source -- do not duplicate locally)
+- Deploy / server / container / VM  -> [infrastructure]
+- API / endpoint / route / auth     -> [api-patterns]
+- Sprint / story / prd / backlog    -> [sprint-workflow]
 ```
-These improve over time as the system learns which bundles co-activate.
+
+The URL-resolver (`~/.claude/url-resolver.md`) maps the canonical GitHub URL to the local clone path so each machine reads the file locally at session speed.
+
+For the governance rule, see `jit-knowledge/rules/routing-single-source.md`. To retire legacy routing files on an existing install, run `jit-knowledge/scripts/cleanup-old-routing.ps1` (Windows) or `cleanup-old-routing.sh` (Linux/Mac).
+
+Do NOT create a `routing-weights.md` or populate `context-manifest.md` with routing tables. Those are retired surfaces.
 
 ## Conversation Logging
 
@@ -81,12 +90,12 @@ CLAUDE.md (brainstem, 30-40 lines)    -- universal rules only
   .claude/rules/deployment.md          -- loads only for deploy/**, Dockerfile, .github/workflows/**
   .claude/bundles/deploy.md            -- loads on demand by orchestrator
   .claude/engrams/repo.md              -- loads on demand per project
-  MEMORY.md                            -- routing weights (first 200 lines)
+  MEMORY.md                            -- project index + business facts (routing is in jit-knowledge/INDEX.md)
 ```
 
 Each level only loads when relevant:
 - **Rules** load automatically when Claude touches matching file paths (zero cost when not needed)
-- **Bundles** load on demand when routing weights match the task
+- **Bundles** load on demand when INDEX.md routing matches the task
 - **Engrams** load on demand when working on a specific project
 - **CLAUDE.md** loads every session (keep it minimal)
 
@@ -115,7 +124,7 @@ JitNeuro is designed to be lightweight. Here's what it actually costs:
 |------|-------|-------------|---------|
 | CLAUDE.md (global) | ~50-140 | ~400-1,100 | Core rules, trust zones |
 | CLAUDE.md (project) | ~30-50 | ~250-400 | Project identity, key paths |
-| MEMORY.md | ~90-200 | ~700-1,600 | Routing weights, project index |
+| MEMORY.md | ~90-200 | ~700-1,600 | Project index, business facts (routing is in jit-knowledge/INDEX.md) |
 | **Total brainstem** | **~170-390** | **~1,350-3,100** | |
 
 That's roughly **1-2% of a 200K context window**. The rest is your conversation and code.

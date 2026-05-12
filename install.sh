@@ -118,12 +118,23 @@ for cmd_file in "$TEMPLATES/commands/"*.md; do
 done
 echo "  ($CMD_COUNT commands installed)"
 
-# Copy templates (don't overwrite existing)
-if [ ! -f "$TARGET/context-manifest.md" ]; then
-  cp "$TEMPLATES/context-manifest.md" "$TARGET/context-manifest.md"
-  echo "Created context-manifest.md"
+# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
+# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.sh
+if [ -f "$TARGET/context-manifest.md" ]; then
+  echo "NOTE: Legacy context-manifest.md found at $TARGET/context-manifest.md"
+  echo "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.sh to retire it."
+fi
+
+# Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
+USER_CLAUDE="$HOME/.claude"
+URL_RESOLVER="$USER_CLAUDE/url-resolver.md"
+if [ ! -f "$URL_RESOLVER" ]; then
+  mkdir -p "$USER_CLAUDE"
+  cp "$TEMPLATES/url-resolver.md" "$URL_RESOLVER"
+  echo "Created ~/.claude/url-resolver.md -- add your jit-knowledge local path to enable routing"
 else
-  echo "Skipped context-manifest.md (already exists)"
+  echo "Skipped url-resolver.md (already exists)"
 fi
 
 # Copy example bundle if bundles dir is empty
@@ -374,9 +385,10 @@ echo "JitNeuro v$VERSION installed to: $TARGET"
 echo ""
 echo "Next steps:"
 echo "  1. CLOSE AND REOPEN Claude Code (commands load at session start)"
-echo "  2. Run /verify to confirm everything is working"
-echo "  3. Run /onboard <repo> to set up context for your repos"
-echo "  4. Create bundles for your domains in $TARGET/bundles/"
+echo "  2. Edit ~/.claude/url-resolver.md -- add the local path to your jit-knowledge clone"
+echo "  3. Run /verify to confirm everything is working"
+echo "  4. Run /onboard <repo> to set up context for your repos"
+echo "  5. Create bundles for your domains in $TARGET/bundles/"
 echo ""
 echo "*** You MUST restart Claude Code for slash commands to take effect. ***"
 echo ""
