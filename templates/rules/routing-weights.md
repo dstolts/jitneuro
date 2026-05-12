@@ -1,38 +1,23 @@
-# Routing Weights
+# Routing Weights -- DEPRECATED TEMPLATE
 
-Load context bundles based on task keywords. Each entry maps trigger phrases to one or more bundle names. When a user request matches a trigger, the listed bundles are loaded to provide domain-specific context.
+This template file is deprecated as of 2026-05-12 (Step 6 Layer B sweep).
 
-## Pattern
+The routing-weights.md pattern enacted routing locally. Routing now lives exclusively in:
 
-```
-- <trigger phrases>  -> [bundle-name]
-- <trigger phrases>  -> [bundle-a, bundle-b]
-```
+  https://github.com/dstolts/jit-knowledge/blob/main/INDEX.md
 
-## Example Routes
+## What to do instead
 
-```
-- Deploy / server / container / VM       -> [infrastructure]
-- API / endpoint / route / auth          -> [api-patterns]
-- Blog / post / publish / content        -> [content]
-- Sprint / story / prd / backlog         -> [sprint-workflow]
-- Test / spec / coverage / assertion     -> [testing]
-- Bug / error / debug / investigate      -> [infrastructure, integrations]
-```
+Do NOT create a routing-weights.md in your repo's `.claude/rules/`. Instead:
 
-## How It Works
+1. Add jit-knowledge as a submodule at `.jit-knowledge/` in your repo
+2. Set up `~/.claude/url-resolver.md` mapping the jit-knowledge GitHub URL to the local submodule path
+3. Reference INDEX.md for routing at session start (via CLAUDE.md or brainstem)
 
-1. AI scans the user's request for trigger keywords
-2. Matching bundles are loaded from the bundles directory
-3. Multiple bundles can load simultaneously for cross-domain tasks
-4. Unmatched requests use base context only (no extra bundles)
+For system-specific routing extensions (routes not in INDEX.md), add them ONLY to INDEX.md
+via a PR to jit-knowledge. Do not maintain a parallel local router.
 
-## Tips
+## Archive
 
-- Group related keywords on the same line (e.g., "deploy / server / container")
-- Use multi-bundle routes for tasks that span domains (e.g., "cross-repo sprint -> [sprint-workflow, infrastructure]")
-- Keep trigger phrases short -- 2-4 words per phrase is ideal
-- Order routes from most specific to most general
-- Add a "Full manifest" reference so AI can discover all available bundles
-
-Full manifest: .claude/context-manifest.md
+The original routing-weights.md template is preserved at:
+  `templates/.archive/rules-routing-weights.md`
