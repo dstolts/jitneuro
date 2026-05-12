@@ -2,6 +2,8 @@
 
 Why JitNeuro uses explicit routing weights instead of vector embeddings for context loading, and what that means for precision, auditability, and token efficiency.
 
+> **Single-source note (2026-05-12):** Routing weights now live exclusively in `jit-knowledge/INDEX.md` (the canonical single source). The design philosophy described here -- keyword-to-bundle mappings, deterministic precision, /learn-driven improvement -- remains unchanged. What changed is WHERE those mappings are stored: not in MEMORY.md or local files, but in INDEX.md as a shared versioned source. Per-machine resolution uses `~/.claude/url-resolver.md`.
+
 ## The Problem Both Solve
 
 Given a user request, which context should the AI assistant have?

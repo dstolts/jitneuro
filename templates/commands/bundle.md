@@ -52,15 +52,14 @@ c. **If no source material found:** Ask the user what this bundle should cover.
 
 d. **Present the draft** and ask for approval before writing.
 
-e. **On approval:** Write to `.claude/bundles/<name>.md`, update
-   `context-manifest.md` (add row to Available Bundles table), and suggest
-   routing weight entries for MEMORY.md.
+e. **On approval:** Write to `.claude/bundles/<name>.md` and suggest
+   opening a PR to `jit-knowledge/INDEX.md` to add the routing entry for this bundle.
 
 ### 4. Without arguments (`/bundle`):
 
 a. Scan `.claude/bundles/` for actual files. Count lines in each.
-b. Read `context-manifest.md` and compare -- flag bundles that exist on disk
-   but aren't in the manifest, or manifest entries with no matching file.
+b. Read `.jit-knowledge/INDEX.md` (via `~/.claude/url-resolver.md`) and compare -- flag bundles that exist on disk
+   but have no routing entry in INDEX.md.
 c. Present:
 
 ```
@@ -96,12 +95,11 @@ If a bundle is over 280 lines, or the user asks to split:
 1. Identify natural subdomain boundaries in the content
 2. Propose split: `<name>-a.md` and `<name>-b.md` with clear names
 3. Show what goes where
-4. On approval: write both files, archive original, update manifest,
-   update routing weights to reference both
+4. On approval: write both files, archive original, suggest PR to jit-knowledge/INDEX.md
+   to update routing to reference both split bundles
 
 ## Important
 - Always ask before writing or modifying bundle files.
 - Target: under 280 lines. Claude reads the full file regardless of length, but shorter bundles load faster and waste fewer tokens when loaded for the wrong task.
 - One bundle = one domain. If a bundle covers two unrelated things, split it.
-- After any write, update context-manifest.md to match reality.
-- Routing weights live in MEMORY.md -- suggest entries but let the user approve.
+- Routing entries live in `jit-knowledge/INDEX.md` -- suggest a PR but do not write locally.

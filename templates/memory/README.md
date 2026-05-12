@@ -16,14 +16,14 @@ MEMORY.md has a hard 200-line limit (Claude Code silently truncates beyond that)
 The full searchable table with descriptions, grouped by type (user, project, reference, feedback). When feedback grows large, subdivide by domain (e.g., "Feedback -- N8N", "Feedback -- Salesforce").
 
 ### Adding new memories
-When creating a new feedback/project/reference file, add the entry to `detail-index.md`, NOT to MEMORY.md. MEMORY.md only holds facts that Claude needs every session (business context, project index, routing weights). Detail files are loaded on-demand.
+When creating a new feedback/project/reference file, add the entry to `detail-index.md`, NOT to MEMORY.md. MEMORY.md holds facts Claude needs every session (business context, project index). Routing lives in `jit-knowledge/INDEX.md`. Detail files are loaded on-demand.
 
 ## What goes where
 
 | Content | Location | Why |
 |---------|----------|-----|
-| Business facts, project index, routing weights | MEMORY.md | Needed every session |
+| Business facts, project index | MEMORY.md | Needed every session |
 | Individual feedback, project details, references | detail-index.md -> individual .md files | Loaded on-demand |
 | Instructions, process, guardrails | ~/.claude/rules/ | Loaded every session (no line limit) |
-| Domain knowledge, cross-project context | bundles/ | Loaded by routing weights |
+| Domain knowledge, cross-project context | bundles/ | Loaded by jit-knowledge/INDEX.md routing |
 | Project identity, architecture, key files | engrams/ | Loaded when working on that project |

@@ -7,7 +7,7 @@ Detailed technical reference for JitNeuro internals. For the quick version, see 
 JitNeuro implements the **DOE (Directive Orchestration Execution)** framework -- a three-layer pattern for AI-assisted development:
 
 - **Directive** -- Owner gives short, high-level instructions. "Score all blog posts." "Audit the repos." "Fix the auth bug." No step-by-step hand-holding.
-- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads routing weights, context manifests, and session state to make these decisions.
+- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads `jit-knowledge/INDEX.md` (routing table) and session state to make these decisions.
 - **Execution** -- Agents do the work. Workers read files, write code, run tests, score content, draft responses. Results flow up as thin summaries. Detail stays in files on disk.
 
 The owner does the $10K/hr work (judgment, priorities, approval). The AI does the $10/hr work (research, coding, analysis, content drafting, task execution). JitNeuro is the memory and orchestration layer that makes this possible across sessions, repos, and teams.
@@ -40,9 +40,10 @@ For architecture diagrams and the neural network mapping, see [architecture.md](
 
 ```
 LONG-TERM MEMORY (disk -- survives all sessions)
-  |-- MEMORY.md            learned patterns + routing weights
+  |-- MEMORY.md            project index + business facts
   |-- bundles/             domain knowledge, loaded on-demand
   |-- engrams/             per-project deep context (updated by /learn)
+  |-- .jit-knowledge/      routing table -- jit-knowledge/INDEX.md (single source)
 
 WORKING MEMORY (context window -- limited capacity)
   |-- CLAUDE.md            core rules (always loaded, minimal)
@@ -65,9 +66,10 @@ workspace-root/
   |   |-- hooks/              hook scripts (6 lifecycle hooks)
   |   |-- rules/              path-scoped rules (optional)
   |   |-- session-state/      session checkpoints
-  |   |-- context-manifest.md bundle index + routing
   |   |-- jitneuro.json       version, hooks config, settings
   |   |-- settings.local.json Claude Code hooks configuration
+  |-- .jit-knowledge/         jit-knowledge submodule (INDEX.md = routing table)
+  |-- ~/.claude/url-resolver.md  GitHub URL -> local path map (machine-specific)
   |-- repo-a/
   |-- repo-b/
 ```

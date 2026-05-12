@@ -114,13 +114,24 @@ foreach ($cmdFile in $cmdTemplates) {
 }
 Write-Host "  ($CmdCount commands installed)"
 
-# Copy context-manifest (don't overwrite)
-$manifest = Join-Path $Target "context-manifest.md"
-if (-not (Test-Path $manifest)) {
-    Copy-Item (Join-Path $Templates "context-manifest.md") $manifest
-    Write-Host "Created context-manifest.md"
+# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
+# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.ps1
+$staleManifest = Join-Path $Target "context-manifest.md"
+if (Test-Path $staleManifest) {
+    Write-Host "NOTE: Legacy context-manifest.md found at $staleManifest" -ForegroundColor Yellow
+    Write-Host "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.ps1 to retire it." -ForegroundColor Yellow
+}
+
+# Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
+$UserClaude = Join-Path $env:USERPROFILE ".claude"
+$UrlResolver = Join-Path $UserClaude "url-resolver.md"
+if (-not (Test-Path $UrlResolver)) {
+    if (-not (Test-Path $UserClaude)) { New-Item -ItemType Directory -Path $UserClaude -Force | Out-Null }
+    Copy-Item (Join-Path $Templates "url-resolver.md") $UrlResolver
+    Write-Host "Created ~/.claude/url-resolver.md -- add your jit-knowledge local path to enable routing"
 } else {
-    Write-Host "Skipped context-manifest.md (already exists)" -ForegroundColor Yellow
+    Write-Host "Skipped url-resolver.md (already exists)" -ForegroundColor Yellow
 }
 
 # Copy example bundle if empty
@@ -449,9 +460,10 @@ Write-Host "JitNeuro v$Version installed to: $Target" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. CLOSE AND REOPEN Claude Code (commands load at session start)" -ForegroundColor Yellow
-Write-Host "  2. Run /verify to confirm everything is working"
-Write-Host "  3. Run /onboard <repo> to set up context for your repos"
-Write-Host "  4. Create bundles for your domains in $Target\bundles\"
+Write-Host "  2. Edit ~/.claude/url-resolver.md -- add the local path to your jit-knowledge clone"
+Write-Host "  3. Run /verify to confirm everything is working"
+Write-Host "  4. Run /onboard <repo> to set up context for your repos"
+Write-Host "  5. Create bundles for your domains in $Target\bundles\"
 Write-Host ""
 Write-Host "*** You MUST restart Claude Code for slash commands to take effect. ***" -ForegroundColor Red
 Write-Host ""

@@ -79,8 +79,7 @@ From any repo, Claude has full read/write access to:
 - `[workspace]/.claude/bundles/` -- shared domain knowledge
 - `[workspace]/.claude/engrams/` -- shared project context
 - `[workspace]/.claude/session-state/` -- shared session checkpoints
-- `[workspace]/.claude/context-manifest.md` -- bundle index and routing
-- MEMORY.md auto-memory (routing weights, project index)
+- MEMORY.md auto-memory (project index)
 -->
 
 ## Feature Discovery
@@ -92,9 +91,9 @@ When the user expresses a need, wish, or frustration ("I wish...", "can we...", 
 - Cognition: `.claude/cognition/personas.md` (16 expert personas, always active)
 - Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
 - Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
-- Manifest: `.claude/context-manifest.md` (bundle index + routing)
+- Routing: `.jit-knowledge/INDEX.md` (single source -- resolved via `~/.claude/url-resolver.md`)
 - Session state: `.claude/session-state/` (one file per named session)
-- Memory: Check MEMORY.md routing weights for task-to-bundle mapping
+- Memory: Check MEMORY.md for project facts and project index
 
 ## Compact Instructions
 When compacting, always preserve:
@@ -117,7 +116,7 @@ When conversation_log is "on" in session-state.md:
 <!-- Only paths Claude needs constantly. Domain paths go in bundles. -->
 | Path | Purpose |
 |------|---------|
-| `.claude/context-manifest.md` | Bundle index and routing |
+| `.jit-knowledge/INDEX.md` | Routing table (single source; resolved via url-resolver.md) |
 | `.claude/session-state/` | Session checkpoints (one per task) |
 | `.claude/bundles/` | Domain knowledge bundles |
 | `.claude/engrams/` | Per-project deep context |
