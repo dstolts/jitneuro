@@ -26,7 +26,7 @@ owner: dstolts
 
 **Status:** Production
 **Last verified:** 2026-05-11
-**Migrated from:** `C:/Users/dstolts/Code/.claude/engrams/jitneuro-context.md` (Step 4 jit-knowledge canonicalization 2026-05-11).
+**Migrated from:** historical workspace engram `jitneuro-context.md` (Step 4 jit-knowledge canonicalization 2026-05-11).
 
 ## Identity
 
@@ -35,7 +35,7 @@ JitNeuro is an **open-source AI engineering framework for Claude Code**. It prov
 Purpose: production tool AND enterprise thought leadership. Never optimize for just Owner's team alone -- every design decision must work for any adopter.
 
 - **GitHub:** `dstolts/jitneuro`
-- **Local path:** `C:/Users/dstolts/Code/jitneuro`
+- **Local checkout:** resolve through the current workspace clone or configured runtime root; do not assume an Owner-machine absolute path.
 - **Domains:** jitneuro.ai (primary), jitneuro.com (redirects to .ai)
 - **Current version target:** v0.4.5
 
