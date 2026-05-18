@@ -142,4 +142,4 @@ MIT -- see [LICENSE](LICENSE).
 
 ## Author
 
-Dan Stolts - [jitai.co](https://jitai.co) | [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
+[github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)

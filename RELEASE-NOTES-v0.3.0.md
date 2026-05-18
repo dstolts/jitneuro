@@ -80,15 +80,15 @@ This appears before the session list, making it trivial to reload the active ses
 Multiple sessions working in the same repo now get their own sections in Hub.md:
 
 ```markdown
-## AIFieldSupport-HE (sync)
+## <session-name> (sync)
 - [ ] Fix sync retry logic
 - [x] Add timeout handling (2026-03-23)
 
-## AIFS-marine-analysis
-- [ ] Marine scoring criteria update
+## <session-name-2>
+- [ ] Scoring criteria update
 ```
 
-Each session reads/writes only its own section. No conflicts when sync, marine analysis, and automotive analysis all work in the same repo simultaneously. Commands updated: session.md (save), health.md, learn.md, pending-questions.md, Cursor rules.
+Each session reads/writes only its own section. No conflicts when multiple sessions work in the same repo simultaneously. Commands updated: session.md (save), health.md, learn.md, pending-questions.md, Cursor rules.
 
 ### Subagent Communication Protocol
 

@@ -127,7 +127,7 @@ See [templates/cursor/README.md](../templates/cursor/README.md) and [cursor-and-
 - **Business automation examples** -- Stripe monitoring, inbound marketing, support triage
 - **Configuration reference** -- single source of truth for all config files
 - **README rewrite** -- philosophy-first (why, simple but powerful, Claude learns to think like you)
-- **Dan->Owner scrub** -- open-source ready
+- **Personal name scrub** -- open-source ready
 
 ### v0.2.0 -- Cognition Layer
 - 16 personas, friction detection, 4 decision models, 10 anti-pattern seeds

@@ -67,7 +67,7 @@ Or if repo override exists:
 
 ```
 Divergent Thinking: ALWAYS
-  Source: repo (D:\Code\AIFieldSupport-API\.claude\toggles.json)
+  Source: repo (<repo-path>/.claude/toggles.json)
   Workspace default: auto
 
   always = evaluate multiple approaches on every response

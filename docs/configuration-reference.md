@@ -176,10 +176,10 @@ Claude Code's hook wiring. This tells Claude Code WHICH scripts to run on WHICH 
 The `permissions.allow` array grants auto-approval for tool calls:
 
 ```json
-"Bash(git *)"        // All git commands
-"Read(D:/Code/**)"   // Read any file under D:\Code
-"Write(D:/Code/**)"  // Write any file under D:\Code
-"WebFetch(*)"        // Fetch any URL
+"Bash(git *)"              // All git commands
+"Read(<workspace-path>/**)"  // Read any file under your workspace root
+"Write(<workspace-path>/**)" // Write any file under your workspace root
+"WebFetch(*)"              // Fetch any URL
 ```
 
 Pattern: `ToolName(glob pattern)`. The `*` and `**` globs work as expected.
@@ -195,8 +195,8 @@ Claude Code's user-level settings. Located at `~/.claude/settings.json`. Not pro
   "permissions": {
     "allow": [
       "Bash(git *)",
-      "Read(D:/Code/**)",
-      "Write(D:/Code/**)",
+      "Read(<workspace-path>/**)",
+      "Write(<workspace-path>/**)",
       "WebFetch(*)"
     ]
   },

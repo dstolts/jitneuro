@@ -126,7 +126,7 @@ Cold start is routing weights' original weakness -- but JitNeuro solves it witho
 |--------|----------------|-------------------|
 | `.env` files | Service dependencies | `AUTH_API_URL` -> links to auth service bundle |
 | `package.json` | Tech stack | `express`, `stripe`, `firebase-admin` -> API, payments, auth bundles |
-| Import statements | Cross-repo references | `import { auth } from '../AuthFirebase'` -> repo dependency mapping |
+| Import statements | Cross-repo references | `import { auth } from '../auth-service'` -> repo dependency mapping |
 | `docker-compose.yml` | Service graph | `depends_on: [api, redis]` -> infrastructure bundle |
 | `CLAUDE.md` / `README.md` | Project identity | Tech stack, purpose, key paths -> engram |
 
