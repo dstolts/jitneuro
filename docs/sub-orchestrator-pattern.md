@@ -63,7 +63,7 @@ GOAL: Score all 77 blog posts against the quality rubric. Fix any scoring below 
 RUBRIC: [SEO score, AEO score, Quality score -- all must be 85+]
 POSTS: [list of 77 file paths]
 BATCH SIZE: 10 concurrent workers
-LOG FILE: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+LOG FILE: <workspace-path>/<project>/.logs/quality-audit-2026-03-26.md
 DIVERGENT MODE: AUTO
 
 Instructions:
@@ -138,16 +138,16 @@ Each worker gets a self-contained prompt:
 ```
 Score this blog post against the quality rubric.
 
-FILE: D:\Code\Automation\blog\content-drafts\ai-security-basics.md
+FILE: <workspace-path>/<project>/content-drafts/ai-security-basics.md
 RUBRIC:
   SEO: [criteria]
   AEO: [criteria]
   Quality: [criteria]
 
-Write your full analysis to: D:\Code\Automation\blog\.logs\scores\ai-security-basics.md
+Write your full analysis to: <workspace-path>/<project>/.logs/scores/ai-security-basics.md
 Start the file with an EXECUTIVE SUMMARY section (scores, pass/fail, issues -- everything
 the orchestrator needs to act without reading the rest of the file).
-Append the log index file: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+Append the log index file: <workspace-path>/<project>/.logs/quality-audit-2026-03-26.md
 
 Return to orchestrator (keep under 5 lines):
 STATUS: OK

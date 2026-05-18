@@ -41,11 +41,11 @@ Owner is not your debugger. Owner reviews finished work, not work-in-progress.
 
 ---
 
-## Task 1: Add to DOE Framework Spec
+## Task 1: Add to Your Framework Spec
 
-**File:** `D:\Code\Automation\Projects\Orchestration\DOE-Framework-Spec-04.md`
+**File:** Your organization's DOE Framework Spec (e.g., `Orchestration/DOE-Framework-Spec.md`)
 
-**Where:** Section "WHAT CLAUDE.md BECOMES" -- quality standards list (around line 349).
+**Where:** Section "WHAT CLAUDE.md BECOMES" -- quality standards list.
 
 **Insert after:** Item 3 ("Quality: ASCII only, fix root cause, test before commit, tsc --noEmit")
 

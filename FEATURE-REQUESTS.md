@@ -32,7 +32,6 @@ bundles, modified files, decisions, next steps) with placeholder prompts.
 ## FR-003: Blog Post -- "How to Get AI Coding Assistants to Actually Remember"
 **Priority:** High (launch day)
 **Status:** Published
-**Published URL:** https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/
 
 Thought leadership blog post. Not a product announcement -- a problem statement every developer relates to.
 

@@ -34,13 +34,13 @@ Divergent thinking is like `effortLevel` but for reasoning breadth:
 Repo-level overrides workspace-level. Workspace-level is the default.
 
 ```
-Workspace: D:\Code\.claude\toggles.json         -> "divergent": "auto"
-Repo:      D:\Code\<repo>\.claude\toggles.json  -> "divergent": "always"
+Workspace: <workspace-path>/.claude/toggles.json         -> "divergent": "auto"
+Repo:      <workspace-path>/<repo>/.claude/toggles.json  -> "divergent": "always"
 ```
 
 **Resolution order:**
 1. Check `<current-repo>/.claude/toggles.json` for `"divergent"` key
-2. If not found or repo has no toggles.json: check `D:\Code\.claude\toggles.json`
+2. If not found or repo has no toggles.json: check `<workspace-path>/.claude/toggles.json`
 3. If not found anywhere: default to `"auto"`
 
 ## Instructions
@@ -50,13 +50,13 @@ Repo:      D:\Code\<repo>\.claude\toggles.json  -> "divergent": "always"
 1. **Resolve current mode:**
    - Determine the current repo (from working directory or session context)
    - Read `<repo>/.claude/toggles.json` if it exists -- check for `"divergent"` key
-   - Read `D:\Code\.claude\toggles.json` -- check for `"divergent"` key
+   - Read `<workspace-path>/.claude/toggles.json` -- check for `"divergent"` key
    - Apply resolution order (repo wins over workspace wins over default)
 2. **Display:**
 
 ```
 Divergent Thinking: AUTO
-  Source: workspace (D:\Code\.claude\toggles.json)
+  Source: workspace (<workspace-path>/.claude/toggles.json)
   Repo override: none
 
   auto = diverge on production/arch/features, serial on research/fixes/docs
@@ -77,7 +77,7 @@ Divergent Thinking: ALWAYS
 ### divergent <mode> -- set mode (infer level)
 
 1. If currently inside a repo (git root detected): set at repo level
-2. If at workspace root (D:\Code): set at workspace level
+2. If at workspace root: set at workspace level
 3. Read the target `toggles.json`, update or create `"divergent"` key
 4. Display confirmation with the tag format:
 
@@ -95,7 +95,7 @@ Divergent Thinking: ALWAYS (set at repo level)
 
 ### divergent workspace <mode> -- set at workspace level
 
-1. Read `D:\Code\.claude\toggles.json`
+1. Read `<workspace-path>/.claude/toggles.json`
 2. Set `"divergent": "<mode>"`
 3. Confirm with resolved mode display (note if repo override still wins)
 

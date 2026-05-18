@@ -115,7 +115,7 @@ New doc (`docs/hook-performance.md`) with benchmarks, race condition audit, and 
 
 - **AI-first patterns** -- setup guide, environment config, memory maintenance, customization guide all lead with "ask Claude Code to do it" instead of shell commands
 - **Context-loss language corrected** -- "forces a session reset and recovery cycle" not "all progress is lost"
-- **Open-source sanitization** -- all D:\Code\ hardcoded paths replaced with generic placeholders
+- **Open-source sanitization** -- all hardcoded local paths replaced with generic placeholders
 
 ### Infrastructure
 
