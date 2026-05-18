@@ -43,15 +43,10 @@ jobs:
           fi
 
           # --- Route: repo name -> default agent (Paperclip display names) ---
+          # Add a case entry for each repo you want to route to a dedicated agent.
+          # The default catch-all (*) routes everything else to Sys Orchestrator.
           case "$REPO" in
-            AIFieldSupport-API)  DEFAULT_AGENT="Repo AIFS API" ;;
-            AIFieldSupport-App)  DEFAULT_AGENT="Repo AIFS App" ;;
-            jitai-website)       DEFAULT_AGENT="Repo JitAI" ;;
-            jit-dash)            DEFAULT_AGENT="Repo JitDash" ;;
-            Automation)          DEFAULT_AGENT="Repo Automation" ;;
-            jITSecure)           DEFAULT_AGENT="Repo JitSecure" ;;
-            CoWork)              DEFAULT_AGENT="Repo CoWork" ;;
-            jitneuro)            DEFAULT_AGENT="Repo JitNeuro" ;;
+            # <your-repo-name>) DEFAULT_AGENT="Repo <YourProject>" ;;
             *)                   DEFAULT_AGENT="Sys Orchestrator" ;;
           esac
 
@@ -84,17 +79,11 @@ jobs:
             -H "Authorization: Bearer $PAPERCLIP_API_KEY" \
             "$PAPERCLIP_URL/api/companies/$COMPANY_ID/projects" || echo '[]')
 
-          # Map repo name to project display name
+          # Map repo name to Paperclip project display name.
+          # Add a case entry for each repo that maps to a Paperclip project.
           case "$REPO" in
-            AIFieldSupport-API)  PROJECT_NAME="AIFS API" ;;
-            AIFieldSupport-App)  PROJECT_NAME="AIFS App" ;;
-            jitai-website)       PROJECT_NAME="JitAI Website" ;;
-            jit-dash)            PROJECT_NAME="Jit Dash" ;;
-            Automation)          PROJECT_NAME="Automation" ;;
-            jITSecure)           PROJECT_NAME="JITSecure" ;;
-            CoWork)              PROJECT_NAME="CoWork" ;;
-            jitneuro)            PROJECT_NAME="JitNeuro" ;;
-            *)                   PROJECT_NAME="" ;;
+            # <your-repo-name>) PROJECT_NAME="<Your Project Display Name>" ;;
+            *)                  PROJECT_NAME="" ;;
           esac
 
           PROJECT_ID=""

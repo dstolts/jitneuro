@@ -29,8 +29,8 @@ Target: publish GitHub + blog + LinkedIn same day.
 - [x] Test /gitstatus across all repos
 - [x] Test /health diagnostic
 - [x] Remove hardcoded paths from all templates (34 files, 3-agent cleanup)
-- [x] Remove "Dan" references -- generic for open source
-- [x] Remove project-specific examples (AIBM, FirstMover, jitai, etc.)
+- [x] Remove personal name references -- generic for open source
+- [x] Remove owner-specific project examples -- use abstract placeholders
 - [x] Simplify QUICKSTART.md to 3-step flow
 - [x] Rewrite DEMO-SCRIPT.md as tutorial (not internal marketing)
 - [x] Rename Phase 2 from "Cognitive Layer" to "Decision Frameworks"

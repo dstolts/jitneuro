@@ -26,7 +26,6 @@ owner: dstolts
 
 **Status:** Production
 **Last verified:** 2026-05-11
-**Migrated from:** `C:/Users/dstolts/Code/.claude/engrams/jitneuro-context.md` (Step 4 jit-knowledge canonicalization 2026-05-11).
 
 ## Identity
 
@@ -35,7 +34,7 @@ JitNeuro is an **open-source AI engineering framework for Claude Code**. It prov
 Purpose: production tool AND enterprise thought leadership. Never optimize for just Owner's team alone -- every design decision must work for any adopter.
 
 - **GitHub:** `dstolts/jitneuro`
-- **Local path:** `C:/Users/dstolts/Code/jitneuro`
+- **Local path:** `<local-clone-path>/jitneuro`
 - **Domains:** jitneuro.ai (primary), jitneuro.com (redirects to .ai)
 - **Current version target:** v0.4.5
 
@@ -136,7 +135,7 @@ Line limit: warn at 230, hard cap at 280.
 | MEMORY.md line limit | 200 (hard, truncated by Claude Code) |
 | Bundle/Engram line limit | 280 (warn at 230) |
 | Session tag | `[session: <name> | DIV: <MODE>]` |
-| Domain guard | jitneuro.ai primary; NEVER jitai.com -- always jitai.co |
+| Domain guard | jitneuro.ai primary; jitneuro.com redirects to .ai |
 
 ## Integration Points
 
@@ -153,14 +152,13 @@ Changes under `.jitneuro/{engrams,bundles,rules,cognition}/**` on `main` trigger
 
 Token: `JITAI_OPENCLAW_PROD` secret (fine-grained PAT, Contents:write on `dstolts/jit-knowledge` only).
 
-## CoWork / Paperclip Agent Execution
+## Agent Execution
 
-Paperclip agents run on `automate1` (192.168.1.155), Docker port 3100, UI: `digital.jitai.co`.
+Agents run via Paperclip or equivalent dispatch infrastructure:
 
-- Repo mounted at `/repos/` inside container; agents run `claude --dangerously-skip-permissions`
-- Agent instructions from `CoWork/agents/<agent-name>/AGENTS.md` (canonical: `jit-knowledge/org/`)
-- Create GH issue + `paperclip-dispatch` label + `agent:<role>` -> GitHub Actions dispatch -> Paperclip
-- Direct API: `POST /api/companies/8167d96e-7a97-4c37-9882-bbf724ed136c/issues`
+- Agents run `claude --dangerously-skip-permissions` inside their container
+- Agent instructions from `<agents-dir>/<agent-name>/AGENTS.md` (canonical: `jit-knowledge/org/`)
+- Create GH issue + `paperclip-dispatch` label + `agent:<role>` -> GitHub Actions dispatch -> agent runner
 - Blocked issues: set `status=blocked` via API with numbered Owner action steps
 
 ### Agent roster
@@ -180,4 +178,4 @@ Paperclip agents run on `automate1` (192.168.1.155), Docker port 3100, UI: `digi
 - NOT a compiled application -- pure Markdown + shell scripts
 - NOT a SaaS product -- installs into user's Claude Code workspace
 - NOT owner-specific -- all templates use "Owner" / "user" / "project owner"; never personal names
-- NOT jitai.com -- always jitai.co for product domains
+- NOT a product domain -- jitneuro.ai is the framework's canonical domain

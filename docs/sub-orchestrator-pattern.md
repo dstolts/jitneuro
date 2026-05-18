@@ -63,7 +63,7 @@ GOAL: Score all 77 blog posts against the quality rubric. Fix any scoring below 
 RUBRIC: [SEO score, AEO score, Quality score -- all must be 85+]
 POSTS: [list of 77 file paths]
 BATCH SIZE: 10 concurrent workers
-LOG FILE: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+LOG FILE: <workspace-path>/<project>/.logs/quality-audit-2026-03-26.md
 DIVERGENT MODE: AUTO
 
 Instructions:
@@ -138,16 +138,16 @@ Each worker gets a self-contained prompt:
 ```
 Score this blog post against the quality rubric.
 
-FILE: D:\Code\Automation\blog\content-drafts\ai-security-basics.md
+FILE: <workspace-path>/<project>/content-drafts/ai-security-basics.md
 RUBRIC:
   SEO: [criteria]
   AEO: [criteria]
   Quality: [criteria]
 
-Write your full analysis to: D:\Code\Automation\blog\.logs\scores\ai-security-basics.md
+Write your full analysis to: <workspace-path>/<project>/.logs/scores/ai-security-basics.md
 Start the file with an EXECUTIVE SUMMARY section (scores, pass/fail, issues -- everything
 the orchestrator needs to act without reading the rest of the file).
-Append the log index file: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+Append the log index file: <workspace-path>/<project>/.logs/quality-audit-2026-03-26.md
 
 Return to orchestrator (keep under 5 lines):
 STATUS: OK
@@ -196,24 +196,24 @@ After all 77 posts are processed:
 
 ```
 STATUS: OK
-LOG: D:\Code\Automation\blog\.logs\quality-audit-2026-03-26.md
+LOG: <log-path>/quality-audit-2026-03-26.md
 SUMMARY:
   Total: 77 | Pass: 63 | Fixed: 11 | Failed: 3
 
   By category:
   | Category    | Count | Pass | Fixed | Failed | Avg SEO | Avg AEO | Avg Quality |
   |-------------|-------|------|-------|--------|---------|---------|-------------|
-  | AIBM        | 15    | 12   | 3     | 0      | 91      | 89      | 88          |
-  | JitAI MSP   | 12    | 10   | 2     | 0      | 88      | 87      | 86          |
-  | Claude Code  | 10    | 8    | 1     | 1      | 85      | 84      | 82          |
-  | CovenAI     | 8     | 5    | 2     | 1      | 83      | 86      | 84          |
-  | JitNeuro    | 6     | 5    | 1     | 0      | 90      | 92      | 89          |
-  | pSEO        | 26    | 23   | 2     | 1      | 86      | 85      | 85          |
+  | Product A   | 15    | 12   | 3     | 0      | 91      | 89      | 88          |
+  | Product B   | 12    | 10   | 2     | 0      | 88      | 87      | 86          |
+  | Product C   | 10    | 8    | 1     | 1      | 85      | 84      | 82          |
+  | Product D   | 8     | 5    | 2     | 1      | 83      | 86      | 84          |
+  | Product E   | 6     | 5    | 1     | 0      | 90      | 92      | 89          |
+  | Product F   | 26    | 23   | 2     | 1      | 86      | 85      | 85          |
 
   Failed posts (could not reach 85+):
-  1. claude-code-context-limits.md -- Quality=79 (structural issues)
-  2. covenai-launch-strategy.md -- AEO=78 (missing key_points)
-  3. pseo-local-plumber-template.md -- SEO=74 (keyword stuffing)
+  1. post-with-structural-issues.md -- Quality=79 (structural issues)
+  2. post-missing-key-points.md -- AEO=78 (missing key_points)
+  3. post-with-keyword-stuffing.md -- SEO=74 (keyword stuffing)
 
 FILES_CHANGED:
   - [list of 11 modified post files]
@@ -267,10 +267,10 @@ For very large operations, sub-orchestrators can dispatch their own sub-orchestr
 
 ```
 MASTER
-  |-- Sub-Orchestrator: "Audit all 6 business verticals"
-        |-- Sub-Orchestrator: "Audit AIBM posts (15)"
+  |-- Sub-Orchestrator: "Audit all 6 content categories"
+        |-- Sub-Orchestrator: "Audit category-A posts (15)"
         |     |-- Workers (batches of 10)
-        |-- Sub-Orchestrator: "Audit JitAI posts (12)"
+        |-- Sub-Orchestrator: "Audit category-B posts (12)"
         |     |-- Workers (batches of 10)
         |-- ...
 ```
