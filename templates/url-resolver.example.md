@@ -19,8 +19,8 @@ This file maps GitHub repo URLs to local filesystem paths so that consumers read
 | Repo URL | Local Path |
 |---|---|
 | https://github.com/dstolts/jit-knowledge | C:/Users/dstolts/Code/jit-knowledge |
-| https://github.com/dstolts/jitai-openclaw | C:/Users/dstolts/Code/jitai-openclaw |
-| https://github.com/dstolts/dash-api | C:/Users/dstolts/Code/dash-api |
+| https://github.com/dstolts/jitai-openclaw | C:/Users/dstolts/Code/_internal/jitai-openclaw |
+| https://github.com/dstolts/dash-api | C:/Users/dstolts/Code/_dash/dash-api |
 | https://github.com/dstolts/dash | (TBD -- add when cloned locally) |
 | https://github.com/dstolts/jitneuro | D:/Code/jitneuro |
 | https://github.com/dstolts/jitai-www | D:/Code/jitai-www |
