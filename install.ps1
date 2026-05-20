@@ -298,7 +298,7 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/pre-compact-save.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/pre-compact-save.sh"; timeout = 10 }
                 )
             }
         )
@@ -306,19 +306,19 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-write-id.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/session-start-write-id.sh"; timeout = 10 }
                 )
             }
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-post-clear.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/session-start-post-clear.sh"; timeout = 10 }
                 )
             }
             @{
                 matcher = "compact"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-start-recovery.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/session-start-recovery.sh"; timeout = 10 }
                 )
             }
         )
@@ -326,13 +326,13 @@ $hooksConfig = @{
             @{
                 matcher = "Bash"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/branch-protection.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/branch-protection.sh"; timeout = 10 }
                 )
             }
             @{
                 matcher = "Agent"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/pre-agent-register.sh`""; timeout = 5 }
+                    @{ type = "command"; command = "$HooksPathFwd/pre-agent-register.sh"; timeout = 5 }
                 )
             }
         )
@@ -340,13 +340,13 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/heartbeat.sh`""; timeout = 5 }
+                    @{ type = "command"; command = "$HooksPathFwd/heartbeat.sh"; timeout = 5 }
                 )
             }
             @{
                 matcher = "Agent"
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/post-agent-complete.sh`""; timeout = 5 }
+                    @{ type = "command"; command = "$HooksPathFwd/post-agent-complete.sh"; timeout = 5 }
                 )
             }
         )
@@ -354,7 +354,7 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
-                    @{ type = "command"; command = "$BashPathFwd `"$HooksPathFwd/session-end-autosave.sh`""; timeout = 10 }
+                    @{ type = "command"; command = "$HooksPathFwd/session-end-autosave.sh"; timeout = 10 }
                 )
             }
         )
