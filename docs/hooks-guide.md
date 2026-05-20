@@ -117,7 +117,9 @@ See [heartbeat.md](heartbeat.md) for the full heartbeat reference -- what it is,
 
 ### settings.local.json hooks block
 
-Add the following to `.claude/settings.local.json` in your project or workspace root:
+Add the following to `.claude/settings.local.json` in your project or workspace root.
+
+Each `command` is a **bare path to the hook script** -- nothing else. Claude Code runs every hook `command` through its own shell, so do NOT prefix it with `bash`, `bash.exe`, or any shell binary. A prefix makes the shell try to run bash as bash's own script argument and the hook fails at runtime with `bash.exe: bash.exe: cannot execute binary file`.
 
 ```json
 {
@@ -128,7 +130,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/pre-compact-save.sh\"",
+            "command": "/path/to/.claude/hooks/pre-compact-save.sh",
             "timeout": 10
           }
         ]
@@ -140,7 +142,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/session-start-write-id.sh\"",
+            "command": "/path/to/.claude/hooks/session-start-write-id.sh",
             "timeout": 5
           }
         ]
@@ -150,7 +152,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/session-start-recovery.sh\"",
+            "command": "/path/to/.claude/hooks/session-start-recovery.sh",
             "timeout": 10
           }
         ]
@@ -162,7 +164,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/branch-protection.sh\"",
+            "command": "/path/to/.claude/hooks/branch-protection.sh",
             "timeout": 5
           }
         ]
@@ -174,7 +176,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/heartbeat.sh\"",
+            "command": "/path/to/.claude/hooks/heartbeat.sh",
             "timeout": 5
           }
         ]
@@ -186,7 +188,7 @@ Add the following to `.claude/settings.local.json` in your project or workspace 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/session-end-autosave.sh\"",
+            "command": "/path/to/.claude/hooks/session-end-autosave.sh",
             "timeout": 10
           }
         ]
@@ -276,7 +278,7 @@ exit 0
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/my-hook.sh\"",
+            "command": "/path/to/.claude/hooks/my-hook.sh",
             "timeout": 10
           }
         ]

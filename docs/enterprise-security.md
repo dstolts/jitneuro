@@ -84,7 +84,7 @@ Developers can execute but not modify.
          "matcher": "Bash",
          "hooks": [{
            "type": "command",
-           "command": "bash \"//server/jitneuro-policy/hooks/branch-protection.sh\"",
+           "command": "//server/jitneuro-policy/hooks/branch-protection.sh",
            "timeout": 5
          }]
        }]
