@@ -142,7 +142,7 @@ Claude Code's hook wiring. This tells Claude Code WHICH scripts to run on WHICH 
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"/path/to/.claude/hooks/script-name.sh\"",
+            "command": "/path/to/.claude/hooks/script-name.sh",
             "timeout": 10
           }
         ]
