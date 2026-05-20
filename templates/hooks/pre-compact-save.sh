@@ -6,12 +6,24 @@
 # Behavior options: "warn" or "block" (default)
 #   warn  = message to Claude, compaction proceeds
 #   block = exit 2, compaction blocked until user responds
+#
+# BUG FIX (WS5): stateless block on every compaction is harmful -- it prevents
+# compaction even when a recent /save already checkpointed the session.
+# Fix: /save (and /session save) writes a save-timestamp marker file.
+# This hook reads the marker and exits 0 (allows compaction silently)
+# when the last save is fresh (within FRESH_THRESHOLD_SECONDS).
+# Otherwise behaves as configured (block or warn).
 
 set +e  # never abort on errors
 
 HOOKS_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 CONFIG="$(dirname "$HOOKS_DIR")/jitneuro.json"
+SESSION_DIR="$(dirname "$HOOKS_DIR")/session-state"
+SAVE_MARKER="$SESSION_DIR/.last-save-timestamp"
 LOG="/tmp/jitneuro-precompact.log"
+
+# Threshold: if last save is within this many seconds, allow compaction silently
+FRESH_THRESHOLD_SECONDS=600  # 10 minutes
 
 # Read config (default to block if no config -- fail secure)
 BEHAVIOR="block"
@@ -34,6 +46,20 @@ echo "[$(date 2>/dev/null)] PreCompact hook fired. Behavior=$BEHAVIOR" >> "$LOG"
 echo "[$(date 2>/dev/null)] Input: $INPUT" >> "$LOG" 2>/dev/null
 
 SOURCE=$(echo "$INPUT" | grep -o '"source"[[:space:]]*:[[:space:]]*"[^"]*"' 2>/dev/null | grep -o '"[^"]*"$' | tr -d '"')
+
+# WS5 FIX: check save-timestamp marker for freshness
+if [ -f "$SAVE_MARKER" ]; then
+  SAVED_AT=$(cat "$SAVE_MARKER" 2>/dev/null | tr -d '[:space:]')
+  NOW=$(date +%s 2>/dev/null)
+  if [ -n "$SAVED_AT" ] && [ -n "$NOW" ] && [ "$SAVED_AT" -gt 0 ] 2>/dev/null; then
+    AGE=$((NOW - SAVED_AT))
+    if [ "$AGE" -le "$FRESH_THRESHOLD_SECONDS" ] 2>/dev/null; then
+      echo "[$(date 2>/dev/null)] PreCompact: save is fresh (${AGE}s ago, threshold ${FRESH_THRESHOLD_SECONDS}s). Allowing compaction." >> "$LOG" 2>/dev/null
+      exit 0  # allow compaction silently -- save already happened
+    fi
+    echo "[$(date 2>/dev/null)] PreCompact: save is stale (${AGE}s ago). Applying behavior=$BEHAVIOR." >> "$LOG" 2>/dev/null
+  fi
+fi
 
 # Build the message
 MSG="[JitNeuro] Context compaction triggered (source: ${SOURCE:-auto}). Run /save to checkpoint your session before context is compressed."
