@@ -118,6 +118,17 @@
       "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes jit-knowledge promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
       "agent_charter": ".claude/agents/cross-repo-rollup/CHARTER.md",
       "_comment": "WS6: see CHARTER.md for full agent prompt + idempotency rules."
+    },
+    {
+      "name": "daily-improvement-scout",
+      "interval": 1440,
+      "enabled": false,
+      "gemmaPreFilter": false,
+      "tokenCeilingPerSource": 8000,
+      "instruction": "NONE",
+      "description": "WS7: daily external source scout. Reads sources.json, fetches Anthropic changelog + release notes + blog + cookbook + skill libraries, classifies findings with Haiku, appends relevant survivors to improvement-opportunities queue. Master triages via /learn on its own cadence -- never interrupted. Disabled by default. Interval: 1440m (24h).",
+      "agent_charter": ".claude/agents/daily-improvement-scout/CHARTER.md",
+      "_comment": "WS7: see CHARTER.md for full agent prompt. Set gemmaPreFilter:true to enable optional Gemma pre-filter (structured single-shot calls only; fallbacks to Haiku on any failure)."
     }
   ]
 }

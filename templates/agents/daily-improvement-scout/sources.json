@@ -1,0 +1,45 @@
+{
+  "_comment": "WS7 Daily Improvement Scout -- approved source list. Edit this file to add/remove sources without changing CHARTER.md.",
+  "sources": [
+    {
+      "name": "anthropic-changelog",
+      "url": "https://docs.anthropic.com/en/release-notes/api",
+      "description": "Anthropic API and model changelog -- new models, parameter changes, deprecations, and breaking changes.",
+      "fetch_type": "webpage",
+      "priority": "high"
+    },
+    {
+      "name": "claude-code-release-notes",
+      "url": "https://docs.anthropic.com/en/release-notes/claude-code",
+      "description": "Claude Code CLI release notes -- new slash commands, tool changes, hook events, MCP updates, and CLI behavior changes.",
+      "fetch_type": "webpage",
+      "priority": "high"
+    },
+    {
+      "name": "anthropic-engineering-blog",
+      "url": "https://www.anthropic.com/research",
+      "description": "Anthropic research and engineering blog -- best practices for prompting, multi-agent patterns, safety, and capability announcements.",
+      "fetch_type": "webpage",
+      "priority": "medium"
+    },
+    {
+      "name": "anthropic-cookbook",
+      "url": "https://github.com/anthropics/anthropic-cookbook/commits/main",
+      "description": "Anthropic Cookbook (claude-cookbooks) GitHub commit feed -- new recipes, patterns, and example code for Claude integration.",
+      "fetch_type": "github_releases",
+      "priority": "medium"
+    },
+    {
+      "name": "awesome-claude-prompts",
+      "url": "https://github.com/anthropics/prompt-library/commits/main",
+      "description": "Curated Anthropic prompt library -- new prompt patterns, skill templates, and system prompt examples relevant to orchestrator design.",
+      "fetch_type": "github_releases",
+      "priority": "low"
+    }
+  ],
+  "fetch_defaults": {
+    "timeout_seconds": 10,
+    "max_chars_per_source": 8000,
+    "lookback_days": 7
+  }
+}
