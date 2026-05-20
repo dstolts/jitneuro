@@ -179,7 +179,7 @@ The bundle holds the full detail. INDEX.md routing ensures it loads when relevan
 
 Before (10 lines per project in MEMORY.md):
 ```
-## AIFieldSupport-API
+## <repo-name>
 Node/Express, Azure SQL, Firebase Auth. Uses analysis engine v2.5 with
 config-driven calls, dual-agent wiring, cost calculation. Key files:
 routes/analysis.js, services/analysis-engine/index.js...
@@ -187,7 +187,7 @@ routes/analysis.js, services/analysis-engine/index.js...
 
 After (1 row in project table):
 ```
-| AIFieldSupport-API | Node/Express, Azure SQL, Firebase | Prod v2.4.5 | aifs-core-context.md |
+| <repo-name> | Node/Express, Azure SQL, Firebase | Prod v1.2.3 | <repo>-context.md |
 ```
 
 ### Strategy 4: Split codebase into smaller workspaces
@@ -242,12 +242,12 @@ Each workspace has:
 
 Before:
 ```
-| AIFieldSupport-API | Node/Express, Azure SQL, Firebase | Production v2.4.5, HE+cost on uat | aifs-core-context.md |
+| <repo-name> | Node/Express, Azure SQL, Firebase | Production v1.2.3, feature-x on uat | <repo>-context.md |
 ```
 
 After:
 ```
-| AIFS-API | Node/Express/SQL/Firebase | Prod 2.4.5 | aifs-core |
+| <repo> | Node/Express/SQL/Firebase | v1.2.3 | <repo>-core |
 ```
 
 Or split:

@@ -41,11 +41,11 @@ Owner is not your debugger. Owner reviews finished work, not work-in-progress.
 
 ---
 
-## Task 1: Add to DOE Framework Spec
+## Task 1: Add to Your Framework Spec
 
-**File:** `D:\Code\Automation\Projects\Orchestration\DOE-Framework-Spec-04.md`
+**File:** Your organization's DOE Framework Spec (e.g., `Orchestration/DOE-Framework-Spec.md`)
 
-**Where:** Section "WHAT CLAUDE.md BECOMES" -- quality standards list (around line 349).
+**Where:** Section "WHAT CLAUDE.md BECOMES" -- quality standards list.
 
 **Insert after:** Item 3 ("Quality: ASCII only, fix root cause, test before commit, tsc --noEmit")
 
@@ -66,16 +66,16 @@ Two insertion points:
 
 ### 2a. New doc: `docs/verify-before-presenting.md`
 
-Create a new best-practices doc in `D:\Code\jitneuro\docs\`. No existing best-practices.md file exists, so this becomes the first standalone best-practice doc.
+Create a new best-practices doc in `docs/` at the jitneuro repo root. No existing best-practices.md file exists, so this becomes the first standalone best-practice doc.
 
 **Content:** Use the canonical rule text above, with these modifications for open-source:
-- Replace any instance of "Dan" with "Owner" (per jitneuro contribution guidelines)
+- Replace any instance of personal names with "Owner" (per jitneuro contribution guidelines)
 - Add a "## Origin" section explaining the pattern failure that motivated the rule
 - Add a "## Integration" section explaining where to place this rule in a new adopter's setup (`~/.claude/rules/` or repo `.claude/CLAUDE.md`)
 
 ### 2b. Reference in `docs/holistic-review.md`
 
-**File:** `D:\Code\jitneuro\docs\holistic-review.md`
+**File:** `docs/holistic-review.md`
 
 **Where:** After the "## Output Format" header (line 85), before "### Preview Output (Pre-Execution)" (line 89).
 
@@ -90,7 +90,7 @@ Create a new best-practices doc in `D:\Code\jitneuro\docs\`. No existing best-pr
 
 ### 2c. Reference in `.claude/CLAUDE.md` Quality Standards
 
-**File:** `D:\Code\jitneuro\.claude\CLAUDE.md`
+**File:** `.claude/CLAUDE.md`
 
 **Where:** Quality Standards section (after line 23).
 
@@ -103,7 +103,7 @@ Create a new best-practices doc in `D:\Code\jitneuro\docs\`. No existing best-pr
 
 ## Naming Reminder
 
-JitNeuro is open source. All content must use "Owner" -- never "Dan" or any personal name. Grep for "Dan" before committing.
+JitNeuro is open source. All content must use "Owner" -- never a personal name. Grep for personal names before committing.
 
 ---
 
@@ -113,5 +113,5 @@ JitNeuro is open source. All content must use "Owner" -- never "Dan" or any pers
 - [ ] `jitneuro/docs/verify-before-presenting.md` exists with full rule + origin + integration guidance
 - [ ] `jitneuro/docs/holistic-review.md` references the new doc as Gate 0
 - [ ] `jitneuro/.claude/CLAUDE.md` Quality Standards references the rule
-- [ ] No instances of "Dan" in any modified jitneuro files
+- [ ] No instances of personal names in any modified jitneuro files
 - [ ] PR created on feature branch (not main)

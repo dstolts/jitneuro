@@ -106,10 +106,6 @@ JitNeuro adds a memory management layer inspired by neural network architecture:
 
 You don't configure these. They activate as you work. When you want to understand the details: [Technical Overview](docs/technical-overview.md).
 
-## Blog & Articles
-
-- [Deep Dive: Building a Brain for Your AI Coding Assistant](https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/) -- how JitNeuro works and why it exists
-
 ## Docs
 
 All docs are reference, not prerequisites. Read them when you're curious, not before you start.
@@ -141,4 +137,4 @@ MIT -- see [LICENSE](LICENSE).
 
 ## Author
 
-Dan Stolts - [jitai.co](https://jitai.co) | [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
+[github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)

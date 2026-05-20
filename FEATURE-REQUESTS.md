@@ -32,7 +32,6 @@ bundles, modified files, decisions, next steps) with placeholder prompts.
 ## FR-003: Blog Post -- "How to Get AI Coding Assistants to Actually Remember"
 **Priority:** High (launch day)
 **Status:** Published
-**Published URL:** https://www.jitai.co/sage/jitneuro-deep-dive-ai-coding-assistant-brain/
 
 Thought leadership blog post. Not a product announcement -- a problem statement every developer relates to.
 
@@ -692,7 +691,7 @@ JitNeuro's routing weights require time to build up via /learn. New adopters sta
 |--------|----------------|---------|
 | `.env` files | Service dependencies | `AUTH_API_URL=https://auth.example.com` -> links to auth service |
 | `package.json` dependencies | Tech stack | `express`, `firebase-admin`, `stripe` -> load API, auth, payments bundles |
-| Import statements | Cross-repo references | `import { auth } from '../AuthFirebase'` -> repo dependency |
+| Import statements | Cross-repo references | `import { auth } from '../auth-service'` -> repo dependency |
 | `docker-compose.yml` | Service graph | `depends_on: [api, redis]` -> infrastructure bundle |
 | API endpoint definitions | Integration points | Routes referencing external services |
 | `CLAUDE.md` / `README.md` | Project identity | Tech stack, purpose, key paths |

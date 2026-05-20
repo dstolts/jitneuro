@@ -291,6 +291,22 @@ Write-Host "Configuring hooks..." -ForegroundColor Green
 $SettingsFile = Join-Path $Target "settings.local.json"
 $HooksPathFwd = ($hooksDir -replace '\\', '/')
 
+# ============================================================================
+# HOW TO WRITE A HOOK COMMAND -- read before editing the entries below
+# ----------------------------------------------------------------------------
+# Claude Code runs each hook `command` through its OWN shell. The `command`
+# value MUST be a bare script path and nothing else, for example:
+#       command = "$HooksPathFwd/heartbeat.sh"
+#
+# NEVER prefix it with bash, bash.exe, or any shell binary. A prefix makes the
+# shell try to run bash as bash's own script argument, so EVERY hook then
+# fails at runtime with:
+#       bash.exe: bash.exe: cannot execute binary file
+#
+# When adding or changing a hook below, look at the other hook entries in this
+# same block and match their format exactly -- each command is just a path.
+# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# ============================================================================
 # Build hooks config object
 $hooksConfig = @{
     hooks = @{

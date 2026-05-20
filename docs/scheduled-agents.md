@@ -324,7 +324,7 @@ Note: `cron-stdout.log` captures raw shell output (for debugging cron issues). T
 **Windows Task Scheduler:**
 ```powershell
 # Create a scheduled task that runs every 5 minutes
-$action = New-ScheduledTaskAction -Execute "pwsh" -Argument "-File D:\Code\.claude\scripts\jitneuro-cron.ps1" -WorkingDirectory "D:\Code"
+$action = New-ScheduledTaskAction -Execute "pwsh" -Argument "-File <workspace-path>/.claude/scripts/jitneuro-cron.ps1" -WorkingDirectory "<workspace-path>"
 $trigger = New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 5) -Once -At (Get-Date)
 Register-ScheduledTask -TaskName "JitNeuro-Cron" -Action $action -Trigger $trigger
 ```
