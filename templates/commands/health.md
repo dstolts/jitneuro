@@ -72,8 +72,8 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 **Bundles** (.claude/bundles/)
 - List all bundles with line counts.
 - OK < 230, WARN 230-279, OVER 280+. Soft limit -- report only, do not auto-trim.
-- Flag bundles referenced in routing weights that don't exist.
-- Flag bundles that exist but have no routing weight entry.
+- Flag bundles referenced in INDEX.md routing that don't exist on disk.
+- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
 
 **Engrams** (.claude/engrams/)
 - List all engrams with line counts.
@@ -86,14 +86,11 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - Flag sessions older than 14 days as EXPIRED.
 - Count total (more than 10 = CLUTTER).
 
-**Routing Weights** (in MEMORY.md)
-- Check routing entries point to bundles/engrams that exist.
-- Check for bundles that exist but have no routing entry.
-
-**Context Manifest** (.claude/context-manifest.md)
-- Verify it lists all bundles that actually exist.
-- Flag bundles in manifest that don't exist on disk.
-- Flag bundles on disk not listed in manifest.
+**Routing** (jit-knowledge/INDEX.md via url-resolver.md)
+- Check `~/.claude/url-resolver.md` exists and has an entry for jit-knowledge.
+- Read INDEX.md (via url-resolver) and verify routing entries point to bundles that exist in `.claude/bundles/`.
+- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
+- If url-resolver is missing or INDEX.md is unreachable, flag as WARNING with setup instructions.
 
 **Hub.md** (per-repo task durability)
 - Resolve current session from heartbeats.

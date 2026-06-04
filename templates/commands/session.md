@@ -247,13 +247,17 @@ BLOCKED: [count] items needing attention
    If Hub.md sync fails or is empty, WARN the user -- do not silently skip.
 
 5. **Write "my current"** (session name).
-6. Confirm with Hub.md sync status:
+6. **Write save-timestamp marker** (WS5 PreCompact fix):
+   Write the current Unix timestamp (seconds since epoch) to `.claude/session-state/.last-save-timestamp`.
+   Use Bash: `date +%s > ".claude/session-state/.last-save-timestamp"`
+   This allows the PreCompact hook to allow compaction silently when a recent save exists.
+7. Confirm with Hub.md sync status:
    ```
    Saved '<name>'.
    Hub.md: [repo1] synced (3 tasks, 1 decision) | [repo2] synced (clean)
    Safe to /clear. Use `/session load <name>` to reload.
    ```
-7. Suggest: "Run `/learn` first if this session had learnings worth persisting."
+8. Suggest: "Run `/learn` first if this session had learnings worth persisting."
 
 **Size guidance:** Target 40-80 lines. Under 30 is missing pickup context. Over 120 is too verbose -- move detail into Hub.md or plan docs and reference them. The PICKUP INSTRUCTIONS section should be 15-30 lines (the most critical part).
 
@@ -271,7 +275,7 @@ BLOCKED: [count] items needing attention
 
 4. **Read active bundles** listed in session state (only those listed)
 
-5. **Read `.claude/context-manifest.md`** for bundle awareness
+5. **Read `.jit-knowledge/INDEX.md`** (via `~/.claude/url-resolver.md`) for routing and bundle awareness
 
 6. **Write "my current"** (session name).
 

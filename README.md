@@ -20,7 +20,7 @@ JitNeuro implements the **DOE (Directive Orchestration Execution)** pattern: you
 
 ## Simple But Powerful
 
-JitNeuro has 16 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
+JitNeuro has 17 commands, scheduled agents, sub-orchestrators, divergent thinking, 16 personas, and a configuration reference that's 300+ lines long.
 
 You don't need any of that to start.
 
@@ -80,6 +80,8 @@ cd jitneuro
 
 **Close and reopen Claude Code after installing.** Then: `/save`, `/learn`, `/load`. That's it.
 
+**Set your north star (optional, 5 minutes).** The installer drops strategic-context templates in `.claude/horizon/`. Tell Claude `"populate my horizon files"` (or open `.claude/horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a time -- to fill in your vision, mission, goals, operating rhythm, and owner profile. Every future session then aligns to your actual goals instead of guessing.
+
 **Having trouble with the install?** Just tell Claude:
 
 ```
@@ -94,9 +96,14 @@ See [Setup Guide](docs/setup-guide.md) for other install modes and troubleshooti
 
 JitNeuro adds a memory management layer inspired by neural network architecture:
 
+- **Master-orchestrator identity** -- a SessionStart hook injects your master/orchestrator role into every session, so Claude coordinates and delegates by default instead of acting as a generic coding agent
+- **Horizon layer** -- vision / mission / goals / operating-rhythm / owner-profile templates plus a guided interview (POPULATE-HORIZON) so every session aligns to your north star
+- **Rule library** -- a curated, install-ready set of behavioral rules (testing discipline, trust zones, verification gates, security guardrails) you can keep, disable, or extend
 - **Context Bundles** -- domain knowledge loaded on-demand (like network layers)
 - **Engrams** -- per-project deep context, strengthened by /learn (like long-term potentiation)
 - **Session State** -- save/load across /clear cycles (like working memory)
+- **Post-compact recovery** -- a PreCompact hook checkpoints state and tells the next turn to /load and re-read context, so a context reset never loses your place
+- **Upgrade-safe** -- a manifest separates framework files from yours; `git pull` + re-install updates the framework and never clobbers your rules, bundles, horizon, or learnings (edited framework files are backed up). See the Setup Guide.
 - **Routing Weights** -- learned patterns for which bundles to co-activate
 - **Scheduled Agents** -- timer, enforcer, cron, and batch agents for automated work
 - **Sub-Orchestrators** -- manage 30+ tasks with rolling worker pools
@@ -114,13 +121,12 @@ All docs are reference, not prerequisites. Read them when you're curious, not be
 |-----|---------------|
 | [Setup Guide](docs/setup-guide.md) | Installation, post-install, troubleshooting |
 | [Technical Overview](docs/technical-overview.md) | Architecture, file structure, full feature list, roadmap |
-| [Commands Reference](docs/commands-reference.md) | All 15 commands + 5 shortcuts |
+| [Commands Reference](docs/commands-reference.md) | All 17 commands + 5 shortcuts |
 | [Configuration Reference](docs/configuration-reference.md) | Every config file and setting |
 | [Scheduled Agents](docs/scheduled-agents.md) | Timer, enforcer, cron, batch agents + business automation |
 | [Sub-Orchestrator Pattern](docs/sub-orchestrator-pattern.md) | Managing large-scale operations with worker pools |
 | [Customization Guide](docs/customization-guide.md) | Personas, rules, cognitive identity |
 | [Hooks Guide](docs/hooks-guide.md) | Lifecycle hooks and custom hooks |
-| [Routing Weights vs Semantic Memory](docs/routing-vs-semantic-memory.md) | Why explicit routing beats vector search for AI context loading |
 | [Enterprise Security](docs/enterprise-security.md) | Trust model and securing hooks for teams |
 
 ## Disclaimer

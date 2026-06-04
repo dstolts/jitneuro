@@ -1,8 +1,23 @@
 # JitNeuro -- add these lines to your project's .gitignore
+# These keep PERSONAL, per-developer files out of the shared repo so multiple
+# developers never collide on each other's settings, learnings, or north-star.
+
+# Per-developer hook config (absolute paths differ per machine)
+.claude/settings.local.json
+
+# Per-developer strategic context (your own vision/mission/goals/owner-profile)
+.claude/horizon/
+
+# Per-developer cognition overlay (persona + learned anti-patterns)
+.claude/cognition/owner-persona.md
+.claude/cognition/anti-patterns.md
+
+# Ephemeral session state + heartbeats (per-machine)
+.claude/session-state/
 
 # Conversation logs (may contain sensitive prompts)
 # Remove this line if you want logs committed to the repo
 .logs/
 
-# Session state (ephemeral, per-machine)
-.claude/session-state/
+# What you SHOULD commit for a team: .claude/CLAUDE.md, .claude/jitneuro.json,
+# .claude/rules/ (shared guardrails), and optionally .claude/bundles/ + .claude/engrams/.

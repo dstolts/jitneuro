@@ -46,8 +46,11 @@ re-run the installer with `user` mode to fix it.
 
 The installer:
 - Copies all commands to `.claude/commands/`
-- Copies hook scripts to `.claude/hooks/`
-- Creates or merges hooks config into `settings.local.json`
+- Installs the full rule library to `.claude/rules/` (skips any rule whose first line is marked `(DISABLED)`; updates only changed rules)
+- Copies the cognition layer (personas, decision models) to `.claude/cognition/`
+- Seeds strategic-context templates into `.claude/horizon/` (only when empty -- never overwrites a filled-in horizon)
+- Copies hook scripts to `.claude/hooks/`, including a **SessionStart master-orchestrator identity hook** and a **PreCompact save + reload-directive hook**
+- Creates or merges hooks config into `settings.local.json` (re-install preserves your own added hooks and dedups JitNeuro's)
 - Installs `jitneuro.json` (version, hook settings, protected branches)
 - Backs up existing commands that differ from source
 - Scans workspace for repos needing onboarding (workspace mode)
@@ -57,6 +60,7 @@ After install:
 1. **Close and reopen Claude Code** (commands load at session start only)
 2. Run `/verify` to confirm all components are GREEN
 3. Run `/onboard <repo>` to set up context for your projects
+4. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `.claude/horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
 
 ### Install Scenarios
 
@@ -126,7 +130,26 @@ ls .claude/commands/*.md             # project level (from inside a repo)
 - Hooks require bash. The PowerShell installer detects Git Bash automatically.
 - WSL is detected but explicitly **not supported** for hooks (path resolution issues).
 - If bash is not found, install continues -- commands work, hooks won't fire.
-- PowerShell 5.1+ supported (no `-AsHashtable` dependency).
+- PowerShell 5.1 and 7+ both supported. On a re-install, PS 7+ does a per-event hook merge (preserves your custom hooks, dedups JitNeuro's); PS 5.1 backs up `settings.local.json` to `.bak` and replaces the hooks block (re-add any custom hooks after).
+
+## Upgrades Are Safe (Framework vs Your Files)
+
+JitNeuro keeps a clean line between the **framework's files** and **yours**, so upgrading never clobbers your work.
+
+- On install, JitNeuro writes a manifest at `.claude/.jitneuro-manifest.tsv` listing every framework-owned file (path + checksum).
+- **To upgrade:** `git pull` in your jitneuro clone, then re-run `./install.sh <mode>` (or `install.ps1`). The installer:
+  - Updates framework files that changed.
+  - Removes framework files dropped in the new version (only if you hadn't edited them).
+  - **Backs up** any framework rule you edited to `.claude/.jitneuro-backup/` before updating it -- your version is never silently lost.
+  - **Never touches files that aren't in the manifest** -- your own rules, bundles, engrams, filled-in horizon, and owner-persona are yours and stay untouched.
+
+In short: put your customizations in your own files (add new rules to `.claude/rules/`, fill in `.claude/horizon/`, create bundles/engrams). Don't hand-edit a shipped framework rule unless you mean to fork it -- if you do, your edit is preserved in `.jitneuro-backup/` on the next upgrade.
+
+## Single-User vs Team
+
+**Single user:** `install.sh user` once. Done. Everything under `~/.claude/` is yours.
+
+**Team (several developers sharing a repo):** each developer runs `install.sh user` on their own machine -- no coordination needed (each `~/.claude/` is isolated). Commit the **shared** pieces to the repo (`.claude/CLAUDE.md`, `.claude/jitneuro.json`, `.claude/rules/`) and gitignore the **per-developer** pieces so they never collide. Add the block from `templates/gitignore-additions.txt` to your repo's `.gitignore` -- it covers `.claude/settings.local.json`, `.claude/horizon/`, `.claude/cognition/`, and session state. Team-shared learning (a shared vision, shared bundles) is a manual opt-in today: commit those files deliberately.
 
 ## Manual Install
 
@@ -195,14 +218,21 @@ Claude Code will read the template, extract domain-specific content from your ex
 
 Claude Code will copy the template, rename it, and walk you through what to add. Keep under 180 lines. Include: key files, commands, conventions, gotchas. Exclude: anything Claude can infer from reading the code.
 
-### Update the Manifest and Routing
+### Register Bundles with the Canonical Router
 
+Routing lives in `jit-knowledge/INDEX.md` -- the single source of truth for all task-keyword to bundle mappings. To make a new bundle load automatically:
+
+1. Open a PR to `dstolts/jit-knowledge` adding a route line to `INDEX.md`:
+   `- <trigger phrase>  -> [your-bundle-name]`
+2. Once merged, your consuming system picks it up on the next `jit-knowledge` submodule pull.
+
+For local-only routes (experimental, not recommended long-term), ask Claude Code:
 ```
-> "Add my new bundles to the context manifest and set up routing weights in MEMORY.md
-   so they load automatically for the right tasks."
+> "Add a temporary routing entry for my-bundle to .jitneuro/engrams/context.md
+   and note it should be promoted to jit-knowledge/INDEX.md via PR."
 ```
 
-Claude Code will update context-manifest.md with your bundles and add routing weights to MEMORY.md based on the task patterns you describe.
+Do NOT add routing entries to `context-manifest.md` or `MEMORY.md`; those surfaces no longer carry routing tables.
 
 ### Add Compact Instructions to CLAUDE.md
 
@@ -268,7 +298,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
 | Claude ignores bundle content | Bundle too long (over 180 lines) or conflicting with CLAUDE.md. |
-| Wrong bundles loaded | Update routing weights in manifest/MEMORY.md. |
+| Wrong bundles loaded | Open a PR to jit-knowledge/INDEX.md to add or correct the route mapping. |
 | Context still fills up | Use agents more aggressively, save/clear more often. |
 | /load loads stale state | Check session date with `/sessions`. |
 | Interrupted install | No `jitneuro.json` in `.claude/` = incomplete. Re-run installer. |

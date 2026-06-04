@@ -1,6 +1,6 @@
 # Commands Reference
 
-JitNeuro ships 15 commands and 5 shortcuts organized into 7 categories. All commands are read-only unless explicitly noted.
+JitNeuro ships 17 commands and 5 shortcuts organized into 7 categories. All commands are read-only unless explicitly noted.
 
 ---
 
@@ -280,6 +280,36 @@ Examples:
 /schedule stop hub-sync      -- stop hub-sync after current cycle
 /schedule add deploy-mon 5 NONE "Poll deploy pipeline"
 ```
+
+---
+
+## Setup and Verification
+
+### /help
+Display JitNeuro quick reference. Zero token cost -- reads and displays a static help file verbatim.
+
+- **Arguments:** None
+- **Source:** Reads `.claude/help.md` from the install root; falls back to the jitneuro templates `help.md`
+
+Example:
+```
+/help
+```
+Displays the quick-reference card for all commands, shortcuts, and common workflows. Offers to open the file in the editor.
+
+---
+
+### /verify
+Post-install health check. Reads the install root and validates all 9 framework components. Read-only -- does not modify any files.
+
+- **Arguments:** None
+- **Checks:** install version, commands directory, hook scripts, hooks config, hook paths, hook event names, bundles, engrams, context manifest
+
+Example:
+```
+/verify
+```
+Returns a GREEN/YELLOW/RED table for each component with recommended remediation steps for any failures.
 
 ---
 

@@ -45,9 +45,9 @@
 | **Session Management** | Named sessions (session:custom-id), session transcripts as JSONL | /save, /load, /sessions, /pulse, session-state files, post-clear picker |
 | **Identity/Persona** | SOUL.md + IDENTITY.md per agent, mutable soul evolution, soul-evil hook for persona swapping | 16 personas in cognition/personas.md, owner persona overlay, per-request persona activation |
 | **Multi-Agent** | Native sub-agents, configurable nesting depth, orchestrator pattern, per-agent workspaces | Planned FR-105 (autonomous orchestration, cross-session spawning) |
-| **Hooks** | Event-driven hooks on agent lifecycle events | 6 lifecycle hooks (pre-compact, session start/recovery/post-clear, branch protection, auto-save) |
+| **Hooks** | Event-driven hooks on agent lifecycle events | 10 hook scripts / 9 hook events (pre-compact save, session-id write, heartbeat, post-compact recovery, post-clear picker, scheduled-agents spawner, branch protection, pre/post agent register, session-end auto-save) |
 | **Scheduling** | Cron jobs (at/every/cron expressions), heartbeat monitoring | Not yet (FR-105 planned: scheduled sessions) |
-| **Skills/Commands** | ClawHub marketplace (4,000+ community skills), CLI-installable | 12 commands + 5 shortcuts, project-scoped |
+| **Skills/Commands** | ClawHub marketplace (4,000+ community skills), CLI-installable | 17 commands + 5 shortcuts, project-scoped |
 | **Decision Framework** | No formal framework -- operational rules in AGENTS.md | 4 decision models, priority weights (security > reliability > correctness > ...), divergent thinking |
 | **Security Guardrails** | Broad filesystem access by default, sandbox mode optional | Trust Zones (GREEN/YELLOW/RED), branch protection hook, file versioning, definition of done |
 | **Friction Detection** | Not present | Pattern matching on owner frustration signals, correction cascades, anti-patterns |

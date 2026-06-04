@@ -156,10 +156,10 @@
     "automation-host": {
       "_description": "Example of a non-HTTP service (e.g., a Docker host, VM, or bare-metal server). Include SSH and relevant ports.",
       "purpose": "Automation and workflow host",
-      "ip": "192.168.1.100",
+      "ip": "10.0.0.10",
       "ssh": {
         "user": "deploy",
-        "passwordIn": "${WORKSPACE}/Automation/.env"
+        "passwordIn": "${WORKSPACE}/your-automation-repo/.env"
       }
     }
   },

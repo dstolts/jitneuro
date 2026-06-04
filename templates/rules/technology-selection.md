@@ -1,3 +1,11 @@
+---
+type: rule
+purpose: Require checking existing tech stack before adopting any new dependency, and prohibit introducing a duplicate when an existing tool covers 80 percent or more of the need.
+read_when: Before adding any new dependency, service, library, or tool to an existing project.
+tags: [technology-selection, dependencies, tech-sprawl, architecture, reuse]
+scope: public
+last_evaluated: 2026-06-03
+---
 # Technology Selection
 
 Before adding any new dependency, service, or tool:
@@ -25,3 +33,11 @@ When proposing a new technology, answer these questions:
 - **Who owns updates and security patches?**
 
 Log the decision in your project's decision log with date and reasoning.
+
+## Data Reuse Before Building
+
+Before adding new data collection or tracking infrastructure:
+1. Check if existing tools already produce the data you need
+2. If the data exists, build an integration to consume it -- do not build a new collector
+3. Only build new collection when no existing source covers the need
+4. Cross-reference existing data sources before building dedicated tracking infrastructure

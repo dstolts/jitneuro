@@ -1,3 +1,11 @@
+---
+type: rule
+purpose: Require every reported test result to include the testing method in parentheses so readers can assess the confidence level of each verification claim.
+read_when: Before reporting any test results in PRs, checkpoints, status reports, or any output claiming something was verified or tested.
+tags: [testing, test-method, transparency, verification, quality]
+scope: public
+last_evaluated: 2026-06-03
+---
 # Testing Method Disclosure
 
 Every test result must state the method used. The method tells the reader how much confidence to put in the result.

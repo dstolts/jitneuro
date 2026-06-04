@@ -7,7 +7,7 @@ Detailed technical reference for JitNeuro internals. For the quick version, see 
 JitNeuro implements the **DOE (Directive Orchestration Execution)** framework -- a three-layer pattern for AI-assisted development:
 
 - **Directive** -- Owner gives short, high-level instructions. "Score all blog posts." "Audit the repos." "Fix the auth bug." No step-by-step hand-holding.
-- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads routing weights, context manifests, and session state to make these decisions.
+- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads `jit-knowledge/INDEX.md` (routing table) and session state to make these decisions.
 - **Execution** -- Agents do the work. Workers read files, write code, run tests, score content, draft responses. Results flow up as thin summaries. Detail stays in files on disk.
 
 The owner does the $10K/hr work (judgment, priorities, approval). The AI does the $10/hr work (research, coding, analysis, content drafting, task execution). JitNeuro is the memory and orchestration layer that makes this possible across sessions, repos, and teams.
@@ -40,9 +40,10 @@ For architecture diagrams and the neural network mapping, see [architecture.md](
 
 ```
 LONG-TERM MEMORY (disk -- survives all sessions)
-  |-- MEMORY.md            learned patterns + routing weights
+  |-- MEMORY.md            project index + business facts
   |-- bundles/             domain knowledge, loaded on-demand
   |-- engrams/             per-project deep context (updated by /learn)
+  |-- .jit-knowledge/      routing table -- jit-knowledge/INDEX.md (single source)
 
 WORKING MEMORY (context window -- limited capacity)
   |-- CLAUDE.md            core rules (always loaded, minimal)
@@ -62,12 +63,13 @@ workspace-root/
   |   |-- engrams/            per-project deep context
   |   |-- cognition/          personas, decisions, anti-patterns, friction detection
   |   |-- scripts/            deterministic bash scripts (dashboard, sessions)
-  |   |-- hooks/              hook scripts (6 lifecycle hooks)
+  |   |-- hooks/              hook scripts (10 scripts / 9 hook events)
   |   |-- rules/              path-scoped rules (optional)
   |   |-- session-state/      session checkpoints
-  |   |-- context-manifest.md bundle index + routing
   |   |-- jitneuro.json       version, hooks config, settings
   |   |-- settings.local.json Claude Code hooks configuration
+  |-- .jit-knowledge/         jit-knowledge submodule (INDEX.md = routing table)
+  |-- ~/.claude/url-resolver.md  GitHub URL -> local path map (machine-specific)
   |-- repo-a/
   |-- repo-b/
 ```
@@ -93,9 +95,9 @@ repos, use **user** mode so commands are available everywhere.
 
 ## What's Included
 
-- **15 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
+- **17 commands + 5 shortcuts** -- session (/session, /sessions), reasoning (/divergent), memory (/learn, /health, /bundle), governance (/enterprise, /audit), git (/gitstatus, /diff), setup (/onboard, /orchestrate, convlog, /help, /verify), diagnostics (/test-tools), automation (/schedule). Shortcuts: /save, /load, /pulse, /status, /dashboard
 - **Scheduled agents** -- timer agents that interrupt master with housekeeping instructions on a configurable interval. Ships with autosave (30m) and hub-sync (10m) by default.
-- **6 hooks** -- pre-compact save, session recovery, post-clear session picker, branch protection, auto-save, session ID tracking
+- **10 hook scripts (9 hook events)** -- pre-compact save, session ID write (heartbeat), heartbeat (PostToolUse), post-compact recovery, post-clear session picker, scheduled-agents spawner, branch protection, pre-agent register, post-agent complete, session-end auto-save
 - **16 personas** -- expert roles that evaluate every request (Security Engineer, DBA, Content Strategist, QA, etc.)
 - **Friction detection** -- pre-reasoning scan for user correction signals with severity-ordered response
 - **4 decision models** -- root cause analysis, API-first design, technology selection, cross-repo contracts
@@ -148,7 +150,7 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 ## Related Docs
 
 - [Setup Guide](setup-guide.md) -- Detailed installation walkthrough
-- [Commands Reference](commands-reference.md) -- All 16 commands + 5 shortcuts
+- [Commands Reference](commands-reference.md) -- All 17 commands + 5 shortcuts
 - [Hooks Guide](hooks-guide.md) -- Lifecycle hooks and custom hook development
 - [Configuration Reference](configuration-reference.md) -- All config files and settings
 - [Scheduled Agents](scheduled-agents.md) -- Timer, enforcer, cron, and batch agents
@@ -156,5 +158,4 @@ See [FEATURE-REQUESTS.md](../FEATURE-REQUESTS.md) for the full roadmap.
 - [Customization Guide](customization-guide.md) -- Personas, rules, cognitive identity
 - [Concepts](concepts.md) -- Core concepts explained
 - [Architecture](architecture.md) -- Neural network mapping and diagrams
-- [Routing Weights vs Semantic Memory](routing-vs-semantic-memory.md) -- Why explicit routing beats vector search
 - [Enterprise Security](enterprise-security.md) -- Trust model and hook enforcement

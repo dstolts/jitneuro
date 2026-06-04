@@ -1,3 +1,15 @@
+---
+type: rule
+purpose: Prevent Write/Edit tool race conditions on heartbeat files by requiring Bash echo instead -- any session operation that sets the active session name will silently corrupt the heartbeat if Write/Edit is used.
+read_when: Before any session operation that writes to heartbeat files (/load, /save, session new, session switch, session rename) -- Write/Edit causes a race with the PostToolUse hook and corrupts session state.
+tags: [heartbeat, session-management, hooks, race-condition, tools]
+scope: public
+status: canonical
+graduation_target: rules/heartbeat-write-safety.md
+last_evaluated: 2026-06-03
+source: backport from jitneuro 2026-05-28
+---
+
 # Heartbeat File Write Safety
 
 NEVER use Write or Edit tools on files in `.claude/session-state/heartbeats/`. Always use Bash:

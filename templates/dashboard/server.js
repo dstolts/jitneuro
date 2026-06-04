@@ -8,7 +8,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 // -- Configuration --
 
@@ -306,7 +306,12 @@ function getSessions() {
 }
 
 function getSessionContent(name) {
-  var filePath = path.join(SESSIONS_DIR, name + '.md');
+  // Security: reject names with path separators or traversal sequences
+  if (!name || /[/\\]/.test(name) || name.indexOf('..') !== -1) return null;
+  var filePath = path.resolve(SESSIONS_DIR, name + '.md');
+  // Security: ensure resolved path stays within SESSIONS_DIR
+  var safeDir = path.resolve(SESSIONS_DIR) + path.sep;
+  if (filePath.indexOf(safeDir) !== 0) return null;
   try { return fs.readFileSync(filePath, 'utf8'); }
   catch (e) { return null; }
 }
@@ -341,16 +346,30 @@ function readBody(req, cb) {
 // -- Browser auto-open --
 
 function openBrowser(url) {
-  var cmd = process.platform === 'win32' ? 'cmd /c start "" "' + url + '"'
-          : process.platform === 'darwin' ? 'open "' + url + '"'
-          : 'xdg-open "' + url + '"';
-  exec(cmd, function() {});
+  // Security: use spawn with arg array to avoid shell injection -- URL is controlled
+  // but defensive practice is to never pass untrusted values through a shell string
+  var args;
+  if (process.platform === 'win32') {
+    args = ['cmd', ['/c', 'start', '', url], { shell: false }];
+  } else if (process.platform === 'darwin') {
+    args = ['open', [url], { shell: false }];
+  } else {
+    args = ['xdg-open', [url], { shell: false }];
+  }
+  try { spawn(args[0], args[1], Object.assign({ detached: true, stdio: 'ignore' }, args[2])).unref(); }
+  catch (e) {}
 }
 
 // -- HTTP server --
 
+var LOCALHOST_ORIGINS = ['http://localhost:' + PORT, 'http://127.0.0.1:' + PORT];
+
 var server = http.createServer(function(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Security: restrict CORS to localhost origins only -- dashboard is a local tool
+  var origin = req.headers.origin || '';
+  if (LOCALHOST_ORIGINS.indexOf(origin) !== -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -382,6 +401,25 @@ var server = http.createServer(function(req, res) {
     readBody(req, function(body) {
       try {
         var data = JSON.parse(body);
+        // Security: validate schema -- only allow known top-level keys with expected types
+        if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Settings must be a JSON object');
+          return;
+        }
+        var allowed = ['dashboard'];
+        for (var k in data) {
+          if (allowed.indexOf(k) === -1) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Unknown settings key: ' + k);
+            return;
+          }
+        }
+        if (data.dashboard !== undefined && (typeof data.dashboard !== 'object' || Array.isArray(data.dashboard))) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('settings.dashboard must be an object');
+          return;
+        }
         if (saveSettings(data)) {
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           res.end(JSON.stringify(getSettings()));
@@ -545,7 +583,8 @@ var server = http.createServer(function(req, res) {
   res.end('Not found');
 });
 
-server.listen(PORT, function() {
+// Security: bind to loopback only -- dashboard is a local developer tool
+server.listen(PORT, '127.0.0.1', function() {
   var url = 'http://localhost:' + PORT;
   console.log('');
   console.log('  JitNeuro Agent Dashboard');

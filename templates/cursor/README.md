@@ -26,8 +26,8 @@ mkdir -p .cursor/rules
 cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/
 ```
 
-Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`, `context-manifest.md`. The rule references those paths.
+Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`. The rule references those paths. Routing comes from `.jit-knowledge/INDEX.md` (resolved via `~/.claude/url-resolver.md`), not from `context-manifest.md`.
 
 ## Paths
 
-The rule uses `.claude/` for session-state, bundles, engrams, and manifest. Resolve it from the workspace root or the project root that actually contains `.claude/` (e.g. in a multi-root workspace, the root that has `session-state/`).
+The rule uses `.claude/` for session-state, bundles, and engrams. Routing uses `.jit-knowledge/INDEX.md`. Resolve `.claude/` from the workspace root or the project root that actually contains it (e.g. in a multi-root workspace, the root that has `session-state/`).

@@ -1,3 +1,11 @@
+---
+type: rule
+purpose: Require tests to cover every segment of the critical path a user traverses including intermediate delivery mechanisms, not just the entry point and final result.
+read_when: Before writing any e2e or integration test for a customer-facing feature to ensure the full critical path is covered.
+tags: [testing, critical-path, e2e, integration, coverage]
+scope: public
+last_evaluated: 2026-06-03
+---
 # Testing: Critical Path, Not Happy Path
 
 Always test the critical path -- the flow every user hits every time.

@@ -1,3 +1,11 @@
+---
+type: rule
+scope: public
+purpose: Decision model preventing duplicate technology adoption by requiring 80% coverage check against existing stack before introducing any new dependency; skipping causes tool sprawl, hidden maintenance cost, and security surface growth.
+read_when: Before adding any new dependency, service, library, or tool to any project in the stack.
+last_evaluated: 2026-06-03
+---
+
 # Decision Model: Technology Selection
 
 When adding any new dependency, service, or tool to a project.
@@ -12,7 +20,7 @@ Every new dependency adds maintenance burden, security surface, and cognitive lo
 1. **Identify the need** -- what specific capability is required?
 2. **Check existing stack** -- does a technology already in use cover this need?
 3. **Evaluate coverage** -- if existing covers 80%+, use it. Document the 20% gap.
-4. **Justify if new** -- if introducing something new, document WHY the existing option doesn't work
+4. **Justify if new** -- if introducing something new, document WHY the existing option does not work
 5. **Evaluate total cost** -- licensing, maintenance, learning curve, security exposure
 6. **Check team familiarity** -- can the team operate this without a specialist?
 7. **Decide:**
@@ -24,5 +32,5 @@ Every new dependency adds maintenance burden, security surface, and cognitive lo
 
 - Document every new dependency decision with reasoning
 - Prefer widely-adopted, well-maintained tools over niche alternatives
-- If a tool requires a specialist to operate, that's a hidden cost -- factor it in
+- If a tool requires a specialist to operate, that is a hidden cost -- factor it in
 - Re-evaluate periodically -- tools that were best-fit 6 months ago may not be today

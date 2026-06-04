@@ -88,7 +88,7 @@ What kind of work is this?
 ```
 JITNEURO (memory layer)              RALPH (execution layer)
   |                                    |
-  |-- MEMORY.md (routing weights)      |-- config.toml (agent config)
+  |-- MEMORY.md (project index)        |-- config.toml (agent config)
   |-- Bundles (domain knowledge)       |-- prd.json (stories + AC)
   |-- Engrams (project context)        |-- iterations/ (execution logs)
   |-- Session state (checkpoints)      |-- reports/ (results)
@@ -107,7 +107,7 @@ JITNEURO (memory layer)              RALPH (execution layer)
 User: "Plan Sprint-UserAuth-001"
 
 Master session:
-  - Loads bundles: [sprint, api] via routing weights
+  - Loads bundles: [sprint, api] (via jit-knowledge/INDEX.md routing)
   - Loads engram: aifs-api.md (project context)
   - Builds spec in .ralph-tui/specs/Sprint-UserAuth-001.md
   - Creates stories in .ralph-tui/tasks/Sprint-UserAuth-001/backlog.md
@@ -238,7 +238,7 @@ Ralph finishes. Back in master session:
 User: "Ralph done. Run US-HER review."
 
 Master session:
-  - Loads bundles: [sprint, api] (routing weights)
+  - Loads bundles: [sprint, api] (via jit-knowledge/INDEX.md routing)
   - Loads engram: aifs-api.md
   - Reads Ralph's output: progress.md, reports/, git log
   - Evaluates from 4 personas (architect, maintenance, reliability, security)
@@ -256,7 +256,7 @@ User: "Run /learn"
   - Did Ralph discover new patterns? (update engram)
   - Did the sprint add new routes/files? (update engram)
   - Did the review reveal bundle gaps? (update bundle)
-  - Did routing weights work? (update MEMORY.md if not)
+  - Did routing work? (suggest PR to jit-knowledge/INDEX.md if a route was missing)
   - System health check: all files within limits?
 ```
 

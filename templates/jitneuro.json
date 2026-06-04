@@ -1,5 +1,5 @@
 {
-  "version": "0.4.1",
+  "version": "0.5.0",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -59,6 +59,13 @@
         "matcher": "",
         "script": "session-end-autosave.sh",
         "timeout": 10
+      },
+      {
+        "event": "SessionEnd",
+        "matcher": "",
+        "script": "session-end-lessons-flush.sh",
+        "timeout": 15,
+        "_comment": "WS5: flush Hub.md Lessons Learned to durable lessons-pending.md so lessons survive context reset"
       }
     ],
     "_options": {
@@ -94,6 +101,23 @@
       "enabled": false,
       "instruction": "UPDATE_HUB",
       "description": "LEGACY: replaced by housekeeper. Keep TodoWrite and Hub.md in sync every 10m."
+    },
+    {
+      "name": "learn-runner",
+      "interval": 480,
+      "enabled": false,
+      "instruction": "/learn q",
+      "description": "WS5: run /learn quick-mode periodically to flush Hub.md lessons into memory. Disabled by default -- enable when session has active learnings to capture. Interval: 480m (8h). The approval flow in /learn requires an interactive channel, so this fires the quick scan; Owner approves the write table when prompted.",
+      "_comment": "WS5: scheduled /learn trigger. Enable per-session when you want automated lesson capture. quick mode (/learn q) skips health check for speed."
+    },
+    {
+      "name": "cross-repo-rollup",
+      "interval": 10080,
+      "enabled": false,
+      "instruction": "NONE",
+      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes jit-knowledge promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
+      "agent_charter": ".claude/agents/cross-repo-rollup/CHARTER.md",
+      "_comment": "WS6: see CHARTER.md for full agent prompt + idempotency rules."
     }
   ]
 }

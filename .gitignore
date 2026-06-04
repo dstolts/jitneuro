@@ -38,6 +38,9 @@ Thumbs.db
 # Local planning docs (not shipped)
 PRDs/
 
+# Archived launch-prep / internal-ops docs (kept on disk, out of the public repo)
+zArchive/
+
 # Debug logs
 docs/debug.log
 

@@ -1,53 +1,30 @@
-# Context Manifest
+# Context Manifest -- DEPRECATED TEMPLATE
 
-This file indexes all available context bundles and tracks session state.
-The orchestrator reads this to determine which bundles to load for a given task.
+This template file is deprecated as of 2026-05-12 (Step 6 Layer B sweep).
 
-## Always Load (Brainstem)
-These load automatically at session start via CLAUDE.md:
-- `~/.claude/CLAUDE.md` (global rules)
-- `.claude/CLAUDE.md` (project rules)
-- `MEMORY.md` (first 200 lines -- routing weights)
+The context-manifest.md pattern taught local routing. Routing now lives exclusively in:
 
-## Available Bundles
+  https://github.com/dstolts/jit-knowledge/blob/main/INDEX.md
 
-| Bundle | Path | Domain | Lines | Last Used |
-|--------|------|--------|-------|-----------|
-| example | .claude/bundles/example.md | Example template | ~30 | never |
+## What to do instead
 
-<!-- Add your bundles here. Keep under 180 lines each. -->
-<!-- Example entries:
-| deploy    | .claude/bundles/deploy.md    | CI/CD, containers, environments | ~60 | 2026-03-09 |
-| api       | .claude/bundles/api.md       | API design, auth, error handling | ~50 | 2026-03-09 |
-| sprint    | .claude/bundles/sprint.md    | Sprint protocol, task format     | ~70 | 2026-03-08 |
-| testing   | .claude/bundles/testing.md   | Test strategy, commands, fixtures | ~40 | 2026-03-07 |
--->
+When setting up a new repo with JitNeuro:
 
-## Routing Weights
+1. Clone or add jit-knowledge as a submodule: `.jit-knowledge/`
+2. Set up `~/.claude/url-resolver.md` with the repo URL -> local path map
+3. In your repo's CLAUDE.md, reference INDEX.md for routing:
+   `# Routing: see .jit-knowledge/INDEX.md (resolved via ~/.claude/url-resolver.md)`
 
-Patterns that map task types to bundle combinations.
-Update these as you learn which bundles co-activate:
+The INDEX.md is the single source of truth for all task-keyword -> bundle mappings.
+Do NOT create a local routing-weights.md or context-manifest.md with routing tables.
 
-```
-- Default task         -> bundles: []  (brainstem only)
-<!-- Example routing weights:
-- Deploy tasks         -> bundles: [deploy, infra]
-- API development      -> bundles: [api, testing]
-- Sprint execution     -> bundles: [sprint, cross-repo]
-- Bug investigation    -> bundles: [api, testing, deploy]
-- Documentation        -> bundles: []  (brainstem sufficient)
--->
-```
+## Bundle catalog (non-routing sections)
 
-## Session State
+If you need a local index of available bundles without routing, use your repo's
+`.jitneuro/bundles/` directory listing. The engram at `.jitneuro/engrams/context.md`
+should describe which bundles are available for this repo.
 
-Updated by /save command. Read by /load command after /clear.
+## Archive
 
-```
-active_bundles: []
-current_task: none
-modified_files: []
-pending_decisions: []
-next_steps: []
-key_findings: []
-```
+The original context-manifest.md template is preserved at:
+  `templates/.archive/context-manifest.md`

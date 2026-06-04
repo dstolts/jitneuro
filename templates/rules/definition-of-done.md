@@ -1,3 +1,11 @@
+---
+type: rule
+purpose: Define four mandatory conditions (value delivered, customer knows how to use it, customer validated, fully documented) that must all be met before any work item is considered done.
+read_when: Before declaring any task, feature, or deliverable complete to verify all four conditions are satisfied.
+tags: [definition-of-done, quality-gate, documentation, validation, completion]
+scope: public
+last_evaluated: 2026-06-03
+---
 # Definition of Done
 
 Nothing is "done" until all four conditions are met:

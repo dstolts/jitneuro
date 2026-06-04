@@ -72,8 +72,28 @@ if ($PrevVersion) {
 }
 Write-Host ""
 
+# --- Upgrade-safe framework manifest (separates framework files from user files) ---
+# Records every FRAMEWORK-owned file (path + sha256). On upgrade we prune framework files
+# the new version dropped and back up any framework file the user edited -- and never touch
+# a file that is not in the manifest (= the user's own).
+$Manifest = Join-Path $Target ".jitneuro-manifest.tsv"
+$OldManifest = @{}
+if (Test-Path $Manifest) {
+    foreach ($line in (Get-Content $Manifest)) {
+        if ($line -match '^\s*#') { continue }
+        $parts = $line -split "`t", 2
+        if ($parts.Count -eq 2) { $OldManifest[$parts[0]] = $parts[1] }
+    }
+}
+$NewManifest = [System.Collections.Generic.List[string]]::new()
+function Get-JnSha($p) { if (Test-Path $p) { (Get-FileHash $p -Algorithm SHA256).Hash.ToLower() } else { "" } }
+function Add-JnManifest($rel) {
+    $f = Join-Path $Target $rel
+    if (Test-Path $f) { $NewManifest.Add("$rel`t$(Get-JnSha $f)") }
+}
+
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs")
+$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -114,13 +134,24 @@ foreach ($cmdFile in $cmdTemplates) {
 }
 Write-Host "  ($CmdCount commands installed)"
 
-# Copy context-manifest (don't overwrite)
-$manifest = Join-Path $Target "context-manifest.md"
-if (-not (Test-Path $manifest)) {
-    Copy-Item (Join-Path $Templates "context-manifest.md") $manifest
-    Write-Host "Created context-manifest.md"
+# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
+# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.ps1
+$staleManifest = Join-Path $Target "context-manifest.md"
+if (Test-Path $staleManifest) {
+    Write-Host "NOTE: Legacy context-manifest.md found at $staleManifest" -ForegroundColor Yellow
+    Write-Host "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.ps1 to retire it." -ForegroundColor Yellow
+}
+
+# Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
+$UserClaude = Join-Path $env:USERPROFILE ".claude"
+$UrlResolver = Join-Path $UserClaude "url-resolver.md"
+if (-not (Test-Path $UrlResolver)) {
+    if (-not (Test-Path $UserClaude)) { New-Item -ItemType Directory -Path $UserClaude -Force | Out-Null }
+    Copy-Item (Join-Path $Templates "url-resolver.md") $UrlResolver
+    Write-Host "Created ~/.claude/url-resolver.md -- map your repo names to local paths (optional)"
 } else {
-    Write-Host "Skipped context-manifest.md (already exists)" -ForegroundColor Yellow
+    Write-Host "Skipped url-resolver.md (already exists)" -ForegroundColor Yellow
 }
 
 # Copy example bundle if empty
@@ -149,13 +180,52 @@ if (-not (Test-Path $ssReadme)) {
     Write-Host "Created session-state\README.md"
 }
 
-# Copy scoped rule example if empty
+# Install rule templates (respect DISABLED marker) -- parity with install.sh:
+# install ALL framework rules, skip user-DISABLED, update only on diff.
+Write-Host "Installing rule templates..." -ForegroundColor Green
 $rulesDir = Join-Path $Target "rules"
-if ((Get-ChildItem $rulesDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
-    Copy-Item (Join-Path $Templates "rules\scoped-rule-example.md") (Join-Path $rulesDir "scoped-rule-example.md")
-    Write-Host "Created rules\scoped-rule-example.md (template)"
+$ruleCount = 0
+$ruleSkip = 0
+foreach ($ruleFile in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md -File -ErrorAction SilentlyContinue)) {
+    $targetRule = Join-Path $rulesDir $ruleFile.Name
+    if (Test-Path $targetRule) {
+        $firstLine = Get-Content $targetRule -TotalCount 1 -ErrorAction SilentlyContinue
+        if ($firstLine -match '\(DISABLED\)') {
+            Write-Host "  SKIP: $($ruleFile.Name) (disabled by user)"
+            $ruleSkip++
+            continue
+        }
+        if ((Get-FileHash $ruleFile.FullName).Hash -ne (Get-FileHash $targetRule).Hash) {
+            # If the user edited this framework rule since last install, preserve their copy.
+            $rel = "rules/$($ruleFile.Name)"
+            if ($OldManifest.ContainsKey($rel) -and $OldManifest[$rel] -ne (Get-JnSha $targetRule)) {
+                $bdir = Join-Path $Target ".jitneuro-backup\rules"
+                if (-not (Test-Path $bdir)) { New-Item -ItemType Directory -Path $bdir -Force | Out-Null }
+                Copy-Item $targetRule (Join-Path $bdir $ruleFile.Name) -Force
+                Write-Host "  BACKUP: rules/$($ruleFile.Name) (your edit saved to .jitneuro-backup\rules\)"
+            }
+            Copy-Item $ruleFile.FullName $targetRule -Force
+            Write-Host "  UPDATED: $($ruleFile.Name)"
+            $ruleCount++
+        }
+    } else {
+        Copy-Item $ruleFile.FullName $targetRule
+        Write-Host "  $($ruleFile.Name)"
+        $ruleCount++
+    }
+}
+Write-Host "  ($ruleCount rules installed, $ruleSkip disabled/skipped)"
+
+# Install horizon templates (strategic-context placeholders).
+# Seed ONLY if empty -- never overwrite an adopter's filled-in horizon on re-run.
+$horizonDir = Join-Path $Target "horizon"
+if ((Get-ChildItem $horizonDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
+    Copy-Item (Join-Path $Templates "horizon\*.md") $horizonDir
+    $horizonN = (Get-ChildItem $horizonDir -Filter *.md -File).Count
+    Write-Host "Installing horizon templates..." -ForegroundColor Green
+    Write-Host "  horizon\ ($horizonN placeholders -- fill in via horizon\POPULATE-HORIZON.md)"
 } else {
-    Write-Host "Skipped rules\ (already has files)" -ForegroundColor Yellow
+    Write-Host "Skipped horizon\ (already has files)" -ForegroundColor Yellow
 }
 
 # Install cognition layer (Phase 2)
@@ -311,6 +381,12 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
+                    @{ type = "command"; command = "$HooksPathFwd/session-start-identity.sh"; timeout = 10 }
+                )
+            }
+            @{
+                matcher = ""
+                hooks = @(
                     @{ type = "command"; command = "$HooksPathFwd/session-start-write-id.sh"; timeout = 10 }
                 )
             }
@@ -367,20 +443,40 @@ $hooksConfig = @{
 }
 
 if (Test-Path $SettingsFile) {
-    # Existing settings -- merge hooks into it
+    # Existing settings -- per-event merge: preserve user-added hooks, replace/dedup
+    # jitneuro's own (entries whose command path starts with this install's hooks dir).
     try {
-        $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json
-        # Add or replace hooks property
-        if ($existing.PSObject.Properties['hooks']) {
-            Write-Host "  Replacing existing hooks config in settings.local.json"
+        $supportsHashtable = (Get-Command ConvertFrom-Json).Parameters.ContainsKey('AsHashtable')
+        if ($supportsHashtable) {
+            $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json -AsHashtable
+            if (-not $existing.ContainsKey('hooks') -or $null -eq $existing['hooks']) { $existing['hooks'] = @{} }
+            foreach ($evt in $hooksConfig.hooks.Keys) {
+                $userEntries = @()
+                if ($existing['hooks'].ContainsKey($evt) -and $existing['hooks'][$evt]) {
+                    foreach ($entry in @($existing['hooks'][$evt])) {
+                        $isJit = $false
+                        foreach ($h in @($entry['hooks'])) {
+                            if ($h['command'] -and $h['command'].ToString().StartsWith($HooksPathFwd)) { $isJit = $true; break }
+                        }
+                        if (-not $isJit) { $userEntries += $entry }
+                    }
+                }
+                $existing['hooks'][$evt] = @($userEntries + $hooksConfig.hooks[$evt])
+            }
+            $tempFile = "$SettingsFile.tmp.$PID"
+            $existing | ConvertTo-Json -Depth 12 | Set-Content $tempFile -Encoding UTF8
+            Move-Item $tempFile $SettingsFile -Force
+            Write-Host "  Merged hooks into settings.local.json (preserved user hooks, deduped jitneuro hooks)"
         } else {
-            Write-Host "  Adding hooks config to existing settings.local.json"
+            # Windows PowerShell 5.1 (no -AsHashtable): back up, then replace the hooks block.
+            Copy-Item $SettingsFile "$SettingsFile.bak" -Force
+            $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+            $existing | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hooksConfig.hooks -Force
+            $tempFile = "$SettingsFile.tmp.$PID"
+            $existing | ConvertTo-Json -Depth 12 | Set-Content $tempFile -Encoding UTF8
+            Move-Item $tempFile $SettingsFile -Force
+            Write-Host "  Replaced hooks block (PS 5.1 -- backup at settings.local.json.bak; re-add any custom hooks)" -ForegroundColor Yellow
         }
-        $existing | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hooksConfig.hooks -Force
-        $tempFile = "$SettingsFile.tmp.$PID"
-        $existing | ConvertTo-Json -Depth 10 | Set-Content $tempFile -Encoding UTF8
-        Move-Item $tempFile $SettingsFile -Force
-        Write-Host "  Merged hooks into settings.local.json"
     } catch {
         Write-Host "  WARNING: Could not parse existing settings.local.json." -ForegroundColor Yellow
         Write-Host "  Existing file left UNTOUCHED to prevent data loss." -ForegroundColor Yellow
@@ -458,6 +554,47 @@ if (Test-Path $gitignore) {
     }
 }
 
+# --- Record framework manifest + prune framework files dropped since last install ---
+Write-Host ""
+Write-Host "Recording framework manifest..." -ForegroundColor Green
+foreach ($t in (Get-ChildItem (Join-Path $Templates "commands") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "commands/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "rules/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition") -Filter *.md -File -EA SilentlyContinue)) {
+    if ($t.Name -eq "owner-persona.example.md") { continue }   # owner-persona is user-owned after seeding
+    Add-JnManifest "cognition/$($t.Name)"
+}
+foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "cognition/decisions/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "scripts") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "scripts/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard") -File -EA SilentlyContinue | Where-Object { $_.Extension -in ".html",".js" })) { Add-JnManifest "dashboard/$($t.Name)" }
+if (Test-Path (Join-Path $Templates "dashboard\bin")) {
+    foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard\bin") -File -EA SilentlyContinue)) { Add-JnManifest "dashboard/bin/$($t.Name)" }
+}
+foreach ($t in (Get-ChildItem (Join-Path $Templates "hooks") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "hooks/$($t.Name)" }
+Add-JnManifest "jitneuro.json"
+
+# Prune framework files present at last install but no longer shipped (sha-guarded).
+$newPaths = @{}
+foreach ($e in $NewManifest) { $newPaths[($e -split "`t",2)[0]] = $true }
+$pruned = 0
+foreach ($rel in $OldManifest.Keys) {
+    if ($newPaths.ContainsKey($rel)) { continue }
+    $f = Join-Path $Target $rel
+    if (Test-Path $f) {
+        if ((Get-JnSha $f) -eq $OldManifest[$rel]) {
+            Remove-Item $f -Force; Write-Host "  REMOVED (dropped by framework): $rel"; $pruned++
+        } else {
+            Write-Host "  KEPT (you edited a now-removed framework file): $rel"
+        }
+    }
+}
+if ($pruned -gt 0) { Write-Host "  ($pruned stale framework file(s) removed)" }
+
+# Write the manifest (sorted, version-stamped). Files NOT listed here = yours; never touched.
+$sorted = $NewManifest | Sort-Object
+$out = @("# jitneuro-manifest v$Version") + $sorted
+Set-Content -Path $Manifest -Value $out -Encoding ascii   # ASCII: no BOM, cross-tool safe
+Write-Host "  .jitneuro-manifest.tsv ($($NewManifest.Count) framework files tracked)"
+
 # --- Summary ---
 Write-Host ""
 Write-Host "---" -ForegroundColor DarkGray
@@ -466,8 +603,11 @@ Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. CLOSE AND REOPEN Claude Code (commands load at session start)" -ForegroundColor Yellow
 Write-Host "  2. Run /verify to confirm everything is working"
-Write-Host "  3. Run /onboard <repo> to set up context for your repos"
-Write-Host "  4. Create bundles for your domains in $Target\bundles\"
+Write-Host "  3. Populate your horizon: tell Claude 'populate my horizon files' (or open"
+Write-Host "     $Target\horizon\POPULATE-HORIZON.md) to capture your vision, goals, and profile"
+Write-Host "  4. Run /onboard <repo> to set up context for your repos"
+Write-Host "  5. Create bundles for your domains in $Target\bundles\"
+Write-Host "  6. (optional) Edit ~/.claude/url-resolver.md to map your repo names to local paths"
 Write-Host ""
 Write-Host "*** You MUST restart Claude Code for slash commands to take effect. ***" -ForegroundColor Red
 Write-Host ""
