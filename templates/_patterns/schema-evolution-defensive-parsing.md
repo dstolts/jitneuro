@@ -41,7 +41,7 @@ When consuming a field from any external service or upstream pipeline component,
 
 ## Concrete example
 
-jITSecure assessment JSON `score` field changed from `float` to `dict`:
+An assessment service's JSON `score` field changed from `float` to `dict`:
 ```
 Old: "score": 0.32
 New: "score": {"pass": 12, "fail": 26, "partial": 0, "not_assessed": 19, "total": 57, "percentage": 32}
@@ -64,6 +64,6 @@ else:
 
 ## Origin
 
-2026-04-02, generate-wisp.py crash: `'>=' not supported between instances of 'dict' and 'float'` when processing Larsen assessment evidence. jITSecure had changed its `score` field format. Both `_derive_risk_level()` and `_derive_cis_score_string()` assumed float. Fixed with isinstance check at the consumption point.
+A report generator crashed with `'>=' not supported between instances of 'dict' and 'float'` when processing assessment evidence: the upstream assessment service had changed its `score` field format from a float to a dict. Two helper functions both assumed float. Fixed with an isinstance check at the consumption point.
 
 Related: `rules/verify-before-claiming.md`, `rules/proactive-quality.md`.
