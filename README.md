@@ -103,6 +103,7 @@ JitNeuro adds a memory management layer inspired by neural network architecture:
 - **Engrams** -- per-project deep context, strengthened by /learn (like long-term potentiation)
 - **Session State** -- save/load across /clear cycles (like working memory)
 - **Post-compact recovery** -- a PreCompact hook checkpoints state and tells the next turn to /load and re-read context, so a context reset never loses your place
+- **Upgrade-safe** -- a manifest separates framework files from yours; `git pull` + re-install updates the framework and never clobbers your rules, bundles, horizon, or learnings (edited framework files are backed up). See the Setup Guide.
 - **Routing Weights** -- learned patterns for which bundles to co-activate
 - **Scheduled Agents** -- timer, enforcer, cron, and batch agents for automated work
 - **Sub-Orchestrators** -- manage 30+ tasks with rolling worker pools
