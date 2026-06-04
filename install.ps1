@@ -160,14 +160,33 @@ if (-not (Test-Path $ssReadme)) {
     Write-Host "Created session-state\README.md"
 }
 
-# Copy scoped rule example if empty
+# Install rule templates (respect DISABLED marker) -- parity with install.sh:
+# install ALL framework rules, skip user-DISABLED, update only on diff.
+Write-Host "Installing rule templates..." -ForegroundColor Green
 $rulesDir = Join-Path $Target "rules"
-if ((Get-ChildItem $rulesDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
-    Copy-Item (Join-Path $Templates "rules\scoped-rule-example.md") (Join-Path $rulesDir "scoped-rule-example.md")
-    Write-Host "Created rules\scoped-rule-example.md (template)"
-} else {
-    Write-Host "Skipped rules\ (already has files)" -ForegroundColor Yellow
+$ruleCount = 0
+$ruleSkip = 0
+foreach ($ruleFile in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md -File -ErrorAction SilentlyContinue)) {
+    $targetRule = Join-Path $rulesDir $ruleFile.Name
+    if (Test-Path $targetRule) {
+        $firstLine = Get-Content $targetRule -TotalCount 1 -ErrorAction SilentlyContinue
+        if ($firstLine -match '\(DISABLED\)') {
+            Write-Host "  SKIP: $($ruleFile.Name) (disabled by user)"
+            $ruleSkip++
+            continue
+        }
+        if ((Get-FileHash $ruleFile.FullName).Hash -ne (Get-FileHash $targetRule).Hash) {
+            Copy-Item $ruleFile.FullName $targetRule -Force
+            Write-Host "  UPDATED: $($ruleFile.Name)"
+            $ruleCount++
+        }
+    } else {
+        Copy-Item $ruleFile.FullName $targetRule
+        Write-Host "  $($ruleFile.Name)"
+        $ruleCount++
+    }
 }
+Write-Host "  ($ruleCount rules installed, $ruleSkip disabled/skipped)"
 
 # Install cognition layer (Phase 2)
 Write-Host "Installing cognition layer..." -ForegroundColor Green
