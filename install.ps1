@@ -73,7 +73,7 @@ if ($PrevVersion) {
 Write-Host ""
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs")
+$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -187,6 +187,18 @@ foreach ($ruleFile in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md
     }
 }
 Write-Host "  ($ruleCount rules installed, $ruleSkip disabled/skipped)"
+
+# Install horizon templates (strategic-context placeholders).
+# Seed ONLY if empty -- never overwrite an adopter's filled-in horizon on re-run.
+$horizonDir = Join-Path $Target "horizon"
+if ((Get-ChildItem $horizonDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
+    Copy-Item (Join-Path $Templates "horizon\*.md") $horizonDir
+    $horizonN = (Get-ChildItem $horizonDir -Filter *.md -File).Count
+    Write-Host "Installing horizon templates..." -ForegroundColor Green
+    Write-Host "  horizon\ ($horizonN placeholders -- fill in via horizon\POPULATE-HORIZON.md)"
+} else {
+    Write-Host "Skipped horizon\ (already has files)" -ForegroundColor Yellow
+}
 
 # Install cognition layer (Phase 2)
 Write-Host "Installing cognition layer..." -ForegroundColor Green
@@ -341,6 +353,12 @@ $hooksConfig = @{
             @{
                 matcher = ""
                 hooks = @(
+                    @{ type = "command"; command = "$HooksPathFwd/session-start-identity.sh"; timeout = 10 }
+                )
+            }
+            @{
+                matcher = ""
+                hooks = @(
                     @{ type = "command"; command = "$HooksPathFwd/session-start-write-id.sh"; timeout = 10 }
                 )
             }
@@ -397,20 +415,40 @@ $hooksConfig = @{
 }
 
 if (Test-Path $SettingsFile) {
-    # Existing settings -- merge hooks into it
+    # Existing settings -- per-event merge: preserve user-added hooks, replace/dedup
+    # jitneuro's own (entries whose command path starts with this install's hooks dir).
     try {
-        $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json
-        # Add or replace hooks property
-        if ($existing.PSObject.Properties['hooks']) {
-            Write-Host "  Replacing existing hooks config in settings.local.json"
+        $supportsHashtable = (Get-Command ConvertFrom-Json).Parameters.ContainsKey('AsHashtable')
+        if ($supportsHashtable) {
+            $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json -AsHashtable
+            if (-not $existing.ContainsKey('hooks') -or $null -eq $existing['hooks']) { $existing['hooks'] = @{} }
+            foreach ($evt in $hooksConfig.hooks.Keys) {
+                $userEntries = @()
+                if ($existing['hooks'].ContainsKey($evt) -and $existing['hooks'][$evt]) {
+                    foreach ($entry in @($existing['hooks'][$evt])) {
+                        $isJit = $false
+                        foreach ($h in @($entry['hooks'])) {
+                            if ($h['command'] -and $h['command'].ToString().StartsWith($HooksPathFwd)) { $isJit = $true; break }
+                        }
+                        if (-not $isJit) { $userEntries += $entry }
+                    }
+                }
+                $existing['hooks'][$evt] = @($userEntries + $hooksConfig.hooks[$evt])
+            }
+            $tempFile = "$SettingsFile.tmp.$PID"
+            $existing | ConvertTo-Json -Depth 12 | Set-Content $tempFile -Encoding UTF8
+            Move-Item $tempFile $SettingsFile -Force
+            Write-Host "  Merged hooks into settings.local.json (preserved user hooks, deduped jitneuro hooks)"
         } else {
-            Write-Host "  Adding hooks config to existing settings.local.json"
+            # Windows PowerShell 5.1 (no -AsHashtable): back up, then replace the hooks block.
+            Copy-Item $SettingsFile "$SettingsFile.bak" -Force
+            $existing = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+            $existing | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hooksConfig.hooks -Force
+            $tempFile = "$SettingsFile.tmp.$PID"
+            $existing | ConvertTo-Json -Depth 12 | Set-Content $tempFile -Encoding UTF8
+            Move-Item $tempFile $SettingsFile -Force
+            Write-Host "  Replaced hooks block (PS 5.1 -- backup at settings.local.json.bak; re-add any custom hooks)" -ForegroundColor Yellow
         }
-        $existing | Add-Member -MemberType NoteProperty -Name "hooks" -Value $hooksConfig.hooks -Force
-        $tempFile = "$SettingsFile.tmp.$PID"
-        $existing | ConvertTo-Json -Depth 10 | Set-Content $tempFile -Encoding UTF8
-        Move-Item $tempFile $SettingsFile -Force
-        Write-Host "  Merged hooks into settings.local.json"
     } catch {
         Write-Host "  WARNING: Could not parse existing settings.local.json." -ForegroundColor Yellow
         Write-Host "  Existing file left UNTOUCHED to prevent data loss." -ForegroundColor Yellow

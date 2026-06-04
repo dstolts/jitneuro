@@ -187,6 +187,18 @@ for rule_file in "$TEMPLATES/rules/"*.md; do
 done
 echo "  ($RULE_COUNT rules installed, $RULE_SKIP disabled/skipped)"
 
+# Install horizon templates (strategic-context placeholders).
+# Seed ONLY if empty -- never overwrite an adopter's filled-in horizon on re-run.
+mkdir -p "$TARGET/horizon"
+if [ -z "$(ls -A "$TARGET/horizon/" 2>/dev/null)" ]; then
+  cp "$TEMPLATES/horizon/"*.md "$TARGET/horizon/" 2>/dev/null
+  HORIZON_N=$(ls -1 "$TARGET/horizon/"*.md 2>/dev/null | wc -l)
+  echo "Installing horizon templates..."
+  echo "  horizon/ ($HORIZON_N placeholders -- fill in via horizon/POPULATE-HORIZON.md)"
+else
+  echo "Skipped horizon/ (already has files)"
+fi
+
 # Install cognition layer (Phase 2)
 echo "Installing cognition layer..."
 for cog_file in "$TEMPLATES/cognition/"*.md; do
@@ -286,6 +298,7 @@ build_hooks_json() {
   "hooks": {
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/pre-compact-save.sh", "timeout": 10 }] }],
     "SessionStart": [
+      { "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/session-start-identity.sh", "timeout": 10 }] },
       { "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/session-start-write-id.sh", "timeout": 10 }] },
       { "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/session-start-post-clear.sh", "timeout": 10 }] },
       { "matcher": "compact", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/session-start-recovery.sh", "timeout": 10 }] }
@@ -309,7 +322,21 @@ if [ -f "$SETTINGS_FILE" ]; then
   if command -v jq >/dev/null 2>&1; then
     HOOKS_JSON=$(build_hooks_json)
     TEMP_FILE="$SETTINGS_FILE.tmp.$$"
-    jq -s '.[0] * .[1]' "$SETTINGS_FILE" <(echo "$HOOKS_JSON") > "$TEMP_FILE" 2>/dev/null
+    # Per-event merge: preserve user-added hooks, replace/dedup jitneuro's own
+    # (entries whose command path starts with this install's hooks dir). Other
+    # top-level settings keys are preserved via the base object merge.
+    jq -s --arg hp "$HOOKS_PATH_FWD" '
+      (.[0]) as $cur | (.[1]) as $new |
+      ($cur * $new) |
+      .hooks = (
+        reduce ($new.hooks | keys_unsorted[]) as $e
+          ( ($cur.hooks // {}) ;
+            .[$e] = ( ( ($cur.hooks[$e] // [])
+                        | map(select( any(.hooks[]?; .command | startswith($hp)) | not )) )
+                      + $new.hooks[$e] )
+          )
+      )
+    ' "$SETTINGS_FILE" <(echo "$HOOKS_JSON") > "$TEMP_FILE" 2>/dev/null
     if [ $? -eq 0 ] && [ -s "$TEMP_FILE" ]; then
       mv "$TEMP_FILE" "$SETTINGS_FILE"
       echo "  Merged hooks into existing settings.local.json"

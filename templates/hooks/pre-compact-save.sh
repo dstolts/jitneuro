@@ -55,6 +55,7 @@ if [ -f "$SAVE_MARKER" ]; then
     AGE=$((NOW - SAVED_AT))
     if [ "$AGE" -le "$FRESH_THRESHOLD_SECONDS" ] 2>/dev/null; then
       echo "[$(date 2>/dev/null)] PreCompact: save is fresh (${AGE}s ago). Allowing compaction silently." >> "$LOG" 2>/dev/null
+      echo "[JitNeuro] POST-COMPACT: in your next turn, run /load first to restore session state and re-read context before continuing work."
       exit 0
     fi
   fi
@@ -73,4 +74,5 @@ fi
 # Warn (default, and always for auto-compaction): compaction proceeds.
 echo "$MSG"
 echo "Compaction is proceeding. Run /save afterward if the session was not recently checkpointed."
+echo "[JitNeuro] POST-COMPACT: in your next turn, run /load first to restore session state and re-read context before continuing work."
 exit 0
