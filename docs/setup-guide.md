@@ -46,8 +46,11 @@ re-run the installer with `user` mode to fix it.
 
 The installer:
 - Copies all commands to `.claude/commands/`
-- Copies hook scripts to `.claude/hooks/`
-- Creates or merges hooks config into `settings.local.json`
+- Installs the full rule library to `.claude/rules/` (skips any rule whose first line is marked `(DISABLED)`; updates only changed rules)
+- Copies the cognition layer (personas, decision models) to `.claude/cognition/`
+- Seeds strategic-context templates into `.claude/horizon/` (only when empty -- never overwrites a filled-in horizon)
+- Copies hook scripts to `.claude/hooks/`, including a **SessionStart master-orchestrator identity hook** and a **PreCompact save + reload-directive hook**
+- Creates or merges hooks config into `settings.local.json` (re-install preserves your own added hooks and dedups JitNeuro's)
 - Installs `jitneuro.json` (version, hook settings, protected branches)
 - Backs up existing commands that differ from source
 - Scans workspace for repos needing onboarding (workspace mode)
@@ -57,6 +60,7 @@ After install:
 1. **Close and reopen Claude Code** (commands load at session start only)
 2. Run `/verify` to confirm all components are GREEN
 3. Run `/onboard <repo>` to set up context for your projects
+4. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `.claude/horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
 
 ### Install Scenarios
 
@@ -126,7 +130,7 @@ ls .claude/commands/*.md             # project level (from inside a repo)
 - Hooks require bash. The PowerShell installer detects Git Bash automatically.
 - WSL is detected but explicitly **not supported** for hooks (path resolution issues).
 - If bash is not found, install continues -- commands work, hooks won't fire.
-- PowerShell 5.1+ supported (no `-AsHashtable` dependency).
+- PowerShell 5.1 and 7+ both supported. On a re-install, PS 7+ does a per-event hook merge (preserves your custom hooks, dedups JitNeuro's); PS 5.1 backs up `settings.local.json` to `.bak` and replaces the hooks block (re-add any custom hooks after).
 
 ## Manual Install
 

@@ -80,6 +80,8 @@ cd jitneuro
 
 **Close and reopen Claude Code after installing.** Then: `/save`, `/learn`, `/load`. That's it.
 
+**Set your north star (optional, 5 minutes).** The installer drops strategic-context templates in `.claude/horizon/`. Tell Claude `"populate my horizon files"` (or open `.claude/horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a time -- to fill in your vision, mission, goals, operating rhythm, and owner profile. Every future session then aligns to your actual goals instead of guessing.
+
 **Having trouble with the install?** Just tell Claude:
 
 ```
@@ -94,9 +96,13 @@ See [Setup Guide](docs/setup-guide.md) for other install modes and troubleshooti
 
 JitNeuro adds a memory management layer inspired by neural network architecture:
 
+- **Master-orchestrator identity** -- a SessionStart hook injects your master/orchestrator role into every session, so Claude coordinates and delegates by default instead of acting as a generic coding agent
+- **Horizon layer** -- vision / mission / goals / operating-rhythm / owner-profile templates plus a guided interview (POPULATE-HORIZON) so every session aligns to your north star
+- **Rule library** -- a curated, install-ready set of behavioral rules (testing discipline, trust zones, verification gates, security guardrails) you can keep, disable, or extend
 - **Context Bundles** -- domain knowledge loaded on-demand (like network layers)
 - **Engrams** -- per-project deep context, strengthened by /learn (like long-term potentiation)
 - **Session State** -- save/load across /clear cycles (like working memory)
+- **Post-compact recovery** -- a PreCompact hook checkpoints state and tells the next turn to /load and re-read context, so a context reset never loses your place
 - **Routing Weights** -- learned patterns for which bundles to co-activate
 - **Scheduled Agents** -- timer, enforcer, cron, and batch agents for automated work
 - **Sub-Orchestrators** -- manage 30+ tasks with rolling worker pools
