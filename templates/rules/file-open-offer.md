@@ -1,3 +1,15 @@
+---
+type: rule
+purpose: When presenting file paths for review, number each file and offer to open them in the IDE.
+read_when: Before presenting two or more file paths to the user for review or inspection.
+tags: [file-references, adhd, ux, output-formatting]
+scope: public
+status: canonical
+graduation_target: rules/file-open-offer.md
+last_evaluated: 2026-06-03
+source: backport from jitneuro 2026-05-28
+---
+
 # File Open Offer
 
 When presenting file paths for the user to review, number each file and offer to open them.

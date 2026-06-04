@@ -1,3 +1,11 @@
+---
+type: rule
+purpose: Require full-codebase search with multiple patterns and content verification before claiming anything is missing or broken, to prevent false alarms and duplicate implementations.
+tags: [verification, missing-claims, search, false-alarms, codebase]
+scope: public
+read_when: Before reporting that any symbol, file, config, or feature is missing or broken in a codebase.
+last_evaluated: 2026-06-03
+---
 # Verify Before Claiming Missing or Broken
 
 Before claiming anything is missing or broken:
@@ -12,7 +20,7 @@ Before claiming anything is missing or broken:
 
 AI assistants frequently claim something is "missing" after a shallow search.
 This leads to unnecessary rewrites, duplicate implementations, and wasted
-Owner time investigating a non-problem. The cost of a false alarm is high:
+time investigating a non-problem. The cost of a false alarm is high:
 context switching, debugging the "fix," and cleaning up duplicates.
 
 ## Search Protocol
@@ -31,5 +39,18 @@ where, then report the item as genuinely missing.
 Before giving navigation instructions for external UIs (portals, admin panels, SaaS dashboards):
 - NEVER state menu paths, breadcrumbs, or settings URLs as fact unless verified (fetched docs, saw screenshot, or confirmed from official source)
 - Say "I cannot verify the exact path -- look for [keyword]" when unsure
-- Ask Owner for a screenshot rather than guessing the navigation
 - External UIs change layouts frequently -- cached knowledge is unreliable
+
+## Repo Names
+
+Before naming a repo in a config, spec, doc, agent prompt, or any handoff to another system, verify it exists. Convention is not verification.
+
+Verification methods (in order of preference):
+1. `git remote get-url origin` from a clone of the repo (authoritative)
+2. An engram or context file that documents the project
+3. `gh repo view <org>/<name>` (GitHub source of truth, requires network)
+4. `gh repo list <org> | grep <fragment>` (when the exact name is uncertain)
+
+## Path-Agnostic References
+
+Rules, agent configs, and inter-system docs reference repos by GitHub origin (e.g., `org/repo-name`), not by local filesystem path. Local checkout location varies per machine; absolute paths in shared config break across machines.

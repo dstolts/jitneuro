@@ -1,111 +1,75 @@
+---
+type: reference
+purpose: The owner's identity, context, and working preferences -- the "who am I working for and how do they want me to work" profile that every agent loads so its judgment, tone, autonomy, and escalation behavior match this specific owner instead of a generic default; an unfilled or skipped profile means agents guess at preferences and produce work that misreads the owner.
+read_when: At session start, by every agent, before doing substantive work -- to load who the owner is and how they want the AI to operate.
+tags: [owner-profile, identity, preferences, onboarding, personalization, fill-in-template]
+scope: public
+status: canonical
+last_evaluated: 2026-06-03
+---
+
 # Owner Profile
 
-This file describes who you are as the operator of this venture: your background,
-working style, communication preferences, and any needs the AI should accommodate.
-The AI reads this to tailor how it works with you -- not just what it does, but how
-it presents information, how much it explains, and how it handles ambiguity.
-
-This file is entirely about YOU as the person, not the business. Keep it honest.
-The AI works better with accurate context than with an idealized version.
+> **THIS IS A TEMPLATE. Replace every `<...>` placeholder with your own information.**
+> This file tells the AI who you are and how you want it to work. Agents read it at the
+> start of every session. The more specific you are, the better the AI's judgment matches
+> yours. Delete guidance lines (the `>` blocks) once you have filled in your answers.
 
 ---
 
-## Background and Expertise
+## Who I Am
 
-[FILL IN: Briefly describe your professional background and where your expertise
-is deepest. What can the AI assume you already know? Where should it explain
-rather than assume?]
+- **Name:** <your name>
+- **Role / title:** <e.g., founder, solo developer, engineering lead>
+- **Organization / project:** <company or project name, or "independent">
+- **Location / timezone:** <e.g., US Eastern (UTC-5)> -- affects scheduling and "today" reasoning
+- **One line about me:** <the single most useful thing for an agent to know about you>
 
-<!-- Example:
-- 15 years in software engineering; strong backend, weaker on frontend design
-- Comfortable reading code in Python, TypeScript, SQL; not Go or Rust
-- Strong on product thinking; less experienced in financial modeling
-- No background in legal or compliance; explain implications in plain English
--->
+## What I Do
 
----
+> What are you building or running? What does the AI most often help you with?
 
-## Working Style
+<2-4 sentences on your work and where the AI fits in>
 
-[FILL IN: How do you prefer to work? Fast and iterative, or thorough and
-deliberate? Top-down from strategy, or bottom-up from concrete problems?
-Decide quickly with good-enough info, or gather more before committing?]
+## How I Want the AI to Work With Me
 
-<!-- Example:
-- Strongly prefer shipping something imperfect quickly over waiting for perfect
-- Make decisions fast; revisit if the outcome is wrong
-- Think out loud; use conversation to work through problems
-- Get frustrated by over-engineered solutions; always ask "what is the simplest version"
--->
+> These shape tone, pace, and how much the AI does before checking in.
 
----
+- **Communication style:** <e.g., direct and concise; lead with the recommendation; minimal preamble>
+- **Detail level:** <e.g., summaries with details on request; or full reasoning every time>
+- **Autonomy:** <e.g., proceed on low-risk work and report; ask before anything irreversible>
+- **Format preferences:** <e.g., ASCII only, no emojis; short lists over long prose>
 
-## Communication Preferences
+## My Priorities
 
-[FILL IN: How do you want the AI to communicate with you? Length, format, tone,
-how much context to include, whether to lead with the answer or the reasoning.]
+> What should the AI optimize for when choices compete (speed vs. completeness, cost vs. quality)?
 
-<!-- Example:
-- Short is better; I will ask for more if I need it
-- Lead with the recommendation, then the reasoning
-- Do not hedge excessively; give me your best judgment, not a wall of caveats
-- Bullet points for status and action items; prose for analysis and explanation
-- ASCII only; no special characters or emoji
--->
+1. <priority 1>
+2. <priority 2>
+3. <priority 3>
 
----
+## Decision Authority (what the AI decides vs. what I decide)
 
-## Focus and Attention
+| The AI may decide and execute | I decide (AI proposes, waits) |
+|---|---|
+| <e.g., formatting, refactors, test additions> | <e.g., production deploys, spending money, customer-facing copy> |
 
-[FILL IN: Are there focus or attention patterns the AI should accommodate?
-For example, how you handle context-switching, how you prefer tasks chunked,
-what causes you to lose track of a thread.]
+## Hard Lines (never do these)
 
-<!-- Example:
-- Context-switching is expensive; prefer to complete one area before opening another
-- Long lists are hard to act on; keep action items to 3-5 at a time
-- If a session gets long and complex, offer a checkpoint summary before continuing
--->
+> Bright-line rules the AI must never cross, regardless of the task.
+
+- <e.g., never push to the main branch without my approval>
+- <e.g., never send email or post publicly on my behalf without confirmation>
+- <e.g., never put secrets in committed files>
+
+## Context Pointers (optional)
+
+> Where the AI can find more about your work -- repos, docs, dashboards. Use names or
+> relative references, not secrets.
+
+- <e.g., main repo: <name>; docs: <location>; key constraints: <...>>
 
 ---
 
-## What Frustrates You
-
-[FILL IN: What AI behaviors or output patterns make you want to stop the session?
-This helps the AI avoid friction from the start.]
-
-<!-- Example:
-- Repeating the same mistake after being corrected
-- Over-explaining things I already know
-- Proposing a complex solution when a simple one would work
-- Adding ceremony (new processes, new docs, new frameworks) when the problem is small
-- Asking permission for things that are clearly low-risk
--->
-
----
-
-## What Works Well for You
-
-[FILL IN: Conversely, what AI behaviors do you find genuinely useful and want
-more of?]
-
-<!-- Example:
-- Flagging problems I did not ask about but that are relevant
-- Moving autonomously through a list of tasks and reporting back on completion
-- Catching edge cases and security issues before I have to think about them
-- Summarizing a complex decision space into a clear recommendation with reasoning
--->
-
----
-
-## Anything Else
-
-[FILL IN: Any other context that would help the AI work with you effectively.
-Personal constraints, schedule realities, communication channel preferences,
-or anything that does not fit the sections above.]
-
-<!-- Example:
-- Work primarily between 6am and 2pm; after that I am not in execution mode
-- Primary machine is Windows; shell commands should be PowerShell-compatible
-- Run this as a for-profit business; all recommendations should consider ROI
--->
+_Keep this profile current. When your role, priorities, or preferences change, update this
+file -- it is the first thing agents read about you._

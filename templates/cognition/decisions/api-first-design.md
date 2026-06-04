@@ -1,13 +1,20 @@
+---
+type: rule
+scope: public
+purpose: Decision model requiring all platforms to be fully API-manageable before adoption -- agents use this to evaluate new tools and reject GUI-only workflows that block automation; skipping allows GUI-locked platforms that break agent pipelines.
+read_when: Before selecting or evaluating any new platform, service, or tool that agents or automation will need to operate.
+last_evaluated: 2026-06-03
+---
+
 # Decision Model: API-First Platform Design
 
 When choosing how to build or integrate with a platform, evaluate API-first.
 
 ## Principle
 
-All platforms must be fully manageable via API. Never depend on a GUI for
-operations that AI agents or automation need to perform. If the only way to
-do something is click a button in a web UI, the platform is not ready for
-AI-assisted workflows.
+All platforms must be fully manageable via API. Never depend on a GUI for operations that
+AI agents or automation need to perform. If the only way to do something is click a button
+in a web UI, the platform is not ready for AI-assisted workflows.
 
 ## Evaluation Process
 
