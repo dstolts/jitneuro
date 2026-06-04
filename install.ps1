@@ -72,6 +72,26 @@ if ($PrevVersion) {
 }
 Write-Host ""
 
+# --- Upgrade-safe framework manifest (separates framework files from user files) ---
+# Records every FRAMEWORK-owned file (path + sha256). On upgrade we prune framework files
+# the new version dropped and back up any framework file the user edited -- and never touch
+# a file that is not in the manifest (= the user's own).
+$Manifest = Join-Path $Target ".jitneuro-manifest.tsv"
+$OldManifest = @{}
+if (Test-Path $Manifest) {
+    foreach ($line in (Get-Content $Manifest)) {
+        if ($line -match '^\s*#') { continue }
+        $parts = $line -split "`t", 2
+        if ($parts.Count -eq 2) { $OldManifest[$parts[0]] = $parts[1] }
+    }
+}
+$NewManifest = [System.Collections.Generic.List[string]]::new()
+function Get-JnSha($p) { if (Test-Path $p) { (Get-FileHash $p -Algorithm SHA256).Hash.ToLower() } else { "" } }
+function Add-JnManifest($rel) {
+    $f = Join-Path $Target $rel
+    if (Test-Path $f) { $NewManifest.Add("$rel`t$(Get-JnSha $f)") }
+}
+
 # Create directories
 $dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
 foreach ($dir in $dirs) {
@@ -176,6 +196,14 @@ foreach ($ruleFile in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md
             continue
         }
         if ((Get-FileHash $ruleFile.FullName).Hash -ne (Get-FileHash $targetRule).Hash) {
+            # If the user edited this framework rule since last install, preserve their copy.
+            $rel = "rules/$($ruleFile.Name)"
+            if ($OldManifest.ContainsKey($rel) -and $OldManifest[$rel] -ne (Get-JnSha $targetRule)) {
+                $bdir = Join-Path $Target ".jitneuro-backup\rules"
+                if (-not (Test-Path $bdir)) { New-Item -ItemType Directory -Path $bdir -Force | Out-Null }
+                Copy-Item $targetRule (Join-Path $bdir $ruleFile.Name) -Force
+                Write-Host "  BACKUP: rules/$($ruleFile.Name) (your edit saved to .jitneuro-backup\rules\)"
+            }
             Copy-Item $ruleFile.FullName $targetRule -Force
             Write-Host "  UPDATED: $($ruleFile.Name)"
             $ruleCount++
@@ -525,6 +553,47 @@ if (Test-Path $gitignore) {
         Add-Content $gitignore "`n# JitNeuro command backups`n.claude/commands/.backup/"
     }
 }
+
+# --- Record framework manifest + prune framework files dropped since last install ---
+Write-Host ""
+Write-Host "Recording framework manifest..." -ForegroundColor Green
+foreach ($t in (Get-ChildItem (Join-Path $Templates "commands") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "commands/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "rules/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition") -Filter *.md -File -EA SilentlyContinue)) {
+    if ($t.Name -eq "owner-persona.example.md") { continue }   # owner-persona is user-owned after seeding
+    Add-JnManifest "cognition/$($t.Name)"
+}
+foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "cognition/decisions/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "scripts") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "scripts/$($t.Name)" }
+foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard") -File -EA SilentlyContinue | Where-Object { $_.Extension -in ".html",".js" })) { Add-JnManifest "dashboard/$($t.Name)" }
+if (Test-Path (Join-Path $Templates "dashboard\bin")) {
+    foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard\bin") -File -EA SilentlyContinue)) { Add-JnManifest "dashboard/bin/$($t.Name)" }
+}
+foreach ($t in (Get-ChildItem (Join-Path $Templates "hooks") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "hooks/$($t.Name)" }
+Add-JnManifest "jitneuro.json"
+
+# Prune framework files present at last install but no longer shipped (sha-guarded).
+$newPaths = @{}
+foreach ($e in $NewManifest) { $newPaths[($e -split "`t",2)[0]] = $true }
+$pruned = 0
+foreach ($rel in $OldManifest.Keys) {
+    if ($newPaths.ContainsKey($rel)) { continue }
+    $f = Join-Path $Target $rel
+    if (Test-Path $f) {
+        if ((Get-JnSha $f) -eq $OldManifest[$rel]) {
+            Remove-Item $f -Force; Write-Host "  REMOVED (dropped by framework): $rel"; $pruned++
+        } else {
+            Write-Host "  KEPT (you edited a now-removed framework file): $rel"
+        }
+    }
+}
+if ($pruned -gt 0) { Write-Host "  ($pruned stale framework file(s) removed)" }
+
+# Write the manifest (sorted, version-stamped). Files NOT listed here = yours; never touched.
+$sorted = $NewManifest | Sort-Object
+$out = @("# jitneuro-manifest v$Version") + $sorted
+Set-Content -Path $Manifest -Value $out -Encoding ascii   # ASCII: no BOM, cross-tool safe
+Write-Host "  .jitneuro-manifest.tsv ($($NewManifest.Count) framework files tracked)"
 
 # --- Summary ---
 Write-Host ""
