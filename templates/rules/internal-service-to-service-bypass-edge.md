@@ -4,6 +4,7 @@ purpose: Require internal service-to-service calls to use private FQDNs rather t
 read_when: When authoring or reviewing any cron job, worker process, or service-to-service HTTP call -- using the public CDN hostname causes silent WAF 403s that are hard to diagnose.
 tags: [networking, internal-services, waf, infrastructure, service-mesh]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Internal Service-to-Service Calls Bypass Public Edge

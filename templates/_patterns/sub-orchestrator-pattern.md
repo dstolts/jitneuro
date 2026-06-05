@@ -4,6 +4,7 @@ purpose: MUST be consulted by any master agent deciding how to dispatch 15+ homo
 read_when: Before dispatching 15 or more homogeneous tasks or any workflow with complex inter-task dependencies from a master session.
 tags: [orchestration, scale, batching, workers]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

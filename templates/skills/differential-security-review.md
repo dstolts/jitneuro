@@ -3,6 +3,7 @@ type: skill
 purpose: Risk-first analysis of a PR or diff that classifies changes by blast radius and reviews HIGH items first; produces per-finding reports with file, line, attack scenario, and fix. Read this when performing a security-focused PR review or auditing any change touching auth, crypto, or external integrations.
 tags: [skill, security, code-review, risk-classification, pr-review]
 scope: public
+departments: [engineering]
 read_when: Before performing a security-focused PR review or auditing any change touching auth, crypto, or external integrations.
 last_evaluated: 2026-06-03
 finding_tracker: ignore

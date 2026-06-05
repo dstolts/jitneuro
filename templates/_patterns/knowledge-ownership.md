@@ -4,6 +4,7 @@ purpose: Any agent or contributor authoring a new framework artifact or retiring
 read_when: Before committing any new framework artifact to ensure ownership frontmatter is declared and the artifact will be maintained.
 tags: [knowledge-management, ownership, audit, role-retirement, artifact-governance]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

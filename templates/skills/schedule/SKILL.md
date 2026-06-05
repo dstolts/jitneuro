@@ -4,6 +4,7 @@ purpose: Manage scheduled agents (list, start, stop, add, remove) across three a
 read_when: When configuring, starting, stopping, or auditing a scheduled or timer agent.
 tags: [schedule, scheduled-agents, timer-agents, smart-agents, enforcer-agents, automation]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/schedule/SKILL.md
 last_evaluated: 2026-06-03

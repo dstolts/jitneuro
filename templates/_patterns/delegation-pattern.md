@@ -4,6 +4,7 @@ purpose: Any manager-level agent or CoS routing work to specialist agents MUST c
 read_when: Before decomposing a goal into subtasks for specialist agents or validating a specialist's returned artifact.
 tags: [delegation, role-chain, task-routing, parallel-execution, managers]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 community_reviewed: 2026-06-02
 ---

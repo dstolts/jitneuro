@@ -5,6 +5,7 @@ trigger: any agent about to run git checkout -b or git switch -c to create a new
 read_when: Immediately before running git checkout -b or git switch -c to create any new branch.
 tags: [git, branching, submodule, stale-state, pre-branch]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_verify_origin_before_branch.md) -- Knowledge session 2026-06-01
 ---

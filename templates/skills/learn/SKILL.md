@@ -4,6 +4,7 @@ purpose: Backpropagation command that evaluates session for long-term knowledge 
 read_when: At session end, after any major correction or discovery, or when Owner triggers /learn to persist knowledge to long-term memory.
 tags: [learn, memory, backpropagation, engrams, bundles, routing-weights, knowledge-management]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/learn/SKILL.md
 last_evaluated: 2026-06-03

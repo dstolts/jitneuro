@@ -4,6 +4,7 @@ purpose: Any agent or engineer authoring a PR that modifies paths governed by a 
 read_when: Before opening a PR that modifies paths in any repo with active living-plan documents, to verify the governing plan is cited or updated.
 tags: [pr-currency, living-plan, code-review, plan-staleness, scanner]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 name: living-plan-currency
 status: canonical

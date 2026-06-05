@@ -4,6 +4,7 @@ purpose: Binding startup identity rule for interactive AI sessions; load when a 
 read_when: At the start of every interactive session -- without this, the session defaults to a passive specialist role instead of orchestrating approved work autonomously.
 tags: [interactive-session, master-agent, orchestrator, codex, claude-code, cursor, delegation, role-context, recursive-improvement, runners-over-tokens]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

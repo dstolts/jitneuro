@@ -3,6 +3,7 @@ type: skill
 purpose: Defines the process for identifying and testing every segment of the customer journey end-to-end (not just entry and exit points), including setup of CRITICAL-PATHS.md inventory and the Playwright runner. Read this when setting up critical-path testing in a new repo or when declaring a customer-facing PR test-complete.
 tags: [skill, testing, critical-path, playwright, e2e]
 scope: public
+departments: [engineering]
 read_when: Before marking any customer-facing PR test-complete or setting up critical-path testing in a new repo.
 last_evaluated: 2026-06-03
 ---

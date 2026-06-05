@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [all]
 purpose: Decision model preventing duplicate technology adoption by requiring 80% coverage check against existing stack before introducing any new dependency; skipping causes tool sprawl, hidden maintenance cost, and security surface growth.
 read_when: Before adding any new dependency, service, library, or tool to any project in the stack.
 last_evaluated: 2026-06-03

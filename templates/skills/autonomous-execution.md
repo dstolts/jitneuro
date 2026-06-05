@@ -9,6 +9,7 @@ purpose: >-
   stopping, summarizing, or waiting while tasks remain.
 tags: [skill, autonomous-execution, agent-behavior, task-management, execution, master-discipline, afk-signal, every-master-agent, anti-stall, agent-onboarding, always-load]
 scope: public
+departments: [all]
 owner_role: sys-orchestrator
 read_when: At agent boot and at every task-completion boundary throughout a session to determine whether to continue executing or surface a blocker.
 last_evaluated: 2026-06-03

@@ -3,6 +3,7 @@ type: skill
 purpose: 'BINDING cross-repo contract discipline -- whenever a change touches an API endpoint signature, shared data model, event payload, or auth interface that ANOTHER repo CONSUMES (most common pattern: an API repo route change that an App repo calls), the contract MUST be written FIRST and both sides MUST ship paired PRs in the same sprint. Any agent about to modify a route handler, response schema, payload shape, status-code, or auth interface MUST consult this skill AND the integration map BEFORE writing code, or backend and frontend ship divergent versions and the mismatch is discovered during integration testing after both sides claim "complete".'
 tags: [skill, cross-repo, api-contract, coordination, integration, api-app-pattern, schema-coupling, pre-code, dispatch-rule]
 scope: public
+departments: [engineering]
 read_when: Before modifying any API endpoint, shared data model, event payload, or auth interface that another repo consumes.
 last_evaluated: 2026-06-03
 ---

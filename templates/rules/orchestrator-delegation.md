@@ -3,6 +3,7 @@ type: rule
 purpose: Require the orchestrating session to delegate file reads, code changes, bulk ops, and research to subagents by default, preserving orchestrator context for coordination and decisions.
 tags: [orchestrator, delegation, subagents, context-protection, efficiency]
 scope: public
+departments: [all]
 read_when: At session start for any orchestrating or master agent before beginning multi-task work that involves file reads, bulk operations, or research.
 last_evaluated: 2026-06-03
 ---

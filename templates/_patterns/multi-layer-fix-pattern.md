@@ -5,6 +5,7 @@ trigger: first fix authored for a settings round-trip, data-path, SSE render-rac
 read_when: Before authoring the first fix for a settings round-trip, data-path, render-race, or App-API contract bug.
 tags: [debugging, iterative-fixing, deploy-test, critical-path, settings-bugs]
 scope: public
+departments: [engineering]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

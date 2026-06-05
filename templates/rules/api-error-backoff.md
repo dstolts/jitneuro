@@ -4,6 +4,7 @@ purpose: Mandate a graduated backoff when API calls return 5xx errors so agents 
 read_when: Before implementing any API retry logic, or immediately when an API call or subagent dispatch returns a 5xx error.
 tags: [api, backoff, error-handling, retry-policy, resilience]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # API Error Backoff (5xx Responses)

@@ -4,6 +4,7 @@ purpose: Defines the boundary a /learn-style memory-capture workflow applies bef
 read_when: Before running or configuring any /learn or memory-capture workflow to route each item to personal memory or publishable patterns correctly.
 tags: [slash-learn, memory-capture, personal-vs-publishable, knowledge-boundary, governance]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

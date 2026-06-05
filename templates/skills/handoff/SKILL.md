@@ -5,6 +5,7 @@ status: canonical
 purpose: 'At a logical stopping point with high context, perform a clean session handoff -- save state, run /learn (persist memories), reconcile TodoWrite + Hub.md to current truth, then author a handoff document so a fresh session can continue without losing continuity. Differs from /save (checkpoint only) and /knowledge (re-anchor current session); /handoff TRANSFERS the work to a new session.'
 tags: [slash-command, session-handoff, save, learn, hub-sync, todo-sync, new-session, context-budget, recursive-improvement]
 scope: public
+departments: [all]
 origin_date: 2026-05-28
 origin_event: 'Owner directive 2026-05-28: "add to todowrite new slash command handoff when at a logical stopping point, save, learn, update todowrite and hub.md, create handoff document to continue in a new session since context is high." Fires when current session is near compaction OR Owner explicitly wants to break to a fresh session WITHOUT losing TodoWrite + active context. Companion to /knowledge (re-anchor) + /save (checkpoint) + /session-close (cleanup) -- the four are the full session-lifecycle quartet.'
 graduation_date: 2026-05-29

@@ -4,6 +4,7 @@ purpose: Prohibit versioning or deleting Hub.md, define when .HUB/ is git-tracke
 read_when: Before any operation that creates, renames, deletes, or archives Hub.md or .HUB/ contents -- violating this rule destroys the durable task record or leaks secrets.
 tags: [hub-md, task-list, guardrail, session-state, durable-state, secrets, security]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Hub.md Guardrail

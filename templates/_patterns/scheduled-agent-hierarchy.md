@@ -4,6 +4,7 @@ purpose: Defines the taxonomy of recurring/scheduled agent work -- from in-sessi
 read_when: Before configuring any scheduled or timer agent to ensure the correct tier (timer, enforcer, cron, or batch) is selected for the execution context.
 tags: [agents, scheduling, automation, lifecycle]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

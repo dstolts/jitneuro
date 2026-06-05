@@ -4,6 +4,7 @@ purpose: Defines a multi-persona review gate that evaluates AI-generated code or
 read_when: Before executing a sprint or merging AI-generated code -- run both the pre-execution preview and post-execution review gates.
 tags: [quality, review, multi-persona, holistic-review, governance]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

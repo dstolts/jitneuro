@@ -5,6 +5,7 @@ status: canonical
 purpose: 'Promote a `status: wip-ready` WIP-Drafts file to its canonical home via `git mv` + frontmatter `status -> canonical` + open graduation PR. The mirror of /wip -- /wip captures, /graduate ships.'
 tags: [slash-command, wip-drafts, graduation, recursive-improvement, jit-knowledge, lifecycle]
 scope: public
+departments: [all]
 authored_at: WIP-Drafts/skills/graduate.md
 origin_date: 2026-05-27
 origin_event: Knowledge session 2026-05-24 handoff item 2b. Pairs with /wip (item 2a, drafted 2026-05-27 in PR #232). Together they close the WIP-Drafts lifecycle: /wip captures into draft; iteration matures status to wip-ready; /graduate moves to canonical.

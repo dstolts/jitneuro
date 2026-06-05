@@ -4,6 +4,7 @@ purpose: Require documentation and spec files to be versioned by copying to a ne
 read_when: Before creating, editing, or archiving any versioned documentation or spec file -- skipping destroys history and may overwrite canonical versions.
 tags: [file-versioning, archiving, documentation, version-control, history]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # File Versioning

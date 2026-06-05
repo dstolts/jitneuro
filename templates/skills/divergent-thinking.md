@@ -3,6 +3,7 @@ type: skill
 purpose: Generate 2-4 genuinely distinct approaches before converging on a solution, preventing tunnel vision on production code and architecture decisions. Read this when an agent needs to apply the FRAME-DIVERGE-EVALUATE-CONVERGE-EXECUTE cycle for non-trivial decisions.
 tags: [skill, divergent-thinking, architecture, decision-making, agent-behavior]
 scope: public
+departments: [all]
 read_when: When an agent is about to make a production code change, architecture decision, or cross-repo change that warrants exploring multiple approaches.
 last_evaluated: 2026-06-03
 ---

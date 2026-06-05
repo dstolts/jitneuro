@@ -4,6 +4,7 @@ purpose: Binding authoring-time rule for reports, triage docs, audits, plans, an
 read_when: Before committing or opening a PR for any markdown artifact that contains future work, open recommendations, remediation steps, or next steps.
 tags: [documentation, todo, tracker, governance, follow-up]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

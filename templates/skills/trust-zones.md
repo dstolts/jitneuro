@@ -3,6 +3,7 @@ type: skill
 purpose: Structured GREEN/YELLOW/RED permission model for AI actions that governs what an agent executes freely, executes-and-reports, or must stop and ask Owner before doing. Read this before any action to classify and get the right permission level.
 tags: [skill, trust-zones, permissions, guardrails, agent-behavior]
 scope: public
+departments: [all]
 read_when: Before taking any action whose scope or permission level is unclear; consult at session start to internalize zone boundaries.
 last_evaluated: 2026-06-03
 ---

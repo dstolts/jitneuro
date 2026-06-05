@@ -5,6 +5,7 @@ description: route task to local LLM, dispatch to local model, run on local infe
 purpose: Routes AI tasks to the local Ollama LLM when the task type is eligible (classification, summarization, pre-filtering, drafting prose, validation, brand-voice-check) and falls back to paid cloud LLM otherwise, reducing API spend. CURRENT LIMITATION (2026-05-14) -- text-only, NO code generation; any code-write/refactor/bugfix/code-review task MUST route PAID until the code-capable local stack ships. Read when an agent or worker needs to decide whether to use local inference or a paid model.
 tags: [skill, local-llm, ollama, routing, cost-optimization, text-only, no-code-gen-today, capability-limited]
 scope: public
+departments: [engineering]
 owner_role: engineering-lead
 current_limitations:
   - text-only (no code generation; routes code tasks PAID -- see Current Capability section in body)

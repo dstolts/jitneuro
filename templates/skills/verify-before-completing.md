@@ -3,6 +3,7 @@ type: skill
 purpose: Require external confirmation that a change actually works before reporting it done; defines the fix-one-verify-one-scale discipline and the investigation-first rule when something breaks. Read this before marking any task complete when the output can be externally verified.
 tags: [skill, verification, quality, definition-of-done, agent-behavior]
 scope: public
+departments: [all]
 read_when: Before marking any task complete when the output can be externally verified (code deployed, file written, endpoint changed, content published).
 last_evaluated: 2026-06-03
 ---

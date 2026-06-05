@@ -3,6 +3,7 @@ type: skill
 purpose: Display JitNeuro quick reference from static help file at zero token cost.
 tags: [help, reference, read-only, quick-reference]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/help/SKILL.md
 read_when: When a user or agent invokes /help to display the JitNeuro quick reference at zero token cost.

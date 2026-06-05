@@ -3,6 +3,7 @@ type: skill
 purpose: Cross-repo git comparison showing local vs uat vs main status, dirty files, and ahead/behind counts.
 tags: [git, gitstatus, cross-repo, status, subagent]
 scope: public
+departments: [engineering]
 status: canonical
 graduation_target: skills/gitstatus/SKILL.md
 read_when: When checking git status across multiple repos to identify dirty, ahead, or behind states before a cross-repo sprint or sync.

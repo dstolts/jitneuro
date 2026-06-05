@@ -4,6 +4,7 @@ purpose: Performance benchmarks and optimization guidance for JitNeuro hooks; ag
 read_when: Before adding, modifying, or disabling any JitNeuro hook to understand its per-call cost and cumulative session impact.
 tags: [performance, hooks, optimization, benchmarks, jit-knowledge-candidate]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: references/hook-performance-benchmarks.md
 last_evaluated: 2026-06-03

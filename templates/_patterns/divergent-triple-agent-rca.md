@@ -5,6 +5,7 @@ trigger: round 5+ on the same failing spec or critical-path test; OR cross-repo 
 read_when: When a bug has survived 5+ single-agent fix rounds or symptoms span both frontend and backend layers simultaneously.
 tags: [debugging, divergent-thinking, multi-agent, rca, persistent-bugs]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

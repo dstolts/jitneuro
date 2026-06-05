@@ -4,6 +4,7 @@ purpose: BINDING for every backend/API agent writing or reviewing catch blocks a
 trigger: any agent writing, reviewing, or modifying a catch block, error-handling path, or HTTP error response in a backend service
 tags: [error-handling, logging, debugging, observability, production]
 scope: public
+departments: [engineering]
 read_when: Before writing or reviewing any catch block, error handler, or HTTP error response in a backend service.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_never_suppress_errors_surface_on_console.md) -- Knowledge session 2026-06-01

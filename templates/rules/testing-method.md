@@ -4,6 +4,7 @@ purpose: Require every reported test result to include the testing method in par
 read_when: Before reporting any test results in PRs, checkpoints, status reports, or any output claiming something was verified or tested.
 tags: [testing, test-method, transparency, verification, quality]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Testing Method Disclosure

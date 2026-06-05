@@ -5,6 +5,7 @@ trigger: creating a new multi-agent system directory or deciding where to place 
 read_when: Before creating a new multi-agent system directory or deciding where to place an orchestrator file relative to its sub-agents.
 tags: [multi-agent, architecture, orchestration, directory-structure, composition]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (project_multi_agent_orchestrator_pattern.md) -- Knowledge session 2026-06-01
 ---

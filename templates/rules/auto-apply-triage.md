@@ -4,6 +4,7 @@ purpose: Require orchestrators to triage large decision batches before surfacing
 read_when: Before presenting a batch of 10 or more decisions, options, or open questions to the Owner or a downstream agent.
 tags: [triage, decision-batches, auto-apply, escalation, orchestrator]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Auto-Apply Triage for Large Decision Batches

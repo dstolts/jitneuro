@@ -4,6 +4,7 @@ purpose: Any framework installer or orchestrator configuring AI agent access for
 read_when: Before installing or configuring agent access in any shared workspace with distinct team boundaries or compliance requirements.
 tags: [enterprise-isolation, multi-repo, team-mode, access-control]
 scope: public
+departments: [all]
 status: canonical
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03

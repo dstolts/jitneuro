@@ -4,6 +4,7 @@ purpose: Require a pre-reasoning scan of every user input for correction signals
 read_when: At the start of every response, before any other reasoning -- missing this scan causes repeated failure loops and user frustration.
 tags: [friction-detection, correction-signals, pre-reasoning, user-experience, rca]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Friction Detection (Pre-Reasoning)

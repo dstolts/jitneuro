@@ -4,6 +4,7 @@ purpose: Any orchestrator or CoS agent resolving a conflict between two roles, v
 read_when: When two agents, validators, or systems produce contradictory outputs or decisions that require resolution.
 tags: [conflict-resolution, multi-agent, authority, escalation, trust-zones]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 community_reviewed: 2026-06-02
 ---

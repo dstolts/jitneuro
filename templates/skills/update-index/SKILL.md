@@ -5,6 +5,7 @@ description: Refresh INDEX.md from current jit-knowledge filesystem state. Trigg
 purpose: BINDING INDEX.md refresh skill -- runs rebuild-index.py + rebuild-manifest.py to bring the auto-managed regions (engram routing + artifact manifest) back in sync with filesystem state, then opens a PR for Owner review. MUST be invoked whenever the artifact set changes, regardless of actor -- AI adds/renames/removes a file, AI versions a file (copy file-01.md to file-02.md AND archive file-01.md per file-versioning rule -- both state changes refresh-trigger), Owner manually archives via .zArchive convention or moves files in the filesystem, a charter/spec is bumped to a new revision, or CI's `rebuild-manifest.py --check` reports drift. Skipping means INDEX.md drifts from filesystem reality and downstream AI agents route on stale paths, miss newly-added artifacts entirely, or load files that have been archived/superseded.
 tags: [skill, index, manifest, update-index, jit-knowledge, dispatch-rule, post-write, file-versioning, archive, user-action-trigger]
 scope: public
+departments: [all]
 owner_role: cos
 read_when: After adding, renaming, archiving, or removing any artifact in jit-knowledge, or when CI reports INDEX.md drift.
 last_evaluated: 2026-06-03

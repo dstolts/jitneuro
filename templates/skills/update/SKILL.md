@@ -4,6 +4,7 @@ name: update
 purpose: 'Update an existing jit-knowledge install: pull latest changes, re-materialize the load rule + repo-local CLAUDE.md + SessionStart identity hook, and bump submodule consumers to the new pin. MUST be run after any `git pull` on the jit-knowledge clone so hook files, rules, and manifest stay in sync with the new tree.'
 tags: [skill, update, install, bootstrap, jit-knowledge, sessionstart-hook]
 scope: public
+departments: [all]
 read_when: After running `git pull` on the jit-knowledge clone or after bumping the `.jit-knowledge` submodule pin in any consuming repo.
 last_evaluated: 2026-06-03
 ---

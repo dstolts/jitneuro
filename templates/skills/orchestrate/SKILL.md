@@ -4,6 +4,7 @@ purpose: Auto-route tasks to subagents with appropriate context bundles using fo
 read_when: Before dispatching multiple tasks to subagents to select the correct strategy (single, parallel, sequential, or pipeline) and load the right context bundles.
 tags: [orchestrate, subagent, routing, bundles, multi-agent, dispatch]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/orchestrate/SKILL.md
 last_evaluated: 2026-06-03

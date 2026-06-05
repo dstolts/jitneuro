@@ -4,6 +4,7 @@ purpose: MUST be consulted by any architect or agent designer choosing a backgro
 read_when: Before designing a new agent, pipeline stage, or async workflow, to select the correct background-work execution level.
 tags: [agent-hierarchy, async-patterns]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

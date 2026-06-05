@@ -4,6 +4,7 @@ purpose: Prohibit secrets and PII in source code and documentation and prohibit 
 read_when: Before committing any file that may contain credentials, PII, live service IDs, or environment-specific secrets.
 tags: [security, secrets, pii, credentials, infrastructure-identifiers]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Security Guardrails

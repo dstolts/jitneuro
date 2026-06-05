@@ -4,6 +4,7 @@ purpose: BINDING for every backend/API and frontend agent writing business-logic
 trigger: any agent writing code that references a dollar amount, plan limit, tier threshold, or cap inline as a literal, OR any agent adding a task dependency on pricing resolution before proceeding with non-pricing work
 tags: [pricing, database, architecture, marketing, blockers]
 scope: public
+departments: [engineering]
 read_when: Before writing any code that references a price, plan limit, tier threshold, or numeric business value inline as a literal.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_pricing_marketing_concern.md, feedback_pricing_never_blocks.md) -- Knowledge session 2026-06-01

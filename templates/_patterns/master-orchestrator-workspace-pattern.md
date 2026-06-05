@@ -4,6 +4,7 @@ purpose: Any master agent setting up a multi-repo orchestration session MUST con
 read_when: Before launching subagent work that spans more than one repository in a single orchestration session.
 tags: [orchestration, multi-repo, master-agent, coordination]
 scope: public
+departments: [all]
 status: canonical
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03

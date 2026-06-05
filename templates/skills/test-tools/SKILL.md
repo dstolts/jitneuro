@@ -4,6 +4,7 @@ purpose: Smoke-test all Claude Code tools and MCP servers via auto-discovery wit
 read_when: At session start after a machine change, MCP reconfiguration, or when a tool is suspected to be broken.
 tags: [test-tools, smoke-test, mcp, tools, diagnostic]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/test-tools/SKILL.md
 last_evaluated: 2026-06-03

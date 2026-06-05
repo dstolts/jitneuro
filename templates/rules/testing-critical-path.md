@@ -4,6 +4,7 @@ purpose: Require tests to cover every segment of the critical path a user traver
 read_when: Before writing any e2e or integration test for a customer-facing feature to ensure the full critical path is covered.
 tags: [testing, critical-path, e2e, integration, coverage]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Testing: Critical Path, Not Happy Path

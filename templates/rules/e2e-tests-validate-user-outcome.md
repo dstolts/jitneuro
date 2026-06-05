@@ -5,6 +5,7 @@ trigger: any agent writing, reviewing, or declaring PASS on an E2E or Playwright
 read_when: Before writing, reviewing, or declaring PASS on any E2E or Playwright test for a customer-facing flow.
 tags: [testing, e2e, quality, customer-outcome, playwright]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_e2e_tests_validate_user_outcome_not_checklist.md) -- Knowledge session 2026-06-01
 ---

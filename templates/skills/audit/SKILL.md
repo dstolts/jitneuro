@@ -3,6 +3,7 @@ type: skill
 purpose: Scan repos for hygiene issues including .env leaks, stale branches, git hygiene, DOE compliance, and file hygiene.
 tags: [audit, hygiene, git, env-leaks, doe-compliance, subagent]
 scope: public
+departments: [engineering]
 status: canonical
 graduation_target: skills/audit/SKILL.md
 read_when: When running the /audit command against a repo to scan for hygiene issues, env leaks, stale branches, or DOE compliance gaps.

@@ -4,6 +4,7 @@ purpose: BINDING rule requiring agents to surface missing jit-knowledge artifact
 read_when: When resolving any jit-knowledge artifact reference that cannot be found -- silently proceeding means guardrails and capabilities are dropped without anyone knowing.
 tags: [governance, missing-knowledge, owner-surface, alarm, silent-failure-prevention, jit-knowledge, session-start]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

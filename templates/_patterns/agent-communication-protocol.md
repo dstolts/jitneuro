@@ -4,6 +4,7 @@ purpose: Binding PR lifecycle and reviewer-dispatch rule for multi-agent enginee
 read_when: Before deciding which review agents to summon for any PR in a multi-agent engineering pipeline.
 tags: [agent-communication, pr-pipeline, github-labels, multi-agent, code-review, pr-review, dispatch-rule, gate-skip-prevention, agent-onboarding]
 scope: public
+departments: [engineering]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

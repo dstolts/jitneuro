@@ -4,6 +4,7 @@ purpose: Prohibit duplicating components or UI logic and require reusing existin
 read_when: Before building a new component, view, or UI element to verify no existing component can be reused with different props or data.
 tags: [code-reuse, components, duplication, maintenance, architecture]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Code Reuse

@@ -4,6 +4,7 @@ purpose: Reference guide for auto-detecting and monitoring CI/CD deployment pipe
 read_when: Before spawning a deploy-monitor subagent or writing any pipeline detection / monitoring logic after a git push.
 tags: [deployment, ci-cd, monitoring, jit-knowledge-candidate]
 scope: public
+departments: [engineering]
 status: canonical
 graduation_target: references/deploy-monitoring-patterns.md
 last_evaluated: 2026-06-03

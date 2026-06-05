@@ -4,6 +4,7 @@ purpose: Define four mandatory conditions (value delivered, customer knows how t
 read_when: Before declaring any task, feature, or deliverable complete to verify all four conditions are satisfied.
 tags: [definition-of-done, quality-gate, documentation, validation, completion]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Definition of Done

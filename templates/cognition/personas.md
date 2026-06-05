@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [all]
 purpose: Always-on cognitive personas for master agents; defines how multiple specialist lenses evaluate every request simultaneously; skipping it causes single-perspective responses that miss security, cost, or UX constraints.
 read_when: At session start, before any substantive reasoning, so all lenses are active from the first request.
 last_evaluated: 2026-06-03

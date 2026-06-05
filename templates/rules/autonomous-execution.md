@@ -4,6 +4,7 @@ purpose: Binding execution-continuity rule for every agent running an approved m
 read_when: At session start for every master agent, and at every task-completion boundary while working an approved task list.
 tags: [autonomous-execution, task-management, afk-signal, anti-stall, agent-behavior]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 
