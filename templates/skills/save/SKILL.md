@@ -4,6 +4,7 @@ purpose: Shortcut for /session save that checkpoints session state to durable st
 read_when: Before going AFK, at context pressure warnings, or when saving a named session checkpoint.
 tags: [save, session-management, shortcut, checkpoint, hub]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/save/SKILL.md
 last_evaluated: 2026-06-03

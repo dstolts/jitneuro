@@ -4,6 +4,7 @@ purpose: Any orchestrator configuring unattended or night-mode AI operation MUST
 read_when: Before enabling autonomous or unattended execution, AFK handoff, or night-mode operation for any agent or orchestrator.
 tags: [autonomous-execution, night-mode, validators, multi-agent, spend-control]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 community_reviewed: 2026-06-02
 ---

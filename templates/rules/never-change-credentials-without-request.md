@@ -4,6 +4,7 @@ purpose: BINDING for every agent investigating authentication or login failures 
 trigger: any agent encountering a login failure, auth error, 401/403, or "invalid credentials" symptom during debugging or investigation
 tags: [credentials, security, auth, debugging, owner-approval]
 scope: public
+departments: [all]
 read_when: Before diagnosing any login failure, 401/403 error, or "invalid credentials" symptom -- read before touching any credential value.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_never_change_creds.md) -- Knowledge session 2026-06-01

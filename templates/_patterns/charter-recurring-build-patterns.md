@@ -4,6 +4,7 @@ purpose: MUST be consulted by any master agent or orchestrator on the third occu
 read_when: On the third occurrence of any repeated build task, before dispatching another ad-hoc agent prompt for it.
 tags: [charter, meta-skill, recurring-work, skill-building, agent-dispatch, recursive-improvement]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

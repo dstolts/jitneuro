@@ -4,6 +4,7 @@ purpose: Any agent or engineer authoring a finding, audit result, issue, or RCA 
 read_when: Before committing any finding, audit result, RCA, or issue document to ensure machine-readable frontmatter and Hub.md rollup registration are present.
 tags: [findings, remediation, audit-tracking, code-quality, hub-rollup, scanner]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 name: finding-to-remediation
 status: canonical

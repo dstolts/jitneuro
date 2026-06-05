@@ -4,6 +4,7 @@ purpose: Binding build-sequencing pattern for any multi-part system; build the t
 read_when: Before starting implementation of any component that depends on a shared runner, API, data source, or service not yet built.
 tags: [build-sequencing, infrastructure-first, testability, system-design, recursive-improvement]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 

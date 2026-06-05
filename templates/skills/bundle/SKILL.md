@@ -3,6 +3,7 @@ type: skill
 purpose: Manage context bundles -- load, create, refresh, inspect, and split domain knowledge files.
 tags: [bundles, context-management, memory, routing-weights]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/bundle/SKILL.md
 read_when: When running the /bundle command to load, create, refresh, inspect, or split a context bundle.

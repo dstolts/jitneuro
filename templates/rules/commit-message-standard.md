@@ -4,6 +4,7 @@ purpose: Define a full commit-message and PR-description template using Conventi
 read_when: Before writing a commit message or opening a pull request to ensure the subject line, body, and test plan meet the required format.
 tags: [git, commit-messages, pull-request, conventional-commits, documentation]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Commit Message + PR Description Standard

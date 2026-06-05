@@ -4,6 +4,7 @@ purpose: Prohibit declaring work done or presenting closure language without exp
 read_when: Before presenting any session summary, wrap-up, handoff language, or closure statement, and whenever the user goes quiet or signals AFK.
 tags: [session-continuity, session-closure, afk, task-queue, guardrail]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Session Continuity (Work-in-Progress Guardrail)

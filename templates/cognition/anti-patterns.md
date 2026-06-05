@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [all]
 purpose: Catalog of learned anti-patterns agents must avoid -- high-severity constraints covering secrets, search rigor, pipeline verification, and E2E testing; skipping causes repeated behavioral failures that cost owner time and credibility.
 read_when: When friction detection fires, a correction is received, or before proposing a new approach that matches any listed trigger condition.
 last_evaluated: 2026-06-03

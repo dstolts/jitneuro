@@ -5,6 +5,7 @@ trigger: any agent performing a model-selection review, performance audit, or bu
 tags: [model-selection, haiku, sonnet, fabrication, customer-safety, parts-sourcing]
 read_when: When selecting model tiers for any pipeline prompt whose output includes part numbers, SKUs, NSNs, regulatory codes, or any identifier the customer will copy and use directly -- using Haiku means fabricated-but-plausible identifiers reach customers who order wrong parts or trigger safety incidents.
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_haiku_fabricates_parts.md) -- Knowledge session 2026-06-01
 ---

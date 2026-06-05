@@ -4,6 +4,7 @@ purpose: BINDING for every backend/API agent writing error handlers and analysis
 trigger: any agent writing or reviewing an HTTP error response, catch block that calls res.json, or an analysis/LLM endpoint response in a non-local environment
 tags: [security, moat-protection, api, error-handling, trade-secrets]
 scope: public
+departments: [engineering]
 read_when: Before writing any HTTP error response, catch block that calls res.json, or analysis/LLM endpoint response in a non-local environment.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_moat_no_internals_or_prompts_to_client.md) -- Knowledge session 2026-06-01

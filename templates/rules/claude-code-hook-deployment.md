@@ -4,6 +4,7 @@ purpose: MUST be consulted by any installer, script, or agent that writes a Clau
 read_when: Before writing or modifying any Claude Code hooks entry in settings.json or settings.local.json, or when diagnosing hook failures at tool-call time.
 tags: [claude-code, hooks, settings-json, installer, deployment]
 scope: public
+departments: [all]
 leak_allow: ["C:/Program", "C:/...", "C:/Users", "Users/..."]
 last_evaluated: 2026-06-03
 ---

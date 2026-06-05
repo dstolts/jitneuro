@@ -4,6 +4,7 @@ purpose: Require every customer-facing repo to maintain a CRITICAL-PATHS.md inve
 read_when: When setting up a new customer-facing repo, adding a new product flow, or evaluating release readiness for any customer-facing service.
 tags: [testing, critical-paths, playwright, e2e, release-gate]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Critical Paths Defined and Tested

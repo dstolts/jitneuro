@@ -4,6 +4,7 @@ purpose: Model-routing policy for roles and orchestrators choosing local inferen
 read_when: Before routing any inference task to decide whether local inference or a hosted paid model is appropriate.
 tags: [local-inference, model-routing, cost-control, llm-routing]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

@@ -5,6 +5,7 @@ trigger: all unit and stub tests pass on a new or refactored LLM pipeline; OR be
 read_when: After all unit/stub tests pass on any new or refactored LLM pipeline and before enabling production traffic.
 tags: [llm-pipelines, smoke-testing, integration-testing, production-readiness, multi-stage]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (project_content_pipeline_smoke_findings.md) -- Knowledge session 2026-06-01
 ---

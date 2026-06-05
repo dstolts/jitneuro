@@ -4,6 +4,7 @@ purpose: 'Require every multi-agent deployment to use distinct label namespaces 
 read_when: Before creating GitHub issues or labels in any repo where multiple agent systems are active, or when onboarding a new agent system alongside existing ones.
 tags: [agent-systems, label-namespace, collision-prevention, github-issues, multi-agent]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Agent System Collision Prevention

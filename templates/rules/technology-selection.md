@@ -4,6 +4,7 @@ purpose: Require checking existing tech stack before adopting any new dependency
 read_when: Before adding any new dependency, service, library, or tool to an existing project.
 tags: [technology-selection, dependencies, tech-sprawl, architecture, reuse]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Technology Selection

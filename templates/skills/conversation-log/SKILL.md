@@ -3,6 +3,7 @@ type: skill
 purpose: Toggle session logging to .logs/ directory; FIRST action is always to append the prompt before any other work.
 tags: [conversation-log, logging, session, toggle]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/conversation-log/SKILL.md
 read_when: When running the /conversation-log command to enable, disable, or query session logging state.

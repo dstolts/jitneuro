@@ -3,6 +3,7 @@ type: rule
 purpose: Require every branch to fetch and integrate the target base before opening or updating a PR, so reviewers are not handed avoidable merge conflicts.
 tags: [git, pull-request, merge-conflicts, review-hygiene, owner-time]
 scope: public
+departments: [engineering]
 read_when: Before opening a PR, updating a PR branch, or telling a reviewer the branch is ready for review.
 last_evaluated: 2026-06-03
 ---

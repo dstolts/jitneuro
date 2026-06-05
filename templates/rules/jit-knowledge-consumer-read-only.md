@@ -4,6 +4,7 @@ purpose: BINDING rule for every consuming repo or agent runtime with a `.jit-kno
 read_when: Before editing or generating any file inside a consuming repo's `.jit-knowledge/` directory -- direct edits create consumer-local drift that breaks the next submodule pin update.
 tags: [jit-knowledge, read-only, submodule, consuming-system, canonical-source, drift-prevention]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

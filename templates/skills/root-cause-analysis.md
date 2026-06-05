@@ -5,6 +5,7 @@ description: This skill should be used when Owner says "root cause analysis", "w
 purpose: Evidence-first four-phase RCA method for any master agent; MUST be invoked before any fix attempt when Owner signals RCA; skipping means hypothesis-before-evidence loops that triple iteration count and produce wrong rules.
 tags: [skill, root-cause-analysis, debugging, evidence-first, four-phase, process, agent-behavior]
 scope: public
+departments: [all]
 read_when: Immediately when Owner signals RCA ("root cause analysis", "why did this happen", "trace this to root cause") -- STOP all work and enter this skill before any fix attempt.
 last_evaluated: 2026-06-03
 ---

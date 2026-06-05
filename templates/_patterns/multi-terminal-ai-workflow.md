@@ -4,6 +4,7 @@ purpose: MUST be read by any developer or agent operator setting up a multi-sess
 read_when: Before setting up a multi-session AI sprint environment with parallel master, execution, and dev-server terminals.
 tags: [terminals, sessions, workflow, parallelism]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

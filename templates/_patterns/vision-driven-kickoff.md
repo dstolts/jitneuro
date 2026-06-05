@@ -4,6 +4,7 @@ purpose: Any principal or orchestrator beginning a strategic planning session on
 read_when: Before beginning any strategic brainstorm or planning session focused on autonomous AI architecture, proactive vs reactive operation, or the owner vision-to-AI-execution alignment loop.
 tags: [vision-driven-ai, proactive-ai, brainstorm-kickoff, autonomous-execution, strategic-planning]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

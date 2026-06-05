@@ -4,6 +4,7 @@ purpose: Require verification that a file path exists before presenting it, and 
 read_when: Before presenting any file path or responding to a request for "where is X" -- broken or description-free links waste context-switching time.
 tags: [file-references, verification, documentation, links, completeness]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # File References

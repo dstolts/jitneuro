@@ -3,6 +3,7 @@ type: skill
 purpose: When a task has multiple plausible interpretations or critical details are missing, surface focused questions before executing so wrong assumptions do not waste implementation effort. Read this when an agent needs guidance on when and how to ask clarifying questions.
 tags: [skill, clarification, requirements, ambiguity, agent-behavior]
 scope: public
+departments: [all]
 read_when: Before executing any task that has multiple plausible interpretations or is missing critical details required to avoid rework.
 last_evaluated: 2026-06-03
 ---

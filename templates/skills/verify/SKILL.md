@@ -4,6 +4,7 @@ purpose: Post-install verification skill for any agent or Owner confirming all 9
 read_when: After running the jit-knowledge installer or after any update to hooks, settings.json, or session-state infrastructure.
 tags: [verify, installation, post-install, diagnostic, read-only]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/verify/SKILL.md
 last_evaluated: 2026-06-03

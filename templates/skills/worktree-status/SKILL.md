@@ -5,6 +5,7 @@ status: canonical
 purpose: Audit worktrees for a repo (or all repos with --all). Per-worktree, surface branch, ahead/behind default, dirty state, PR status (none / open / merged / closed), age, and a one-word recommendation (ready-to-remove / in-flight / stale / needs-review / blocked). Lets Owner or master scan worktree fleet at a glance instead of running 5 git commands per worktree.
 tags: [slash-command, git, worktrees, audit, lifecycle, jit-knowledge, branch-discipline]
 scope: public
+departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-status.md
 origin_date: 2026-05-28
 origin_event: PR #241 (/worktree-remove) open questions item #3 -- "Should there be a /worktree-status <repo> skill that audits all worktrees for staleness? Lean: yes -- queue as a future skill alongside /worktree-new + /worktree-remove for full lifecycle visibility." Authored as that follow-up.

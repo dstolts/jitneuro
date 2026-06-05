@@ -4,6 +4,7 @@ purpose: Require a comprehensive E2E test loop after every deploy or merge and m
 read_when: After any deploy, merge, or infrastructure change that ships customer-facing functionality -- stopping after partial success ships broken customer paths.
 tags: [testing, e2e, iterate-until-green, deployment, quality-gate]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Iterate Until Success

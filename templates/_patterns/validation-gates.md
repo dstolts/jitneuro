@@ -4,6 +4,7 @@ purpose: BINDING for every role agent routing a durable artifact (code, content,
 read_when: Before routing any durable artifact for approval or designing a new pipeline gate -- apply the 4-layer validation chain every time.
 tags: [validation, quality-gate, artifact-approval, rejection-protocol, parallel-validation]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

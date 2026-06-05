@@ -6,6 +6,7 @@ purpose: Force Claude to re-read the full session-start bootstrap chain on deman
 read_when: When a session feels off-route, after a correction signal fires, or whenever the bootstrap HARD GATE must be manually re-triggered mid-session.
 tags: [slash-command, bootstrap, session-management, master-orchestrator, identity, jit-knowledge, recursive-improvement]
 scope: public
+departments: [all]
 authored_at: $env:USERPROFILE\.claude\commands\knowledge.md
 origin_date: 2026-05-27
 origin_event: RCA 2026-05-27 -- Claude observed skipping session-start bootstrap, writing to deprecated tracker surface (.HUB/Hub.md instead of <repo>/todo/backlog.md), violating actionable-docs-require-tracking.md (PRs without same-change tracker rows), and skipping verification gates (relayed agent STATUS:OK without gh pr view confirmation). The SessionStart hook injects only the identity rule mechanically; the rest of the bootstrap chain requires Claude to actively read files, which it forgot.

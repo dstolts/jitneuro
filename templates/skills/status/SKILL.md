@@ -4,6 +4,7 @@ purpose: Shortcut that delegates to /session or /sessions based on shortcut_scop
 read_when: When quickly checking current session status or the full list of active sessions.
 tags: [status, session-management, shortcut]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/status/SKILL.md
 last_evaluated: 2026-06-03

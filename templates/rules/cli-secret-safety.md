@@ -4,6 +4,7 @@ purpose: Prohibit passing secrets as CLI arguments and mandate stdin or heredoc 
 read_when: Before writing any shell command, script, or CI step that handles API keys, tokens, passwords, or other secret values.
 tags: [security, secrets, cli, credentials, shell-safety]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # CLI Secret Safety

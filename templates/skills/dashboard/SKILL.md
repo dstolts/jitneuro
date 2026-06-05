@@ -3,6 +3,7 @@ type: skill
 purpose: Shortcut that delegates to /session dashboard or /sessions dashboard based on shortcut_scope preference.
 tags: [dashboard, session-management, shortcut, blockers]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/dashboard/SKILL.md
 read_when: When Owner wants a quick status view of blockers and NEEDS OWNER items at the start of a work block.

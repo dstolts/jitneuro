@@ -4,6 +4,7 @@ purpose: Post-deploy verification rule requiring Playwright VISIBLE+ACTIONABLE c
 read_when: Before declaring a UI app deploy complete or when setting up post-deploy verification in a deployment pipeline.
 tags: [deployment, playwright, verification, trust-ratchet]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 community_reviewed: 2026-06-02
 ---

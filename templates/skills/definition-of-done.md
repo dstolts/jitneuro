@@ -3,6 +3,7 @@ type: skill
 purpose: Defines the four conditions (value delivered, customer knows, customer validated, fully documented) that must all be met before any task is marked complete. Read this before marking a story, PR, or deliverable done.
 tags: [skill, definition-of-done, quality, acceptance-criteria, delivery]
 scope: public
+departments: [all]
 read_when: Before marking any task, story, PR, or deliverable complete to verify all four conditions are met.
 last_evaluated: 2026-06-03
 ---

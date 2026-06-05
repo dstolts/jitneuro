@@ -3,6 +3,7 @@ type: skill
 purpose: Find fail-open patterns where missing or empty configuration causes the system to proceed insecurely; reports each finding with file path, exploitation scenario, and fix. Read this during security audits or any code review touching config, env vars, secrets, or auth.
 tags: [skill, security, insecure-defaults, code-review, fail-open]
 scope: public
+departments: [engineering]
 read_when: During a security audit or any code review touching config, env vars, secrets, auth, or feature flags to find fail-open patterns.
 last_evaluated: 2026-06-03
 ---

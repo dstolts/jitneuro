@@ -3,6 +3,7 @@ type: rule
 purpose: Require maintaining a pending-questions queue for non-blocking decisions and surfacing it at the end of every response so no decision is lost in long conversations.
 tags: [pending-questions, queue, decisions, non-blocking, session-state]
 scope: public
+departments: [all]
 read_when: At session start for every interactive session to establish the pending-questions queue before any substantive work begins.
 last_evaluated: 2026-06-03
 ---

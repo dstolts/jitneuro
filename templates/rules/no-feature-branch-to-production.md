@@ -4,6 +4,7 @@ purpose: BINDING for every devops and backend agent executing production contain
 trigger: any agent about to run az containerapp update, kubectl set image, or any equivalent command targeting a production environment, OR following a handoff plan that sequences deploy before PR open
 tags: [deployment, production-safety, git-discipline, aca, pr-discipline]
 scope: public
+departments: [engineering]
 read_when: Before executing any production container deploy or image-update command targeting a live environment.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_no_feature_branch_to_active_prod.md) -- Knowledge session 2026-06-01

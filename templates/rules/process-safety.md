@@ -3,6 +3,7 @@ type: rule
 purpose: Prohibit spawning processes, running tests, or triggering hooks that could crash the IDE, close terminals, or kill other agent sessions.
 tags: [process-safety, ide, terminal, session-protection, spawn]
 scope: public
+departments: [all]
 read_when: Before running any command that launches a new process, spawns a secondary agent CLI, or triggers a hook from within a running session.
 last_evaluated: 2026-06-03
 ---

@@ -3,6 +3,7 @@ type: skill
 purpose: Pre-delivery self-check that surfaces missed edge cases, unactivated persona blindspots, and wrong assumptions before presenting code to Owner. Read this when an agent is about to deliver a code change or architecture proposal.
 tags: [skill, gap-analysis, quality, pre-delivery, code-review]
 scope: public
+departments: [all]
 read_when: Before delivering any code change or architecture proposal to Owner to surface missed edge cases and blindspots.
 last_evaluated: 2026-06-03
 ---

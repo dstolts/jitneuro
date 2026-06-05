@@ -4,6 +4,7 @@ purpose: Kill-switch triggers and rollback procedures for autonomous AI work -- 
 read_when: When implementing autonomous agent oversight for a project, or when a K1-K4 kill-switch event fires and rollback procedures must be executed.
 tags: [kill-switch, rollback, autonomous-ai, cost-runaway, demotion-cascade]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

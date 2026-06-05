@@ -3,6 +3,7 @@ type: skill
 purpose: Standalone memory system diagnostic reporting line counts, stale sessions, and missing engrams.
 tags: [health, memory, diagnostic, sessions, engrams, bundles]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/health/SKILL.md
 read_when: When diagnosing memory system bloat, stale sessions, or oversized engrams and bundles.

@@ -3,6 +3,7 @@ type: rule
 purpose: Prohibit asking reviewers to check or validate anything until the agent has verified it independently, including read-after-write confirmation and root-cause investigation before retry.
 tags: [verification, quality, read-after-write, review-hygiene, presentment]
 scope: public
+departments: [all]
 read_when: Before presenting any completed work, change, or fix to a reviewer or Owner for evaluation.
 last_evaluated: 2026-06-03
 ---

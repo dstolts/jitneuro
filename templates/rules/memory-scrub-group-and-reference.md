@@ -4,6 +4,7 @@ purpose: Standard process for scrubbing a memory manifest (MEMORY.md or any inde
 read_when: When any session-loaded manifest (MEMORY.md or equivalent) approaches or exceeds its byte or line cap -- skipping causes the runtime to silently truncate the newest entries, losing the most current knowledge.
 tags: [memory, scrub, archive, manifest, group-and-reference, recursive-improvement]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

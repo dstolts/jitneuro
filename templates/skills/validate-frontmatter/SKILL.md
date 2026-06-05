@@ -4,6 +4,7 @@ name: validate-frontmatter
 purpose: BINDING tool for every agent proposing or revising YAML frontmatter on jit-knowledge artifacts; reads files in scope, generates or re-evaluates frontmatter against the canonical v1.1 schema (with purpose-strength self-check, sibling-awareness, snake_case normalization, custom-field preservation), and opens an Owner-reviewed PR; MUST be invoked for initial backfill, re-validation, monthly sweeps, and targeted ad-hoc maintenance.
 tags: [frontmatter, metadata, validation, skill, governance, jit-knowledge, manifest]
 scope: public
+departments: [all]
 owner_role: governance
 schema_version: v1.1
 read_when: Before proposing or revising YAML frontmatter on any jit-knowledge artifact, or when running initial backfill, re-validation, or monthly sweep.

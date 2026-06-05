@@ -5,6 +5,7 @@ description: Review a UX mockup or design artifact for pattern-justification qua
 purpose: BINDING quality gate for ux-designer outputs; MUST be run by an INDEPENDENT Opus agent (not the authoring designer) before mockups reach Owner; skipping means structurally wrong patterns ship undetected, as proven in a 2026-05-23/24 dashboard-design attempt (#4) where the QA skill approved 7 of 8 mockups Owner subsequently rejected.
 tags: [skill, ux-design, design-review, quality-gate, stolts-critique, opus-required, independent-dispatch]
 scope: public
+departments: [operations]
 leak_allow: ["Dan Stolts"]
 owner_role: ux-designer
 read_when: Before any ux-designer mockup reaches Owner review or before any frontend PR merges; dispatch as an independent Opus agent.

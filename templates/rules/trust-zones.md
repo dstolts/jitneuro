@@ -3,6 +3,7 @@ type: rule
 purpose: Define GREEN / YELLOW / RED permission zones for AI actions in a repo, with push-to-main and production deploys as RED requiring explicit user permission every time.
 tags: [trust-zones, permissions, red-zone, git, deployment-safety]
 scope: public
+departments: [all]
 read_when: At session start and before any push, deploy, delete, or schema-change action to determine whether the action is GREEN, YELLOW, or RED.
 last_evaluated: 2026-06-03
 ---

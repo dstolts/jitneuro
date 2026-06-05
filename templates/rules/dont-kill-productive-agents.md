@@ -4,6 +4,7 @@ purpose: Prohibit stopping in-flight agents due to priority shifts when those ag
 read_when: When a priority shift occurs and the orchestrator is tempted to kill an agent that is currently making progress.
 tags: [agent-management, token-efficiency, priority-shift, orchestrator, runaway-prevention]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Don't Kill Productive Agents Mid-Flight

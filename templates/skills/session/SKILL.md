@@ -4,6 +4,7 @@ purpose: Full session lifecycle management (new, save, load, pulse, switch, rena
 read_when: When creating, restoring, switching, or managing the lifecycle of any session checkpoint.
 tags: [session, session-management, heartbeat, hub, checkpoint, lifecycle]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/session/SKILL.md
 last_evaluated: 2026-06-03
