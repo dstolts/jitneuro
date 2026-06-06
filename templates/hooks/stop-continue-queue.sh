@@ -19,17 +19,16 @@
 #
 # Enable :  echo on  > <project>/.claude/session-state/autonomous-mode.flag
 #           (optionally scope to one session: echo "on:<session_id>" > ...flag)
-#           -- or use the /afk slash command.
 # Disable:  rm <project>/.claude/session-state/autonomous-mode.flag   (or: echo off > it)
 #
 # Queue source: the first existing of  <cwd>/.HUB/Hub.md , <cwd>/.hub/hub.md ,
-# <project>/.HUB/Hub.md , <project>/.hub/hub.md  -- counts unchecked "- [ ]" lines,
-# excluding ones marked blocked/hold/awaiting/needs owner/red-zone/owner-gated.
+# <project>/.HUB/Hub.md , <project>/.hub/hub.md  -- counts unchecked "- [ ]" lines
+# under ACTIVE TODO, excluding ones marked blocked/hold/awaiting/needs owner/red-zone.
 #
 # Runaway guard: a stall counter that RESETS on progress (remaining count drops).
 # After JITNEURO_MAX_CONTINUE (default 50) consecutive NO-PROGRESS turns it gives
-# up and allows the stop. Claude Code's own consecutive-block cap is a secondary
-# backstop; raise it via CLAUDE_CODE_STOP_HOOK_BLOCK_CAP for long unattended runs.
+# up and allows the stop. (Claude Code's own consecutive-block cap is a secondary
+# backstop; raise it via CLAUDE_CODE_STOP_HOOK_BLOCK_CAP for long unattended runs.)
 
 set +e   # never abort; FAIL-OPEN -- a crash must allow the stop, never trap the session
 
@@ -80,9 +79,16 @@ for cand in "$CWD/.HUB/Hub.md" "$CWD/.hub/hub.md" "$PROJECT_DIR/.HUB/Hub.md" "$P
 done
 [ -n "$HUB" ] || { log "no Hub.md under $CWD / $PROJECT_DIR -> allow stop"; rm -f "$COUNTER" 2>/dev/null; exit 0; }
 
-# count executable unchecked tasks: "- [ ]" / "* [ ]" lines, excluding blocked/hold/awaiting
-REMAINING=$(grep -E '^[[:space:]]*[-*][[:space:]]*\[[[:space:]]\]' "$HUB" 2>/dev/null \
-            | grep -ivE '(blocked|on hold|[^a-z]hold|awaiting|needs owner|red.?zone|waiting on|owner-gated)' \
+# count executable unchecked tasks within the FIRST "## ACTIVE TODO" section ONLY
+# (scoping avoids counting stale checkboxes scattered through a sprawling multi-section Hub.md)
+SECTION=$(awk '
+  f && /^##[[:space:]]/ {f=0; done=1}
+  /^##[[:space:]]+ACTIVE TODO/ {if(!done && !f){f=1; next}}
+  f {print}
+' "$HUB" 2>/dev/null)
+REMAINING=$(printf '%s\n' "$SECTION" \
+            | grep -E '^[[:space:]]*[-*][[:space:]]*\[[[:space:]]\]' 2>/dev/null \
+            | grep -ivE '(blocked|on hold|[^a-z]hold|awaiting|needs owner|red.?zone|waiting on|owner-gated|backlog)' \
             | grep -c . 2>/dev/null)
 REMAINING=$(printf '%s' "$REMAINING" | tr -cd '0-9'); REMAINING=${REMAINING:-0}
 
@@ -117,5 +123,5 @@ printf '%s\n%s\n' "$COUNT" "$REMAINING" > "$COUNTER" 2>/dev/null
 
 # ---- block the stop; inject the continue directive ----
 log "BLOCK: $REMAINING open in $HUB (stall $COUNT/$MAX_STALL) session=$SESSION_ID"
-echo "AUTONOMOUS MODE ON -- do NOT stop. $REMAINING executable task(s) remain in the queue ($HUB '## ACTIVE TODO'). Pick the next unblocked task, mark it in_progress, do the work end-to-end, update Hub.md (check it off, or mark it blocked/awaiting-owner with the reason), then continue to the next task. If EVERY remaining task is genuinely blocked on the owner or a RED-zone approval, mark them so in Hub.md and run: rm $FLAG  (to release autonomous mode). (continuation; stall $COUNT/$MAX_STALL)" >&2
+echo "AUTONOMOUS MODE ON -- do NOT stop. $REMAINING executable task(s) remain in the queue ($HUB '## ACTIVE TODO'). Pick the next unblocked task, mark it in_progress, do the work end-to-end, update Hub.md (check it off, or mark it blocked/awaiting-owner with the reason), then continue to the next task. If EVERY remaining task is genuinely blocked on Owner or a RED-zone approval, mark them so in Hub.md and run: rm $FLAG  (to release autonomous mode). (continuation; stall $COUNT/$MAX_STALL)" >&2
 exit 2
