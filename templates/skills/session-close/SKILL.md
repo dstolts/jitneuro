@@ -5,6 +5,7 @@ status: canonical
 purpose: One command at session end that runs the standard close-out checklist -- /worktree-status --all-merged (clean up retired worktrees), Hub.md final update for the session, session-state file refresh with pickup instructions, TodoWrite snapshot. Replaces the Owner's "did I remember to..." anxiety with a single explicit ceremony.
 tags: [slash-command, session-end, hub-md, worktrees, session-state, jit-knowledge, recursive-improvement]
 scope: public
+departments: [all]
 authored_at: WIP-Drafts/skills/session-close.md
 origin_date: 2026-05-28
 origin_event: PR #241 + #242 open questions both ask "should --all-merged run at session-end via hypothetical /session-close skill?" -- this is that skill. After /knowledge as the session-start ceremony and the worktree trio as the lifecycle scaffolding, /session-close completes the bookend pattern.

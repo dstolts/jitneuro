@@ -3,6 +3,7 @@ type: rule
 purpose: Mandate ASCII-only output, prohibit long URLs in chat, ban line-wrapping in markdown, and require single-line shell commands so output renders correctly across all surfaces.
 tags: [output-formatting, ascii, markdown, shell-commands, readability]
 scope: public
+departments: [all]
 read_when: Before generating any chat response, markdown document, or content that flows through an automated pipeline.
 last_evaluated: 2026-06-03
 ---

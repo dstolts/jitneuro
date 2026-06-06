@@ -5,6 +5,7 @@ trigger: one or more subagent PRs have been merged to uat or main and master is 
 tags: [git, multi-agent, worktree, diagnostic, stale-state]
 read_when: After any subagent merges a PR to a shared branch and before dispatching any subsequent diagnostic, sweep, or verification agent -- skipping means sweep agents test stale code and attribute false failures to fixes that already landed.
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_master_pull_after_merge.md) -- Knowledge session 2026-06-01
 ---

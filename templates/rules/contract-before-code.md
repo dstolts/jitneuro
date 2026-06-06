@@ -5,6 +5,7 @@ trigger: any agent about to write a migration file, open a PR, or deploy after O
 read_when: Before writing any migration file, handler, or schema change, and after Owner answers design questions about a new endpoint or feature.
 tags: [gate-discipline, pr-discipline, deployment, contract-first, approval-workflow]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_gate_discipline_contract_before_code.md) -- Knowledge session 2026-06-01
 ---

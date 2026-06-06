@@ -4,6 +4,7 @@ purpose: BINDING for every agent handling PII or sensitive content in any privat
 trigger: any agent discovering PII, sensitive content, or a security-adjacent finding in a private repo and considering what remediation to propose
 tags: [git, security, pii, private-repo, history-rewrite]
 scope: public
+departments: [engineering]
 read_when: When discovering PII or sensitive content in a private repo and evaluating what remediation to propose.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_private_repo_no_history_scrub.md) -- Knowledge session 2026-06-01

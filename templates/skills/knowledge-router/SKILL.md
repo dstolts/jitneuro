@@ -5,6 +5,7 @@ description: 'Route a captured finding (lesson, rule, pattern) to its correct du
 purpose: BINDING for every master agent or /learn invocation routing a captured finding to its correct durable home; MUST be invoked after the master classifies a finding's breadth and destination -- skipping means the lesson lands in local volatile memory and dies there, never reaching jit-knowledge canonical or the WS8 audit dashboard.
 tags: [knowledge-router, recursive-improvement, skill, routing, jit-knowledge, audit-log, learn]
 scope: public
+departments: [all]
 read_when: After the master or /learn classifies a finding and needs to deploy it to its correct durable home in jit-knowledge, local memory, or Hub.md.
 last_evaluated: 2026-06-03
 ---

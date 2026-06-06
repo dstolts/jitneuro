@@ -3,6 +3,7 @@ type: rule
 purpose: Require full-codebase search with multiple patterns and content verification before claiming anything is missing or broken, to prevent false alarms and duplicate implementations.
 tags: [verification, missing-claims, search, false-alarms, codebase]
 scope: public
+departments: [all]
 read_when: Before reporting that any symbol, file, config, or feature is missing or broken in a codebase.
 last_evaluated: 2026-06-03
 ---

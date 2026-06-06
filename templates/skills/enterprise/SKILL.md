@@ -3,6 +3,7 @@ type: skill
 purpose: Display consolidated DOE governance rules, trust zones, approval workflow, quality gates, and branch rules.
 tags: [enterprise, governance, doe, trust-zones, read-only]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/enterprise/SKILL.md
 read_when: When an agent or Owner needs a consolidated view of trust zones, approval workflow, quality gates, and branch rules.

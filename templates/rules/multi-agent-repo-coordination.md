@@ -4,6 +4,7 @@ purpose: Require agent systems to maintain disjoint repo allowlists and explicit
 read_when: When adding a repo to any agent system's scope or when two agent systems are active in the same repository -- overlapping allowlists cause conflicting commits and trust-zone enforcement failures.
 tags: [multi-agent, repo-ownership, coordination, allowlist, collision-prevention]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Multi-Agent Repo Coordination

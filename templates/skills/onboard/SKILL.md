@@ -4,6 +4,7 @@ purpose: Bootstrap a new repo into the DOE/JitNeuro framework with automated ass
 read_when: When adding a new repository to the JitNeuro framework and it lacks CLAUDE.md, engram, or jitneuro scaffolding.
 tags: [onboard, bootstrap, doe, jitneuro, repo-setup, automation]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/onboard/SKILL.md
 last_evaluated: 2026-06-03

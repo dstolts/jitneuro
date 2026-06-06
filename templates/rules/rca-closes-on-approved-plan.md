@@ -4,6 +4,7 @@ purpose: BINDING for every master/orchestrator agent closing an RCA -- when the 
 trigger: any agent about to close or declare closure on an RCA whose proposed solution spans multiple components, repos, or weeks of effort
 tags: [rca, root-cause-analysis, planning, approval, documentation]
 scope: public
+departments: [all]
 read_when: Before closing or declaring closure on any RCA whose solution touches multiple components, repos, or weeks of effort.
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_rca_closes_on_approved_plan.md) -- Knowledge session 2026-06-01

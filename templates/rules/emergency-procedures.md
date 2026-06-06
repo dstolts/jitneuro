@@ -4,6 +4,7 @@ purpose: Define the recovery sequence (save state, list files and line numbers, 
 read_when: When approaching context limits mid-task, or when a session needs to hand off in-progress work to a fresh context.
 tags: [emergency, context-limits, recovery, checkpoint, session-state]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Emergency Procedures (Context Limits)

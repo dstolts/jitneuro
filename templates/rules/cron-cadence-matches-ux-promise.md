@@ -4,6 +4,7 @@ purpose: Require that cron and queue cadence can deliver on any timing promise m
 read_when: Before shipping UX copy with timing language, or before changing any cron schedule or queue processing interval that backs a customer-facing promise.
 tags: [cron, ux-copy, timing-promise, cadence, consistency]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Cron Cadence Must Match UX Promise

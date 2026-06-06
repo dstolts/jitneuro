@@ -3,6 +3,7 @@ type: skill
 purpose: Binding rules for handling secrets -- they belong in .env files only, never in code, docs, specs, or source control -- and the process for verifying before committing. Read this when writing or reviewing any code, doc, or config that touches credentials, API keys, or tokens.
 tags: [skill, security, secrets, credentials, guardrails]
 scope: public
+departments: [engineering]
 read_when: When writing or reviewing any code, doc, or configuration that touches credentials, API keys, tokens, or secrets.
 last_evaluated: 2026-06-03
 ---

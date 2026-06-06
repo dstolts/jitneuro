@@ -5,6 +5,7 @@ read_when: Before authoring any fix when 3 or more bugs have been diagnosed in a
 trigger: batch of 3+ bugs diagnosed in one pass; OR a bug that "passed" but symptom persists; OR diagnosis cites a specific file:line not yet independently verified
 tags: [debugging, quality-gates, multi-bug, verification, diagnosis]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

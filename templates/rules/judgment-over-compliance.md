@@ -4,6 +4,7 @@ purpose: Require AI to apply practitioner judgment to each request rather than r
 read_when: Before responding to any user request -- mechanical rule-routing without judgment produces generic or over-engineered outputs that miss what the request actually needs.
 tags: [judgment, compliance, ai-behavior, quality, practitioner-mindset]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Judgment Over Compliance

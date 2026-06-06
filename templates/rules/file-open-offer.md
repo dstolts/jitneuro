@@ -4,6 +4,7 @@ purpose: When presenting file paths for review, number each file and offer to op
 read_when: Before presenting two or more file paths to the user for review or inspection.
 tags: [file-references, adhd, ux, output-formatting]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: rules/file-open-offer.md
 last_evaluated: 2026-06-03

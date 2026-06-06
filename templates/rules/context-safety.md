@@ -4,6 +4,7 @@ purpose: Cap single-response file analysis at 25 files and limit concurrent suba
 read_when: Before planning any bulk file analysis, audit, or multi-agent dispatch to determine batching strategy and concurrency limits.
 tags: [context-safety, memory-exhaustion, batch-limits, concurrency, orchestrator]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Context Safety (Memory Exhaustion Prevention)

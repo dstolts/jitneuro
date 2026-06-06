@@ -4,6 +4,7 @@ purpose: Require durable task-list, decision-log, and architecture-context files
 read_when: At each phase or milestone boundary during a session, and before ending or handing off any work in progress.
 tags: [documentation, task-list, hub-md, phase-boundary, session-state]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Context and Documentation Updates

@@ -4,6 +4,7 @@ purpose: Prevent Write/Edit tool race conditions on heartbeat files by requiring
 read_when: Before any session operation that writes to heartbeat files (/load, /save, session new, session switch, session rename) -- Write/Edit causes a race with the PostToolUse hook and corrupts session state.
 tags: [heartbeat, session-management, hooks, race-condition, tools]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: rules/heartbeat-write-safety.md
 last_evaluated: 2026-06-03

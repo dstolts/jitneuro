@@ -4,6 +4,7 @@ purpose: BINDING for every development-phase agent or master session when Owner 
 trigger: Owner says "test local", "test on local", "verify locally", "get it working in dev", or any equivalent phrase directing verification to happen on the local machine before uat promotion
 tags: [dev-flow, local-testing, feature-branch, uat-promotion, owner-time]
 scope: public
+departments: [engineering]
 read_when: When Owner says "test local", "test on local", "verify locally", or any equivalent phrase directing verification to happen on the local machine.
 last_evaluated: 2026-06-03
 ---

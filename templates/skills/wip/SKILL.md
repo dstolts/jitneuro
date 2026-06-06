@@ -5,6 +5,7 @@ status: canonical
 purpose: Capture the current conversation's working context into a WIP-Drafts file so the work survives session end and can graduate to canonical jit-knowledge later. Infers the right WIP-Drafts surface (rules / charters / patterns / playbooks / workflows / skills / references / INBOX) from content; confirms with Owner in a single line before staging. Stages the file but does NOT auto-commit -- Owner controls the commit boundary.
 tags: [slash-command, wip-drafts, session-capture, recursive-improvement, jit-knowledge]
 scope: public
+departments: [all]
 authored_at: WIP-Drafts/skills/wip.md
 origin_date: 2026-05-27
 origin_event: Knowledge session 2026-05-24 follow-up queue item 2a; Owner directive (see WIP-Drafts/README.md + rules/wip-drafts-lifecycle.md). The /knowledge command exists to re-anchor sessions to bootstrap; /wip is the complementary capture mechanism so insights surfaced mid-session don't evaporate.

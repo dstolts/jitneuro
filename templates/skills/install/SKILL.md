@@ -5,6 +5,7 @@ description: One-shot install of jit-knowledge on a consuming machine. Trigger p
 purpose: 'One-shot bootstrap of jit-knowledge on a new consuming machine: clones the repo, installs dependencies, drops the Claude Code load rule, and prints the mandatory horizon-doc reading primer. Read this when setting up jit-knowledge on a fresh machine or after a major reinstall.'
 tags: [skill, install, bootstrap, setup, jit-knowledge]
 scope: public
+departments: [all]
 leak_allow: ["Code/jit-knowledge", "Code\jit-knowledge", "C:\Users", "C:/Users"]
 owner_role: cos
 read_when: When setting up jit-knowledge on a fresh machine or after a major reinstall to clone the repo, install dependencies, and register hooks.

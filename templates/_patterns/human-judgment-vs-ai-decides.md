@@ -4,6 +4,7 @@ purpose: Any AI agent considering whether to act autonomously or escalate to the
 read_when: Every time an agent reaches a decision point and must choose between acting autonomously or escalating to the owner.
 tags: [escalation, human-judgment, autonomous-execution, decision-routing, owner-attention]
 scope: public
+departments: [all]
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03
 ---

@@ -6,6 +6,7 @@ purpose: Standardize the orchestrated QA-dev iteration loop. A QA agent validate
 read_when: Before declaring any UI feature, API endpoint, or generated artifact done -- configure the QA-dev iteration loop and run it to 100% compliance.
 tags: [qa, iteration-loop, master-orchestrator, dev-agent, user-stories, api-contract, mockups, compliance-gate, recursive-improvement, definition-of-done]
 scope: public
+departments: [engineering]
 origin_date: 2026-05-28
 origin_event: Owner directive 2026-05-28 -- "qa agent loops validating actual against user stories and mockups completed loops through 100% confidence... this should be a standard QA process to iterate; report issues, master agent triggers developers to fix, and continue iterating until 100% compliance with user stories, contract and mockups." Captured into Knowledge session (item #15) and drafted same turn.
 related:

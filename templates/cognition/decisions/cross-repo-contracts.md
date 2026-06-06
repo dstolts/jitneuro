@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [engineering]
 purpose: Decision model mandating that API contracts between repos are defined in a spec before any implementation starts -- prevents contract drift and broken integrations when one side changes without the other.
 read_when: Before starting any sprint that touches integration points between two repos, or when a contract change is proposed on either side.
 last_evaluated: 2026-06-03

@@ -331,6 +331,7 @@ build_hooks_json() {
   cat <<HOOKJSON
 {
   "hooks": {
+    "Stop": [{ "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/stop-continue-queue.sh", "timeout": 10 }] }],
     "PreCompact": [{ "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/pre-compact-save.sh", "timeout": 10 }] }],
     "SessionStart": [
       { "matcher": "", "hooks": [{ "type": "command", "command": "${HOOKS_PATH_FWD}/session-start-identity.sh", "timeout": 10 }] },

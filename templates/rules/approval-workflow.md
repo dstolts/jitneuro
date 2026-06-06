@@ -4,6 +4,7 @@ purpose: Enforce a strategy-mode gate that blocks code changes until an explicit
 read_when: At session start for every master agent, and before making any code change to confirm an explicit approval phrase has been received.
 tags: [approval, strategy-mode, autonomous-execution, task-management, governance]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Approval Workflow

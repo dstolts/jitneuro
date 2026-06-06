@@ -4,6 +4,7 @@ purpose: Canonical quality-gate judge pattern for authors and pipeline integrato
 read_when: Before authoring or wiring any LLM judge into a quality-gate pipeline to ensure the scoring, retry, and escalation shape follows the canonical pattern.
 tags: [llm-judge, quality-gate, retry-loop, rubric, content-quality]
 scope: public
+departments: [engineering]
 name: LLM-as-Judge Pattern
 status: canonical
 owner: org/architect

@@ -4,6 +4,7 @@ purpose: Require every code-generation prompt that modifies an existing applicat
 read_when: Before authoring or reviewing any prompt sent to a code-generation tool that will modify an existing application.
 tags: [code-generation, regression-guard, ai-tools, preservation, quality-gate]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # Code-Gen Regression Guard (HARD RULE #0 Pattern)

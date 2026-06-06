@@ -4,6 +4,7 @@ purpose: Defines the defense-in-depth model for AI-assistant hooks -- a local ho
 read_when: Before configuring agent guardrails or any hook intended to block a prohibited action in an AI-assisted workflow.
 tags: [security, hooks, enforcement, trust-model, claude-code, ai-guardrails]
 scope: public
+departments: [all]
 status: canonical
 community_reviewed: 2026-06-02
 last_evaluated: 2026-06-03

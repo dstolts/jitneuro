@@ -5,6 +5,7 @@ trigger: Owner issues a class-level authorization phrase (e.g., "merge to uat", 
 read_when: When the Owner issues a class-level authorization phrase and you are deciding whether each individual instance requires fresh confirmation before proceeding.
 tags: [autonomous-execution, authorization, afw, owner-delegation, class-auth]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 origin: promoted from personal memory (feedback_act_on_greenlit_authority.md) -- Knowledge session 2026-06-01
 ---

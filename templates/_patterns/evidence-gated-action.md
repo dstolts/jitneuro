@@ -4,6 +4,7 @@ purpose: Any agent or gate designer authorizing an irreversible, high-risk, or p
 read_when: Before executing any irreversible, production-promotion, or high-risk action to verify the required evidence chain is complete and fresh.
 tags: [evidence-gate, validation, promotion, rca, trust-zones, verification]
 scope: public
+departments: [all]
 name: evidence-gated-action
 status: canonical
 owner: org/architect

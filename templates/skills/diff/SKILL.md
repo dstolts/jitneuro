@@ -3,6 +3,7 @@ type: skill
 purpose: Show git diff since last push or main divergence for the current or specified repo.
 tags: [git, diff, code-review, read-only]
 scope: public
+departments: [engineering]
 status: canonical
 graduation_target: skills/diff/SKILL.md
 read_when: When reviewing what changed in a repo since the last push or main divergence before a PR or code review.

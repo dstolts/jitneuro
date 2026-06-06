@@ -5,6 +5,7 @@ read_when: Before wiring any new integration or adding a credential reference to
 last_evaluated: 2026-06-03
 tags: [environment-management, credentials, security, ai-agent-patterns]
 scope: public
+departments: [engineering]
 status: canonical
 community_reviewed: 2026-06-02
 ---

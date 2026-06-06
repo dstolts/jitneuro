@@ -4,6 +4,7 @@ purpose: Require API-level smoke testing against live endpoints before running b
 read_when: Before running any browser-based E2E test suite, or when declaring a customer-facing flow change ready for review.
 tags: [testing, api-smoke, e2e, test-sequence, quality-gate]
 scope: public
+departments: [engineering]
 last_evaluated: 2026-06-03
 ---
 # API Test Before E2E

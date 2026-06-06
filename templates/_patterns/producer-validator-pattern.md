@@ -4,6 +4,7 @@ purpose: Defines producer-validator routing for any role that generates a durabl
 read_when: Before dispatching any artifact-production task to a role that generates content or code using a tiered model strategy.
 tags: [producer-validator, local-inference, iteration-cap, artifact-routing, escalation]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 

@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [all]
 purpose: Decision model requiring all platforms to be fully API-manageable before adoption -- agents use this to evaluate new tools and reject GUI-only workflows that block automation; skipping allows GUI-locked platforms that break agent pipelines.
 read_when: Before selecting or evaluating any new platform, service, or tool that agents or automation will need to operate.
 last_evaluated: 2026-06-03

@@ -4,6 +4,7 @@ purpose: Shortcut for /session load that delegates to session.md load operation;
 read_when: When restoring a prior session checkpoint at the start of a work window.
 tags: [load, session-management, shortcut, checkpoint]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/load/SKILL.md
 last_evaluated: 2026-06-03

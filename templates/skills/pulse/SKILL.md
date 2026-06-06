@@ -4,6 +4,7 @@ purpose: Shortcut for /session pulse that re-reads shared state from other activ
 read_when: After returning from an AFK break or when another session or external tool has made changes that need to be reflected in the current session.
 tags: [pulse, session-management, shortcut, shared-state, multi-session]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/pulse/SKILL.md
 last_evaluated: 2026-06-03

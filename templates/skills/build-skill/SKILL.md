@@ -5,6 +5,7 @@ type: skill
 purpose: BINDING procedure for the interactive master agent before creating, auditing, or improving any Claude skill; defines the raised Anthropic-aligned standard (three-layer skills, real tools layer, composability, improvement loop, evaluation-driven, right-sized models) so skills stop shipping as flat prompt-only files.
 tags: [skill, build-skill, meta-skill, skills, anthropic, composability, recursive-improvement]
 scope: public
+departments: [all]
 owner_role: skill-builder
 read_when: Before creating, auditing, or improving any Claude skill to ensure it meets the three-layer standard and composability requirements.
 last_evaluated: 2026-06-03

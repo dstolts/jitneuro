@@ -4,6 +4,7 @@ purpose: List and manage all session checkpoints with numbered output, stale det
 read_when: When auditing active sessions, identifying stale or archived sessions, or cleaning up session sprawl.
 tags: [sessions, session-management, archive, stale, cleanup]
 scope: public
+departments: [all]
 status: canonical
 graduation_target: skills/sessions/SKILL.md
 last_evaluated: 2026-06-03

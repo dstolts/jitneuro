@@ -3,6 +3,7 @@ type: rule
 purpose: Require proactive end-to-end verification of every code change and comprehensive post-deploy E2E coverage so issues are surfaced before reviewers or users encounter them.
 tags: [quality, proactive, e2e, verification, post-deploy]
 scope: public
+departments: [engineering]
 read_when: Before making any code change or executing any deploy that touches customer-facing functionality.
 last_evaluated: 2026-06-03
 ---

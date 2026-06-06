@@ -4,6 +4,7 @@ purpose: The owner's identity, context, and working preferences -- the "who am I
 read_when: At session start, by every agent, before doing substantive work -- to load who the owner is and how they want the AI to operate.
 tags: [owner-profile, identity, preferences, onboarding, personalization, fill-in-template]
 scope: public
+departments: [all]
 status: canonical
 last_evaluated: 2026-06-03
 ---

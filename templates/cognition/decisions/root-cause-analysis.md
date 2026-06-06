@@ -1,6 +1,7 @@
 ---
 type: rule
 scope: public
+departments: [all]
 purpose: RCA decision workflow for all failure types (code bugs, process failures, behavioral errors) -- ensures root cause is identified before any fix is applied; skipping produces symptom patches that recur.
 read_when: When friction detection fires and the user rejects an initial fix, when repeated failures occur in the same area, or when the user explicitly requests root cause analysis.
 last_evaluated: 2026-06-03

@@ -4,6 +4,7 @@ purpose: Require a gap-analysis pass before delivering any code change to surfac
 read_when: Before delivering any response that includes code changes, architecture decisions, or cross-repo edits -- skipping allows undetected edge cases and regressions to ship.
 tags: [gap-analysis, code-review, edge-cases, quality, pre-delivery]
 scope: public
+departments: [all]
 last_evaluated: 2026-06-03
 ---
 # Gap Analysis
