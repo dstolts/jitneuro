@@ -53,6 +53,26 @@ This is NOT a full /save -- it only records that a session ended and where.
 If the user forgot to /save, this file confirms a session was active.
 Written to `.claude/session-state/_autosave.md` (overwritten each time).
 
+### 5. Autonomous Continuation (stop-continue-queue.sh)
+
+**Event:** `Stop` | **Matcher:** all | **Timeout:** 10s
+
+Makes autonomous execution MECHANICAL instead of advisory. A rule that says "keep
+working the queue" is soft -- the model reads it, agrees, and still yields control
+after each turn. This Stop hook fires when the model tries to stop and, while
+autonomous mode is ON and executable tasks remain in `.HUB/Hub.md` `## ACTIVE TODO`,
+blocks the stop (exit 2) and re-injects "continue the queue." Use it to hand the
+agent a backlog and walk away.
+
+**Safe by default:** does nothing unless armed. Arm with the `/afk` command (or
+`echo on > .claude/session-state/autonomous-mode.flag`); disarm with `/afk off`.
+
+**Runaway guard:** a progress-aware stall counter (resets when the open-task count
+drops) gives up after `JITNEURO_MAX_CONTINUE` (default 50) consecutive no-progress
+turns; it also allows the stop when the queue is empty or all remaining tasks are
+marked blocked / awaiting-owner. For long unattended runs, raise Claude Code's own
+consecutive-block cap via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (e.g., `999`).
+
 ## Installation
 
 Add to `.claude/settings.local.json`:
@@ -122,6 +142,7 @@ Replace `/path/to/` with your actual workspace or project path.
 | session-start-recovery.sh | SessionStart | Re-inject context after compaction |
 | branch-protection.sh | PreToolUse (Bash) | Block RED zone git operations |
 | session-end-autosave.sh | SessionEnd | Safety net breadcrumb on exit |
+| stop-continue-queue.sh | Stop | Keep working the Hub.md queue unattended (armed via /afk) |
 | ../jitneuro.json | Config | Version, hook behavior, protected branches |
 
 ## Future Hooks (Planned)
