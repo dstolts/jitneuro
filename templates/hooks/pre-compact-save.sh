@@ -66,8 +66,18 @@ MSG="[JitNeuro] Context compaction triggered (source: ${SOURCE:-auto}). Run /sav
 # CRITICAL: never block auto-compaction -- exit 2 there wedges the session.
 # Only an explicit manual /compact may be paused, and only when configured.
 if [ "$BEHAVIOR" = "block" ] && [ "$SOURCE" = "manual" ]; then
+  # Make the pause stand out. Claude Code renders this stderr inline with its
+  # own "Compaction blocked by PreCompact hook" wrapper, so a leading blank line
+  # plus a banner separates the action message from the surrounding output.
+  echo "" >&2
+  echo "================================================================" >&2
+  echo "  ACTION NEEDED -- MANUAL COMPACTION PAUSED" >&2
+  echo "================================================================" >&2
   echo "$MSG" >&2
-  echo "Manual compaction paused by JitNeuro hook. Run /save, then re-run /compact." >&2
+  echo "" >&2
+  echo "  Run /save to checkpoint this session, then re-run /compact." >&2
+  echo "================================================================" >&2
+  echo "" >&2
   exit 2
 fi
 
