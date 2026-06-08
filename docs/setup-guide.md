@@ -60,7 +60,9 @@ After install:
 1. **Close and reopen Claude Code** (commands load at session start only)
 2. Run `/verify` to confirm all components are GREEN
 3. Run `/onboard <repo>` to set up context for your projects
-4. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `.claude/horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
+4. Configure `/learn` destination policy when Claude asks (personal `.claude/`,
+   repo/team `.jitneuro/`, or a configured internal/team shared catalog)
+5. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `.claude/horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
 
 ### Install Scenarios
 
@@ -173,7 +175,38 @@ Claude Code will create directories, copy files, set permissions, and configure 
 > "Show me jitneuro.json and explain what I can customize"
 ```
 
-Key options: `preCompactBehavior` (block vs warn), `autosave` (true/false), `protectedBranches`.
+Key options: `preCompactBehavior` (block vs warn), `autosave` (true/false), `protectedBranches`, and `learning.defaultDestination`.
+
+### Configure Learning Scope
+
+JitNeuro installs with `learning.defaultDestination` set to `ask`. That is
+intentional: `/learn` should not guess whether a lesson is private, repo/team
+shared, publishable to public JitNeuro, or internal to a company's knowledge
+catalog.
+
+Claude should ask this setup question before the first `/learn` write:
+
+```
+Where should /learn persist approved lessons by default?
+
+Recommended: personal/local `.claude/` for user preferences and private workflow
+habits. Use repo/team `.jitneuro/` for context that belongs with this repo and
+should be shared with collaborators. Use an internal/team shared catalog only if
+one is configured.
+```
+
+Destination model:
+
+| Scope | Destination |
+|-------|-------------|
+| Personal preferences / private workflow habits | `learning.personalRoot` (default `.claude`) |
+| Repo/team-specific architecture, conventions, local rules | `learning.repoTeamRoot` (default `.jitneuro`) |
+| Universal pattern useful to public adopters | propose a JitNeuro issue/PR; do not auto-write |
+| Private company/team knowledge catalog | `learning.internalCatalog`, only when configured |
+
+Public JitNeuro adopters do not need a private catalog. Only configure
+`learning.internalCatalog` when your company or team has a separate private
+knowledge location.
 
 <details>
 <summary>Shell commands (if you prefer manual)</summary>
@@ -228,14 +261,12 @@ To make a repo-specific bundle discoverable, document it in the repo's
 `.jitneuro/engrams/context.md` or equivalent repo context file. If your team also
 maintains an internal/shared catalog, add the cross-repo route there.
 
-For example, inside the JIT AI portfolio the internal superset catalog is
-`jit-knowledge/INDEX.md`. JitNeuro is the public subset published from that
-lineage; public adopters should not need `jit-knowledge`. To make a bundle load
-across the internal JIT AI portfolio:
+If your company maintains a private shared catalog, add cross-repo routes there.
+For example:
 
-1. Open a PR to `dstolts/jit-knowledge` adding a route line to `INDEX.md`:
+1. Open a PR to the private catalog adding a route line:
    `- <trigger phrase>  -> [your-bundle-name]`
-2. Once merged, that portfolio's consuming system picks it up on the next shared
+2. Once merged, that company's consuming system picks it up on the next shared
    catalog update.
 
 For local-only routes (experimental, not recommended long-term), ask Claude Code:

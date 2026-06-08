@@ -140,12 +140,12 @@ for cmd_file in "$TEMPLATES/commands/"*.md; do
 done
 echo "  ($CMD_COUNT commands installed)"
 
-# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# Routing can live in an optional shared catalog -- do NOT seed context-manifest.md with private routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.sh
+# Users can remove it after migrating any local routing they still need.
 if [ -f "$TARGET/context-manifest.md" ]; then
   echo "NOTE: Legacy context-manifest.md found at $TARGET/context-manifest.md"
-  echo "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.sh to retire it."
+  echo "      Shared routing is optional in JitNeuro; retire this file after migrating any local entries."
 fi
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -325,7 +325,7 @@ HOOKS_PATH_FWD=$(echo "$HOOKS_PATH" | sed 's|\\|/|g')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each `command` is just a path.
-# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# Full rule: templates/rules/claude-code-hook-deployment.md
 # ============================================================================
 build_hooks_json() {
   cat <<HOOKJSON

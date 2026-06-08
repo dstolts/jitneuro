@@ -42,10 +42,9 @@ JitNeuro framework.
 .jitneuro/rules/trust-local.md    # repo-specific rule
 ```
 
-JIT AI maintains `jit-knowledge` as the internal superset catalog. JitNeuro is
-the public released subset, so public adopters should not need `jit-knowledge`
-to use the framework. Internal JIT AI sessions can import `jit-knowledge/INDEX.md`
-when they need the private portfolio catalog.
+Teams can maintain a separate private shared catalog through a local clone,
+submodule, or resolver entry. That catalog is not part of public JitNeuro, and
+public adopters should not need one to use the framework.
 
 The URL-resolver (`~/.claude/url-resolver.md`) maps internal or team catalog
 GitHub URLs to local clone paths when a team uses them, so each machine reads

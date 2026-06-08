@@ -1,7 +1,7 @@
 ---
 type: skill
 purpose: Post-install verification skill for any agent or Owner confirming all 9 JitNeuro components (CLAUDE.md, hooks, session-state, engram, help) are present and wired; skipping means broken installs go undetected and hooks silently fail to fire.
-read_when: After running the jit-knowledge installer or after any update to hooks, settings.json, or session-state infrastructure.
+read_when: After running the JitNeuro installer or after any update to hooks, settings.json, or session-state infrastructure.
 tags: [verify, installation, post-install, diagnostic, read-only]
 scope: public
 departments: [all]
@@ -35,7 +35,7 @@ JITNEURO VERIFICATION
 [OK] CLAUDE.md present
 [OK] .claude/commands/ present (22 commands)
 [OK] jitneuro.json valid
-[WARN] Engram missing: jit-knowledge-context.md (run /learn to create)
+[WARN] Engram missing: project-context.md (run /learn to create)
 [OK] session-state/ writable
 [OK] heartbeats/ present
 [OK] Hooks registered (SessionStart, PostToolUse)

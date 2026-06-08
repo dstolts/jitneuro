@@ -132,7 +132,7 @@ artifact to the relevant repo's `.HUB/` or `docs/reviews/` folder:
 ---
 type: rca
 date: YYYY-MM-DD
-classification: rule-candidate | persona | engram | jit-knowledge-candidate | none
+classification: rule-candidate | persona | engram | publishable-candidate | none
 ---
 
 # RCA: [short title]
@@ -170,7 +170,7 @@ The `classification` field drives next-action routing:
 - `rule-candidate` -- propose a new or amended rule in `~/.claude/rules/`
 - `persona` -- amend the master-orchestrator persona or a specialist charter
 - `engram` -- update the repo's `.jitneuro/engrams/context.md`
-- `jit-knowledge-candidate` -- flag for WS6 cross-repo rollup promotion
+- `publishable-candidate` -- flag for WS6 cross-repo rollup promotion
 - `none` -- fix only, no structural artifact needed
 
 ## Domain Shortcuts
@@ -198,6 +198,6 @@ it did not fire.
 Used by: sys-architect, sys-backend, sys-security, sys-qa, sys-code-reviewer,
 sys-sre, security-developer, master-orchestrator.
 
-Canonical home: `jit-knowledge/skills/root-cause-analysis.md`. The
+Canonical home: `templates/skills/root-cause-analysis.md`. The
 user-global rule at `~/.claude/rules/root-cause-analysis.md` is a thin wrapper
 that points here; the authoritative method lives in this skill.

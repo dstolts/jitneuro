@@ -25,7 +25,7 @@ This doc answers: (1) Can Cursor leverage JitNeuro without change? (2) What chan
   - `session-state/*.md`
   - `jitneuro.json`
   - `.jitneuro/` when present (repo/team-specific context only)
-  - internal/team shared catalogs such as `.jit-knowledge/INDEX.md` when configured
+  - internal/team shared catalogs when configured
   - `~/.claude/url-resolver.md` (GitHub URL -> local clone map)
 
   So the *concepts* (bundles, engrams, session state, routing) work in Cursor; the agent just needs to be told where they live and when to use them. Routing comes from installed JitNeuro context plus any configured internal/team catalog, not from a per-repo `context-manifest.md`.
@@ -89,7 +89,7 @@ So: **no code change to JitNeuro**; only documentation and, optionally, a separa
   No need to change the *content* of the brainstem; only the *injection mechanism* (Claude = CLAUDE.md, Cursor = rule or AGENTS.md).
 
 - **MEMORY.md / routing:**
-  Routing is no longer in MEMORY.md or context-manifest.md. Use installed JitNeuro context and repo-local `.jitneuro/` when present. If your team maintains an internal/shared catalog, add one Cursor rule or AGENTS.md block that tells Cursor where to read it, for example `.jit-knowledge/INDEX.md` resolved via `~/.claude/url-resolver.md` inside JIT AI.
+  Routing is no longer in MEMORY.md or context-manifest.md. Use installed JitNeuro context and repo-local `.jitneuro/` when present. If your team maintains an internal/shared catalog, add one Cursor rule or AGENTS.md block that tells Cursor where to read it.
   MEMORY.md continues to hold project-specific facts and the project index; it has no routing tables.
 
 ---

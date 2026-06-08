@@ -13,11 +13,10 @@ When setting up a new repo with JitNeuro:
 2. Keep framework files in the installed `.claude/` surfaces.
 3. Use `.jitneuro/` only for repo/team-specific context that belongs with this repo.
 4. If your team has an internal/shared catalog, reference it separately, for example:
-   `# Shared catalog: see .jit-knowledge/INDEX.md (resolved via ~/.claude/url-resolver.md)`
+   `# Shared catalog: see <private-catalog>/INDEX.md (resolved via your team's resolver)`
 
-The public JitNeuro framework source is the `jitneuro` repo. `jit-knowledge` is
-the internal JIT AI superset; selected artifacts may be published from there
-into JitNeuro, but public JitNeuro adopters should not need `jit-knowledge`.
+The public JitNeuro framework source is the `jitneuro` repo. Private company
+catalogs are optional inputs and are not required for public adopters.
 Do NOT create a local routing-weights.md or context-manifest.md with routing tables.
 
 ## Bundle catalog (non-routing sections)

@@ -2,7 +2,7 @@
 type: reference
 purpose: Reference guide for auto-detecting and monitoring CI/CD deployment pipelines (GitHub Actions, Vercel, Azure, Jenkins, GitLab); agents that skip this fail to detect the active pipeline and either miss failures or report NO_PIPELINE incorrectly.
 read_when: Before spawning a deploy-monitor subagent or writing any pipeline detection / monitoring logic after a git push.
-tags: [deployment, ci-cd, monitoring, jit-knowledge-candidate]
+tags: [deployment, ci-cd, monitoring, publishable-candidate]
 scope: public
 departments: [engineering]
 status: canonical

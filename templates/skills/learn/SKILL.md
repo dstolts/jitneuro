@@ -25,6 +25,22 @@ Evaluate session for long-term knowledge and persist to correct memory locations
 
 ## Phases
 
+### Phase 0: Resolve destination policy
+
+Before writing, read `jitneuro.json` and inspect `learning.defaultDestination`.
+If the setting is missing or `ask`, ask the user where approved learnings should
+go by default and save that policy only after approval:
+
+| Scope | Destination |
+|-------|-------------|
+| Personal preferences / private workflow habits | `learning.personalRoot` (default `.claude`) |
+| Repo/team-specific architecture, conventions, local rules | `learning.repoTeamRoot` (default `.jitneuro`) |
+| Universal public pattern | propose JitNeuro issue/PR; do not auto-write |
+| Internal/team shared catalog | `learning.internalCatalog`, only when configured |
+
+Public JitNeuro adopters should not need a private catalog. Only use
+`learning.internalCatalog` when the user or team configured one explicitly.
+
 ### Phase 1: Parallel gather
 
 Dispatch subagents in parallel to scan:
@@ -51,7 +67,9 @@ Write ONLY after explicit approval. Use the WS4 save-router to classify destinat
 - Instructions/rules -> rules/ file
 - Domain knowledge -> bundles/
 - Project context -> engrams/
-- Routing -> context-manifest.md / INDEX.md
+- Repo/team context -> `.jitneuro/`
+- Universal public pattern -> propose JitNeuro issue/PR
+- Internal/team catalog -> configured `learning.internalCatalog` only
 
 ## Memory health check
 
@@ -59,5 +77,5 @@ After writing, run a quick /health to surface any thresholds exceeded by the new
 
 ## --team flag
 
-`/learn --team` promotes the update to `.jitneuro/` (team-shared) instead of `.claude/` (personal).
+`/learn --team` promotes the update to `learning.repoTeamRoot` (default `.jitneuro/`, team-shared) instead of `learning.personalRoot` (default `.claude/`, personal).
 Requires Owner confirmation before writing team-shared files.

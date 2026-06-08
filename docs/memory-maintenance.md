@@ -47,15 +47,15 @@ These load only when MEMORY.md references them, keeping context costs low.
 
 ### 3. JitNeuro /learn (bundles, engrams, routing)
 
-**Location:** `.claude/bundles/`, `.claude/engrams/`, `jit-knowledge/INDEX.md` (routing)
+**Location:** `.claude/bundles/`, `.claude/engrams/`, `the configured shared catalog` (routing)
 **Loaded:** On-demand by INDEX.md routing or manual bundle load
 **Created by:** `/learn` command evaluation
-**Updated by:** `/learn` (with owner approval); routing changes via PR to jit-knowledge
+**Updated by:** `/learn` (with owner approval); routing changes via PR to the configured shared catalog
 
 /learn captures domain knowledge and project context:
 - **Bundles** -- cross-project domain knowledge ("how to deploy", "API patterns")
 - **Engrams** -- per-project deep context ("what this repo is, how it works")
-- **Routing** -- lives exclusively in `jit-knowledge/INDEX.md`; /learn flags missing routes and prompts you to open a PR
+- **Routing** -- lives exclusively in `the configured shared catalog`; /learn flags missing routes and prompts you to open a PR
 
 **Maintenance:** `/learn` includes a health check that flags oversized bundles (280+ lines),
 missing engrams, stale sessions, and routes that may need updating in INDEX.md. Run it at session boundaries.
@@ -90,7 +90,7 @@ Is this a behavioral correction from the owner?
 |---------|---------|-----|
 | Same guidance in feedback_* and rules/ | Auto-memory saved what was already a rule | Delete the feedback_* file |
 | A feedback_* that says "always" or "never" | Universal instruction stored as situational memory | Promote to rules/, delete feedback_* |
-| MEMORY.md has "how to deploy" instructions | Domain knowledge in the index file | Extract to a bundle; add route to jit-knowledge/INDEX.md via PR |
+| MEMORY.md has "how to deploy" instructions | Domain knowledge in the index file | Extract to a bundle; add route to the configured shared catalog via PR |
 | A bundle has owner-specific names or preferences | Project-specific content in a cross-project file | Move to the project's engram or rules/ |
 | An engram has process instructions | Behavioral rule stored as project context | Move to rules/ (global) or .claude/rules/ (project) |
 
@@ -104,13 +104,13 @@ When JitNeuro releases updates, the install script touches:
 The install script does NOT touch:
 - `~/.claude/rules/` -- owner's global rules (never overwritten)
 - `~/.claude/projects/*/memory/` -- auto-memory (never overwritten)
-- MEMORY.md -- project index and business facts (never overwritten; routing lives in jit-knowledge/INDEX.md)
+- MEMORY.md -- project index and business facts (never overwritten; routing lives in the configured shared catalog)
 - `.claude/jitneuro-settings.json` -- runtime settings (never overwritten)
 
 **Safe upgrade pattern:**
 1. Run `jitneuro install` (overwrites templates only)
 2. Run `/learn` or `/health` to verify memory system health after upgrade
-3. If new commands or conventions were added, /learn will flag routes that may need updating in jit-knowledge/INDEX.md
+3. If new commands or conventions were added, /learn will flag routes that may need updating in the configured shared catalog
 
 ## MEMORY.md Remediation (When It Gets Too Big)
 
@@ -153,7 +153,7 @@ See `templates/memory/detail-index.md` for the template. Group entries by domain
 
 **When:** MEMORY.md has paragraphs of domain knowledge (infrastructure details, deployment procedures, API patterns). These are facts that don't need to load every session.
 
-**Fix:** Move the section to a bundle (`.claude/bundles/<domain>.md`). Add a route to `jit-knowledge/INDEX.md` so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
+**Fix:** Move the section to a bundle (`.claude/bundles/<domain>.md`). Add a route to `the configured shared catalog` so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
 
 Before (20 lines in MEMORY.md):
 ```
@@ -163,9 +163,9 @@ Before (20 lines in MEMORY.md):
 - Deployment steps are...
 ```
 
-After (bundle created; route added to jit-knowledge/INDEX.md via PR):
+After (bundle created; route added to the configured shared catalog via PR):
 ```
-# jit-knowledge/INDEX.md
+# the configured shared catalog
 - Deploy / server / VM / container -> [infrastructure]
 ```
 
@@ -228,7 +228,7 @@ Split into work areas:
 
 Each workspace has:
 - Its own `.claude/` with MEMORY.md, bundles, engrams
-- Routes in jit-knowledge/INDEX.md (a PR per new route -- shared single source)
+- Routes in the configured shared catalog (a PR per new route -- shared single source)
 - Smaller, focused context that fits within 200 lines
 - Cross-workspace facts go in `~/.claude/rules/` (loads everywhere)
 
