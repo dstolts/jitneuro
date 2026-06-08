@@ -73,7 +73,7 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - List all bundles with line counts.
 - OK < 230, WARN 230-279, OVER 280+. Soft limit -- report only, do not auto-trim.
 - Flag bundles referenced in INDEX.md routing that don't exist on disk.
-- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to the configured shared catalog).
+- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
 
 **Engrams** (.claude/engrams/)
 - List all engrams with line counts.
@@ -86,10 +86,10 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - Flag sessions older than 14 days as EXPIRED.
 - Count total (more than 10 = CLUTTER).
 
-**Routing** (optional configured shared catalog via url-resolver.md)
-- If a shared catalog is configured, check `~/.claude/url-resolver.md` exists and has that catalog entry.
-- If a shared catalog is configured, read INDEX.md (via url-resolver) and verify routing entries point to bundles that exist in `.claude/bundles/`.
-- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to the configured shared catalog).
+**Routing** (jit-knowledge/INDEX.md via url-resolver.md)
+- Check `~/.claude/url-resolver.md` exists and has an entry for jit-knowledge.
+- Read INDEX.md (via url-resolver) and verify routing entries point to bundles that exist in `.claude/bundles/`.
+- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
 - If url-resolver is missing or INDEX.md is unreachable, flag as WARNING with setup instructions.
 
 **Hub.md** (per-repo task durability)

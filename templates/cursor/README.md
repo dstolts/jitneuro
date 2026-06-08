@@ -26,7 +26,7 @@ mkdir -p .cursor/rules
 cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/
 ```
 
-Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`. The rule references those paths. Repo/team context can live in `.jitneuro/` when present. Internal/team shared catalogs are configured separately and are not required for public JitNeuro adopters.
+Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`. The rule references those paths. Repo/team context can live in `.jitneuro/` when present. Internal/team shared catalogs such as `.jit-knowledge/INDEX.md` are configured separately; public JitNeuro adopters should not need JIT AI's private `jit-knowledge` catalog.
 
 ## Paths
 

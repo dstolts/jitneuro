@@ -85,11 +85,11 @@ in other repos. Cross-repo sessions are not possible in isolated mode.
 
 Everything except cross-repo features:
 - /save and /load (scoped to this repo)
-- /learn (updates this repo's bundles, engrams; flags new routes for PR to the configured shared catalog)
+- /learn (updates this repo's bundles, engrams; flags new routes for PR to jit-knowledge/INDEX.md)
 - /sessions (lists this repo's sessions only)
 - /orchestrate (subagents scoped to this repo)
 - Conversation logging (.logs/ inside this repo)
-- Routing from the configured shared catalog (shared across all users; extensions via PR)
+- Routing from jit-knowledge/INDEX.md (shared across all users; extensions via PR)
 - Compact instructions
 - All bundle and engram management
 
@@ -153,7 +153,7 @@ team's directory. This gives shared commands with isolated context.
 ## Compliance Notes
 
 - MEMORY.md (auto-memory) is always per-user (the agent's local project directory). It is NOT
-  shared between users. Each developer has their own MEMORY.md. Routing is shared via the configured shared catalog.
+  shared between users. Each developer has their own MEMORY.md. Routing is shared via jit-knowledge/INDEX.md.
 - Session state files may contain summaries of code and decisions. Include
   `.claude/session-state/` in your `.gitignore` if these should not be committed.
 - Conversation logs (`.logs/`) may contain user prompts verbatim. Always gitignore.

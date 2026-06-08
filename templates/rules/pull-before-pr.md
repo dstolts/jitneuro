@@ -38,14 +38,14 @@ git push
 ```
 
 If the repo has a generated/derived file that conflicts on merge (e.g.
-`INDEX.md` in a generated catalog), resolve by regenerating from the merged
+`INDEX.md` for jit-knowledge), resolve by regenerating from the merged
 file set, not by hand-editing conflict markers.
 
 ### Repo-specific target bases
 
 | Repo class | Target base | Reference |
 |---|---|---|
-| Public framework repos | repo default branch | `CONTRIBUTING.md` / repo governance docs |
+| jit-knowledge | `main` (no `uat`) | `governance/PR-CHECKLIST.md` |
 | Repos promoting via uat | `uat`, then `uat -> main` | that repo's CLAUDE.md / AGENTS.md |
 | Repos that merge straight to main | `main` | that repo's CLAUDE.md / AGENTS.md |
 

@@ -32,8 +32,8 @@ contributors, prior PRs from other sessions, or an outdated submodule pin. Branc
 from stale local state produces a branch that immediately has a merge conflict against
 the current origin tip.
 
-Origin incident (2026-05-12): a downstream PR with a submodule pin bump hit a merge
-conflict on open because the local submodule pin was read from the stale
+Origin incident (2026-05-12): OC PR #7 (submodule bump v1.0.2 -> v1.1) hit a merge
+conflict on open because the local jit-knowledge submodule pin was read from the stale
 local working tree. Two prior PRs (#5/#6) had already moved the pin forward on
 origin/main. The branch conflicted before a single review comment.
 

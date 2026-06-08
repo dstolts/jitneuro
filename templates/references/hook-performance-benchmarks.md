@@ -2,7 +2,7 @@
 type: reference
 purpose: Performance benchmarks and optimization guidance for JitNeuro hooks; agents adding or modifying hooks without this data risk adding latency to every tool call and degrading session responsiveness.
 read_when: Before adding, modifying, or disabling any JitNeuro hook to understand its per-call cost and cumulative session impact.
-tags: [performance, hooks, optimization, benchmarks, publishable-candidate]
+tags: [performance, hooks, optimization, benchmarks, jit-knowledge-candidate]
 scope: public
 departments: [all]
 status: canonical

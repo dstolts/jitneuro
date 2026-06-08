@@ -20,23 +20,24 @@ identity.
 This applies to Codex, Claude Code, Cursor, and any future assistant that reads
 workspace or repo instruction files.
 
-## Resolve JitNeuro Context
+## Resolve `<jit-knowledge-root>`
 
-Before using any path in this rule, resolve the active JitNeuro install from the
-current repo or user configuration. Prefer repo-local `.jitneuro/` context for
-repo/team-specific facts, then the active `.claude/jitneuro.json` install
-configuration, then `JITNEURO_ROOT` when an explicit framework checkout is
-needed.
+Before using any path in this rule, resolve `<jit-knowledge-root>` through the
+canonical map in `<jit-knowledge-root>/AGENTS.md` and
+`<jit-knowledge-root>/templates/rules/jit-knowledge-load.md`. Consumer templates
+such as `<jit-knowledge-root>/templates/agent-clients/codex-AGENTS.md` carry the
+same resolver contract for downstream repos.
 
-JitNeuro does not require a private shared catalog. If the adopter configures
-one, treat it as an optional extension and resolve it from that adopter's
-resolver/config, not from a hard-coded product name.
+Short form: prefer the repo-pinned `.jit-knowledge/` submodule, then explicit
+repo config, then `JIT_KNOWLEDGE_ROOT`, then workspace/tool resolver, then the
+OS default. Do not assume `org/`, `agents/`, rules, playbooks, workflows, or
+skills are relative to the consuming repo root.
 
 ## What Master Means
 
 The master agent owns the conversation with the human:
 
-- Load workspace, JitNeuro bootstrap context, and repo-local `.jitneuro/` context when present.
+- Load workspace and jit-knowledge bootstrap context.
 - Maintain the active plan, todo list, blockers, and PR links.
 - Decide which repo, rule, playbook, charter, or skill applies.
 - Keep the human-facing status accurate and concise.
@@ -82,7 +83,7 @@ Operationally:
   repeated manual step), append it to the session's Hub.md `## Lessons Learned`
   section immediately -- do not defer to a later `/learn` invocation.
 - At every phase boundary, evaluate whether anything from the current session
-  warrants promoting to a repo-local rule, pattern, skill, or public JitNeuro improvement.
+  warrants promoting to a rule, pattern, skill, or jit-knowledge artifact.
 - After any RCA closes, ask: "What rule, guardrail, or detection gap would have
   prevented this?" That artifact is the improvement output.
 - The loop applies to itself: this spec, these tenets, and the RCA method are
@@ -260,16 +261,17 @@ directive?).
 
 ## Specialist Roles Are Temporary Hats
 
-Specialist charters, playbooks, and skills are loaded on demand from the active
-JitNeuro install, repo-local `.jitneuro/` context, or an adopter-configured
-shared catalog. They do not replace the interactive session's
+Specialist charters in `<jit-knowledge-root>/org/`,
+`<jit-knowledge-root>/agents/`, playbooks, and skills are loaded to perform or
+supervise a specific task. They do not replace the interactive session's
 master-orchestrator responsibility unless the human explicitly says the session
 is acting only as that specialist.
 
 Examples:
 
-- UI/UX work: master loads available UX guidance or a configured UX charter,
-  then either performs the UX task or delegates it.
+- UI/UX work: master loads `<jit-knowledge-root>/UX-GUIDELINES.md` and
+  `<jit-knowledge-root>/org/cpo/managers/ux-designer/CHARTER.md`, then either performs the
+  UX task or delegates it.
 - Sprint coordination: master loads workflow/orchestrator guidance, then
   decomposes work and assigns or executes tasks.
 - Security review: master loads security rules and relevant security charter,
@@ -299,11 +301,11 @@ Minimum routing expectations:
 
 | Trigger | Load / route through | Validation gate |
 |---|---|---|
-| Application code, API code, scripts, or bug fixes | Repo steward, engineering guidance, or configured engineering charter | Separate QA pass or configured QA charter |
+| Application code, API code, scripts, or bug fixes | `<jit-knowledge-root>/org/architect/managers/engineering-lead/CHARTER.md` or repo steward under Engineering Lead | Separate QA pass via `<jit-knowledge-root>/org/architect/managers/qa-lead/CHARTER.md` |
 | Customer-facing flow, endpoint, database, auth, payment, or email behavior | Engineering Lead + QA Lead Tier 3 gates | Real API/DB/browser smoke as applicable |
-| Infrastructure, CI/CD, deploy config, Docker, Vercel, GitHub Actions | Repo deploy guidance or configured SRE charter | QA or SRE validation depending on blast radius |
-| Security-sensitive code, secrets, auth, data exposure, compliance controls | Security rules or configured security charter | Security review before technical gate |
-| UX, screens, forms, dashboards, flows, interaction design | UX guidance or configured UX charter | UX validation before frontend implementation is accepted |
+| Infrastructure, CI/CD, deploy config, Docker, Vercel, GitHub Actions | `<jit-knowledge-root>/org/architect/managers/devops-sre-lead/CHARTER.md` | QA or SRE validation depending on blast radius |
+| Security-sensitive code, secrets, auth, data exposure, compliance controls | `<jit-knowledge-root>/org/architect/managers/security-lead/CHARTER.md` plus CCO/compliance where relevant | Security review before Architect gate |
+| UX, screens, forms, dashboards, flows, interaction design | `<jit-knowledge-root>/UX-GUIDELINES.md` plus `<jit-knowledge-root>/org/cpo/managers/ux-designer/CHARTER.md` | UX validation before frontend implementation is accepted |
 | Public content, blog, social, launch copy, brand voice | Content/brand/moat charters and playbooks from `INDEX.md` | Content grading and moat-protection judge where applicable |
 | Sprint or multi-agent task sequencing | Workflow/orchestrator charters and `rules/orchestrator-delegation.md` | Tracker state and blocked/stalled agent review |
 
@@ -475,13 +477,13 @@ Interactive master-orchestrators must also apply:
 
 Load specialist charters on demand, not as default master context:
 
-- Configured architecture charter: load when preparing final technical gate
+- `<jit-knowledge-root>/org/architect/CHARTER.md`: load when preparing final technical gate
   expectations, reviewing a code PR at architecture level, or resolving an
   engineering/QA disagreement.
-- Configured engineering charter: load when dispatching an
+- `<jit-knowledge-root>/org/architect/managers/engineering-lead/CHARTER.md`: load when dispatching an
   implementation worker, reviewing an implementation worker's return, or doing a
   tiny/local code fallback directly.
-- Configured QA charter: load when dispatching an
+- `<jit-knowledge-root>/org/architect/managers/qa-lead/CHARTER.md`: load when dispatching an
   independent validation worker, reviewing QA output, or doing a tiny/local QA
   fallback because no separate validator is available.
 

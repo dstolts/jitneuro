@@ -18,7 +18,7 @@ No manual /clear or reload needed. No new sessions to open.
 When a task is received:
 
 1. **Classify the task** -- determine which domain(s) it touches:
-   - Read `.the configured shared catalog` (via `~/.claude/url-resolver.md`) for routing patterns
+   - Read `.jit-knowledge/INDEX.md` (via `~/.claude/url-resolver.md`) for routing patterns
    - Scan `.claude/bundles/` for available bundles on this install
    - If no routing entry exists in INDEX.md, infer from the task description
 
@@ -68,11 +68,11 @@ When a task is received:
    - Only read SUMMARY_DOC if you need detail beyond the status and file list
    - If BLOCKED: answer the question and re-dispatch via SendMessage
    - Update session-state.md with results
-   - If new routing patterns discovered, note for shared-catalog route update
+   - If new routing patterns discovered, note for jit-knowledge PR
    - Report to user: what was done, files changed, what's next
 
 5. **Update routing** if a new pattern emerged:
-   - "Task type X needed bundles [A, B] -- suggest PR to the configured shared catalog"
+   - "Task type X needed bundles [A, B] -- suggest PR to jit-knowledge/INDEX.md"
    - Routing lives in INDEX.md; do not write to context-manifest.md or MEMORY.md
 
 ## Routing Decision Table
@@ -91,4 +91,4 @@ When a task is received:
 - Never load all bundles into main context "just in case"
 - When in doubt, use an agent (isolated context is always safer)
 - Failed agent? Retry with additional bundles, not more main context
-- When new co-activation patterns are discovered, suggest a PR to the configured shared catalog to add the route
+- When new co-activation patterns are discovered, suggest a PR to jit-knowledge/INDEX.md to add the route

@@ -60,36 +60,6 @@ Did the user correct Claude on something it stated from memory?
 
 When invoked as `/learn`:
 
-### Phase 0: Resolve learning destination policy
-
-Before proposing writes, read `jitneuro.json` from the active install scope
-(`.claude/jitneuro.json` in project/workspace installs, or the user install
-equivalent). If the file has no `learning` section, or if
-`learning.defaultDestination` is `ask`, ask one setup question before writing:
-
-```
-Where should /learn persist approved lessons by default?
-
-Recommended: personal/local `.claude/` for user preferences and private workflow
-habits; repo/team `.jitneuro/` only for context that belongs with this repo and
-should be shared with collaborators; internal/team shared catalog only when the
-team has configured one.
-```
-
-Then update `jitneuro.json` only after the user approves the selected policy.
-Public JitNeuro adopters should not need a private catalog. Public or reusable
-patterns are candidates for publication into JitNeuro, not automatic writes to
-every repo.
-
-Use this destination model:
-
-| Learning scope | Destination | Notes |
-|---|---|---|
-| Personal preference / private workflow habit | `learning.personalRoot` (default `.claude`) | User-local; not committed unless the user chooses to commit it. |
-| Repo-specific architecture / convention / local rule | `learning.repoTeamRoot` (default `.jitneuro`) | Committed repo/team context; not a full framework copy. |
-| Universal pattern useful to public adopters | `publishableDestination` (default feature request / PR proposal) | Requires explicit approval; publish into JitNeuro if accepted. |
-| Private company/team knowledge | `learning.internalCatalog` when configured | Unavailable to public adopters unless they configure their own catalog. |
-
 ### Phase 1: Gather (master + 2-4 agents in PARALLEL)
 
 These happen simultaneously:
@@ -162,11 +132,10 @@ For each finding, determine the destination and risk tier:
 
 | Finding type | Destination | Risk |
 |---|---|---|
-| Repo-specific convention / architecture fact | `learning.repoTeamRoot` (default `.jitneuro/`) | T1 |
-| Cross-project fact / personal preference | `learning.personalRoot` (default `.claude/`) or local `memory/` | T1 |
+| Repo-specific convention / architecture fact | that repo's `.jitneuro/` (engram / bundle / rule) | T1 |
+| Cross-project fact / personal preference | local `~/.claude/` or local `memory/` | T1 |
 | Session-volatile scratch | Hub.md only (no write) | T1 |
-| Universal pattern (candidate for public JitNeuro) | flag as PUBLISH -- propose issue/PR, no automatic write | T2 |
-| Private company/team knowledge | `learning.internalCatalog` when configured | T2 |
+| Universal pattern (candidate for jit-knowledge) | flag as PROMOTE -- WS6 rollup handles promotion | T2 |
 | Security / privacy / irreversible | synchronous approval (as today) | T3 |
 
 Include the destination and tier in the Phase 2 table.

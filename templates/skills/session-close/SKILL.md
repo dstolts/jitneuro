@@ -3,13 +3,13 @@ type: skill
 name: session-close
 status: canonical
 purpose: One command at session end that runs the standard close-out checklist -- /worktree-status --all-merged (clean up retired worktrees), Hub.md final update for the session, session-state file refresh with pickup instructions, TodoWrite snapshot. Replaces the Owner's "did I remember to..." anxiety with a single explicit ceremony.
-tags: [slash-command, session-end, hub-md, worktrees, session-state, jitneuro, recursive-improvement]
+tags: [slash-command, session-end, hub-md, worktrees, session-state, jit-knowledge, recursive-improvement]
 scope: public
 departments: [all]
 authored_at: WIP-Drafts/skills/session-close.md
 origin_date: 2026-05-28
 origin_event: PR #241 + #242 open questions both ask "should --all-merged run at session-end via hypothetical /session-close skill?" -- this is that skill. After /knowledge as the session-start ceremony and the worktree trio as the lifecycle scaffolding, /session-close completes the bookend pattern.
-graduation_target: templates/skills/session-close/SKILL.md
+graduation_target: jit-knowledge/skills/session-close/SKILL.md
 related_skills:
   - skills/knowledge/SKILL.md (the open bookend: re-anchor + status)
   - skills/worktree-status/SKILL.md (invoked by step 2 with --all-merged)
@@ -206,4 +206,4 @@ would do before I commit to it."
 - [ ] Live-trial: session-state file written passes
       session-handoff-readiness "Step 1 -- Bootstrap" requirement
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `templates/skills/session-close/SKILL.md`
+      `jit-knowledge/skills/session-close/SKILL.md`

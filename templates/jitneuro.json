@@ -79,25 +79,6 @@
     },
     "_configResolution": "Single-level config for v0.1.x. Future: multi-level with most-secure-wins."
   },
-  "learning": {
-    "defaultDestination": "ask",
-    "personalRoot": ".claude",
-    "repoTeamRoot": ".jitneuro",
-    "internalCatalog": null,
-    "publishableDestination": "feature-request",
-    "_options": {
-      "defaultDestination": {
-        "ask": "Ask before first write when a learning could fit personal, repo/team, or shared catalog scope. Recommended default.",
-        "personal": "Write approved personal learnings to personal/local .claude surfaces.",
-        "repo-team": "Write approved repo/team learnings to .jitneuro surfaces in the active repo.",
-        "internal-catalog": "Only for teams with a configured internal/shared catalog. Do not use for public JitNeuro adopters."
-      },
-      "personalRoot": "Root for user-local learnings and preferences. Usually .claude in the active install scope.",
-      "repoTeamRoot": "Root for repo/team-specific committed context. This is not a framework copy.",
-      "internalCatalog": "Optional path or URL resolver key for an internal/team shared catalog. Null for public adopters.",
-      "publishableDestination": "Where universal public patterns go. Default feature-request means propose a JitNeuro issue/PR, not write automatically."
-    }
-  },
   "scheduledAgents": [
     {
       "name": "housekeeper",
@@ -134,7 +115,7 @@
       "interval": 10080,
       "enabled": false,
       "instruction": "NONE",
-      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes shared-catalog promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
+      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes jit-knowledge promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
       "agent_charter": ".claude/agents/cross-repo-rollup/CHARTER.md",
       "_comment": "WS6: see CHARTER.md for full agent prompt + idempotency rules."
     }

@@ -17,7 +17,7 @@ memory/, the WS4 changes-log) for:
 3. **Stale knowledge** -- superseded, duplicate, or contradicted entries flagged
    for retirement. The loop prunes, not only adds.
 
-Proposes shared-catalog promotions in BATCH (one PR with N artifacts). Applies
+Proposes jit-knowledge promotions in BATCH (one PR with N artifacts). Applies
 prompt caching for the stable reference context. Uses idempotency via content
 hash to skip already-promoted or already-proposed items.
 
@@ -107,16 +107,16 @@ For each knowledge item:
 5. Items where the content is contradicted by a newer item in the same repo are STALE candidates
 
 Classify each candidate:
-- PROMOTE: recurring pattern in 2+ repos, not already in the configured shared catalog
+- PROMOTE: recurring pattern in 2+ repos, not already in jit-knowledge
 - SKILL_GAP: deterministic work done repeatedly that should be a runner/script
 - STALE: outdated entry that should be retired
 - SKIP: already promoted / already proposed / below threshold
 
-### STEP 4 -- Propose shared-catalog promotions (batch PR)
+### STEP 4 -- Propose jit-knowledge promotions (batch PR)
 
 For PROMOTE candidates:
 
-1. Draft the artifact content (rules/patterns/playbooks format per shared-catalog conventions)
+1. Draft the artifact content (rules/patterns/playbooks format per jit-knowledge conventions)
 2. Assign a content hash to each draft
 3. Append hashes to `.claude/session-state/.rollup-promoted-hashes.txt` (prevents duplicate PRs)
 4. Write draft artifacts to a staging directory:
@@ -135,7 +135,7 @@ PROPOSAL.md format:
 
 ### <artifact-title>
 - Source repos: <list>
-- Proposed destination: <shared-catalog>/<path>
+- Proposed destination: jit-knowledge/<path>
 - Evidence: seen in <repo1>/.jitneuro/rules/<file>, <repo2>/.jitneuro/rules/<file>
 - Draft: rollup-staging/<date>/<filename>.md
 
@@ -154,22 +154,22 @@ PROPOSAL.md format:
 6. Write a one-line entry to `.claude/session-state/improvement-changes.log.md`:
    `<ISO-timestamp> | Rollup | Proposed <N> promotions, <N> skill gaps, <N> stale | rollup-staging/<date>/PROPOSAL.md | cross-repo-rollup`
 
-### STEP 5 -- Open shared-catalog route update (if PROMOTE candidates exist)
+### STEP 5 -- Open jit-knowledge PR (if PROMOTE candidates exist)
 
 **Only if Owner has authorized automated PRs in jitneuro.json `rollupAutoPR: true`.**
 By default: write staging artifacts and proposal doc only. Owner opens the PR manually.
 
 If authorized:
-1. Ensure the configured shared catalog local clone is up to date (`git pull origin main`)
+1. Ensure jit-knowledge local clone is up to date (`git pull origin main`)
 2. Create branch: `chore/rollup-<YYYY-MM-DD>`
-3. Copy staging artifacts to correct shared-catalog paths
+3. Copy staging artifacts to correct jit-knowledge paths
 4. Run `scripts/rebuild-manifest.py` once for the full batch
 5. Commit with standard format:
    ```
    chore(rollup): cross-repo pattern promotions <YYYY-MM-DD>
 
    ## What
-   Promote <N> recurring patterns from per-repo .jitneuro/ to the configured shared catalog.
+   Promote <N> recurring patterns from per-repo .jitneuro/ to jit-knowledge.
 
    ## Why
    WS6 cross-repo rollup detected these patterns in 2+ repos, meeting the
@@ -219,7 +219,7 @@ PR: <url or "not created -- rollupAutoPR is false">
 
 ## Workflow Optimizations Applied (per spec)
 
-- **Prompt caching:** The current-capabilities reference list (configured shared catalog)
+- **Prompt caching:** The current-capabilities reference list (jit-knowledge INDEX.md)
   is passed with `ttl: "1h"` cache_control to reduce cost on repeated weekly runs.
 - **Idempotency:** Every item carries a stable content hash. The promoted-hashes file
   is checked before acting -- no duplicate PRs, no duplicate staging files.
@@ -244,7 +244,7 @@ PR: <url or "not created -- rollupAutoPR is false">
 ```
 
 - `rollupAutoPR`: false = write staging + proposal only, Owner opens PR manually.
-  true = agent opens the PR automatically (requires shared-catalog write access).
+  true = agent opens the PR automatically (requires jit-knowledge write access).
 - `maxRepos`: cap on repos scanned per run (memory safety, default 20).
 - `promoteThreshold`: minimum number of repos a pattern must appear in to qualify
   for promotion (default 2 = "serves 2+ systems" from PROMOTION-CRITERIA.md).

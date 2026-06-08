@@ -134,13 +134,13 @@ foreach ($cmdFile in $cmdTemplates) {
 }
 Write-Host "  ($CmdCount commands installed)"
 
-# Routing can live in an optional shared catalog -- do NOT seed context-manifest.md with private routing tables.
+# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it after migrating any local routing they still need.
+# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.ps1
 $staleManifest = Join-Path $Target "context-manifest.md"
 if (Test-Path $staleManifest) {
     Write-Host "NOTE: Legacy context-manifest.md found at $staleManifest" -ForegroundColor Yellow
-    Write-Host "      Shared routing is optional in JitNeuro; retire this file after migrating any local entries." -ForegroundColor Yellow
+    Write-Host "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.ps1 to retire it." -ForegroundColor Yellow
 }
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -364,7 +364,7 @@ $HooksPathFwd = ($hooksDir -replace '\\', '/')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each command is just a path.
-# Full rule: templates/rules/claude-code-hook-deployment.md
+# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
 # ============================================================================
 # Build hooks config object
 $hooksConfig = @{

@@ -213,4 +213,4 @@ For this pattern to run cleanly, the consuming repo needs:
 - [ ] Refine the QA agent prompt template based on trial findings
 - [ ] Decide max-iterations default (lean: 5; surface to Owner at 3)
 - [ ] Status -> `wip-ready` after trial done; then `/graduate` to
-      `templates/_patterns/qa-iteration-loop.md`
+      `jit-knowledge/_patterns/qa-iteration-loop.md`
