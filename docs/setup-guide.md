@@ -220,16 +220,28 @@ Claude Code will copy the template, rename it, and walk you through what to add.
 
 ### Register Bundles with the Canonical Router
 
-Routing lives in `jit-knowledge/INDEX.md` -- the single source of truth for all task-keyword to bundle mappings. To make a new bundle load automatically:
+JitNeuro framework files come from the `jitneuro` checkout and the installed
+`.claude/` surfaces. Repo-local `.jitneuro/` files are for repo/team-specific
+context only.
+
+To make a repo-specific bundle discoverable, document it in the repo's
+`.jitneuro/engrams/context.md` or equivalent repo context file. If your team also
+maintains an internal/shared catalog, add the cross-repo route there.
+
+For example, inside the JIT AI portfolio the internal superset catalog is
+`jit-knowledge/INDEX.md`. JitNeuro is the public subset published from that
+lineage; public adopters should not need `jit-knowledge`. To make a bundle load
+across the internal JIT AI portfolio:
 
 1. Open a PR to `dstolts/jit-knowledge` adding a route line to `INDEX.md`:
    `- <trigger phrase>  -> [your-bundle-name]`
-2. Once merged, your consuming system picks it up on the next `jit-knowledge` submodule pull.
+2. Once merged, that portfolio's consuming system picks it up on the next shared
+   catalog update.
 
 For local-only routes (experimental, not recommended long-term), ask Claude Code:
 ```
-> "Add a temporary routing entry for my-bundle to .jitneuro/engrams/context.md
-   and note it should be promoted to jit-knowledge/INDEX.md via PR."
+> "Document my-bundle in .jitneuro/engrams/context.md as repo-local context.
+   If it becomes cross-repo, flag it for promotion to the team's shared catalog."
 ```
 
 Do NOT add routing entries to `context-manifest.md` or `MEMORY.md`; those surfaces no longer carry routing tables.
@@ -298,7 +310,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
 | Claude ignores bundle content | Bundle too long (over 180 lines) or conflicting with CLAUDE.md. |
-| Wrong bundles loaded | Open a PR to jit-knowledge/INDEX.md to add or correct the route mapping. |
+| Wrong bundles loaded | Check the installed JitNeuro context and repo-local `.jitneuro/` first. If your team uses an internal/shared catalog, update that catalog's route. |
 | Context still fills up | Use agents more aggressively, save/clear more often. |
 | /load loads stale state | Check session date with `/sessions`. |
 | Interrupted install | No `jitneuro.json` in `.claude/` = incomplete. Re-run installer. |

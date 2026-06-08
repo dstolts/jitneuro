@@ -11,7 +11,8 @@ subagent sessions scoped to individual repos.
 
 ```
 MASTER SESSION (workspace root: ~/Code/)
-  |-- Brainstem loaded: CLAUDE.md + MEMORY.md (project index) + jit-knowledge/INDEX.md (routing)
+  |-- Brainstem loaded: CLAUDE.md + MEMORY.md (project index) + installed JitNeuro context
+  |-- Optional: internal/team shared catalog if this team configured one
   |-- Context: ~3-4% used for infrastructure
   |-- Role: route, delegate, summarize, checkpoint
   |
@@ -42,7 +43,7 @@ the context it needs. Cross-repo dependencies are tracked in one place.
 
 ## Master Session Responsibilities
 
-1. **Route tasks** to the right repo + bundles using jit-knowledge/INDEX.md routing
+1. **Route tasks** to the right repo + bundles using installed JitNeuro context, repo-local `.jitneuro/` context, and any configured internal/team shared catalog
 2. **Track cross-repo state** in session-state (which repos, which stories, which branch)
 3. **Enforce ordering** -- API must deploy before FE can test against it
 4. **Collect summaries** -- never load full code diffs into master context

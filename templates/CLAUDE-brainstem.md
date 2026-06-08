@@ -91,7 +91,8 @@ When the user expresses a need, wish, or frustration ("I wish...", "can we...", 
 - Cognition: `.claude/cognition/personas.md` (16 expert personas, always active)
 - Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
 - Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
-- Routing: `.jit-knowledge/INDEX.md` (single source -- resolved via `~/.claude/url-resolver.md`)
+- Repo context: `.jitneuro/` when present (repo/team-specific context only)
+- Shared catalog: internal/team catalog such as `.jit-knowledge/INDEX.md`, only when configured
 - Session state: `.claude/session-state/` (one file per named session)
 - Memory: Check MEMORY.md for project facts and project index
 
@@ -116,7 +117,8 @@ When conversation_log is "on" in session-state.md:
 <!-- Only paths Claude needs constantly. Domain paths go in bundles. -->
 | Path | Purpose |
 |------|---------|
-| `.jit-knowledge/INDEX.md` | Routing table (single source; resolved via url-resolver.md) |
+| `.jitneuro/` | Repo/team-specific context only; never a full framework copy |
+| `.jit-knowledge/INDEX.md` | Internal/team shared catalog only when configured; not required for public JitNeuro |
 | `.claude/session-state/` | Session checkpoints (one per task) |
 | `.claude/bundles/` | Domain knowledge bundles |
 | `.claude/engrams/` | Per-project deep context |

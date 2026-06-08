@@ -45,7 +45,8 @@ SESSION START
   |-- Check session-state.md (any prior state to resume?)
   |
   |-- User gives a task
-  |-- Orchestrator reads jit-knowledge/INDEX.md (routing), picks bundles
+  |-- Orchestrator reads installed JitNeuro context, picks bundles
+  |-- Optional: reads an internal/team shared catalog if this team configured one
   |-- Launches agent with ONLY those bundles
   |-- Agent works in isolated context, returns summary
   |-- Main context stays thin

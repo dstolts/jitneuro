@@ -30,18 +30,26 @@ Bundles and engrams are orthogonal:
 
 Routing maps task keywords to bundle combinations so the right domain knowledge loads automatically.
 
-Routing has a single source of truth: `jit-knowledge/INDEX.md`. All task-keyword to bundle mappings live there. Consuming systems (per-repo installs, Cursor, future agents) reference INDEX.md rather than maintaining their own routing tables.
+JitNeuro routing starts from the installed JitNeuro context surfaces in the active
+user, workspace, or project. A repo can add repo-specific context under
+`.jitneuro/`; that folder is for local/team knowledge only, not a copy of the
+JitNeuro framework.
 
 ```
-# jit-knowledge/INDEX.md (single source -- do not duplicate locally)
-- Deploy / server / container / VM  -> [infrastructure]
-- API / endpoint / route / auth     -> [api-patterns]
-- Sprint / story / prd / backlog    -> [sprint-workflow]
+# Repo-local .jitneuro/ example
+.jitneuro/engrams/context.md      # what this repo is
+.jitneuro/bundles/api.md          # repo-specific API context
+.jitneuro/rules/trust-local.md    # repo-specific rule
 ```
 
-The URL-resolver (`~/.claude/url-resolver.md`) maps the canonical GitHub URL to the local clone path so each machine reads the file locally at session speed.
+JIT AI maintains `jit-knowledge` as the internal superset catalog. JitNeuro is
+the public released subset, so public adopters should not need `jit-knowledge`
+to use the framework. Internal JIT AI sessions can import `jit-knowledge/INDEX.md`
+when they need the private portfolio catalog.
 
-For the governance rule, see `jit-knowledge/rules/routing-single-source.md`. To retire legacy routing files on an existing install, run `jit-knowledge/scripts/cleanup-old-routing.ps1` (Windows) or `cleanup-old-routing.sh` (Linux/Mac).
+The URL-resolver (`~/.claude/url-resolver.md`) maps internal or team catalog
+GitHub URLs to local clone paths when a team uses them, so each machine reads
+those files at session speed.
 
 Do NOT create a `routing-weights.md` or populate `context-manifest.md` with routing tables. Those are retired surfaces.
 
@@ -90,7 +98,8 @@ CLAUDE.md (brainstem, 30-40 lines)    -- universal rules only
   .claude/rules/deployment.md          -- loads only for deploy/**, Dockerfile, .github/workflows/**
   .claude/bundles/deploy.md            -- loads on demand by orchestrator
   .claude/engrams/repo.md              -- loads on demand per project
-  MEMORY.md                            -- project index + business facts (routing is in jit-knowledge/INDEX.md)
+  MEMORY.md                            -- project index + business facts
+  .jitneuro/                           -- optional repo/team-specific context only
 ```
 
 Each level only loads when relevant:
@@ -124,7 +133,7 @@ JitNeuro is designed to be lightweight. Here's what it actually costs:
 |------|-------|-------------|---------|
 | CLAUDE.md (global) | ~50-140 | ~400-1,100 | Core rules, trust zones |
 | CLAUDE.md (project) | ~30-50 | ~250-400 | Project identity, key paths |
-| MEMORY.md | ~90-200 | ~700-1,600 | Project index, business facts (routing is in jit-knowledge/INDEX.md) |
+| MEMORY.md | ~90-200 | ~700-1,600 | Project index, business facts |
 | **Total brainstem** | **~170-390** | **~1,350-3,100** | |
 
 That's roughly **1-2% of a 200K context window**. The rest is your conversation and code.

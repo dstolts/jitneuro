@@ -7,10 +7,22 @@ Detailed technical reference for JitNeuro internals. For the quick version, see 
 JitNeuro implements the **DOE (Directive Orchestration Execution)** framework -- a three-layer pattern for AI-assisted development:
 
 - **Directive** -- Owner gives short, high-level instructions. "Score all blog posts." "Audit the repos." "Fix the auth bug." No step-by-step hand-holding.
-- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads `jit-knowledge/INDEX.md` (routing table) and session state to make these decisions.
+- **Orchestration** -- Claude determines the approach: which bundles to load, which agents to spawn, what order to execute, how to split work across repos. The orchestration layer reads JitNeuro's installed context surfaces and session state to make these decisions. Internal JIT AI sessions can also read `jit-knowledge/INDEX.md` as the private superset catalog.
 - **Execution** -- Agents do the work. Workers read files, write code, run tests, score content, draft responses. Results flow up as thin summaries. Detail stays in files on disk.
 
 The owner does the $10K/hr work (judgment, priorities, approval). The AI does the $10/hr work (research, coding, analysis, content drafting, task execution). JitNeuro is the memory and orchestration layer that makes this possible across sessions, repos, and teams.
+
+## Product Boundary
+
+`jit-knowledge` and `jitneuro` are different products in the same lineage.
+`jit-knowledge` is the internal JIT AI knowledge superset. `jitneuro` is the
+publicly released subset of that system: the portable framework, templates,
+commands, hooks, rules, and docs that can be used outside JIT AI.
+
+Public JitNeuro adopters should point at the `jitneuro` checkout for framework
+files. They should not need the internal `jit-knowledge` repo. Inside JIT AI,
+`jit-knowledge` can still act as the internal superset and shared catalog that
+feeds or publishes selected artifacts into JitNeuro.
 
 ## The Problem
 
@@ -43,7 +55,8 @@ LONG-TERM MEMORY (disk -- survives all sessions)
   |-- MEMORY.md            project index + business facts
   |-- bundles/             domain knowledge, loaded on-demand
   |-- engrams/             per-project deep context (updated by /learn)
-  |-- .jit-knowledge/      routing table -- jit-knowledge/INDEX.md (single source)
+  |-- .jitneuro/           optional team/repo context, committed with the repo
+  |-- .jit-knowledge/      internal JIT AI superset catalog, when operating inside JIT AI
 
 WORKING MEMORY (context window -- limited capacity)
   |-- CLAUDE.md            core rules (always loaded, minimal)
@@ -68,7 +81,8 @@ workspace-root/
   |   |-- session-state/      session checkpoints
   |   |-- jitneuro.json       version, hooks config, settings
   |   |-- settings.local.json Claude Code hooks configuration
-  |-- .jit-knowledge/         jit-knowledge submodule (INDEX.md = routing table)
+  |-- .jitneuro/              repo/team-specific context only; not a framework copy
+  |-- .jit-knowledge/         internal JIT AI superset catalog, if operating inside JIT AI
   |-- ~/.claude/url-resolver.md  GitHub URL -> local path map (machine-specific)
   |-- repo-a/
   |-- repo-b/
@@ -83,6 +97,13 @@ If JitNeuro used `.jitneuro/`, Claude Code wouldn't find the commands, hooks, or
 `.claude/` is Claude Code's namespace. JitNeuro adds content to it (bundles, engrams, cognition, session state) but doesn't own the namespace. This means JitNeuro works alongside any other Claude Code tooling without conflicts.
 
 **In v1.0**, `.jitneuro/` will be introduced as the TEAM knowledge folder -- committed to git, shared across developers. `.claude/` remains personal (gitignored). The two folders have different purposes: `.jitneuro/` = team shared, `.claude/` = personal + platform.
+
+`.jitneuro/` is not where the JitNeuro framework is duplicated into every repo.
+The public framework source is the `jitneuro` checkout and its installed files
+under `.claude/`. Repo-local `.jitneuro/` content is only for repo-specific or
+team-specific context: engrams, bundles, local rules, and config that belong to
+that repository. Internal JIT AI shared knowledge belongs in `jit-knowledge`
+until deliberately published into the public JitNeuro subset.
 
 Commands can be installed at three levels (user, workspace, project).
 Claude Code merges all levels; more specific scopes take priority.
