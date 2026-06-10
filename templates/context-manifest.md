@@ -13,7 +13,7 @@ When setting up a new repo with JitNeuro:
 2. Keep framework files in the installed `.claude/` surfaces.
 3. Use `.jitneuro/` only for repo/team-specific context that belongs with this repo.
 4. If your team has a shared knowledge catalog, reference it separately, for example:
-   `# Shared catalog: see .knowledge/INDEX.md (or path resolved via JITNEURO_KNOWLEDGE_ROOT)`
+   `# Shared catalog: see .knowledge/INDEX.md (or path resolved via KNOWLEDGE_ROOT)`
 
 The public JitNeuro framework is standalone. Teams may optionally configure a shared
 knowledge catalog alongside it, but public adopters do not need any external catalog.

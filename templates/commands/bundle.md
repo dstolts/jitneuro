@@ -58,7 +58,7 @@ e. **On approval:** Write to `.claude/bundles/<name>.md` and suggest
 ### 4. Without arguments (`/bundle`):
 
 a. Scan `.claude/bundles/` for actual files. Count lines in each.
-b. If a knowledge catalog is configured (via `JITNEURO_KNOWLEDGE_ROOT` or `.knowledge/`), read its `INDEX.md` and compare -- flag bundles that exist on disk but have no routing entry in INDEX.md.
+b. If a knowledge catalog is configured (via `KNOWLEDGE_ROOT` or `.knowledge/`), read its `INDEX.md` and compare -- flag bundles that exist on disk but have no routing entry in INDEX.md.
 c. Present:
 
 ```

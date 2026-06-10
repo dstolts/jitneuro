@@ -119,13 +119,13 @@ _jn_write_kr() {
 }
 
 # Prompt the user for the shared knowledge catalog location and persist the choice.
-# Resolution at runtime: JITNEURO_KNOWLEDGE_ROOT env -> url-resolver map -> this value
+# Resolution at runtime: KNOWLEDGE_ROOT env -> url-resolver map -> this value
 # -> ./.knowledge if present -> unset (standalone). Empty = standalone.
 configure_knowledge_root() {
   local kr="$PREV_KR"
   # A live env var always wins; record it as the persisted default too.
-  if [ -n "${JITNEURO_KNOWLEDGE_ROOT:-}" ]; then
-    kr="$JITNEURO_KNOWLEDGE_ROOT"
+  if [ -n "${KNOWLEDGE_ROOT:-}" ]; then
+    kr="$KNOWLEDGE_ROOT"
   fi
   # Already configured and not re-configuring: keep it, do not prompt.
   if [ -n "$kr" ] && [ "$RECONFIGURE" -eq 0 ]; then
@@ -135,7 +135,7 @@ configure_knowledge_root() {
   fi
   # Non-interactive with nothing configured: default to standalone, no prompt.
   if [ ! -t 0 ] && [ "$RECONFIGURE" -eq 0 ]; then
-    echo "Knowledge catalog: standalone (no shared catalog). Set JITNEURO_KNOWLEDGE_ROOT or re-run with --reconfigure to configure."
+    echo "Knowledge catalog: standalone (no shared catalog). Set KNOWLEDGE_ROOT or re-run with --reconfigure to configure."
     _jn_write_kr ""
     return
   fi
@@ -156,7 +156,7 @@ configure_knowledge_root() {
   _jn_write_kr "$kr"
   if [ -n "$kr" ]; then
     echo "Knowledge catalog set to: $kr"
-    echo "Tip: export JITNEURO_KNOWLEDGE_ROOT=\"$kr\" to override per-machine without editing config."
+    echo "Tip: export KNOWLEDGE_ROOT=\"$kr\" to override per-machine without editing config."
   else
     echo "Knowledge catalog: standalone (no shared catalog)."
   fi

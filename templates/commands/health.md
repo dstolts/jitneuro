@@ -87,7 +87,7 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - Count total (more than 10 = CLUTTER).
 
 **Routing** (knowledge catalog INDEX.md, when configured)
-- If `JITNEURO_KNOWLEDGE_ROOT` is set or `.knowledge/` exists, locate the catalog's `INDEX.md`.
+- If `KNOWLEDGE_ROOT` is set or `.knowledge/` exists, locate the catalog's `INDEX.md`.
 - Read INDEX.md and verify routing entries point to bundles that exist in `.claude/bundles/`.
 - Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to the catalog).
 - If no catalog is configured, skip this section and note "no shared catalog configured".

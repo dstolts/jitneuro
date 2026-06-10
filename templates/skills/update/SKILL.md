@@ -25,7 +25,7 @@ Re-running the installer is the update path. No separate migration script needed
 ### 1. Pull latest changes
 
 ```bash
-cd "$JITNEURO_KNOWLEDGE_ROOT"   # e.g. <CodeBasePath>\jitneuro
+cd "$KNOWLEDGE_ROOT"   # e.g. <CodeBasePath>\jitneuro
 git pull --ff-only
 ```
 
@@ -56,7 +56,7 @@ powershell -ExecutionPolicy Bypass -File scripts/install.ps1
 - Updates `~/.claude/rules/jitneuro-load.md` if the shipped template has changed and the local file matches the previous shipped version; warns and preserves local edits if the file diverged (step 5)
 - Re-materializes `.claude/CLAUDE.md` inside the clone (step 5b)
 - **Overwrites** `~/.claude/hooks/jitneuro-session-start.sh` with the repo-canonical version and re-registers it in `~/.claude/settings.json` if not already present (step 5c) -- hook files are always overwritten because the repo copy is canonical
-- Updates `workspace.json` with `jitneuro_knowledge_root` if the file exists (step 6)
+- Updates `workspace.json` with `knowledge_root` if the file exists (step 6)
 - Validates INDEX.md is current; warns if a manifest refresh is needed (step 7)
 - Prints the foundational read primer (step 8)
 

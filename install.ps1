@@ -107,18 +107,18 @@ function Set-KnowledgeRoot($v) {
 }
 
 # Prompt for the shared knowledge catalog location and persist the choice.
-# Resolution at runtime: JITNEURO_KNOWLEDGE_ROOT env -> url-resolver map -> this value
+# Resolution at runtime: KNOWLEDGE_ROOT env -> url-resolver map -> this value
 # -> .\.knowledge if present -> unset (standalone). Empty = standalone.
 function Configure-KnowledgeRoot {
     $kr = $script:PrevKr
-    if ($env:JITNEURO_KNOWLEDGE_ROOT) { $kr = $env:JITNEURO_KNOWLEDGE_ROOT }
+    if ($env:KNOWLEDGE_ROOT) { $kr = $env:KNOWLEDGE_ROOT }
     if ($kr -and -not $Reconfigure) {
         Write-Host "Knowledge catalog: $kr (re-run with -Reconfigure to change)"
         Set-KnowledgeRoot $kr
         return
     }
     if (-not [Environment]::UserInteractive -and -not $Reconfigure) {
-        Write-Host "Knowledge catalog: standalone (no shared catalog). Set JITNEURO_KNOWLEDGE_ROOT or re-run with -Reconfigure to configure." -ForegroundColor Yellow
+        Write-Host "Knowledge catalog: standalone (no shared catalog). Set KNOWLEDGE_ROOT or re-run with -Reconfigure to configure." -ForegroundColor Yellow
         Set-KnowledgeRoot ""
         return
     }
@@ -145,7 +145,7 @@ function Configure-KnowledgeRoot {
     Set-KnowledgeRoot $kr
     if ($kr) {
         Write-Host "Knowledge catalog set to: $kr"
-        Write-Host "Tip: set JITNEURO_KNOWLEDGE_ROOT=$kr to override per-machine without editing config."
+        Write-Host "Tip: set KNOWLEDGE_ROOT=$kr to override per-machine without editing config."
     } else {
         Write-Host "Knowledge catalog: standalone (no shared catalog)."
     }

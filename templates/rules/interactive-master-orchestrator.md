@@ -29,7 +29,7 @@ such as `<knowledge-root>/templates/agent-clients/codex-AGENTS.md` carry the
 same resolver contract for downstream repos.
 
 Short form: prefer the repo-pinned `.knowledge/` submodule, then explicit
-repo config, then `JITNEURO_KNOWLEDGE_ROOT`, then workspace/tool resolver, then the
+repo config, then `KNOWLEDGE_ROOT`, then workspace/tool resolver, then the
 OS default. Do not assume `org/`, `agents/`, rules, playbooks, workflows, or
 skills are relative to the consuming repo root.
 
