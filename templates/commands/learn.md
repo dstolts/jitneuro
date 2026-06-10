@@ -135,7 +135,7 @@ For each finding, determine the destination and risk tier:
 | Repo-specific convention / architecture fact | that repo's `.jitneuro/` (engram / bundle / rule) | T1 |
 | Cross-project fact / personal preference | local `~/.claude/` or local `memory/` | T1 |
 | Session-volatile scratch | Hub.md only (no write) | T1 |
-| Universal pattern (candidate for jit-knowledge) | flag as PROMOTE -- WS6 rollup handles promotion | T2 |
+| Universal pattern (candidate for shared catalog) | flag as PROMOTE -- WS6 rollup handles promotion | T2 |
 | Security / privacy / irreversible | synchronous approval (as today) | T3 |
 
 Include the destination and tier in the Phase 2 table.

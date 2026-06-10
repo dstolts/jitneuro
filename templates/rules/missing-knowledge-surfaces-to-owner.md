@@ -1,8 +1,8 @@
 ---
 type: rule
-purpose: BINDING rule requiring agents to surface missing jit-knowledge artifacts to the Owner rather than silently proceeding; a missing rule, charter, playbook, or pinned file is an alarm that removes a capability or guardrail, not an absent-by-design no-op.
-read_when: When resolving any jit-knowledge artifact reference that cannot be found -- silently proceeding means guardrails and capabilities are dropped without anyone knowing.
-tags: [governance, missing-knowledge, owner-surface, alarm, silent-failure-prevention, jit-knowledge, session-start]
+purpose: BINDING rule requiring agents to surface missing jitneuro artifacts to the Owner rather than silently proceeding; a missing rule, charter, playbook, or pinned file is an alarm that removes a capability or guardrail, not an absent-by-design no-op.
+read_when: When resolving any jitneuro artifact reference that cannot be found -- silently proceeding means guardrails and capabilities are dropped without anyone knowing.
+tags: [governance, missing-knowledge, owner-surface, alarm, silent-failure-prevention, jitneuro, session-start]
 scope: public
 departments: [all]
 last_evaluated: 2026-06-03
@@ -10,7 +10,7 @@ last_evaluated: 2026-06-03
 
 # Missing Knowledge Surfaces to Owner
 
-When an agent or any tool references a jit-knowledge artifact and that file is NOT
+When an agent or any tool references a jitneuro artifact and that file is NOT
 FOUND, the agent MUST surface the gap to the Owner. It must not silently proceed as
 though the knowledge were intentionally absent.
 
@@ -23,7 +23,7 @@ When ANY of the following are referenced but cannot be resolved:
 - A rule file listed in `rules/` (e.g., `rules/interactive-master-orchestrator.md`)
 - A playbook, charter, or skill file listed in `INDEX.md` or a SKILL.md procedure
 - An entry in a `CLAUDE.md` or `AGENTS.md` import list (e.g., `load: - rules/foo.md`)
-- A submodule-pinned file inside `.jit-knowledge/`
+- A submodule-pinned file inside `.knowledge/`
 - Any artifact the SessionStart hook or a capability-dispatch procedure names as required
 
 The agent MUST immediately surface the gap to the Owner with:
@@ -39,11 +39,11 @@ is an intentional design choice.
 ## Reference Implementation
 
 The SessionStart hook (`templates/claude-hooks/session-start-master-orchestrator-rule.sh`)
-prints an explicit `[jit-knowledge] WARNING` when `rules/interactive-master-orchestrator.md`
+prints an explicit `[jitneuro] WARNING` when `rules/interactive-master-orchestrator.md`
 cannot be found:
 
 ```
-[jit-knowledge] WARNING: master-orchestrator rule not found at <path>.
+[jitneuro] WARNING: master-orchestrator rule not found at <path>.
 Identity rule NOT loaded. Session may run as a generic coding agent.
 ```
 
@@ -54,7 +54,7 @@ the artifact, cite the path, state the consequence in plain English.
 
 The master-orchestrator identity rule exists precisely to prevent sessions from
 operating as generic coding agents without the binding ownership, delegation, and
-judgment rules that govern JIT AI portfolio work. If that rule is missing -- or any
+judgment rules that govern your organization's work. If that rule is missing -- or any
 other binding rule, charter, or playbook -- the session's behavior is undefined and
 potentially harmful (wrong ownership assumptions, skipped guardrails, wrong
 trust-zone decisions).
@@ -78,7 +78,7 @@ the agent must tell the Owner rather than continuing blind.
 3. Format: one focused paragraph -- artifact name, expected path, missing capability.
    Not a bullet list. Not a multi-section report. One readable paragraph Owner can
    act on in 30 seconds.
-4. After surfacing, stop and wait for Owner direction (install jit-knowledge,
+4. After surfacing, stop and wait for Owner direction (install jitneuro,
    provide the missing file, or explicitly say "proceed without it").
 5. Do NOT infer what the missing rule or charter would have said. The absence of a
    guardrail is not permission to proceed without that guardrail.
@@ -89,7 +89,7 @@ the agent must tell the Owner rather than continuing blind.
   all context were present.
 - Noting the missing file in a status line buried in the middle of a long response
   without halting for Owner acknowledgment.
-- Treating a missing pinned file in `.jit-knowledge/` as "the submodule is just
+- Treating a missing pinned file in `.knowledge/` as "the submodule is just
   behind" and proceeding without warning.
 - Swallowing a not-found error (e.g., `cat: file: No such file or directory`)
   without telling the Owner.
@@ -99,11 +99,11 @@ the agent must tell the Owner rather than continuing blind.
 ## Cross-References
 
 - `templates/claude-hooks/session-start-master-orchestrator-rule.sh` -- reference
-  implementation; prints `[jit-knowledge] WARNING` on a missing rule
+  implementation; prints `[jitneuro] WARNING` on a missing rule
 - `rules/interactive-master-orchestrator.md` -- the binding identity rule that
   this guardrail is most likely protecting
 - `governance/SYNC-MECHANISMS.md` -- how consuming systems discover and validate
-  pinned jit-knowledge artifacts
-- `governance/PIN-POLICY.md` -- how consumers pin and verify their jit-knowledge ref
-- `skills/install/SKILL.md` -- how to install jit-knowledge on a new machine if it
+  pinned jitneuro artifacts
+- `governance/PIN-POLICY.md` -- how consumers pin and verify their jitneuro ref
+- `skills/install/SKILL.md` -- how to install jitneuro on a new machine if it
   is missing entirely

@@ -93,7 +93,7 @@ repo-specific -> project settings.
 
 ## Origin
 
-2026-05-20. jit-knowledge `scripts/install.sh` and jitneuro `install.sh` /
+2026-05-20. the knowledge catalog's `scripts/install.sh` and jitneuro `install.sh` /
 `install.ps1` all wrote hook commands shell-prefixed -- `"<git-bash>" "<path>"`
 or `bash "<path>"`. Claude Code 2.1.x runs each hook as `bash -c "<command>"`,
 so every PreToolUse / PostToolUse / SessionStart hook failed with
@@ -104,5 +104,5 @@ removed. `pre-compact-save.sh` exits 2 by design (blocks compaction) -- that
 one is intentional, not a defect.
 
 This rule was moved from a machine-local `~/.claude/rules/` file into
-jit-knowledge as the canonical, portable home so installers and agents in any
+jitneuro as the canonical, portable home so installers and agents in any
 clone can reference `rules/claude-code-hook-deployment.md`.

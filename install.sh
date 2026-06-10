@@ -23,7 +23,17 @@ if [ -f "$TEMPLATES/jitneuro.json" ]; then
   VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$TEMPLATES/jitneuro.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"//;s/"$//')
 fi
 
-MODE="${1:-project}"
+# --- Parse args: positional mode + optional flags ---
+MODE=""
+RECONFIGURE=0
+for arg in "$@"; do
+  case "$arg" in
+    --reconfigure) RECONFIGURE=1 ;;
+    workspace|project|user) MODE="$arg" ;;
+    *) ;;
+  esac
+done
+MODE="${MODE:-project}"
 
 case "$MODE" in
   workspace)
@@ -97,6 +107,61 @@ _jn_oldsha() { [ -n "$OLD_MANIFEST" ] && awk -F'\t' -v p="$1" '$1==p{print $2; e
 # record a framework file (by target-relative path) into the new manifest (set -e safe)
 _jn_record() { local rel="$1"; if [ -f "$TARGET/$rel" ]; then printf '%s\t%s\n' "$rel" "$(_jn_sha "$TARGET/$rel")" >> "$NEW_MANIFEST"; fi; }
 
+# Patch the installed jitneuro.json "knowledgeRoot" value (portable, no jq needed).
+_jn_write_kr() {
+  local v="$1"
+  local esc; esc=$(printf '%s' "$v" | sed 's/[\\&|]/\\&/g')
+  if [ -f "$TARGET/jitneuro.json" ]; then
+    sed "s|\"knowledgeRoot\"[[:space:]]*:[[:space:]]*\"[^\"]*\"|\"knowledgeRoot\": \"$esc\"|" \
+      "$TARGET/jitneuro.json" > "$TARGET/jitneuro.json.tmp.$$" \
+      && mv "$TARGET/jitneuro.json.tmp.$$" "$TARGET/jitneuro.json"
+  fi
+}
+
+# Prompt the user for the shared knowledge catalog location and persist the choice.
+# Resolution at runtime: JITNEURO_KNOWLEDGE_ROOT env -> url-resolver map -> this value
+# -> ./.knowledge if present -> unset (standalone). Empty = standalone.
+configure_knowledge_root() {
+  local kr="$PREV_KR"
+  # A live env var always wins; record it as the persisted default too.
+  if [ -n "${JITNEURO_KNOWLEDGE_ROOT:-}" ]; then
+    kr="$JITNEURO_KNOWLEDGE_ROOT"
+  fi
+  # Already configured and not re-configuring: keep it, do not prompt.
+  if [ -n "$kr" ] && [ "$RECONFIGURE" -eq 0 ]; then
+    echo "Knowledge catalog: $kr (re-run with --reconfigure to change)"
+    _jn_write_kr "$kr"
+    return
+  fi
+  # Non-interactive with nothing configured: default to standalone, no prompt.
+  if [ ! -t 0 ] && [ "$RECONFIGURE" -eq 0 ]; then
+    echo "Knowledge catalog: standalone (no shared catalog). Set JITNEURO_KNOWLEDGE_ROOT or re-run with --reconfigure to configure."
+    _jn_write_kr ""
+    return
+  fi
+  echo ""
+  echo "Where should JitNeuro find your shared knowledge catalog?"
+  echo "  1) A separate repo / folder elsewhere (recommended -- most common)"
+  echo "  2) In this repo, in a .knowledge/ folder"
+  echo "  3) Personal: ~/.claude/.knowledge"
+  echo "  4) None -- run standalone (no shared catalog)"
+  printf "Choice [1-4, default 4]: "
+  read -r choice || choice=4
+  case "$choice" in
+    1) printf "Absolute path to the catalog repo/folder: "; read -r kr || kr="" ;;
+    2) kr="./.knowledge"; mkdir -p "$TARGET/../.knowledge" 2>/dev/null || true ;;
+    3) kr="$HOME/.claude/.knowledge"; mkdir -p "$kr" 2>/dev/null || true ;;
+    *) kr="" ;;
+  esac
+  _jn_write_kr "$kr"
+  if [ -n "$kr" ]; then
+    echo "Knowledge catalog set to: $kr"
+    echo "Tip: export JITNEURO_KNOWLEDGE_ROOT=\"$kr\" to override per-machine without editing config."
+  else
+    echo "Knowledge catalog: standalone (no shared catalog)."
+  fi
+}
+
 # Create directories
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/bundles"
@@ -140,12 +205,12 @@ for cmd_file in "$TEMPLATES/commands/"*.md; do
 done
 echo "  ($CMD_COUNT commands installed)"
 
-# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# Routing lives in your configured knowledge catalog's INDEX.md (when one is configured)
+# -- do NOT seed context-manifest.md with routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.sh
 if [ -f "$TARGET/context-manifest.md" ]; then
   echo "NOTE: Legacy context-manifest.md found at $TARGET/context-manifest.md"
-  echo "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.sh to retire it."
+  echo "      Routing now lives in your knowledge catalog's INDEX.md. You may retire context-manifest.md."
 fi
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -298,8 +363,16 @@ case "$(uname -s)" in
 esac
 
 # --- Copy jitneuro.json config ---
+# Preserve a previously configured knowledge catalog root across re-installs.
+PREV_KR=""
+if [ -f "$TARGET/jitneuro.json" ]; then
+  PREV_KR=$(grep -o '"knowledgeRoot"[[:space:]]*:[[:space:]]*"[^"]*"' "$TARGET/jitneuro.json" | head -1 | sed 's/.*"knowledgeRoot"[[:space:]]*:[[:space:]]*"//;s/"$//')
+fi
 cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
 echo "Installed jitneuro.json (v$VERSION)"
+
+# --- Configure shared knowledge catalog location (prompt / preserve / standalone) ---
+configure_knowledge_root
 
 # --- Auto-configure hooks in settings.local.json (US-001) ---
 echo ""
@@ -325,7 +398,7 @@ HOOKS_PATH_FWD=$(echo "$HOOKS_PATH" | sed 's|\\|/|g')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each `command` is just a path.
-# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# Full rule: rules/claude-code-hook-deployment.md (installed with JitNeuro)
 # ============================================================================
 build_hooks_json() {
   cat <<HOOKJSON

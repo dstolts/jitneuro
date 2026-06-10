@@ -25,7 +25,7 @@ This document defines what must exist and be deployed in the **jitneuro** repo s
 
 - **Guardrails:** Override goals; never bypass; get current list by **reading** project/workspace `.claude/CLAUDE.md` (and repo `CLAUDE.md`). No cached copy.
 - **Save:** Trigger phrases → determine session name → gather state → write `.claude/session-state/<name>.md` → sync Hub if present → update `.current` → confirm. If compact/preserve rules needed, **read** CLAUDE.md.
-- **Load:** Resolve session (name or #) → **read** session file → **read** listed bundles → **read** `.jit-knowledge/INDEX.md` (routing) and **MEMORY.md** (project facts; always read file) → update `.current` → report.
+- **Load:** Resolve session (name or #) → **read** session file → **read** listed bundles → **read** the configured knowledge catalog index (routing) and **MEMORY.md** (project facts; always read file) → update `.current` → report.
 - **Learn:** **Read MEMORY.md** (no cache) → health check (line counts, routing, sessions, bundles, engrams) → scan conversation for learnings → proposed changes table → approve then execute.
 - **Source-of-truth principle:** At top of rule and where relevant: CLAUDE.md and MEMORY.md are live; **read** when needed, never copy into the rule or rely on stale context.
 

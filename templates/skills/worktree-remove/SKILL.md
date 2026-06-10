@@ -3,13 +3,13 @@ type: skill
 name: worktree-remove
 status: canonical
 purpose: Safely remove a git worktree after its branch's work is retired. Enforces lifecycle discipline -- refuses to remove a worktree with unpushed commits, open PR, or dirty working tree. The cleanup half of /worktree-new; together they implement the rules/worktree-discipline.md lifecycle ("created with branch; removed when branch retires").
-tags: [slash-command, git, worktrees, lifecycle, cleanup, jit-knowledge, branch-discipline]
+tags: [slash-command, git, worktrees, lifecycle, cleanup, jitneuro, branch-discipline]
 scope: public
 departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-remove.md
 origin_date: 2026-05-28
 origin_event: PR #240 (/worktree-new) open questions item #4 -- "Should /worktree-remove <repo> <branch> be a sibling skill in the same PR? Lean: separate PR; cleanup discipline is enough scope on its own." Authored as that separate follow-up PR. Also addresses rules/worktree-discipline.md "Worktree lifecycle is mandatory ... created with branch, removed when branch retires" + the related feedback_worktree_lifecycle_create_use_cleanup memory.
-graduation_target: jit-knowledge/skills/worktree-remove/SKILL.md
+graduation_target: <knowledge-root>/skills/worktree-remove/SKILL.md
 related_skills:
   - skills/worktree-new/SKILL.md (sibling: create)
   - rules/worktree-discipline.md (the rule this skill's cleanup half implements)
@@ -99,14 +99,14 @@ pass. Surfaces a summary:
 
 ```text
 Removed: 4
-  - jit-knowledge-feat-wip-skill-draft (PR #232 merged)
-  - jit-knowledge-feat-graduate-skill-draft (PR #233 merged)
-  - jit-knowledge-feat-worktree-discipline-rule-capture (PR #234 merged)
-  - jit-knowledge-chore-status-active-to-canonical-sweep (PR #235 merged)
+  - jitneuro-feat-wip-skill-draft (PR #232 merged)
+  - jitneuro-feat-graduate-skill-draft (PR #233 merged)
+  - jitneuro-feat-worktree-discipline-rule-capture (PR #234 merged)
+  - jitneuro-chore-status-active-to-canonical-sweep (PR #235 merged)
 
 Skipped: 2
-  - jit-knowledge-feat-qa-trial (working tree dirty)
-  - jit-knowledge-codex-readonly-rule (not mine; codex/* prefix, different agent)
+  - jitneuro-feat-qa-trial (working tree dirty)
+  - jitneuro-codex-readonly-rule (not mine; codex/* prefix, different agent)
 ```
 
 `--all-merged` NEVER removes worktrees owned by other agent runtimes
@@ -189,4 +189,4 @@ Drafted body to be added when the script ships via install.sh distribution
       with /worktree-new's script decision)
 - [ ] Decide: add `/worktree-status <repo>` audit skill as sibling
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `jit-knowledge/skills/worktree-remove/SKILL.md`
+      `<knowledge-root>/skills/worktree-remove/SKILL.md`

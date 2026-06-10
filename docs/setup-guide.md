@@ -228,15 +228,10 @@ To make a repo-specific bundle discoverable, document it in the repo's
 `.jitneuro/engrams/context.md` or equivalent repo context file. If your team also
 maintains an internal/shared catalog, add the cross-repo route there.
 
-For example, inside the JIT AI portfolio the internal superset catalog is
-`jit-knowledge/INDEX.md`. JitNeuro is the public subset published from that
-lineage; public adopters should not need `jit-knowledge`. To make a bundle load
-across the internal JIT AI portfolio:
-
-1. Open a PR to `dstolts/jit-knowledge` adding a route line to `INDEX.md`:
-   `- <trigger phrase>  -> [your-bundle-name]`
-2. Once merged, that portfolio's consuming system picks it up on the next shared
-   catalog update.
+If your team has a shared knowledge catalog, make a bundle available across
+the team by opening a PR to that catalog's `INDEX.md` adding a route line:
+`- <trigger phrase>  -> [your-bundle-name]`
+Once merged, all team members pick it up on the next catalog update.
 
 For local-only routes (experimental, not recommended long-term), ask Claude Code:
 ```
@@ -310,7 +305,7 @@ See [concepts.md](concepts.md) for detailed explanation with examples.
 | "bash not found" on Windows | Install Git for Windows. Installer detects paths automatically. |
 | settings.local.json parse error | Installer skips merge on parse failure. Fix JSON and re-run. |
 | Claude ignores bundle content | Bundle too long (over 180 lines) or conflicting with CLAUDE.md. |
-| Wrong bundles loaded | Check the installed JitNeuro context and repo-local `.jitneuro/` first. If your team uses an internal/shared catalog, update that catalog's route. |
+| Wrong bundles loaded | Check the installed JitNeuro context and repo-local `.jitneuro/` first. If your team uses a shared catalog, update that catalog's routing entry. |
 | Context still fills up | Use agents more aggressively, save/clear more often. |
 | /load loads stale state | Check session date with `/sessions`. |
 | Interrupted install | No `jitneuro.json` in `.claude/` = incomplete. Re-run installer. |

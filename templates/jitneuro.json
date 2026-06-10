@@ -1,5 +1,7 @@
 {
   "version": "0.5.0",
+  "knowledgeRoot": "",
+  "_knowledgeRoot": "Optional shared knowledge catalog location. Resolution order: JITNEURO_KNOWLEDGE_ROOT env var -> ~/.claude/url-resolver.md map (when the catalog is a separate repo) -> this value (relative paths resolve from repo root) -> ./.knowledge if present -> unset = standalone (no shared catalog; JitNeuro is fully functional). The installer prompts for this on first run; re-run with --reconfigure to change it. Empty string = standalone.",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -115,7 +117,7 @@
       "interval": 10080,
       "enabled": false,
       "instruction": "NONE",
-      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes jit-knowledge promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
+      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes knowledge catalog promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
       "agent_charter": ".claude/agents/cross-repo-rollup/CHARTER.md",
       "_comment": "WS6: see CHARTER.md for full agent prompt + idempotency rules."
     }

@@ -73,7 +73,7 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - List all bundles with line counts.
 - OK < 230, WARN 230-279, OVER 280+. Soft limit -- report only, do not auto-trim.
 - Flag bundles referenced in INDEX.md routing that don't exist on disk.
-- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
+- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to the shared catalog).
 
 **Engrams** (.claude/engrams/)
 - List all engrams with line counts.
@@ -86,11 +86,11 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - Flag sessions older than 14 days as EXPIRED.
 - Count total (more than 10 = CLUTTER).
 
-**Routing** (jit-knowledge/INDEX.md via url-resolver.md)
-- Check `~/.claude/url-resolver.md` exists and has an entry for jit-knowledge.
-- Read INDEX.md (via url-resolver) and verify routing entries point to bundles that exist in `.claude/bundles/`.
-- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
-- If url-resolver is missing or INDEX.md is unreachable, flag as WARNING with setup instructions.
+**Routing** (knowledge catalog INDEX.md, when configured)
+- If `JITNEURO_KNOWLEDGE_ROOT` is set or `.knowledge/` exists, locate the catalog's `INDEX.md`.
+- Read INDEX.md and verify routing entries point to bundles that exist in `.claude/bundles/`.
+- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to the catalog).
+- If no catalog is configured, skip this section and note "no shared catalog configured".
 
 **Hub.md** (per-repo task durability)
 - Resolve current session from heartbeats.
@@ -154,7 +154,7 @@ Fixes run in master context (small, targeted edits).
 | Engram missing for active project | Create from template |
 | Session older than 7 days | Flag for user decision |
 | More than 10 sessions | List all, ask user to clean up |
-| Manifest out of sync | Update to match actual files |
+| Catalog routing out of sync | Update local bundles or open PR to shared catalog index |
 | Hub.md STALE | Run /save to sync |
 | Hub.md MISSING | Create on next /save |
 | Rules over 600 total | Review for duplicates, consolidate |

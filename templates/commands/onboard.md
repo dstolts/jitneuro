@@ -132,8 +132,8 @@ Review and approve? (all / pick by number / edit first)
 
 - Write approved files
 - Add repo to MEMORY.md project table (if not already there)
-- Suggest PR to `jit-knowledge/INDEX.md` if a new routing entry is needed for this repo's domain
-- Add bundle files to `.claude/bundles/` if new bundles are needed; routing goes via PR to INDEX.md
+- Suggest PR to the shared knowledge catalog index if a new routing entry is needed for this repo's domain
+- Add bundle files to `.claude/bundles/` if new bundles are needed; routing goes via PR to the catalog index
 
 ### Step 6: Verify
 

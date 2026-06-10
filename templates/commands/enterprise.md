@@ -83,7 +83,7 @@ Store rules at the lowest level possible, closest to where they apply.
 - .claude/rules/*.md: path-scoped rules (load automatically per file type)
 - .claude/bundles/*.md: domain knowledge (load on demand by task)
 - .claude/engrams/*.md: project context (load on demand per repo)
-- MEMORY.md: project index + business facts (first 200 lines; routing lives in jit-knowledge/INDEX.md)
+- MEMORY.md: project index + business facts (first 200 lines; routing lives in the shared knowledge catalog index)
 Don't put schema rules in CLAUDE.md. Put them in rules/schema.md.
 Don't put deploy commands in CLAUDE.md. Put them in rules/deployment.md.
 ```

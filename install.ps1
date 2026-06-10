@@ -7,7 +7,8 @@
 
 param(
     [ValidateSet("workspace", "project", "user")]
-    [string]$Mode = "project"
+    [string]$Mode = "project",
+    [switch]$Reconfigure
 )
 
 $ErrorActionPreference = "Stop"
@@ -92,6 +93,64 @@ function Add-JnManifest($rel) {
     if (Test-Path $f) { $NewManifest.Add("$rel`t$(Get-JnSha $f)") }
 }
 
+# Patch the installed jitneuro.json "knowledgeRoot" value (preserves file formatting).
+function Set-KnowledgeRoot($v) {
+    $jf = Join-Path $Target "jitneuro.json"
+    if (-not (Test-Path $jf)) { return }
+    $raw = Get-Content $jf -Raw
+    # JSON-escape backslashes and quotes in the value.
+    $jsonVal = ($v -replace '\\', '\\') -replace '"', '\"'
+    # Escape any literal $ for the regex replacement string ($$ = literal $ in -replace).
+    $repl = '$1"' + ($jsonVal -replace '\$', '$$$$') + '"'
+    $raw = [regex]::Replace($raw, '("knowledgeRoot"\s*:\s*)"[^"]*"', $repl)
+    Set-Content -Path $jf -Value $raw -Encoding UTF8 -NoNewline
+}
+
+# Prompt for the shared knowledge catalog location and persist the choice.
+# Resolution at runtime: JITNEURO_KNOWLEDGE_ROOT env -> url-resolver map -> this value
+# -> .\.knowledge if present -> unset (standalone). Empty = standalone.
+function Configure-KnowledgeRoot {
+    $kr = $script:PrevKr
+    if ($env:JITNEURO_KNOWLEDGE_ROOT) { $kr = $env:JITNEURO_KNOWLEDGE_ROOT }
+    if ($kr -and -not $Reconfigure) {
+        Write-Host "Knowledge catalog: $kr (re-run with -Reconfigure to change)"
+        Set-KnowledgeRoot $kr
+        return
+    }
+    if (-not [Environment]::UserInteractive -and -not $Reconfigure) {
+        Write-Host "Knowledge catalog: standalone (no shared catalog). Set JITNEURO_KNOWLEDGE_ROOT or re-run with -Reconfigure to configure." -ForegroundColor Yellow
+        Set-KnowledgeRoot ""
+        return
+    }
+    Write-Host ""
+    Write-Host "Where should JitNeuro find your shared knowledge catalog?"
+    Write-Host "  1) A separate repo / folder elsewhere (recommended -- most common)"
+    Write-Host "  2) In this repo, in a .knowledge\ folder"
+    Write-Host "  3) Personal: ~\.claude\.knowledge"
+    Write-Host "  4) None -- run standalone (no shared catalog)"
+    $choice = Read-Host "Choice [1-4, default 4]"
+    switch ($choice) {
+        "1" { $kr = Read-Host "Absolute path to the catalog repo/folder" }
+        "2" {
+            $kr = "./.knowledge"
+            $d = Join-Path (Split-Path $Target -Parent) ".knowledge"
+            if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+        }
+        "3" {
+            $kr = Join-Path $env:USERPROFILE ".claude\.knowledge"
+            if (-not (Test-Path $kr)) { New-Item -ItemType Directory -Path $kr -Force | Out-Null }
+        }
+        default { $kr = "" }
+    }
+    Set-KnowledgeRoot $kr
+    if ($kr) {
+        Write-Host "Knowledge catalog set to: $kr"
+        Write-Host "Tip: set JITNEURO_KNOWLEDGE_ROOT=$kr to override per-machine without editing config."
+    } else {
+        Write-Host "Knowledge catalog: standalone (no shared catalog)."
+    }
+}
+
 # Create directories
 $dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
 foreach ($dir in $dirs) {
@@ -134,13 +193,13 @@ foreach ($cmdFile in $cmdTemplates) {
 }
 Write-Host "  ($CmdCount commands installed)"
 
-# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# Routing lives in your configured knowledge catalog's INDEX.md (when one is configured)
+# -- do NOT seed context-manifest.md with routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.ps1
 $staleManifest = Join-Path $Target "context-manifest.md"
 if (Test-Path $staleManifest) {
     Write-Host "NOTE: Legacy context-manifest.md found at $staleManifest" -ForegroundColor Yellow
-    Write-Host "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.ps1 to retire it." -ForegroundColor Yellow
+    Write-Host "      Routing now lives in your knowledge catalog's INDEX.md. You may retire context-manifest.md." -ForegroundColor Yellow
 }
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -288,8 +347,17 @@ foreach ($hook in $hookFiles) {
 }
 
 # --- Copy jitneuro.json config ---
+# Preserve a previously configured knowledge catalog root across re-installs.
+$script:PrevKr = ""
+$installedJson = Join-Path $Target "jitneuro.json"
+if (Test-Path $installedJson) {
+    try { $script:PrevKr = (Get-Content $installedJson -Raw | ConvertFrom-Json).knowledgeRoot } catch { }
+}
 Copy-Item $ConfigFile (Join-Path $Target "jitneuro.json") -Force
 Write-Host "Installed jitneuro.json (v$Version)"
+
+# --- Configure shared knowledge catalog location (prompt / preserve / standalone) ---
+Configure-KnowledgeRoot
 
 # --- Windows bash detection (US-005) ---
 Write-Host ""
@@ -364,7 +432,7 @@ $HooksPathFwd = ($hooksDir -replace '\\', '/')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each command is just a path.
-# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# Full rule: rules/claude-code-hook-deployment.md (installed with JitNeuro)
 # ============================================================================
 # Build hooks config object
 $hooksConfig = @{
