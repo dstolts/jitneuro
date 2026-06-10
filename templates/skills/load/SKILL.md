@@ -6,7 +6,6 @@ tags: [load, session-management, shortcut, checkpoint]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/load/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

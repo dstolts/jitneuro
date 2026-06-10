@@ -1,8 +1,7 @@
-# JitNeuro vs OpenClaw -- Comparison Analysis
+# JitNeuro vs OpenClaw -- Comparison
 
-**Date:** 2026-03-18
-**Purpose:** Research comparison for JitNeuro roadmap planning
-**Sources:** GitHub repos, official docs, Wikipedia, community articles, security research
+**Purpose:** Accurate positioning of JitNeuro relative to OpenClaw for adopters evaluating both.
+**Sources:** GitHub repos, official docs, community articles, security research (as of March 2026).
 
 ---
 
@@ -10,12 +9,12 @@
 
 ### OpenClaw
 
-- **What:** Open-source autonomous AI agent framework that wraps around LLMs (Claude, GPT, Gemini, Llama) and exposes them through messaging platforms (WhatsApp, Telegram, Discord, Signal, Slack, iMessage) as a personal AI assistant.
-- **Creator:** Peter Steinberger (Austrian developer). Originally published as "Clawdbot" in November 2025, renamed "Moltbot" January 27, 2026 after Anthropic trademark complaint, then "OpenClaw" January 30, 2026.
+- **What:** Open-source autonomous AI agent framework that wraps LLMs (Claude, GPT, Gemini, Llama) and exposes them through messaging platforms (WhatsApp, Telegram, Discord, Signal, Slack, iMessage) as a personal AI assistant.
+- **Creator:** Peter Steinberger (Austrian developer). Originally published as "Clawdbot" November 2025, renamed "Moltbot" January 27, 2026 after an Anthropic trademark complaint, then "OpenClaw" January 30, 2026.
 - **License:** MIT
 - **Language:** TypeScript
-- **GitHub:** github.com/openclaw/openclaw -- 322,645 stars, 62,111 forks, 14,616 open issues (as of March 18, 2026)
-- **Status:** Steinberger joined OpenAI on February 14, 2026. Project transitioning to an independent, OpenAI-sponsored foundation.
+- **GitHub:** github.com/openclaw/openclaw
+- **Status:** Steinberger joined OpenAI February 14, 2026. Project transitioning to an independent, OpenAI-sponsored foundation.
 - **Scope:** General-purpose personal AI assistant. Runs locally on Mac/Windows/Linux. Multi-channel messaging interface. 50+ integrations (Spotify, Obsidian, Twitter, GitHub, Gmail, smart home, etc.).
 
 ### JitNeuro
@@ -24,15 +23,15 @@
 - **Creator:** Just In Time AI, Inc.
 - **License:** MIT
 - **Language:** Shell (bash + PowerShell install scripts), Markdown configuration
-- **GitHub:** github.com/dstolts/jitneuro -- 2 stars, 0 forks, 2 open issues (as of March 18, 2026)
-- **Status:** Active development, v0.2.0
+- **GitHub:** github.com/dstolts/jitneuro
+- **Version:** v0.5.0
 - **Scope:** Claude Code-specific. Enhances the Claude Code CLI with structured memory, enterprise-grade guardrails, decision frameworks, and autonomous task execution patterns. Not a standalone agent -- augments an existing tool.
 
 ---
 
 ## 2. Feature Comparison Table
 
-| Feature | OpenClaw | JitNeuro v0.2.0 |
+| Feature | OpenClaw | JitNeuro v0.5.0 |
 |---------|----------|-----------------|
 | **Primary Purpose** | General AI assistant via messaging | Claude Code memory + enterprise guardrails |
 | **Target User** | Anyone wanting a personal AI assistant | Claude Code power users, enterprise developers |
@@ -44,9 +43,9 @@
 | **Context Compaction** | Built-in compaction with pre-compaction memory flush | Pre-compact hook (lifecycle hook triggers context save) |
 | **Session Management** | Named sessions (session:custom-id), session transcripts as JSONL | /save, /load, /sessions, /pulse, session-state files, post-clear picker |
 | **Identity/Persona** | SOUL.md + IDENTITY.md per agent, mutable soul evolution, soul-evil hook for persona swapping | 16 personas in cognition/personas.md, owner persona overlay, per-request persona activation |
-| **Multi-Agent** | Native sub-agents, configurable nesting depth, orchestrator pattern, per-agent workspaces | Planned FR-105 (autonomous orchestration, cross-session spawning) |
+| **Multi-Agent** | Native sub-agents, configurable nesting depth, orchestrator pattern, per-agent workspaces | Shipped: scheduled agents, background sub-agent spawning, cross-session orchestration via hooks |
 | **Hooks** | Event-driven hooks on agent lifecycle events | 10 hook scripts / 9 hook events (pre-compact save, session-id write, heartbeat, post-compact recovery, post-clear picker, scheduled-agents spawner, branch protection, pre/post agent register, session-end auto-save) |
-| **Scheduling** | Cron jobs (at/every/cron expressions), heartbeat monitoring | Not yet (FR-105 planned: scheduled sessions) |
+| **Scheduling** | Cron jobs (at/every/cron expressions), heartbeat monitoring | Scheduled agents (interval-based, configurable per jitneuro.json) |
 | **Skills/Commands** | ClawHub marketplace (4,000+ community skills), CLI-installable | 17 commands + 5 shortcuts, project-scoped |
 | **Decision Framework** | No formal framework -- operational rules in AGENTS.md | 4 decision models, priority weights (security > reliability > correctness > ...), divergent thinking |
 | **Security Guardrails** | Broad filesystem access by default, sandbox mode optional | Trust Zones (GREEN/YELLOW/RED), branch protection hook, file versioning, definition of done |
@@ -54,7 +53,7 @@
 | **Install Method** | curl one-liner, npm, or git clone | bash + PowerShell scripts, 3 modes (user/workspace/project) |
 | **Configuration** | JSON config + markdown workspace files | Pure markdown + JSON (settings.json, workspace.json) |
 | **File Size Limits** | 20K chars per file, 150K aggregate bootstrap | Line-count limits (MEMORY.md < 200, bundles < 180, engrams < 150) |
-| **AFK/Autonomous** | Heartbeat system, cron-driven autonomous tasks, 24/7 daemon | AFK pattern for autonomous task execution within Claude Code sessions |
+| **AFK/Autonomous** | Heartbeat system, cron-driven autonomous tasks, 24/7 daemon | Scheduled housekeeper agent, AFK pattern for autonomous task execution within Claude Code sessions |
 | **Integrations** | 50+ (Spotify, smart home, GitHub, Gmail, etc.) | Claude Code native only (MCP servers for external tools) |
 | **Customization Guide** | Community docs, blog posts, ClawHub examples | Post-install review guide, rule templates (Definition of Done, Trust Zones, File Versioning) |
 | **Enterprise Focus** | Minimal -- personal assistant first | Core design principle -- enterprise security, compliance, audit trails |
@@ -103,13 +102,13 @@ OpenClaw is a **runtime** -- it is the agent. JitNeuro is a **configuration laye
 | **16 Named Personas with Per-Request Activation** | Specialist personas activated based on task context, announced at response start, with conflict reconciliation. OpenClaw has SOUL.md for a single agent personality, not task-specific persona switching. |
 | **Divergent Thinking Process** | Structured FRAME > DIVERGE > EVALUATE > CONVERGE > EXECUTE process for enterprise decisions. Forces multi-approach evaluation before committing. |
 | **Trust Zones (GREEN/YELLOW/RED)** | Formal permission model with escalation gates. RED actions require explicit owner approval. OpenClaw has sandbox mode but no structured trust zone model. |
-| **Anti-Pattern Tracking** | 10 documented anti-patterns that persist across sessions via cognition/anti-patterns.md. |
+| **Anti-Pattern Tracking** | Documented anti-patterns that persist across sessions via cognition/anti-patterns.md. |
 | **Root Cause Analysis Protocol** | Formal RCA process triggered by friction detection or explicit request. Traces to root cause before fixing. |
 | **File Versioning with Archive** | Mandatory copy-before-edit with -01/-02 naming, .archive/ directories, import verification before archiving. |
 | **Definition of Done** | Three conditions: value delivered + customer knows how to use it + customer validated. Applied to all work. |
 | **Routing Weights** | Keyword-based automatic bundle loading. Task context determines which knowledge files load. Reduces token waste. |
 | **Branch Protection Hook** | Lifecycle hook preventing commits to main without explicit permission. |
-| **Gap Analysis** | Mandatory 15% extra thought time before delivering code: edge cases, missed personas, wrong assumptions. |
+| **Gap Analysis** | Mandatory extra thought time before delivering code: edge cases, missed personas, wrong assumptions. |
 | **Engram System** | Per-project deep context files (engrams/) with toggle control via toggles.json. Separate from operational memory. |
 | **Cross-Project Orchestration** | API contract-first rule for cross-repo changes. Sprint protocol with per-repo build verification. |
 | **Pure Markdown Config** | No runtime dependencies. Everything is markdown files that Claude Code reads natively. Zero attack surface from the framework itself. |
@@ -124,15 +123,13 @@ OpenClaw is a **runtime** -- it is the agent. JitNeuro is a **configuration laye
 | **Multi-Platform Messaging** | WhatsApp, Telegram, Discord, Signal, Slack, iMessage, browser. JitNeuro is CLI-only through Claude Code. |
 | **Multi-LLM Support** | Works with Claude, GPT, Gemini, Llama, and other models. JitNeuro is Claude-only. |
 | **Semantic Memory Search** | Vector embeddings (embeddinggemma-300m) + keyword hybrid RAG for memory retrieval. JitNeuro uses keyword-based routing and grep. |
-| **Native Multi-Agent** | Sub-agent spawning with configurable nesting depth, orchestrator patterns, per-agent isolated workspaces. JitNeuro has this planned (FR-105) but not implemented. |
-| **Cron Scheduling** | Built-in cron jobs (at/every/cron expressions) managed by the Gateway daemon. JitNeuro has no scheduling. |
-| **Heartbeat Monitoring** | Periodic awareness checks (HEARTBEAT.md) where the agent evaluates whether action is needed. Intelligent triage vs blind alerts. |
+| **Native Multi-Agent at Runtime** | Sub-agent spawning with configurable nesting depth, orchestrator patterns, per-agent isolated workspaces managed by the Gateway daemon. |
+| **Cron Scheduling** | Built-in cron jobs (at/every/cron expressions) managed by the Gateway daemon outside Claude Code sessions. |
 | **Skills Marketplace** | ClawHub with 4,000+ community-contributed skills, CLI-installable. JitNeuro commands are author-maintained only. |
 | **50+ Platform Integrations** | Spotify, Obsidian, smart home, Twitter, GitHub, Gmail, etc. JitNeuro relies on Claude Code's MCP servers for external tool access. |
 | **Mutable Agent Identity** | Agents can modify their own SOUL.md across sessions, enabling personality evolution. JitNeuro personas are static configuration. |
-| **Dynamic Persona Swapping** | soul-evil hook enables random or scheduled persona changes (e.g., 10% chance alternate personality). |
+| **Dynamic Persona Swapping** | soul-evil hook enables random or scheduled persona changes. |
 | **Session Transcripts as JSONL** | Full conversation history stored on disk in structured format. JitNeuro session state is markdown checkpoints. |
-| **Massive Community** | 322K+ stars, 62K+ forks, extensive third-party tooling, blog posts, courses, marketplace ecosystem. |
 | **AWS Managed Service** | AWS Lightsail managed hosting option available. JitNeuro is self-managed configuration only. |
 
 ---
@@ -165,31 +162,31 @@ OpenClaw is a **runtime** -- it is the agent. JitNeuro is a **configuration laye
 
 OpenClaw and JitNeuro solve different problems at different layers:
 - OpenClaw is an **agent runtime** -- it IS the AI assistant
-- JitNeuro is a **configuration framework** -- it makes Claude Code BETTER at being an AI coding assistant
+- JitNeuro is a **configuration framework** -- it makes Claude Code better at being an AI coding assistant
 
-A user could theoretically use both: OpenClaw as a general assistant on messaging platforms, and JitNeuro to enhance their Claude Code development sessions. They do not conflict.
+A user could use both: OpenClaw as a general assistant on messaging platforms, and JitNeuro to enhance their Claude Code development sessions. They do not conflict.
 
 ---
 
-## 7. Recommendations for the JitNeuro Roadmap Based on Gaps Found
+## 7. Roadmap Considerations Based on This Analysis
 
-### High Priority (Borrow concepts, adapt to JitNeuro's architecture)
+### High Priority (borrow concepts, adapt to JitNeuro's architecture)
 
 1. **Semantic Memory Search** -- OpenClaw's hybrid RAG (vector + keyword) for memory retrieval is a significant advantage over keyword-based routing weights. Consider adding an MCP server that provides semantic search across engrams and bundles. This would make context loading smarter without changing the markdown-first architecture. Could leverage Claude Code's native MCP support.
 
-2. **Pre-Compaction Memory Flush** -- OpenClaw's configurable `reserveTokensFloor` (40K tokens) ensures critical context is saved before compaction destroys it. JitNeuro has a pre-compact hook, but verify it has enough reserved token budget to execute reliably. Document recommended settings.
+2. **Pre-Compaction Memory Flush** -- OpenClaw's configurable `reserveTokensFloor` (40K tokens) ensures critical context is saved before compaction. JitNeuro has a pre-compact hook; verify it has enough reserved token budget to execute reliably and document recommended settings.
 
-3. **Heartbeat / Scheduled Check-Ins** -- The HEARTBEAT.md pattern (agent periodically evaluates a checklist and decides whether to act) is elegant and low-overhead. Could be implemented as a scheduled Claude Code session that reads a HEARTBEAT.md file. Natural extension of FR-105.
+3. **Richer Heartbeat / Check-In Logic** -- The HEARTBEAT.md pattern (agent periodically evaluates a checklist and decides whether to act) is elegant and low-overhead. JitNeuro's scheduled housekeeper agent covers this; consider expanding its checklist coverage.
 
-### Medium Priority (Valuable but not urgent)
+### Medium Priority (valuable but not urgent)
 
-4. **Session Transcripts** -- OpenClaw stores full session history as JSONL. JitNeuro sessions are markdown checkpoints. Consider adding structured session logging (the /conversation-log command is already in the command list) as a default-on feature for audit and replay.
+4. **Session Transcripts** -- OpenClaw stores full session history as JSONL. JitNeuro sessions are markdown checkpoints. The /conversation-log command is already in the command list; consider making structured session logging default-on for audit and replay.
 
-5. **Skills Marketplace / Community Sharing** -- OpenClaw's ClawHub enables community contribution (despite its security problems). JitNeuro could publish command templates and rule templates as a curated, reviewed collection. Quality over quantity -- avoid ClawHub's 20% malicious skill problem.
+5. **Curated Skills Sharing** -- OpenClaw's ClawHub enables community contribution at scale. JitNeuro could publish command and rule templates as a reviewed collection. Quality over quantity -- avoid the supply-chain risks ClawHub has encountered.
 
-6. **Mutable Persona Evolution** -- OpenClaw agents can modify their own SOUL.md. JitNeuro personas are static. Consider allowing the /learn command to propose persona refinements based on session patterns. Controlled evolution with owner approval.
+6. **Guided Persona Evolution** -- OpenClaw agents can modify their own SOUL.md. JitNeuro personas are static. The /learn command could propose persona refinements based on session patterns, subject to owner approval.
 
-### Low Priority (Interesting but different scope)
+### Low Priority (interesting but different scope)
 
 7. **Multi-LLM Support** -- Not relevant while JitNeuro is Claude Code-specific, but if Claude Code ever supports multiple model backends, the framework should be model-agnostic.
 
@@ -198,19 +195,19 @@ A user could theoretically use both: OpenClaw as a general assistant on messagin
 ### What NOT to Adopt from OpenClaw
 
 - **Broad default filesystem access** -- OpenClaw's permissive default permissions contributed to critical CVEs. JitNeuro's Trust Zones are the correct approach.
-- **Unreviewed skills marketplace** -- ClawHub's 20% malicious skill rate and 41.7% vulnerability rate prove that community contribution without review is dangerous. If JitNeuro adds community sharing, gate it with review.
+- **Unreviewed skills marketplace** -- ClawHub's high malicious-skill and vulnerability rates prove that community contribution without review is dangerous. If JitNeuro adds community sharing, gate it with review.
 - **Mutable identity without guardrails** -- Allowing agents to modify their own SOUL.md creates attack vectors for prompt injection persistence. JitNeuro's approach (owner controls identity, AI proposes via /learn) is safer.
 - **Runtime daemon architecture** -- Adding a background process would increase JitNeuro's attack surface and complexity. The markdown-only approach is a security advantage.
 
-### Security Lessons from OpenClaw
+### Security Lessons from OpenClaw's CVE History
 
 OpenClaw's security history is instructive:
-- **CVE-2026-25253** (CVSS 8.8): Control UI accepted unvalidated gateway URLs, leaking auth tokens. 42,665 exposed instances, 93.4% authentication bypass.
+- **CVE-2026-25253** (CVSS 8.8): Control UI accepted unvalidated gateway URLs, leaking auth tokens. Widespread exposure, high authentication bypass rate.
 - **CVE-2026-22175**: Exec approval bypass via unrecognized shell wrappers (busybox, toybox).
-- **ClawHub supply chain**: 800+ malicious skills out of ~4,000 (20%). 41.7% had exploitable vulnerabilities.
-- **30,000+ exposed instances** with stored LLM API credentials on public-facing cloud servers.
+- **ClawHub supply chain**: A significant fraction of community skills contained exploitable vulnerabilities or malicious payloads.
+- Stored LLM API credentials exposed on public-facing cloud servers at scale.
 
-JitNeuro's architecture (pure markdown config, no daemon, no network listener, no marketplace) inherently avoids these attack vectors. This is worth emphasizing in marketing and documentation.
+JitNeuro's architecture (pure markdown config, no daemon, no network listener, no marketplace) inherently avoids these attack vectors. This is a meaningful differentiator for security-conscious adopters.
 
 ---
 
@@ -218,14 +215,13 @@ JitNeuro's architecture (pure markdown config, no daemon, no network listener, n
 
 | Dimension | OpenClaw | JitNeuro |
 |-----------|----------|----------|
-| **Maturity** | 4 months old, massive adoption | 9 days old, early stage |
-| **Community** | 322K stars, 62K forks | 2 stars, 0 forks |
 | **Scope** | General AI assistant | Claude Code enhancement |
 | **Architecture** | Agent runtime (daemon) | Configuration framework (markdown) |
-| **Security** | Multiple critical CVEs | Zero attack surface by design |
+| **Security** | Multiple critical CVEs; permissive defaults | Zero attack surface by design; Trust Zones |
 | **Memory** | Semantic search + bootstrap files | Layered markdown + routing weights |
-| **Autonomy** | Cron + heartbeat + sub-agents | AFK pattern + hooks (scheduling planned) |
+| **Autonomy** | Cron + heartbeat + sub-agents (daemon) | Scheduled housekeeper + AFK pattern + hooks |
 | **Enterprise** | Minimal governance | Trust zones, decision frameworks, audit trails |
 | **Cognition** | Single SOUL.md personality | 16 personas, 4 decision models, friction detection |
+| **Community** | Large, active, third-party ecosystem | Author-maintained, focused on quality |
 
-OpenClaw and JitNeuro are complementary rather than competitive. OpenClaw is a broad AI assistant platform with massive community momentum but significant security concerns. JitNeuro is a focused, security-first enhancement layer for Claude Code with enterprise-grade cognitive frameworks. The primary opportunities for JitNeuro are: semantic memory search, scheduled autonomous sessions, and curated community sharing -- all implementable without compromising the framework's zero-runtime-dependency security model.
+OpenClaw and JitNeuro are complementary rather than competitive. OpenClaw is a broad AI assistant platform with a large community and rich integrations. JitNeuro is a focused, security-first enhancement layer for Claude Code with enterprise-grade cognitive frameworks. The primary opportunities for JitNeuro are: semantic memory search, richer scheduled autonomy, and curated community sharing -- all implementable without compromising the framework's zero-runtime-dependency security model.

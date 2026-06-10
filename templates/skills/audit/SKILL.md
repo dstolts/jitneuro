@@ -5,7 +5,6 @@ tags: [audit, hygiene, git, env-leaks, doe-compliance, subagent]
 scope: public
 departments: [engineering]
 status: canonical
-graduation_target: skills/audit/SKILL.md
 read_when: When running the /audit command against a repo to scan for hygiene issues, env leaks, stale branches, or DOE compliance gaps.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

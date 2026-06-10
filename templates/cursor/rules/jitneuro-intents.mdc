@@ -1,52 +1,54 @@
 ---
-description: JitNeuro intents — guardrails, save, load, learn. When you see these, do this.
+description: JitNeuro intents -- guardrails, save, load, learn. When you see these, do this.
 globs:
 alwaysApply: true
 ---
 
 # JitNeuro: When You See It, Do This
 
-This rule defines **guardrails** and three core intents: **save**, **load**, **learn**. No slash required — when the user (or context) implies one of these, do the following.
+This rule defines **guardrails** and three core intents: **save**, **load**, **learn**. No slash required -- when the user (or context) implies one of these, do the following.
 
-## Source of truth — read, never copy
+## Source of truth -- read, never copy
 
-**CLAUDE.md** and **MEMORY.md** (and project/workspace `.claude/CLAUDE.md`) are updated constantly. You must **read** them when you need guardrails, routing weights, compact instructions, or other live rules. Do **not** rely on copied or inlined text from these files; always read the current file so you see the latest content.
+**`AGENTS.md`** (repo root) is JitNeuro's canonical, vendor-neutral standard -- Cursor, Codex, Claude Code, and other agents all read the SAME file. **Read `AGENTS.md` first** for identity, cognitive identity, decision weights, divergent thinking, critical rules, guardrails, KNOWLEDGE_ROOT, and context loading.
+
+**MEMORY.md** and any project/workspace `.claude/CLAUDE.md` (a thin importer of `AGENTS.md`) are updated constantly. You must **read** the live file when you need guardrails, routing, compact instructions, or other rules. Do **not** rely on copied or inlined text; always read the current file so you see the latest content. There is no hook or slash-command support in Cursor -- the standard (`AGENTS.md`) plus `.claude/rules/`, bundles, engrams, and the knowledge store IS the contract.
 
 ---
 
 ## Guardrails
 
 - **Guardrails override goals.** If a task conflicts with a guardrail, the guardrail wins. Never bypass a guardrail to complete a task. Surface the conflict and ask the project owner.
-- **Get the current list by reading:** Project or workspace **`.claude/CLAUDE.md`** (and repo root `CLAUDE.md` if present). **Read that file** whenever you need the full guardrail list — trust zones, branch rules, approval workflow, critical rules. Do not use a cached or copied version; the file changes constantly.
+- **Get the current list by reading:** Repo root **`AGENTS.md`** (the canonical standard) plus `.claude/rules/`. **Read those** whenever you need the full guardrail list -- trust zones, branch rules, approval workflow, critical rules. Do not use a cached or copied version; the files change constantly.
 - **If unsure:** Treat as a guardrail. Ask before doing anything destructive or that crosses a stated boundary.
 
 ---
 
 ## Save (checkpoint session)
 
-**Trigger phrases (or equivalent intent):** save, checkpoint, session save, /save, “save this session”, “save session as …”, “remember where we are”.
+**Trigger phrases (or equivalent intent):** save, checkpoint, session save, /save, "save this session", "save session as ...", "remember where we are".
 
 **What to do:**
 
 1. **Session name**  
-   If the user gave a name, use it (lowercase, hyphens). Otherwise read `.claude/session-state/heartbeats/<session-id>` (session-id from context); if there’s an active session name (not "none"), use that name. If none, suggest a short task-based name and confirm.
+   If the user gave a name, use it (lowercase, hyphens). Otherwise read `.claude/session-state/heartbeats/<session-id>` (session-id from context); if there's an active session name (not "none"), use that name. If none, suggest a short task-based name and confirm.
 
 2. **Gather state**  
-   From current context: current task, repos involved, active bundles, modified files, key decisions, pending/unresolved items, next steps, key findings. If you need what to preserve on compact or project rules, **read CLAUDE.md** (and `.claude/CLAUDE.md` if in scope) — do not rely on a copy; those files change constantly.
+   From current context: current task, repos involved, active bundles, modified files, key decisions, pending/unresolved items, next steps, key findings. If you need what to preserve on compact or project rules, **read CLAUDE.md** (and `.claude/CLAUDE.md` if in scope) -- do not rely on a copy; those files change constantly.
 
 3. **Write**  
    Write to `.claude/session-state/<name>.md` in this format:
    - `# Session: <name>`
    - `**Checkpointed:**` date/time
-   - `## Current Task` — task and status
-   - `## Repos Involved` — list with brief note
-   - `## Active Bundles` — which bundles are loaded and why
-   - `## Modified Files` — paths and what changed
-   - `## Key Decisions` — decisions and reasoning
-   - `## Pending / Unresolved` — items needing input
-   - `## Next Steps` — ordered list
-   - `## Key Findings` — discoveries worth keeping across context reset  
-   Target 30–60 lines.
+   - `## Current Task` -- task and status
+   - `## Repos Involved` -- list with brief note
+   - `## Active Bundles` -- which bundles are loaded and why
+   - `## Modified Files` -- paths and what changed
+   - `## Key Decisions` -- decisions and reasoning
+   - `## Pending / Unresolved` -- items needing input
+   - `## Next Steps` -- ordered list
+   - `## Key Findings` -- discoveries worth keeping across context reset  
+   Target 30-60 lines.
 
 4. **Sync todos**
    If the session involves repos with `.HUB/Hub-*.md`, find or create a section headed `## <session-name>` and sync TodoWrite items there (add new, update status). Each session owns its own section. If there are todos and no Hub file, consider creating one.
@@ -55,7 +57,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    Use a shell command to write the session name: `echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"`. Never use Write/Edit tools for heartbeat files -- the PostToolUse hook touches them constantly, causing "file modified since read" errors.
 
 6. **Confirm**  
-   Say something like: “Saved `<name>`. Safe to clear context. Use load to restore.” If the session had learnings, suggest running **learn** next.
+   Say something like: "Saved `<name>`. Safe to clear context. Use load to restore." If the session had learnings, suggest running **learn** next.
 
 **Current (per-session):** To get "my" active session name: read `.claude/session-state/heartbeats/<session-id>` (session-id from context). Content = session name. To **update current** after save: write session name to `heartbeats/<session-id>`.
 
@@ -65,7 +67,7 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
 
 ## Load (restore session)
 
-**Trigger phrases (or equivalent intent):** load, restore, session load, /load, “load session …”, “restore …”, “pick up where we left off”, “switch to session …”.
+**Trigger phrases (or equivalent intent):** load, restore, session load, /load, "load session ...", "restore ...", "pick up where we left off", "switch to session ...".
 
 **What to do:**
 
@@ -76,35 +78,35 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    Read the session file `.claude/session-state/<name>.md`.
 
 3. **Load bundles**  
-   For each bundle listed under “Active Bundles” in that file, read the corresponding `.claude/bundles/<name>.md`.
+   For each bundle listed under "Active Bundles" in that file, read the corresponding `.claude/bundles/<name>.md`.
 
-4. **Read manifest and memory**  
-   Read `.claude/context-manifest.md` for bundle index. Read **MEMORY.md** for current routing weights and project index (it changes constantly — always read the file).
+4. **Read catalog and memory**
+   Read `KNOWLEDGE_ROOT/INDEX.md` for the routing + bundle index (KNOWLEDGE_ROOT resolves via the `KNOWLEDGE_ROOT` env var, then `jitneuro.json` `knowledgeRoot`, then the local `.knowledge/` store -- always present). Read **MEMORY.md** for the project index (it changes constantly -- always read the file).
 
 5. **Update current**  
    Write the session name to `.claude/session-state/heartbeats/<session-id>` (session-id from context).
 
 6. **Report**  
-   Summarize: “Loaded: &lt;name&gt; (checkpointed &lt;date&gt;). Task: … Repos: … Loaded bundles: … Next steps: 1. …”  
-   If the checkpoint is older than 7 days, note that it may be stale and ask if it’s still relevant.
+   Summarize: "Loaded: &lt;name&gt; (checkpointed &lt;date&gt;). Task: ... Repos: ... Loaded bundles: ... Next steps: 1. ..."  
+   If the checkpoint is older than 7 days, note that it may be stale and ask if it's still relevant.
 
-**Paths:** Same as save — workspace or project `.claude/`.
+**Paths:** Same as save -- workspace or project `.claude/`.
 
 ---
 
 ## Learn (persist learnings + memory health)
 
-**Trigger phrases (or equivalent intent):** learn, /learn, “persist this”, “update memory”, “remember this”, “run learn”, “memory health”.
+**Trigger phrases (or equivalent intent):** learn, /learn, "persist this", "update memory", "remember this", "run learn", "memory health".
 
 **What to do:**
 
 1. **Memory health check**  
-   **Read MEMORY.md** (do not use a cached copy — it changes constantly). Then:  
+   **Read MEMORY.md** (do not use a cached copy -- it changes constantly). Then:  
    - Count lines. Warn at 150+, critical at 190+ (hard limit 200). Note truncation/stale/duplicates.  
    - **Bundles** (`.claude/bundles/`): List, count lines each. Warn at 150+ (max 180). Note missing or oversized.  
    - **Engrams** (`.claude/engrams/`): List, count lines each. Warn at 130+ (soft max 150). Note missing for active projects.  
    - **Session state** (`.claude/session-state/`): List files and age. Flag >7 days stale, >14 days for archive/delete.  
-   - **Routing:** From the MEMORY.md you just read, check routing weights; note missing routes or references to missing bundles/engrams.  
+   - **Routing:** From `KNOWLEDGE_ROOT/INDEX.md` (and the MEMORY.md you just read), check routing; note missing routes or references to missing bundles/engrams.
    Present a short table: Component | Status | Detail | Fix.
 
 2. **Scan session for learnings**  
@@ -114,13 +116,13 @@ This rule defines **guardrails** and three core intents: **save**, **load**, **l
    Build a single table: Type (Health/Learn/Fix), File, Change, Fix. Include both health-check fixes and session learnings.
 
 4. **Approve then execute**  
-   Present the table. Ask: “Approve all, or pick by number?” Do **not** write until the user approves. Then apply only approved changes. Re-check line counts after edits.
+   Present the table. Ask: "Approve all, or pick by number?" Do **not** write until the user approves. Then apply only approved changes. Re-check line counts after edits.
 
 5. **If nothing to do**  
-   Say: “Memory system healthy. No learnings to persist from this session.”
+   Say: "Memory system healthy. No learnings to persist from this session."
 
 **Limits:** MEMORY.md 200 lines; bundles 180; engrams 150. Session state: flag stale; suggest cleaning when many active sessions.
 
 **Full procedure:** For edge cases (splits, new engrams, remediation patterns), read `.claude/commands/learn.md` and, for save/load, `.claude/commands/session.md` (session save / session load sections).
 
-**Reminder:** CLAUDE.md and MEMORY.md are live sources. Whenever you need guardrails, routing weights, compact instructions, or project index: **read the file**. Do not copy their content into this rule or rely on an earlier read in the same conversation if the user may have changed them.
+**Reminder:** `AGENTS.md`, MEMORY.md, and `KNOWLEDGE_ROOT/INDEX.md` are live sources. Whenever you need guardrails, routing, compact instructions, or the project index: **read the file**. Do not copy their content into this rule or rely on an earlier read in the same conversation if the user may have changed them.

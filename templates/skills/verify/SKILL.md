@@ -6,7 +6,6 @@ tags: [verify, installation, post-install, diagnostic, read-only]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/verify/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

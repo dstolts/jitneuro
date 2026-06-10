@@ -6,7 +6,6 @@ tags: [orchestrate, subagent, routing, bundles, multi-agent, dispatch]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/orchestrate/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

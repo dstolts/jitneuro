@@ -5,7 +5,6 @@ tags: [health, memory, diagnostic, sessions, engrams, bundles]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/health/SKILL.md
 read_when: When diagnosing memory system bloat, stale sessions, or oversized engrams and bundles.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

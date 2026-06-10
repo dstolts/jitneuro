@@ -5,7 +5,6 @@ tags: [conversation-log, logging, session, toggle]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/conversation-log/SKILL.md
 read_when: When running the /conversation-log command to enable, disable, or query session logging state.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

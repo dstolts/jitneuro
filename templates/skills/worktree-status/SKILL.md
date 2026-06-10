@@ -9,7 +9,6 @@ departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-status.md
 origin_date: 2026-05-28
 origin_event: PR #241 (/worktree-remove) open questions item #3 -- "Should there be a /worktree-status <repo> skill that audits all worktrees for staleness? Lean: yes -- queue as a future skill alongside /worktree-new + /worktree-remove for full lifecycle visibility." Authored as that follow-up.
-graduation_target: <knowledge-root>/skills/worktree-status/SKILL.md
 related_skills:
   - skills/worktree-new/SKILL.md (sibling: create)
   - skills/worktree-remove/SKILL.md (sibling: remove)

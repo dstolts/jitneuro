@@ -6,7 +6,6 @@ tags: [heartbeat, session-management, hooks, race-condition, tools]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: rules/heartbeat-write-safety.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
