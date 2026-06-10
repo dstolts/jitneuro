@@ -6,7 +6,6 @@ tags: [status, session-management, shortcut]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/status/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

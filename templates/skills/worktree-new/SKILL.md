@@ -9,7 +9,6 @@ departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-new.md
 origin_date: 2026-05-28
 origin_event: PR #234 (worktree-discipline rule) open questions item #1 -- "Should the rule include a `git worktree-add` slash command / helper script? Lean: yes -- a `/worktree-new <repo> <branch>` slash command would encode the path convention and make the right way frictionless." Knowledge session 2026-05-28 follow-up after batch graduation PR #239 merged the worktree-discipline rule as canonical.
-graduation_target: <knowledge-root>/skills/worktree-new/SKILL.md
 related_skills:
   - rules/worktree-discipline.md (the rule this skill makes mechanical)
   - skills/wip/SKILL.md (sibling: capture into WIP-Drafts)

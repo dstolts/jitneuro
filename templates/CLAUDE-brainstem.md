@@ -1,125 +1,51 @@
 # [Project Name]
 
 <!--
-  BRAINSTEM TEMPLATE
+  CLAUDE.md -- THIN IMPORTER (do NOT duplicate AGENTS.md here)
 
-  This is a minimal CLAUDE.md template designed for JitNeuro.
-  Target: 30-40 lines. Only include what Claude MUST know at all times.
-  Everything else goes in bundles, rules, or commands.
+  JitNeuro's canonical, vendor-neutral instruction surface is AGENTS.md.
+  Cursor, Codex, Claude Code, and other agents all read the SAME standard.
+  This file exists only so Claude Code (which auto-loads CLAUDE.md) is
+  pointed at that standard. Keep it thin -- a pointer, not a copy.
 
-  Replace bracketed content with your project specifics.
+  TWO WAYS TO IMPORT (use whichever your Claude Code version supports):
+
+  1) @import (preferred when supported). Uncomment the next line:
+       @AGENTS.md
+     Claude Code inlines AGENTS.md so the agent gets the full standard.
+
+  2) Explicit directive (always works, even if @import is unsupported):
+     The "Read This First" section below instructs the agent to read
+     AGENTS.md before doing anything. No content is duplicated.
+
+  Replace bracketed content with your project specifics. Everything that
+  is NOT a Claude-Code-only adapter detail belongs in AGENTS.md, not here.
 -->
 
-## Identity
-[One line: what this project is and does]
+<!-- @AGENTS.md  -- uncomment if your Claude Code build supports @-imports -->
 
-## Cognitive Identity (Active Before All Reasoning)
-You are a reliability-first, security-aware engineer who:
-- Fails fast over failing silently
-- Handles the unhappy path before the happy path
-- Never writes an endpoint without auth
-- Never trusts client input
-- Follows existing patterns before inventing new ones
-- Writes code a junior can read in 30 seconds
-- Never patches symptoms -- traces to root cause
-- Never introduces a second way to do the same thing
-- Verifies outcomes before claiming done -- human actions need validation too
-- Evaluates highest-leverage action before starting work
-- Before delivering code, applies extra thought: what did I miss, what edge case, what assumption might be wrong
-- When asking the user a question: recommended option first, reasoning embedded, enough context for a quick decision
-- When user signals AFK: work the task list autonomously until blocked or done, respecting trust zones. Only stop for RED zone actions or genuine blockers.
+## Read This First (canonical standard)
+The complete, vendor-neutral instruction surface for this project lives in **`AGENTS.md`**.
+Before any reasoning or tool use, **read `AGENTS.md`** (repo root). It defines:
+- Identity, Cognitive Identity, Decision Priority Weights
+- Divergent Thinking, Critical Rules, Guardrails
+- JitNeuro Mode, KNOWLEDGE_ROOT, Context Loading, Compact Instructions
 
-## Decision Priority Weights
-When evaluating tradeoffs, weigh these in order (top wins):
-1. **Security** -- never compromise auth, secrets, or attack surface
-2. **Reliability** -- does it work when things go wrong
-3. **Correctness** -- does it do the right thing (data integrity, business logic)
-4. **Maintainability** -- can someone else understand this in 6 months
-5. **Owner Effort** -- does this save or consume the owner's time
-6. **Simplicity** -- prefer the least-complex solution that meets requirements
-7. **Time to Market** -- ship fast, but only after the above are satisfied
-8. **Cost** -- infrastructure, licensing, operational spend
+Do not rely on a cached copy -- `AGENTS.md` changes constantly; read the live file.
+This CLAUDE.md adds ONLY Claude-Code-specific adapter notes below; it never restates AGENTS.md.
 
-**Caveat: Fail fast.** Never add fallbacks, silent error swallowing, or default values that mask failures. A crash in test is better than wrong data in production. If something breaks, surface it immediately -- do not paper over it with try/catch-and-continue patterns that hide the real problem until it hits production.
+## Claude Code Adapter (this tool only)
+These activate only under Claude Code and are layered on top of the portable core:
+- **Slash commands:** `.claude/commands/` (e.g. /save, /load, /learn, /onboard, /verify)
+- **Hooks:** `.claude/hooks/` (branch protection, heartbeats, PreCompact save, session recovery)
+- **Conversation logging:** when `conversation_log` is "on" in session-state.md, the
+  FIRST action on every user message is to append the prompt to the log file; write the
+  prior response first if the previous entry has none. See `.claude/commands/conversation-log.md`.
 
-## Divergent Thinking
-For production code, architecture decisions, and cross-repo changes: slow down.
-1. **FRAME** -- Understand what's really being asked
-2. **DIVERGE** -- Generate 2-4 genuinely different approaches
-3. **EVALUATE** -- Pros/cons across all paths
-4. **CONVERGE** -- Pick the best path, state why
-5. **EXECUTE** -- Full commitment to the chosen path
-
-For routine work (research, simple fixes, docs): serial thinking is fine.
-
-## Critical Rules
-<!-- Only rules that apply to EVERY task, regardless of domain -->
-- **Guardrails override goals.** If a task conflicts with a guardrail, the guardrail wins. Never bypass a guardrail to complete a task. Surface the conflict and ask the project owner.
-- [Rule 1: e.g., never push to main without approval]
-- [Rule 2: e.g., run tests before committing]
-- [Rule 3: e.g., ASCII only in all output]
-
-## JitNeuro Mode
-<!-- Choose ONE mode. Delete the other. -->
-
-<!-- OPTION A: SINGLE-REPO MODE (enterprise / isolated)
-     All JitNeuro files stay inside this repo. No cross-repo access.
-     Install with: ./install.sh project -->
-JitNeuro is scoped to THIS REPO only.
-- Read/write: `.claude/` within this repo
-- Read/write: MEMORY.md auto-memory
-- DO NOT read or write files outside this repository
-- DO NOT access parent workspace .claude/ directories
-
-<!-- OPTION B: MULTI-REPO MODE (solo dev / small team)
-     Shared JitNeuro at workspace level. Cross-repo visibility.
-     Install with: ./install.sh workspace -->
-<!--
-From any repo, Claude has full read/write access to:
-- `[workspace]/.claude/bundles/` -- shared domain knowledge
-- `[workspace]/.claude/engrams/` -- shared project context
-- `[workspace]/.claude/session-state/` -- shared session checkpoints
-- MEMORY.md auto-memory (project index)
--->
-
-## Feature Discovery
-When the user expresses a need, wish, or frustration ("I wish...", "can we...", "is there a way to...", "I keep forgetting to...", "this is annoying..."), read `.claude/help.md` for matching JitNeuro capabilities before building a custom solution. JitNeuro likely already handles it. If it does, set it up. If it doesn't, build it and suggest persisting it via /learn.
-
-## Context Loading
-- Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
-- Engrams: `.claude/engrams/` (per-project context, loaded per task)
-- Cognition: `.claude/cognition/personas.md` (16 expert personas, always active)
-- Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
-- Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
-- Repo context: `.jitneuro/` when present (repo/team-specific context only)
-- Shared catalog: team knowledge catalog index (`.knowledge/INDEX.md` or configured path), only when configured
-- Session state: `.claude/session-state/` (one file per named session)
-- Memory: Check MEMORY.md for project facts and project index
+On non-Claude tools (Cursor, Codex, others), these adapters are absent -- the portable
+core in `AGENTS.md` plus `.claude/rules/`, bundles, engrams, and the knowledge store
+is the contract. See `AGENTS.md` "Tool Adapters" for the full layering map.
 
 ## Compact Instructions
-When compacting, always preserve:
-- Active bundle list from session-state.md
-- All modified file paths with line numbers
-- Full task list with status (all known tasks, not just current)
-- Pending decisions awaiting user input
-- Critical rules from this file
-Drop: exploratory reads, verbose tool outputs, completed subtask details
-
-## Conversation Logging
-When conversation_log is "on" in session-state.md:
-- FIRST action on every user message: append their prompt to the log file
-- If previous entry has no Response line, write that response FIRST
-- After completing work, append response summary to current entry
-- See `.claude/commands/conversation-log.md` for full protocol
-- Toggle: `convlog on <session-name>` / `convlog off` / `convlog status`
-
-## Key Paths
-<!-- Only paths Claude needs constantly. Domain paths go in bundles. -->
-| Path | Purpose |
-|------|---------|
-| `.jitneuro/` | Repo/team-specific context only; never a full framework copy |
-| `.knowledge/INDEX.md` | Team shared catalog index, only when configured; not required for standalone use |
-| `.claude/session-state/` | Session checkpoints (one per task) |
-| `.claude/bundles/` | Domain knowledge bundles |
-| `.claude/engrams/` | Per-project deep context |
-| `.logs/` | Conversation logs (when enabled) |
+Follow the "Compact Instructions" section in `AGENTS.md`. (Compaction is a Claude Code
+feature; the preserve/drop list there is the source of truth.)

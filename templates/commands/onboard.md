@@ -1,32 +1,73 @@
 # Onboard
 
 Bootstrap a repo into the JitNeuro framework, or refresh an existing repo's
-context if it's stale. Generates CLAUDE.md, brainstem, and engram by analyzing
-the repo's actual codebase.
+context if it's stale. Generates the canonical vendor-neutral standard (AGENTS.md),
+a thin CLAUDE.md importer, an optional Cursor bridge, and an engram by analyzing
+the repo's actual codebase. Also imports any AI knowledge sources the installer
+staged (existing CLAUDE.md / AGENTS.md / .cursor rules / Copilot instructions /
+agent charters) into their correct homes.
+
+## Agent-Agnostic Output (single standard + thin importers)
+JitNeuro emits ONE standard read by every tool, plus thin per-tool importers:
+- **AGENTS.md** (repo root) -- the canonical, vendor-neutral instruction surface.
+  Read by Cursor, Codex, Claude Code, and others. This is the source of truth.
+- **CLAUDE.md** (repo root) -- a THIN IMPORTER of AGENTS.md. It uses an `@AGENTS.md`
+  import where Claude Code supports it, otherwise an explicit "read AGENTS.md first"
+  directive. It NEVER duplicates AGENTS.md content; it adds only Claude-Code adapter notes.
+- **.cursor/rules/jitneuro-intents.mdc** (optional) -- a Cursor bridge that references
+  the same AGENTS.md standard and maps intents (save/load/learn/guardrails).
+The portable core (AGENTS.md + rules + skills + bundles + engrams + the KNOWLEDGE_ROOT
+store) works on any agent. Claude Code hooks/commands are a layered adapter only where
+supported -- do not assume hooks exist on non-Claude tools.
 
 ## When to Use
 - Adding a new repo to the workspace
 - Setting up a repo that was cloned but has no JitNeuro context
 - Refreshing context after major changes (new framework, restructured code)
-- After /audit flags a repo as missing CLAUDE.md or engram
+- After /audit flags a repo as missing AGENTS.md, CLAUDE.md, or engram
 - On a second machine where repos exist but context hasn't been pulled
+- Importing existing AI knowledge the installer staged (see Step 0)
 
 ## Instructions
 
 When invoked as `/onboard <repo-path>`:
 
+### Step 0: Read Staged Import Manifest (onboarding import)
+
+The installer may have staged existing AI knowledge sources for import. Before
+anything else, resolve KNOWLEDGE_ROOT and check for the staging manifest:
+
+- Resolve KNOWLEDGE_ROOT: `KNOWLEDGE_ROOT` env var -> `jitneuro.json` `knowledgeRoot`
+  -> the local `.knowledge/` store (always present).
+- Read `KNOWLEDGE_ROOT/imports/onboarding-staging.md` if it exists.
+
+If present, it lists detected sources (existing CLAUDE.md, AGENTS.md,
+`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, existing `.claude/`
+content, agent/charter files) and a suggested home for each. You will IMPORT
+these in Step 3 and report the result in Step 4. SAFETY:
+- This is surface-and-catalog, NOT blind-merge. Read each source, decide the
+  correct home, and present conflicts for the user to reconcile -- do not
+  silently overwrite an existing file.
+- NEVER ingest secrets. Skip `.env`, `*.key`, `*.pem`, token/credential files
+  entirely. If a staged source references a secret, catalog the reference, not
+  the value.
+
+If no manifest exists, skip the import path -- this is a fresh onboarding with
+no prior sources.
+
 ### Step 1: Assess Current State
 
 Before generating anything, check what already exists:
 
-- Does `<repo>/CLAUDE.md` exist? Read it.
+- Does `<repo>/AGENTS.md` exist? Read it. (This is the canonical standard.)
+- Does `<repo>/CLAUDE.md` exist? Read it. (Should be a thin importer of AGENTS.md.)
 - Does `<repo>/.claude/CLAUDE.md` exist? Read it.
 - Does `.claude/engrams/<repo-name>-context.md` exist? Read it.
 - Is the repo a git repo? Check remote, branch, last commit date.
-- Is the repo behind its remote? (`git fetch --dry-run` -- if CLAUDE.md
+- Is the repo behind its remote? (`git fetch --dry-run` -- if AGENTS.md/CLAUDE.md
   exists on remote but not locally, suggest pulling first.)
 
-**If all 3 files exist and are recent (commits within last 7 days match):**
+**If AGENTS.md + engram exist and are recent (commits within last 7 days match):**
 Report "Repo already onboarded. Context looks current." and offer to refresh
 specific files if the user wants.
 
@@ -87,59 +128,92 @@ RECENT_COMMITS: [last 5 commit messages, one per line]
 INTEGRATIONS: [external services detected: databases, APIs, auth providers]
 ```
 
-### Step 3: Generate Files (runs in master)
+### Step 3: Generate Files + Import Staged Sources (runs in master)
 
 Using the subagent's summary, generate only files that are missing or that the user asked to refresh.
 
-**Root CLAUDE.md** (project identity, ~20-30 lines):
-```markdown
-# [Project Name]
-[One-line description]
+**AGENTS.md (CANONICAL standard, repo root, ~40-60 lines):**
+Use the JitNeuro `templates/AGENTS-brainstem.md` as the template. This is the
+vendor-neutral instruction surface every tool reads. Fill in project-specific
+Identity, Critical Rules, JitNeuro Mode, and Key Paths. Keep the KNOWLEDGE_ROOT
+and Tool Adapters sections intact -- they make the framework agent-agnostic.
 
-## Tech Stack
-[Framework, language, key dependencies]
+**Root CLAUDE.md (THIN IMPORTER of AGENTS.md, repo root):**
+Use the JitNeuro `templates/CLAUDE-brainstem.md` as the template. Do NOT duplicate
+AGENTS.md. It must either `@AGENTS.md`-import (where Claude Code supports it) or
+carry the explicit "read AGENTS.md first" directive, plus Claude-Code-only adapter
+notes (slash commands, hooks). If a project-identity summary is wanted, keep it to
+a few lines (name, tech stack, build/test/lint) -- the standard lives in AGENTS.md.
 
-## Key Files
-[Entry points, config files, route files]
-
-## Development
-[Build, test, lint commands]
-```
-
-**.claude/CLAUDE.md** (brainstem, ~30-40 lines):
-Use the JitNeuro `templates/CLAUDE-brainstem.md` as the template.
-Fill in project-specific values.
+**.cursor/rules/jitneuro-intents.mdc (Cursor bridge, OPTIONAL):**
+If the repo is used with Cursor (or the user asks), generate it from the JitNeuro
+`templates/cursor/rules/jitneuro-intents.mdc`. It references the same AGENTS.md
+standard and KNOWLEDGE_ROOT -- it does not duplicate them.
 
 **Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-180 lines):
 Use the JitNeuro `templates/engrams/example.md` as the template.
 Populate with discovered tech stack, key files, architecture, integrations.
 
+**Import staged sources (only if Step 0 found a manifest):**
+For each detected source in `KNOWLEDGE_ROOT/imports/onboarding-staging.md`, read it
+and route it to the RIGHT home -- surface-and-catalog, never blind-merge:
+- **Per-project context** (architecture notes, repo facts, "how this repo works")
+  -> fold into the **engram** (`.claude/engrams/[repo-name]-context.md`).
+- **Behavioral standard / rules** (existing CLAUDE.md/AGENTS.md directives, Copilot
+  instructions, Cursor intent rules) -> fold into **AGENTS.md** (the standard) and/or
+  `.claude/rules/`. Keep CLAUDE.md a thin importer.
+- **Capabilities** (agent charters, playbooks, skills, reusable references that are
+  not repo-specific) -> catalog under the **KNOWLEDGE_ROOT store** and add a routing
+  entry to `KNOWLEDGE_ROOT/INDEX.md`.
+- **Conflicts** (e.g., an existing CLAUDE.md that is NOT a thin importer, or two
+  sources stating different rules) -> DO NOT auto-resolve. List them in the summary
+  for the user to reconcile.
+- **Secrets** -> never ingest. Skip `.env`, `*.key`, `*.pem`, and any token/credential
+  file. Catalog a reference if needed, never the value.
+
 ### Step 4: Present for Approval
 
-Show generated files to the user:
+Show generated files AND the import plan to the user:
 ```
 Onboarding: [repo-name]
 Generated N files:
 
-1. [repo]/CLAUDE.md (project identity, 25 lines) [NEW/REFRESH]
-2. [repo]/.claude/CLAUDE.md (brainstem, 35 lines) [NEW/REFRESH]
+1. [repo]/AGENTS.md (canonical standard, 50 lines) [NEW/REFRESH]
+2. [repo]/CLAUDE.md (thin importer of AGENTS.md, 20 lines) [NEW/REFRESH]
 3. .claude/engrams/[repo]-context.md (engram, 60 lines) [NEW/REFRESH]
+4. .cursor/rules/jitneuro-intents.mdc (Cursor bridge) [NEW/SKIP]   (only if Cursor in use)
+
+Onboarding import (from KNOWLEDGE_ROOT/imports/onboarding-staging.md):
+- [source] -> [engram | AGENTS.md/rules | KNOWLEDGE_ROOT store]   (per source)
+- Conflicts to reconcile: [list, or "none"]
+- Secrets skipped: [list, or "none"]
 
 Review and approve? (all / pick by number / edit first)
 ```
 
 ### Step 5: Execute (only after approval)
 
-- Write approved files
+- Write approved files (AGENTS.md is the canonical standard; CLAUDE.md stays thin)
+- Apply the approved import routing (engram / AGENTS.md+rules / KNOWLEDGE_ROOT store)
+- Add a routing entry to `KNOWLEDGE_ROOT/INDEX.md` for any cataloged capabilities
 - Add repo to MEMORY.md project table (if not already there)
-- Suggest PR to the shared knowledge catalog index if a new routing entry is needed for this repo's domain
-- Add bundle files to `.claude/bundles/` if new bundles are needed; routing goes via PR to the catalog index
+- Add bundle files to `.claude/bundles/` if new bundles are needed
+- After importing, mark the staging manifest done: rename
+  `KNOWLEDGE_ROOT/imports/onboarding-staging.md` to
+  `KNOWLEDGE_ROOT/imports/onboarding-staging.done.md` so it is not re-imported.
 
-### Step 6: Verify
+### Step 6: Verify + Onboarding Summary
 
 - Confirm all files written
 - Check line counts are within limits
-- Report: "Repo [name] onboarded. Run /verify to check full setup."
+- Write a documented onboarding summary to
+  `KNOWLEDGE_ROOT/imports/onboarding-summary-[repo-name].md` capturing:
+  - What was FOUND (each staged source)
+  - Where it LANDED (engram / AGENTS.md+rules / KNOWLEDGE_ROOT store)
+  - CONFLICTS still to reconcile (so nothing is silently lost)
+  - Secrets that were intentionally skipped
+- Report: "Repo [name] onboarded. AGENTS.md is the standard; CLAUDE.md imports it.
+  Summary: KNOWLEDGE_ROOT/imports/onboarding-summary-[repo-name].md. Run /verify."
 
 ## Without arguments (`/onboard`) -- Workspace Scan
 
@@ -155,21 +229,21 @@ You are scanning a workspace for JitNeuro onboarding status. Check each subdirec
 Workspace root: [path]
 
 For each subdirectory that contains a .git/ folder (1 level deep, skip .claude/ and node_modules/):
-- Check if [repo]/CLAUDE.md exists
-- Check if [repo]/.claude/CLAUDE.md exists
+- Check if [repo]/AGENTS.md exists (the canonical standard)
+- Check if [repo]/CLAUDE.md exists (should be a thin importer of AGENTS.md)
 - Check if .claude/engrams/[repo-name]-context.md exists
 - Get last commit date: git -C [repo] log -1 --format=%ci
 
 Return format:
 
 ONBOARD_TABLE:
-| Repo | CLAUDE.md | Brainstem | Engram | Last Commit | Status |
+| Repo | AGENTS.md | CLAUDE.md | Engram | Last Commit | Status |
 |------|-----------|-----------|--------|-------------|--------|
 (Status: Current / Needs onboarding / Stale)
 
-Current = all 3 files exist and commits within 7 days
-Stale = all 3 exist but last commit >30 days ago
-Needs onboarding = any file missing
+Current = AGENTS.md + engram exist and commits within 7 days
+Stale = they exist but last commit >30 days ago
+Needs onboarding = AGENTS.md or engram missing
 
 SUMMARY: [N] repos, [M] need onboarding, [X] stale
 ```
@@ -179,7 +253,10 @@ Present the table. Then: "Onboard a repo: `/onboard <repo-path>`"
 ## Important
 - **Repo analysis and workspace scan run in subagents.** File generation and writing run in master.
 - NEVER overwrite existing files without asking. Always show what would change.
-- If CLAUDE.md already exists, show a diff of proposed changes and ask.
+- AGENTS.md is the canonical standard; CLAUDE.md must stay a thin importer of it (never duplicate).
+- If AGENTS.md or CLAUDE.md already exists, show a diff of proposed changes and ask.
+- Imports are surface-and-catalog, never blind-merge; conflicts are surfaced, never auto-resolved.
+- Never ingest secrets (.env, *.key, *.pem, credential files) during import.
 - Engram creation is always safe (new file) but still ask.
 - Keep generated files minimal -- they grow organically via /learn.
 - If the repo has no package.json (e.g., PowerShell, docs-only), adapt analysis.

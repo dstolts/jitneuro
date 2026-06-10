@@ -10,8 +10,8 @@ last_evaluated: 2026-06-03
 
 # Pull Before PR
 
-Before opening a PR, updating a PR branch, or telling Owner a PR is ready for
-review, the branch must be current with the target base branch.
+Before opening a PR, updating a PR branch, or telling a reviewer a PR is ready
+for review, the branch must be current with the target base branch.
 
 ## Rule
 
@@ -37,15 +37,15 @@ git merge origin/<target-base>   # or: git rebase origin/<target-base>
 git push
 ```
 
-If the repo has a generated/derived file that conflicts on merge (e.g.
-`INDEX.md` for jitneuro), resolve by regenerating from the merged
-file set, not by hand-editing conflict markers.
+If the repo has a generated/derived file that conflicts on merge (for example a
+manifest or index that is rebuilt from many source files), resolve by
+regenerating it from the merged file set, not by hand-editing conflict markers.
 
 ### Repo-specific target bases
 
 | Repo class | Target base | Reference |
 |---|---|---|
-| jitneuro | `main` (no `uat`) | `governance/PR-CHECKLIST.md` |
+| Repos with no staging branch | `main` | that repo's CLAUDE.md / AGENTS.md / contribution docs |
 | Repos promoting via uat | `uat`, then `uat -> main` | that repo's CLAUDE.md / AGENTS.md |
 | Repos that merge straight to main | `main` | that repo's CLAUDE.md / AGENTS.md |
 
@@ -67,5 +67,5 @@ mergeable now, not mergeable when the PR was first opened.
 
 ## Why
 
-Avoidable merge conflicts consume Owner review time and hide the actual change
+Avoidable merge conflicts consume reviewer time and hide the actual change
 behind generated-file noise. The author owns keeping the branch mergeable.

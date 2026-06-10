@@ -45,8 +45,8 @@ summary (per subagent-communication.md protocol), keeping the orchestrator thin.
 Before starting any task, ask: "Does the orchestrator need to hold this context?" If no,
 spawn an agent. If yes, proceed directly. When in doubt, delegate.
 
-When Owner has already approved execution, delegate before explaining. The
-worker prompt is the place for operational detail; the Owner-facing message is
+When the user has already approved execution, delegate before explaining. The
+worker prompt is the place for operational detail; the user-facing message is
 for concise status, blockers, and verified results.
 
 ## Sizing Guidance

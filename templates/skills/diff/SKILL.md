@@ -5,7 +5,6 @@ tags: [git, diff, code-review, read-only]
 scope: public
 departments: [engineering]
 status: canonical
-graduation_target: skills/diff/SKILL.md
 read_when: When reviewing what changed in a repo since the last push or main divergence before a PR or code review.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

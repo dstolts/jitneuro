@@ -5,7 +5,6 @@ tags: [bundles, context-management, memory, routing-weights]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/bundle/SKILL.md
 read_when: When running the /bundle command to load, create, refresh, inspect, or split a context bundle.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
