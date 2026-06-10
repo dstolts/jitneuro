@@ -9,7 +9,6 @@ departments: [all]
 authored_at: WIP-Drafts/skills/session-close.md
 origin_date: 2026-05-28
 origin_event: PR #241 + #242 open questions both ask "should --all-merged run at session-end via hypothetical /session-close skill?" -- this is that skill. After /knowledge as the session-start ceremony and the worktree trio as the lifecycle scaffolding, /session-close completes the bookend pattern.
-graduation_target: <knowledge-root>/skills/session-close/SKILL.md
 related_skills:
   - skills/knowledge/SKILL.md (the open bookend: re-anchor + status)
   - skills/worktree-status/SKILL.md (invoked by step 2 with --all-merged)

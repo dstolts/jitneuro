@@ -6,7 +6,6 @@ tags: [deployment, ci-cd, monitoring, jitneuro-candidate]
 scope: public
 departments: [engineering]
 status: canonical
-graduation_target: references/deploy-monitoring-patterns.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro docs/ 2026-05-28
 ---

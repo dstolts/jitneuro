@@ -5,7 +5,6 @@ tags: [git, gitstatus, cross-repo, status, subagent]
 scope: public
 departments: [engineering]
 status: canonical
-graduation_target: skills/gitstatus/SKILL.md
 read_when: When checking git status across multiple repos to identify dirty, ahead, or behind states before a cross-repo sprint or sync.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

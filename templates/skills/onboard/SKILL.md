@@ -6,7 +6,6 @@ tags: [onboard, bootstrap, doe, jitneuro, repo-setup, automation]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/onboard/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

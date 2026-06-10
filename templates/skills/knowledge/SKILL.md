@@ -10,7 +10,6 @@ departments: [all]
 authored_at: ~/.claude/commands/knowledge.md
 origin_date: 2026-05-27
 origin_event: RCA 2026-05-27 -- Claude observed skipping session-start bootstrap, writing to deprecated tracker surface (.HUB/Hub.md instead of <repo>/todo/backlog.md), violating actionable-docs-require-tracking.md (PRs without same-change tracker rows), and skipping verification gates (relayed agent STATUS:OK without gh pr view confirmation). The SessionStart hook injects only the identity rule mechanically; the rest of the bootstrap chain requires Claude to actively read files, which it forgot.
-graduation_target: <knowledge-root>/skills/knowledge/SKILL.md
 last_evaluated: 2026-06-03
 changelog:
   - 2026-05-27 -- initial WIP capture (PR #228)

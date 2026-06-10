@@ -6,7 +6,6 @@ tags: [learn, memory, backpropagation, engrams, bundles, routing-weights, knowle
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/learn/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

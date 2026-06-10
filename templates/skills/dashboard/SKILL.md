@@ -5,7 +5,6 @@ tags: [dashboard, session-management, shortcut, blockers]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/dashboard/SKILL.md
 read_when: When Owner wants a quick status view of blockers and NEEDS OWNER items at the start of a work block.
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28

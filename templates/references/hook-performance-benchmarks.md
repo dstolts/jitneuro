@@ -6,7 +6,6 @@ tags: [performance, hooks, optimization, benchmarks, jitneuro-candidate]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: references/hook-performance-benchmarks.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro docs/ 2026-05-28
 ---

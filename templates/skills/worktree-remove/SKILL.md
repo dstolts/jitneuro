@@ -9,7 +9,6 @@ departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-remove.md
 origin_date: 2026-05-28
 origin_event: PR #240 (/worktree-new) open questions item #4 -- "Should /worktree-remove <repo> <branch> be a sibling skill in the same PR? Lean: separate PR; cleanup discipline is enough scope on its own." Authored as that separate follow-up PR. Also addresses rules/worktree-discipline.md "Worktree lifecycle is mandatory ... created with branch, removed when branch retires" + the related feedback_worktree_lifecycle_create_use_cleanup memory.
-graduation_target: <knowledge-root>/skills/worktree-remove/SKILL.md
 related_skills:
   - skills/worktree-new/SKILL.md (sibling: create)
   - rules/worktree-discipline.md (the rule this skill's cleanup half implements)

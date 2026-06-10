@@ -6,7 +6,6 @@ tags: [test-tools, smoke-test, mcp, tools, diagnostic]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/test-tools/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
