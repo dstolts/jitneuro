@@ -106,7 +106,7 @@ Per the side-effect risk of the skill (Anthropic skill schema):
 ### 7. Author SKILL.md
 
 Frontmatter carries BOTH the Anthropic fields (`name`, `description`, invocability
-flags, `model` if applicable) AND the jit-knowledge required fields (`type`,
+flags, `model` if applicable) AND the jitneuro required fields (`type`,
 `purpose`, `tags`, `scope`, `last_evaluated`) per `governance/FRONTMATTER-SCHEMA.md`.
 Body: Operating Principle, When to Use, Procedure, QA Gates, Improvement Loop,
 Cross-references. Reference bundled files rather than inlining them.
@@ -124,7 +124,7 @@ pass. A skill that does not pass its own scenarios is not done.
 ### 10. Open a PR
 
 Branch, commit (conventional-commits format), run `scripts/rebuild-manifest.py`,
-open a PR. Never merge -- jit-knowledge is PR-gated; Owner approves.
+open a PR. Never merge -- jitneuro is PR-gated; Owner approves.
 
 ### 11. Wire the improvement loop (Rule 4)
 
@@ -139,7 +139,7 @@ prompt in a folder.
 - `<skill-name>` -- lowercase, hyphens, max 64 chars.
 - `<task description>` -- what the skill should do; the recurring task it replaces.
 - `<destination>` -- project (`.claude/skills/`), personal (`~/.claude/skills/`),
-  or jit-knowledge (`skills/`). Default jit-knowledge for cross-system skills.
+  or jitneuro (`skills/`). Default jitneuro for cross-system skills.
 
 ## Example Usage
 

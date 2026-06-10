@@ -24,7 +24,7 @@ When invoked as `/verify`:
    | 6 | Hook events | Event names match Claude Code events (PreCompact, SessionStart, PreToolUse, SessionEnd) | All valid | Unknown event name | -- |
    | 7 | Bundles | Check .claude/bundles/ has files | Has bundles | Only example.md | Empty |
    | 8 | Engrams | Check .claude/engrams/ has files | Has engrams | Only example.md | Empty |
-   | 9 | URL resolver | Check ~/.claude/url-resolver.md exists and has a jit-knowledge entry | Entry present | File missing | No jit-knowledge entry |
+   | 9 | URL resolver | Check ~/.claude/url-resolver.md exists (optional: entry for configured knowledge catalog) | Entry present | File missing | No catalog entry |
 
 3. **Check config values:**
    - If `preCompactBehavior` is "warn": flag as YELLOW ("block is recommended to prevent silent context loss")

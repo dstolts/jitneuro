@@ -4,13 +4,13 @@ name: knowledge
 status: canonical
 purpose: Force Claude to re-read the full session-start bootstrap chain on demand, then print the Mandatory Session Preflight block AND a "How I'm acting" report (identity / posture / divergent mode / active session / loaded rules / pending Owner actions / open tasks / brief summary). Manual override for the SessionStart hook + bootstrap-required HARD GATE.
 read_when: When a session feels off-route, after a correction signal fires, or whenever the bootstrap HARD GATE must be manually re-triggered mid-session.
-tags: [slash-command, bootstrap, session-management, master-orchestrator, identity, jit-knowledge, recursive-improvement]
+tags: [slash-command, bootstrap, session-management, master-orchestrator, identity, jitneuro, recursive-improvement]
 scope: public
 departments: [all]
-authored_at: $env:USERPROFILE\.claude\commands\knowledge.md
+authored_at: ~/.claude/commands/knowledge.md
 origin_date: 2026-05-27
 origin_event: RCA 2026-05-27 -- Claude observed skipping session-start bootstrap, writing to deprecated tracker surface (.HUB/Hub.md instead of <repo>/todo/backlog.md), violating actionable-docs-require-tracking.md (PRs without same-change tracker rows), and skipping verification gates (relayed agent STATUS:OK without gh pr view confirmation). The SessionStart hook injects only the identity rule mechanically; the rest of the bootstrap chain requires Claude to actively read files, which it forgot.
-graduation_target: jit-knowledge/skills/knowledge/SKILL.md
+graduation_target: <knowledge-root>/skills/knowledge/SKILL.md
 last_evaluated: 2026-06-03
 changelog:
   - 2026-05-27 -- initial WIP capture (PR #228)
@@ -22,9 +22,9 @@ changelog:
 ## Status
 
 This is the WIP draft of a slash command currently live in Owner's workspace
-at `$env:USERPROFILE\.claude\commands\knowledge.md`. It is operational
+at `~/.claude/commands/knowledge.md`. It is operational
 locally (visible in the Claude Code skills list as `knowledge: /knowledge`).
-It has NOT yet been graduated to canonical `jit-knowledge/skills/knowledge/`.
+It has NOT yet been graduated to canonical `<knowledge-root>/skills/knowledge/`.
 
 When graduating, decide:
 - Does this stay as a slash command (Claude Code specific) or become a portable
@@ -39,13 +39,13 @@ When graduating, decide:
 Two distinct gates need to fire at session-start, and only one is mechanical:
 
 1. **SessionStart hook (mechanical):** injects the identity rule from
-   `<jit-knowledge>/rules/interactive-master-orchestrator.md` into the
+   `<jitneuro>/rules/interactive-master-orchestrator.md` into the
    context window before any tool runs. Output is the line
-   `** jit-knowledge loaded -- master-orchestrator identity rule active **`.
+   `** jitneuro loaded -- master-orchestrator identity rule active **`.
    This part is reliable.
 
 2. **Bootstrap chain reads (NOT mechanical):** requires Claude to actively
-   open and read `<workspace>/AGENTS.md` -> jit-knowledge `AGENTS.md/COMPANY.md/
+   open and read `<workspace>/AGENTS.md` -> jitneuro `AGENTS.md/COMPANY.md/
    README.md/INDEX.md` -> binding rules -> repo-local instructions including
    `<repo>/AGENTS.md`, `<repo>/CLAUDE.md`, `<repo>/.HUB/Hub.md`, and
    `<repo>/todo/backlog.md` where present. This is discipline, not mechanism.
@@ -56,7 +56,7 @@ override that forces #2 to run when Owner notices the session is off-route.
 ## What Claude must do when invoked
 
 (See the live skill at
-`$env:USERPROFILE\.claude\commands\knowledge.md` for full procedure.)
+`~/.claude/commands/knowledge.md` for full procedure.)
 
 Summary:
 1. STOP all in-progress executable work
@@ -107,7 +107,7 @@ status display. Default is auto-execute steps 6-7.
 
 ## Promotion checklist
 
-- [ ] Decide canonical home: `jit-knowledge/skills/knowledge/SKILL.md`
+- [ ] Decide canonical home: `<knowledge-root>/skills/knowledge/SKILL.md`
 - [ ] Decide if `install.sh` should also distribute a slash-command stub for
       Claude-Code-runtime consumers (similar to existing rules drop pattern)
 - [ ] Reconcile tracker-surface conflict: `.HUB/Hub.md` vs `<repo>/todo/backlog.md`

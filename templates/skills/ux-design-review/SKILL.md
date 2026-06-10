@@ -12,6 +12,11 @@ read_when: Before any ux-designer mockup reaches Owner review or before any fron
 last_evaluated: 2026-06-03
 ---
 
+<!-- ATTRIBUTION NOTE: "Stolts" / "Dan Stolts" in this skill is intentional authorship
+attribution for the UX-critique methodology (the "Stolts UX Constraints" / "Stolts
+Adversarial Baseline"), recorded via leak_allow in the frontmatter above. It is published
+deliberately as attribution -- it is NOT an accidental private-data leak. -->
+
 # UX Design Review Skill
 
 Independent quality gate for ux-designer mockup outputs. Evaluates WHY a pattern fits,

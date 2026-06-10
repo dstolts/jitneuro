@@ -1,35 +1,37 @@
 ---
 type: skill
 name: install
-description: One-shot install of jit-knowledge on a consuming machine. Trigger phrases include "install jit-knowledge", "set up jit-knowledge", "bootstrap jit-knowledge", "jit-knowledge first time setup", "wire jit-knowledge into Claude Code". Use on a fresh machine or after a major reinstall to put jit-knowledge in its canonical location, install per-component dependencies, register the load rule with Claude Code, and prime the session with the horizon docs.
-purpose: 'One-shot bootstrap of jit-knowledge on a new consuming machine: clones the repo, installs dependencies, drops the Claude Code load rule, and prints the mandatory horizon-doc reading primer. Read this when setting up jit-knowledge on a fresh machine or after a major reinstall.'
-tags: [skill, install, bootstrap, setup, jit-knowledge]
+description: One-shot install of jitneuro on a consuming machine. Trigger phrases include "install jitneuro", "set up jitneuro", "bootstrap jitneuro", "jitneuro first time setup", "wire jitneuro into Claude Code". Use on a fresh machine or after a major reinstall to put jitneuro in its canonical location, install per-component dependencies, register the load rule with Claude Code, and prime the session with the horizon docs.
+purpose: 'One-shot bootstrap of jitneuro on a new consuming machine: clones the repo, installs dependencies, drops the Claude Code load rule, and prints the mandatory horizon-doc reading primer. Read this when setting up jitneuro on a fresh machine or after a major reinstall.'
+tags: [skill, install, bootstrap, setup, jitneuro]
 scope: public
 departments: [all]
-leak_allow: ["Code/jit-knowledge", "Code\jit-knowledge", "C:\Users", "C:/Users"]
+leak_allow: ['Code/jitneuro', 'Code\jitneuro', 'C:\Users', 'C:/Users']
 owner_role: cos
-read_when: When setting up jit-knowledge on a fresh machine or after a major reinstall to clone the repo, install dependencies, and register hooks.
+read_when: When setting up jitneuro on a fresh machine or after a major reinstall to clone the repo, install dependencies, and register hooks.
 last_evaluated: 2026-06-03
 ---
 
-# Install jit-knowledge (Bootstrap a Consuming Machine)
+# Install jitneuro (Bootstrap a Consuming Machine)
 
-Brings a new machine to a state where jit-knowledge skills, charters, engrams, playbooks, workflows, and patterns are discoverable + the foundational horizon context (vision + mission + personal-constitution-simplified) is loaded at session start.
+Brings a new machine to a state where jitneuro skills, charters, engrams, playbooks, workflows, and patterns are discoverable + the foundational horizon context (vision + mission + personal-constitution-simplified) is loaded at session start.
 
 ## What this skill does (high level)
 
 1. Verifies prerequisites (git, gh, node, python, bash)
-2. Clones jit-knowledge to the canonical local path (or refreshes an existing clone)
+2. Clones jitneuro to the canonical local path (or refreshes an existing clone)
 3. Installs per-component node dependencies (gtm-gate, ux-narration-agent, visual-review-agent each have a `package.json`)
 4. Installs Python dependency PyYAML (used by `scripts/rebuild-index.py` + `scripts/rebuild-manifest.py`)
-5. Drops the `jit-knowledge-load.md` rule into the consuming user's `~/.claude/rules/` (idempotent)
+5. Drops the `jitneuro-load.md` rule into the consuming user's `~/.claude/rules/` (idempotent)
 5a. Drops the `hub-guardrail.md` rule (no-secrets-in-Hub.md + gitignore-scope) into `~/.claude/rules/` (idempotent; mirrors step 5)
-5b. Materializes the gitignored `.claude/CLAUDE.md` from `templates/claude-repo-local/CLAUDE.md` inside the jit-knowledge clone
+5b. Materializes the gitignored `.claude/CLAUDE.md` from `templates/claude-repo-local/CLAUDE.md` inside the jitneuro clone
 5d. Wires the in-repo `hooks/pre-push` hook via `git config core.hooksPath hooks` (mechanical enforcement of `rules/worktree-discipline.md` -- refuses pushes from main clone on non-default branches; worktrees pass through unblocked)
-5c. Installs `templates/claude-hooks/session-start-master-orchestrator-rule.sh` to `~/.claude/hooks/jit-knowledge-session-start.sh` and registers it under `hooks.SessionStart` in `~/.claude/settings.json` (idempotent -- always overwrites the hook file; skips settings registration if already present)
-5e. Installs `templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh` to `~/.claude/hooks/jit-knowledge-pre-compact.sh` and registers it under `hooks.PreCompact` in `~/.claude/settings.json` (idempotent; mirrors 5c pattern). Fires on Claude Code's PreCompact event and injects a post-compact directive instructing the session to invoke `/knowledge` as its first action so the bootstrap chain + TodoWrite are re-anchored from durable state (Hub.md + session-state) after context compaction. Origin: 2026-05-28 -- post-compact loss of in-conversation TodoWrite + bootstrap discipline drift.
-5f. Resolves and logs canonical placeholders (`<CodeBasePath>`, `<jit-knowledge-root>`) per `governance/path-conventions.md` section 3a, and prints the install-time artifact registry (below) so Owner sees exactly which docs / scripts / hooks now point at which real paths.
-6. Updates `~/.claude/workspace.json` to record both `jit_knowledge_root` (this clone) AND `codeBasePath` (the workspace code root that `<CodeBasePath>` placeholder resolves to). Derives `codeBasePath` from the parent dir of `JIT_KNOWLEDGE_ROOT` unless env `CODE_BASE_PATH` is set. Idempotent (skips write if both values already match).
+5c. Installs `templates/claude-hooks/session-start-master-orchestrator-rule.sh` to `~/.claude/hooks/jitneuro-session-start.sh` and registers it under `hooks.SessionStart` in `~/.claude/settings.json` (idempotent -- always overwrites the hook file; skips settings registration if already present)
+5e. Installs `templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh` to `~/.claude/hooks/jitneuro-pre-compact.sh` and registers it under `hooks.PreCompact` in `~/.claude/settings.json` (idempotent; mirrors 5c pattern). Fires on Claude Code's PreCompact event and injects a post-compact directive instructing the session to invoke `/knowledge` as its first action so the bootstrap chain + TodoWrite are re-anchored from durable state (Hub.md + session-state) after context compaction. Origin: 2026-05-28 -- post-compact loss of in-conversation TodoWrite + bootstrap discipline drift.
+5f. Resolves and logs canonical placeholders (`<CodeBasePath>`, `<knowledge-root>`) per `governance/path-conventions.md` section 3a, and prints the install-time artifact registry (below) so Owner sees exactly which docs / scripts / hooks now point at which real paths.
+5g. Installs `templates/claude-hooks/stop-continue-queue.sh` to `~/.claude/hooks/stop-continue-queue.sh` and registers it under `hooks.Stop` in `~/.claude/settings.json` (idempotent; mirrors 5c/5e pattern; replaces stale registrations of the same hook). Fires on Claude Code's Stop event: while a project's `.claude/session-state/autonomous-mode.flag` is armed and executable tasks remain in `.HUB/Hub.md` `## ACTIVE TODO`, it blocks the stop and re-injects a continue-the-queue directive, making AFK execution mechanical instead of advisory. Safe by default (no flag = no effect); stall-counter runaway guard (50 no-progress turns, env `JITNEURO_MAX_CONTINUE`). Origin: 2026-06-06 -- /afk existed only on the Owner Z machine; sessions on other machines had no autonomous-continuation mechanism.
+5h. Installs `templates/commands/afk.md` to `~/.claude/commands/afk.md` (idempotent; never silently overwrites local edits -- mirrors step 5 rule pattern). `/afk on|off|status` arms/disarms the flag that the 5g Stop hook reads.
+6. Updates `~/.claude/workspace.json` to record both `knowledge_root` (this clone) AND `codeBasePath` (the workspace code root that `<CodeBasePath>` placeholder resolves to). Derives `codeBasePath` from the parent dir of `KNOWLEDGE_ROOT` unless env `CODE_BASE_PATH` is set. Idempotent (skips write if both values already match).
 7. Runs the manifest refresh once to validate INDEX.md is current
 8. Prints a "post-install" block that names the foundational reads to do next:
    - `horizon/vision.md` (auto-loads `mission.md` + `personal-constitution-simplified.md` per its footer)
@@ -61,7 +63,7 @@ Resolution chain for `<CodeBasePath>` (first match wins):
 | `skills/worktree-status/SKILL.md` | Per-worktree path display | Slash command; resolves at invocation time |
 | `skills/session-close/SKILL.md` | Hub.md + session-state file paths | Slash command; resolves at invocation time |
 | `workflows/pre-push-hook-worktree-discipline.md` | Error message refusal text refers to worktree path | Doc; the actual hook (`hooks/pre-push`) prints the path it expects -- text uses `<CodeBasePath>` substitution by the install script when generating the hook, or by the hook itself at runtime via env-var fallback |
-| `workflows/nightly-pull-jit-knowledge.md` | Task scheduler script + log file path | Doc + scheduled-task spec; consumer substitutes |
+| `workflows/nightly-pull-jitneuro.md` | Task scheduler script + log file path | Doc + scheduled-task spec; consumer substitutes |
 | `hooks/pre-push` | Error message text (only -- the logic uses `$GIT_DIR` directly) | The hook script may EMBED the substituted path at install time so error messages show real paths; or use a runtime fallback. See "Hook path substitution" below. |
 
 ### Hook path substitution
@@ -99,13 +101,13 @@ It does NOT use Windows-only commands (no `mklink`, no `Set-ExecutionPolicy`, no
 This installer registers the load rule and repo-local Claude stub. It does not
 make copied skills authoritative.
 
-For skills, prefer direct discovery of `<jit-knowledge-root>/skills/`. If a
+For skills, prefer direct discovery of `<knowledge-root>/skills/`. If a
 future adapter installs commands into a runtime-local command or skill
 directory, those commands must either be thin wrappers that read the canonical
-skill from `<jit-knowledge-root>/skills/<name>/SKILL.md`, or generated files with
-source metadata recording the jit-knowledge path and tag/SHA.
+skill from `<knowledge-root>/skills/<name>/SKILL.md`, or generated files with
+source metadata recording the jitneuro path and tag/SHA.
 
-Re-run install or the future adapter sync after every jit-knowledge pin bump.
+Re-run install or the future adapter sync after every jitneuro pin bump.
 Generated, unmodified adapters may be refreshed. Locally edited adapters must
 produce a warning and require manual review. A copied command without source
 metadata is stale and non-authoritative.
@@ -121,7 +123,7 @@ Required:
 - `pip install pyyaml` (manifest dep)
 
 Recommended:
-- `gh` CLI authenticated to the JIT AI org (so `rebuild-index.py` can refresh the engram routing region from subscribed repos)
+- `gh` CLI authenticated to the your org (so `rebuild-index.py` can refresh the engram routing region from subscribed repos)
 - `node` 20+ + `npm` (for the gtm-gate / ux-narration-agent / visual-review-agent components)
 
 If anything is missing, surface a one-line warning per missing tool. Do not block the install on optional tools -- only block on the required set.
@@ -129,22 +131,22 @@ If anything is missing, surface a one-line warning per missing tool. Do not bloc
 ### 2. Clone or refresh
 
 Default canonical path:
-- macOS / Linux: `$HOME/Code/jit-knowledge`
-- Windows: `$USERPROFILE/Code/jit-knowledge` (e.g., `C:\Users\<you>\Code\jit-knowledge`)
+- macOS / Linux: `$HOME/Code/jitneuro`
+- Windows: `$USERPROFILE/Code/jitneuro` (e.g., `C:\Users\<you>\Code\jitneuro`)
 
 ```
-JIT_KNOWLEDGE_ROOT="${JIT_KNOWLEDGE_ROOT:-$HOME/Code/jit-knowledge}"
-if [ -d "$JIT_KNOWLEDGE_ROOT/.git" ]; then
-  cd "$JIT_KNOWLEDGE_ROOT" && git fetch --tags && git pull --ff-only
+KNOWLEDGE_ROOT="${KNOWLEDGE_ROOT:-$HOME/Code/jitneuro}"
+if [ -d "$KNOWLEDGE_ROOT/.git" ]; then
+  cd "$KNOWLEDGE_ROOT" && git fetch --tags && git pull --ff-only
 else
-  git clone https://github.com/<your-org>/jit-knowledge.git "$JIT_KNOWLEDGE_ROOT"
+  git clone https://github.com/<your-org>/jitneuro.git "$KNOWLEDGE_ROOT"
 fi
 ```
 
 If pin-to-tag is desired (per `governance/PIN-POLICY.md`), check out the tag:
 
 ```
-git -C "$JIT_KNOWLEDGE_ROOT" checkout v1.3   # whatever the consuming system pins
+git -C "$KNOWLEDGE_ROOT" checkout v1.3   # whatever the consuming system pins
 ```
 
 ### 3. Install component dependencies
@@ -153,8 +155,8 @@ Walk each component that ships a `package.json`:
 
 ```
 for d in playbooks/gtm-gate playbooks/ux-narration-agent playbooks/visual-review-agent; do
-  if [ -f "$JIT_KNOWLEDGE_ROOT/$d/package.json" ]; then
-    (cd "$JIT_KNOWLEDGE_ROOT/$d" && npm install --no-fund --no-audit)
+  if [ -f "$KNOWLEDGE_ROOT/$d/package.json" ]; then
+    (cd "$KNOWLEDGE_ROOT/$d" && npm install --no-fund --no-audit)
   fi
 done
 ```
@@ -169,17 +171,17 @@ pip install --user pyyaml
 
 ### 5. Drop the Claude Code load rule (user) + repo-local stub + SessionStart hook
 
-**User rule:** Source `templates/rules/jit-knowledge-load.md` (shipped with this repo).
-Target `~/.claude/rules/jit-knowledge-load.md` (per-user rules dir).
+**User rule:** Source `templates/rules/jitneuro-load.md` (shipped with this repo).
+Target `~/.claude/rules/jitneuro-load.md` (per-user rules dir).
 
-**Repo-local (jit-knowledge clone only):** Source `templates/claude-repo-local/CLAUDE.md`.
-Target `<jit-knowledge-root>/.claude/CLAUDE.md`. The `jit-knowledge` repo gitignores `.claude/` so nothing here is committed; `scripts/install.sh` materializes the stub idempotently.
+**Repo-local (jitneuro clone only):** Source `templates/claude-repo-local/CLAUDE.md`.
+Target `<knowledge-root>/.claude/CLAUDE.md`. The `jitneuro` repo gitignores `.claude/` so nothing here is committed; `scripts/install.sh` materializes the stub idempotently.
 
 ```
 USER_RULES_DIR="$HOME/.claude/rules"
 mkdir -p "$USER_RULES_DIR"
-SRC="$JIT_KNOWLEDGE_ROOT/templates/rules/jit-knowledge-load.md"
-DST="$USER_RULES_DIR/jit-knowledge-load.md"
+SRC="$KNOWLEDGE_ROOT/templates/rules/jitneuro-load.md"
+DST="$USER_RULES_DIR/jitneuro-load.md"
 if [ -f "$DST" ]; then
   if ! diff -q "$SRC" "$DST" >/dev/null 2>&1; then
     echo "WARN: $DST exists and differs from template. Manual review needed (do NOT auto-overwrite local edits)."
@@ -193,9 +195,9 @@ fi
 **Repo-local stub (same idempotency rules as the user rule):**
 
 ```
-LOCAL_DIR="$JIT_KNOWLEDGE_ROOT/.claude"
+LOCAL_DIR="$KNOWLEDGE_ROOT/.claude"
 mkdir -p "$LOCAL_DIR"
-SRC2="$JIT_KNOWLEDGE_ROOT/templates/claude-repo-local/CLAUDE.md"
+SRC2="$KNOWLEDGE_ROOT/templates/claude-repo-local/CLAUDE.md"
 DST2="$LOCAL_DIR/CLAUDE.md"
 if [ -f "$DST2" ]; then
   if ! diff -q "$SRC2" "$DST2" >/dev/null 2>&1; then
@@ -211,29 +213,29 @@ Idempotent: running install twice either copies once or warns on local divergenc
 
 **SessionStart hook (5c):**
 
-Install `templates/claude-hooks/session-start-master-orchestrator-rule.sh` to `~/.claude/hooks/jit-knowledge-session-start.sh`. Always overwrite -- the repo copy is canonical. Register a `SessionStart` entry in `~/.claude/settings.json` pointing at the hook (on Windows Git Bash, use `bash "<hookpath>"`; on POSIX, the path directly). Skip registration if the command is already present.
+Install `templates/claude-hooks/session-start-master-orchestrator-rule.sh` to `~/.claude/hooks/jitneuro-session-start.sh`. Always overwrite -- the repo copy is canonical. Register a `SessionStart` entry in `~/.claude/settings.json` pointing at the hook (on Windows Git Bash, use `bash "<hookpath>"`; on POSIX, the path directly). Skip registration if the command is already present.
 
 ```
 HOOKS_DIR="$HOME/.claude/hooks"
 mkdir -p "$HOOKS_DIR"
-cp "$JIT_KNOWLEDGE_ROOT/templates/claude-hooks/session-start-master-orchestrator-rule.sh" \
-   "$HOOKS_DIR/jit-knowledge-session-start.sh"
-chmod +x "$HOOKS_DIR/jit-knowledge-session-start.sh"
+cp "$KNOWLEDGE_ROOT/templates/claude-hooks/session-start-master-orchestrator-rule.sh" \
+   "$HOOKS_DIR/jitneuro-session-start.sh"
+chmod +x "$HOOKS_DIR/jitneuro-session-start.sh"
 # python3 heredoc registers in settings.json (idempotent)
 ```
 
-When the hook fires at SessionStart, it resolves `<jit-knowledge-root>`, reads `rules/interactive-master-orchestrator.md`, and injects the binding identity rule into the session context window before any tool runs. Origin: 2026-05-19 RCA -- the identity rule was documented but never mechanically reached context; the session ran as a generic coding agent the whole session.
+When the hook fires at SessionStart, it resolves `<knowledge-root>`, reads `rules/interactive-master-orchestrator.md`, and injects the binding identity rule into the session context window before any tool runs. Origin: 2026-05-19 RCA -- the identity rule was documented but never mechanically reached context; the session ran as a generic coding agent the whole session.
 
 **PreCompact hook (5e):**
 
-Install `templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh` to `~/.claude/hooks/jit-knowledge-pre-compact.sh`. Always overwrite -- the repo copy is canonical. Register a `PreCompact` entry in `~/.claude/settings.json` pointing at the hook. Skip registration if the command is already present.
+Install `templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh` to `~/.claude/hooks/jitneuro-pre-compact.sh`. Always overwrite -- the repo copy is canonical. Register a `PreCompact` entry in `~/.claude/settings.json` pointing at the hook. Skip registration if the command is already present.
 
 ```
 HOOKS_DIR="$HOME/.claude/hooks"
 mkdir -p "$HOOKS_DIR"
-cp "$JIT_KNOWLEDGE_ROOT/templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh" \
-   "$HOOKS_DIR/jit-knowledge-pre-compact.sh"
-chmod +x "$HOOKS_DIR/jit-knowledge-pre-compact.sh"
+cp "$KNOWLEDGE_ROOT/templates/claude-hooks/pre-compact-knowledge-rebootstrap.sh" \
+   "$HOOKS_DIR/jitneuro-pre-compact.sh"
+chmod +x "$HOOKS_DIR/jitneuro-pre-compact.sh"
 # python3 heredoc registers in settings.json under hooks.PreCompact (idempotent)
 ```
 
@@ -241,7 +243,7 @@ When the hook fires at PreCompact (just before Claude Code compresses the conver
 
 ### 6. Record the path in workspace.json (optional)
 
-If `~/.claude/workspace.json` exists and the consuming system uses it for path resolution, set `jit_knowledge_root`:
+If `~/.claude/workspace.json` exists and the consuming system uses it for path resolution, set `knowledge_root`:
 
 ```
 WORKSPACE_JSON="$HOME/.claude/workspace.json"
@@ -250,9 +252,9 @@ if [ -f "$WORKSPACE_JSON" ]; then
 import json, sys
 p = '$WORKSPACE_JSON'
 with open(p) as f: d = json.load(f)
-d['jit_knowledge_root'] = '$JIT_KNOWLEDGE_ROOT'
+d['knowledge_root'] = '$KNOWLEDGE_ROOT'
 with open(p, 'w') as f: json.dump(d, f, indent=2)
-print('Updated workspace.json: jit_knowledge_root = $JIT_KNOWLEDGE_ROOT')
+print('Updated workspace.json: knowledge_root = $KNOWLEDGE_ROOT')
 "
 fi
 ```
@@ -260,7 +262,7 @@ fi
 ### 7. Validate INDEX.md is current
 
 ```
-cd "$JIT_KNOWLEDGE_ROOT"
+cd "$KNOWLEDGE_ROOT"
 python scripts/rebuild-manifest.py --check
 ```
 
@@ -268,54 +270,20 @@ If exit-non-zero, run `python scripts/rebuild-manifest.py` and (if changes appea
 
 ### 8. Foundational read primer (post-install)
 
-The install script prints, and the operator must complete BEFORE doing real work:
-
-```
-============================================================
-jit-knowledge installed at: $JIT_KNOWLEDGE_ROOT
-
-NEXT: load the foundational horizon context. In your Claude
-Code session, read these files in order:
-
-  1. horizon/vision.md
-       -- auto-loads mission.md + personal-constitution-simplified.md
-          per its footer (mandatory)
-  2. horizon/business-strategies.md
-       -- per-venture plans + 2026 priority frame
-  3. horizon/goals-2026.md AND the current quarter file
-       (e.g. goals-2026-q2.md)
-       -- annual + quarterly milestones
-  4. horizon/decision-routing.md
-       -- T1 / T2 / T3 trust ratchet; ANY-of-3 escalation
-  5. horizon/operating-rhythm.md
-       -- daily cadence; brief formats
-  6. INDEX.md
-       -- the capability manifest
-
-  Optional but high value:
-  -  horizon/risk-register.md
-  -  horizon/metrics-config.md
-  -  horizon/product-launch-pipeline.md
-
-These are READ-ONLY at this point. They prime the session with
-Owner's vision + operating model. Skipping them produces work
-that conflicts with anchors / counter-horizons / hard lines.
-============================================================
-```
-
-The vision.md footer encodes a self-load rule -- when an AI session reads vision.md, it MUST also read mission.md + personal-constitution-simplified.md silently. Honor that rule; do not stop at vision.md.
-
+After install, read `INDEX.md` and any foundational context documents your
+organization provides in its knowledge catalog before doing substantive work.
 ## QA Gates
 
 Reject or revise the output if any of these are true:
 
-- The SessionStart hook was not installed to `~/.claude/hooks/jit-knowledge-session-start.sh` AND not registered under `hooks.SessionStart` in `~/.claude/settings.json` -- both must be present for mechanical identity loading to function
-- The PreCompact hook was not installed to `~/.claude/hooks/jit-knowledge-pre-compact.sh` AND not registered under `hooks.PreCompact` in `~/.claude/settings.json` -- both must be present for the post-compact `/knowledge` re-anchor to fire
-- The skill silently overwrote an existing `~/.claude/rules/jit-knowledge-load.md` that diverged from the shipped template (per-machine rules may be intentionally edited; never destroy local state)
+- The SessionStart hook was not installed to `~/.claude/hooks/jitneuro-session-start.sh` AND not registered under `hooks.SessionStart` in `~/.claude/settings.json` -- both must be present for mechanical identity loading to function
+- The PreCompact hook was not installed to `~/.claude/hooks/jitneuro-pre-compact.sh` AND not registered under `hooks.PreCompact` in `~/.claude/settings.json` -- both must be present for the post-compact `/knowledge` re-anchor to fire
+- The Stop hook was not installed to `~/.claude/hooks/stop-continue-queue.sh` AND not registered under `hooks.Stop` in `~/.claude/settings.json`, or `~/.claude/commands/afk.md` was not installed -- all three must be present for /afk autonomous continuation to function
+- The skill silently overwrote an existing `~/.claude/rules/jitneuro-load.md` that diverged from the shipped template (per-machine rules may be intentionally edited; never destroy local state)
 - The skill ran `npm install` without checking for `package.json` first (would error out on directories that have no node component)
 - The skill failed cross-platform: used `mklink`, `Set-ExecutionPolicy`, or any Windows-only or macOS-only command outside the documented contract
 - The skill skipped the Foundational Read Primer block (the install is incomplete without it -- the consuming session needs the horizon context loaded BEFORE doing work)
-- The skill assumed a hard-coded clone path instead of honoring `JIT_KNOWLEDGE_ROOT` env override + per-OS default
+- The skill assumed a hard-coded clone path instead of honoring `KNOWLEDGE_ROOT` env override + per-OS default
 - The skill ran the engram refresh (`rebuild-index.py`) without `gh` auth and committed `status: missing` placeholders -- network failures are diagnostic warnings, not regressions to commit
 - The skill auto-committed an INDEX.md diff without surfacing it for Owner review (manifest changes are PR-gated per governance)
 
@@ -327,13 +295,14 @@ Reject or revise the output if any of these are true:
 ## After This Skill Completes
 
 The consuming machine has:
-- jit-knowledge cloned at the canonical path
+- jitneuro cloned at the canonical path
 - Per-component node dependencies installed
 - PyYAML installed
 - The Claude Code load rule registered in `~/.claude/rules/`
-- The SessionStart identity hook installed at `~/.claude/hooks/jit-knowledge-session-start.sh` and registered in `~/.claude/settings.json`
-- The PreCompact re-bootstrap hook installed at `~/.claude/hooks/jit-knowledge-pre-compact.sh` and registered under `hooks.PreCompact` in `~/.claude/settings.json`
-- (Optional) workspace.json updated with `jit_knowledge_root`
+- The SessionStart identity hook installed at `~/.claude/hooks/jitneuro-session-start.sh` and registered in `~/.claude/settings.json`
+- The PreCompact re-bootstrap hook installed at `~/.claude/hooks/jitneuro-pre-compact.sh` and registered under `hooks.PreCompact` in `~/.claude/settings.json`
+- The autonomous-continuation Stop hook installed at `~/.claude/hooks/stop-continue-queue.sh`, registered under `hooks.Stop` in `~/.claude/settings.json`, and the `/afk` command installed at `~/.claude/commands/afk.md`
+- (Optional) workspace.json updated with `knowledge_root`
 - A clean INDEX.md (or a surfaced diff for Owner review)
 
 The operator's NEXT action is to read the horizon docs in their Claude Code session per the post-install primer.
@@ -341,8 +310,8 @@ The operator's NEXT action is to read the horizon docs in their Claude Code sess
 ## Related
 
 - `scripts/install.sh` -- the implementation of the procedure above (POSIX)
-- `scripts/install.ps1` -- Windows entry that runs `install.sh` via Git Bash and sets `JIT_KNOWLEDGE_ROOT` to the current clone
-- `templates/rules/jit-knowledge-load.md` -- the shipped Claude Code load rule
+- `scripts/install.ps1` -- Windows entry that runs `install.sh` via Git Bash and sets `KNOWLEDGE_ROOT` to the current clone
+- `templates/rules/jitneuro-load.md` -- the shipped Claude Code load rule
 - `governance/PIN-POLICY.md` -- pinning tags vs floating on main
 - `governance/SYNC-MECHANISMS.md` -- the formal integration spec (declarative imports, skill discovery, charter discovery)
 - `skills/update-index/SKILL.md` -- when adding new artifacts; refreshes INDEX.md

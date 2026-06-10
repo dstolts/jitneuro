@@ -1,13 +1,13 @@
 ---
 type: skill
 name: update-index
-description: Refresh INDEX.md from current jit-knowledge filesystem state. Trigger phrases include "update the index", "refresh INDEX.md", "update jit-knowledge index", "rebuild manifest", "audit INDEX". Use after adding, renaming, archiving (.zArchive), or removing any artifact in jit-knowledge so the manifest stays canonical.
+description: Refresh INDEX.md from current jitneuro filesystem state. Trigger phrases include "update the index", "refresh INDEX.md", "update the knowledge catalog index", "rebuild manifest", "audit INDEX". Use after adding, renaming, archiving (.zArchive), or removing any artifact in jitneuro so the manifest stays canonical.
 purpose: BINDING INDEX.md refresh skill -- runs rebuild-index.py + rebuild-manifest.py to bring the auto-managed regions (engram routing + artifact manifest) back in sync with filesystem state, then opens a PR for Owner review. MUST be invoked whenever the artifact set changes, regardless of actor -- AI adds/renames/removes a file, AI versions a file (copy file-01.md to file-02.md AND archive file-01.md per file-versioning rule -- both state changes refresh-trigger), Owner manually archives via .zArchive convention or moves files in the filesystem, a charter/spec is bumped to a new revision, or CI's `rebuild-manifest.py --check` reports drift. Skipping means INDEX.md drifts from filesystem reality and downstream AI agents route on stale paths, miss newly-added artifacts entirely, or load files that have been archived/superseded.
-tags: [skill, index, manifest, update-index, jit-knowledge, dispatch-rule, post-write, file-versioning, archive, user-action-trigger]
+tags: [skill, index, manifest, update-index, jitneuro, dispatch-rule, post-write, file-versioning, archive, user-action-trigger]
 scope: public
 departments: [all]
 owner_role: cos
-read_when: After adding, renaming, archiving, or removing any artifact in jit-knowledge, or when CI reports INDEX.md drift.
+read_when: After adding, renaming, archiving, or removing any artifact in jitneuro, or when CI reports INDEX.md drift.
 last_evaluated: 2026-06-03
 ---
 
@@ -32,7 +32,7 @@ INDEX.md has two auto-managed regions and a few hand-curated regions. This skill
 - After archiving a file with the `.zArchive` convention (rename `Foo.md` -> `Foo.md.zArchive`)
 - After renaming or moving any artifact (the manifest paths must follow)
 - After bumping a charter / spec to a new revision (the auto-extracted purpose may change)
-- Before tagging a new version of jit-knowledge (PIN-POLICY requires a clean manifest)
+- Before tagging a new version of jitneuro (PIN-POLICY requires a clean manifest)
 - When CI surfaces "Artifact Manifest is out of date" via `rebuild-manifest.py --check`
 
 ## Procedure
@@ -115,7 +115,7 @@ Reject or revise the output if any of these are true:
 
 - Python 3.11+ with PyYAML (`pip install pyyaml`)
 - `gh` CLI authenticated to the GitHub org (for the engram routing refresh only -- artifact manifest needs no network)
-- A local jit-knowledge clone with the AUTO markers present in INDEX.md
+- A local jitneuro clone with the AUTO markers present in INDEX.md
 
 ## After This Skill Completes
 
@@ -130,4 +130,4 @@ The manifest's `Last refreshed:` line at the top of INDEX.md is updated by the r
 - `.github/workflows/refresh-index.yml` -- 6-hourly + dispatch trigger for engram refresh
 - `governance/PIN-POLICY.md` -- pin policy requires a clean manifest before tagging
 - `governance/PROMOTION-CRITERIA.md` -- artifact intake criteria; new artifacts must show up in the next manifest refresh
-- `skills/install/SKILL.md` -- one-shot install of jit-knowledge on a new consuming machine
+- `skills/install/SKILL.md` -- one-shot install of jitneuro on a new consuming machine

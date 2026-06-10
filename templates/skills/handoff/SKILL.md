@@ -90,7 +90,7 @@ Per `<workspace>/AGENTS.md` "Handoff Rule (BINDING)":
 ## Step 1 -- Bootstrap (do NOT skip)
 Read in order:
 1. <workspace>/AGENTS.md
-2. jit-knowledge: AGENTS.md, COMPANY.md, README.md, INDEX.md
+2. <knowledge-root>: AGENTS.md, COMPANY.md, README.md, INDEX.md
 3. Every rule in workspace AGENTS.md "Binding Rules"
 4. THIS handoff
 5. <active-repo>/AGENTS.md, CLAUDE.md, .HUB/Hub.md, todo/backlog.md

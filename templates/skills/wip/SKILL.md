@@ -2,14 +2,14 @@
 type: skill
 name: wip
 status: canonical
-purpose: Capture the current conversation's working context into a WIP-Drafts file so the work survives session end and can graduate to canonical jit-knowledge later. Infers the right WIP-Drafts surface (rules / charters / patterns / playbooks / workflows / skills / references / INBOX) from content; confirms with Owner in a single line before staging. Stages the file but does NOT auto-commit -- Owner controls the commit boundary.
-tags: [slash-command, wip-drafts, session-capture, recursive-improvement, jit-knowledge]
+purpose: Capture the current conversation's working context into a WIP-Drafts file so the work survives session end and can graduate to canonical knowledge catalog later. Infers the right WIP-Drafts surface (rules / charters / patterns / playbooks / workflows / skills / references / INBOX) from content; confirms with Owner in a single line before staging. Stages the file but does NOT auto-commit -- Owner controls the commit boundary.
+tags: [slash-command, wip-drafts, session-capture, recursive-improvement, jitneuro]
 scope: public
 departments: [all]
 authored_at: WIP-Drafts/skills/wip.md
 origin_date: 2026-05-27
 origin_event: Knowledge session 2026-05-24 follow-up queue item 2a; Owner directive (see WIP-Drafts/README.md + rules/wip-drafts-lifecycle.md). The /knowledge command exists to re-anchor sessions to bootstrap; /wip is the complementary capture mechanism so insights surfaced mid-session don't evaporate.
-graduation_target: jit-knowledge/skills/wip/SKILL.md
+graduation_target: <knowledge-root>/skills/wip/SKILL.md
 related_skills:
   - /knowledge -- bootstrap re-read + status display + auto task-list + auto-resume (WIP draft at WIP-Drafts/INBOX/knowledge-slash-command.md)
   - /graduate -- promote a `status: wip-ready` file to canonical via git mv + frontmatter flip + open PR (queued item 2b)
@@ -157,7 +157,7 @@ Usage:
 - [ ] Live-trial in 2+ real capture sessions; verify inference accuracy
 - [ ] Reconcile with `/save` (some overlap in 'persist session insight'
       scope)
-- [ ] Decide canonical home: `jit-knowledge/skills/wip/SKILL.md`
+- [ ] Decide canonical home: `<knowledge-root>/skills/wip/SKILL.md`
 - [ ] Decide if `install.sh` should distribute a slash-command stub for
       Claude-Code-runtime consumers
 - [ ] Status -> `wip-ready` once trial + reconciliation done; then

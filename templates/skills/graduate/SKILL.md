@@ -3,16 +3,16 @@ type: skill
 name: graduate
 status: canonical
 purpose: 'Promote a `status: wip-ready` WIP-Drafts file to its canonical home via `git mv` + frontmatter `status -> canonical` + open graduation PR. The mirror of /wip -- /wip captures, /graduate ships.'
-tags: [slash-command, wip-drafts, graduation, recursive-improvement, jit-knowledge, lifecycle]
+tags: [slash-command, wip-drafts, graduation, recursive-improvement, jitneuro, lifecycle]
 scope: public
 departments: [all]
 authored_at: WIP-Drafts/skills/graduate.md
 origin_date: 2026-05-27
 origin_event: Knowledge session 2026-05-24 handoff item 2b. Pairs with /wip (item 2a, drafted 2026-05-27 in PR #232). Together they close the WIP-Drafts lifecycle: /wip captures into draft; iteration matures status to wip-ready; /graduate moves to canonical.
-graduation_target: jit-knowledge/skills/graduate/SKILL.md
+graduation_target: <knowledge-root>/skills/graduate/SKILL.md
 related_skills:
   - /wip -- conversation-context capture into WIP-Drafts (PR #232)
-read_when: When promoting a wip-ready WIP-Drafts file to its canonical location in jit-knowledge via git mv and a graduation PR.
+read_when: When promoting a wip-ready WIP-Drafts file to its canonical location in jitneuro via git mv and a graduation PR.
 last_evaluated: 2026-06-03
 ---
 
@@ -31,7 +31,7 @@ Usage:
 /graduate WIP-Drafts/skills/wip.md             # graduate by path
 /graduate skills/wip                            # short form (resolve from name)
 /graduate skills/wip --dry-run                  # show diff + planned PR, don't execute
-/graduate skills/wip --target jit-knowledge/skills/wip/SKILL.md   # override target
+/graduate skills/wip --target <knowledge-root>/skills/wip/SKILL.md   # override target
 /graduate skills/wip --repo-path <worktree-path>  # operate on a worktree
 ```
 
@@ -43,7 +43,7 @@ When operating in a worktree (worktree-discipline compliant -- the main clone st
    still `draft`, refuse with: "File is still draft. Iterate to wip-ready
    first, or use --force-from-draft if Owner explicitly approves."
 2. **Graduation target check:** frontmatter `graduation_target:` must
-   resolve to a path INSIDE `jit-knowledge/`. If missing, refuse and ask
+   resolve to a path INSIDE `<knowledge-root>/`. If missing, refuse and ask
    Owner to set it.
 3. **Path conflict check:** the target path must not already exist. If it does,
    refuse with: "Target <path> exists. Open a refactor PR against the
@@ -80,7 +80,7 @@ When operating in a worktree (worktree-discipline compliant -- the main clone st
    owns the topic, producing duplicate-source-of-truth violations the
    librarian-index sprints are explicitly designed to remove.
 
-4. **PR checklist preview:** print the jit-knowledge `governance/PR-CHECKLIST.md`
+4. **PR checklist preview:** print the jitneuro `governance/PR-CHECKLIST.md`
    mandatory items and ask Owner to confirm each one in one line:
    `Promotion / Sanitization / Conflict / Compat / Frontmatter / INDEX / Tracking -- all OK?`
 5. **Owner explicit confirm:** Owner must respond `yes` / `go` / `graduate`
@@ -199,7 +199,7 @@ When operating in a worktree (worktree-discipline compliant -- the main clone st
 - [ ] Live-trial in 2+ graduations; verify the 5 gates fire correctly
 - [ ] Reconcile with `governance/PR-CHECKLIST.md` -- gate 4 should print
       the latest checklist version, not a hard-coded snapshot
-- [ ] Decide canonical home: `jit-knowledge/skills/graduate/SKILL.md`
+- [ ] Decide canonical home: `<knowledge-root>/skills/graduate/SKILL.md`
 - [ ] Decide if `install.sh` should distribute a slash-command stub for
       Claude-Code-runtime consumers
 - [ ] Status -> `wip-ready` once trial + reconciliation done; then

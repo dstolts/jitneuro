@@ -275,7 +275,7 @@ BLOCKED: [count] items needing attention
 
 4. **Read active bundles** listed in session state (only those listed)
 
-5. **Read `.jit-knowledge/INDEX.md`** (via `~/.claude/url-resolver.md`) for routing and bundle awareness
+5. **If a knowledge catalog is configured**, read its `INDEX.md` for routing and bundle awareness
 
 6. **Write "my current"** (session name).
 

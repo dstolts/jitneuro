@@ -26,8 +26,8 @@ mkdir -p .cursor/rules
 cp jitneuro/templates/cursor/rules/jitneuro-intents.mdc .cursor/rules/
 ```
 
-Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`. The rule references those paths. Routing comes from `.jit-knowledge/INDEX.md` (resolved via `~/.claude/url-resolver.md`), not from `context-manifest.md`.
+Ensure your `.claude/` (or workspace `.claude/`) has the usual layout: `session-state/`, `bundles/`, `engrams/`. The rule references those paths. Repo/team context can live in `.jitneuro/` when present. A shared knowledge catalog (`.knowledge/INDEX.md` or configured via `KNOWLEDGE_ROOT`) is optional; standalone use requires no external catalog.
 
 ## Paths
 
-The rule uses `.claude/` for session-state, bundles, and engrams. Routing uses `.jit-knowledge/INDEX.md`. Resolve `.claude/` from the workspace root or the project root that actually contains it (e.g. in a multi-root workspace, the root that has `session-state/`).
+The rule uses `.claude/` for session-state, bundles, and engrams. Resolve `.claude/` from the workspace root or the project root that actually contains it (e.g. in a multi-root workspace, the root that has `session-state/`). Resolve `.jitneuro/` from the active repo when present, and resolve any shared knowledge catalog through `KNOWLEDGE_ROOT`, `.knowledge/`, or the team's configured path.
