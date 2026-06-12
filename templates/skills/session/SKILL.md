@@ -35,10 +35,10 @@ Checkpoint current state:
 
 ### `/session load [name|#]`
 Restore from checkpoint:
-1. List available sessions if no name/# provided
-2. Read checkpoint file
-3. Restore TodoWrite task list
-4. Set heartbeat (Bash echo)
+1. Resolve the session name (list available sessions if no name/# provided)
+2. **Set heartbeat FIRST (Bash echo), the instant the name resolves** -- this is the action the statusline reads; do it before anything else so the load "took" even if a later step is interrupted. If the owner appended a question to the command, write the heartbeat first, finish the load, THEN answer.
+3. Read checkpoint file
+4. Restore TodoWrite task list
 5. Spawn scheduled agents if not running
 6. Display session summary + next actions
 
@@ -71,11 +71,12 @@ Show blockers and NEEDS OWNER items for current session.
 
 ## Session tag rule
 
-Every response ends with: `[session: <name> | DIV: <MODE>]`
+Every response ends with: `[session: <name> | DIV: <MODE>]` -- on the **Stop output**, NOT the statusline. The statusline mechanically shows the session name from the heartbeat; the Stop tag is the orchestrator's per-turn confirmation that it is actively routing.
 
 - Get `<name>` from your OWN heartbeat file ONLY (one read, one file)
 - Get `<MODE>` from toggles.json (AUTO / ALWAYS / NEVER)
 - Add `| STRATEGY` when strategy mode is active
+- **Empty heartbeat = broken load, not a missing tag.** If the heartbeat is empty when a session should be active, the load skipped the heartbeat write -- fix the load (`/load` step 0), do not silently drop the tag.
 
 ## Hub.md sync is MANDATORY on save
 

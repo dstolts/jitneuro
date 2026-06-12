@@ -42,6 +42,12 @@ Read by: default view, `pulse`, `dashboard`, and the session tag rule.
 If no active session: `[session: none | DIV: <MODE>]`.
 This is non-negotiable -- it prevents context confusion across terminals and provides constant visibility into the reasoning mode.
 
+**Tag location -- Stop output, NOT the statusline.** These are two distinct displays:
+- The **statusline** mechanically carries the session name (read from the heartbeat file by the statusline script). It is configured once and updates itself.
+- The **Stop tag** `[session: <name> | DIV: <MODE>]` is authored by the orchestrator at the **end of every response**. It is the per-turn confirmation that the orchestrator is actively routing -- consciously deciding, this turn, what mode applies. Dropping it means routing was skipped.
+
+**Empty heartbeat = broken load, not a missing tag.** If resolving "my current" yields an empty/absent heartbeat, the session was not loaded correctly (the heartbeat write was skipped). Fix the load (`/load` step 0 / `session load` step 1 write the heartbeat unconditionally) -- do NOT silently drop the tag or print `none` when a session was supposed to be active.
+
 ## Shortcut Preference
 
 Read `.claude/session-state/.preferences` for `shortcut_scope` setting.
@@ -268,6 +274,11 @@ BLOCKED: [count] items needing attention
    - If no name: **resolve "my current"**. If exists, load that.
    - If no name and no current: list sessions, ask user to pick
    - If number: resolve from last `/sessions` list output
+   - **IMMEDIATELY after resolving the name, write the heartbeat** (do NOT wait for step 6):
+     ```bash
+     echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"
+     ```
+     This is the single mechanical action the statusline depends on. Writing it first guarantees the load "took" even if a later step is interrupted or the owner appended a question to the command. (Step 6 re-affirms it; the write is idempotent.)
 
 2. **Read the session state file**
 
