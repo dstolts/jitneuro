@@ -1,4 +1,4 @@
-# JitNeuro v0.5.0 Release Notes
+# JitNeuro v0.5.1 Release Notes
 
 **Release Date:** June 12, 2026
 **Stability:** Stable
@@ -9,7 +9,7 @@
 
 ## Summary
 
-v0.5.0 fixes a session-load bug that caused the statusline (and the session tag) to show `none`/`?` even after a successful `/load`, and clarifies where the session tag belongs and what `DIV` actually confirms.
+v0.5.1 fixes a session-load bug that caused the statusline (and the session tag) to show `none`/`?` even after a successful `/load`, and clarifies where the session tag belongs and what `DIV` actually confirms.
 
 The load procedure deferred its one mechanical step -- writing the heartbeat -- to the middle of the flow. When the owner appended a question to the load command (e.g. `/load my-session what's broken?`), the assistant treated the message as "answer the question," ran the answer, and never wrote the heartbeat. The session was effectively never loaded: the statusline had no name to read, and the session tag silently dropped.
 
@@ -57,7 +57,7 @@ then you are affected.
 
 ## How to update
 
-1. Pull the latest JitNeuro (v0.5.0 or later).
+1. Pull the latest JitNeuro (v0.5.1 or later).
 2. Re-run the installer for your platform, in the same mode you originally used:
    - macOS / Linux / Git Bash: `bash install.sh`
    - Windows PowerShell: `pwsh -File install.ps1`
@@ -78,3 +78,4 @@ then you are affected.
 
 - Fix-only behavior change; no breaking changes and no new features.
 - The statusline script itself was always correct -- it had nothing to read because the load never wrote the heartbeat.
+- v0.5.0 was a prior version bump that shipped without a dedicated release-notes file; this fix ships as v0.5.1.
