@@ -198,6 +198,6 @@ it did not fire.
 Used by: sys-architect, sys-backend, sys-security, sys-qa, sys-code-reviewer,
 sys-sre, security-developer, master-orchestrator.
 
-Canonical home: `<knowledge-root>/skills/root-cause-analysis.md`. The
+Canonical home: `<KnowledgeRoot>/skills/root-cause-analysis.md`. The
 user-global rule at `~/.claude/rules/root-cause-analysis.md` is a thin wrapper
 that points here; the authoritative method lives in this skill.

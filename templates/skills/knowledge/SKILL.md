@@ -23,7 +23,7 @@ changelog:
 This is the WIP draft of a slash command currently live in Owner's workspace
 at `~/.claude/commands/knowledge.md`. It is operational
 locally (visible in the Claude Code skills list as `knowledge: /knowledge`).
-It has NOT yet been graduated to canonical `<knowledge-root>/skills/knowledge/`.
+It has NOT yet been graduated to canonical `<KnowledgeRoot>/skills/knowledge/`.
 
 When graduating, decide:
 - Does this stay as a slash command (Claude Code specific) or become a portable
@@ -106,7 +106,7 @@ status display. Default is auto-execute steps 6-7.
 
 ## Promotion checklist
 
-- [ ] Decide canonical home: `<knowledge-root>/skills/knowledge/SKILL.md`
+- [ ] Decide canonical home: `<KnowledgeRoot>/skills/knowledge/SKILL.md`
 - [ ] Decide if `install.sh` should also distribute a slash-command stub for
       Claude-Code-runtime consumers (similar to existing rules drop pattern)
 - [ ] Reconcile tracker-surface conflict: `.HUB/Hub.md` vs `<repo>/todo/backlog.md`

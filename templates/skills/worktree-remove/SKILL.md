@@ -188,4 +188,4 @@ Drafted body to be added when the script ships via install.sh distribution
       with /worktree-new's script decision)
 - [ ] Decide: add `/worktree-status <repo>` audit skill as sibling
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `<knowledge-root>/skills/worktree-remove/SKILL.md`
+      `<KnowledgeRoot>/skills/worktree-remove/SKILL.md`

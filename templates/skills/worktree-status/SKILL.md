@@ -183,4 +183,4 @@ distribution; this skill graduates first.
 - [ ] Decide: ship companion PowerShell script via install.sh? (Pair
       with /worktree-new + /worktree-remove script decisions)
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `<knowledge-root>/skills/worktree-status/SKILL.md`
+      `<KnowledgeRoot>/skills/worktree-status/SKILL.md`

@@ -192,4 +192,4 @@ code blocks. The .md describes the skill; the .ps1 IS the skill.
 - [ ] Decide if companion PowerShell script ships via install.sh
 - [ ] Sibling `/worktree-remove` skill in follow-up PR (lifecycle cleanup)
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `<knowledge-root>/skills/worktree-new/SKILL.md`
+      `<KnowledgeRoot>/skills/worktree-new/SKILL.md`

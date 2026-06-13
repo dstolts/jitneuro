@@ -165,7 +165,7 @@ Before (20 lines in MEMORY.md):
 
 After (bundle created; route added to shared catalog index via PR):
 ```
-# <knowledge-root>/INDEX.md
+# <KnowledgeRoot>/INDEX.md
 - Deploy / server / VM / container -> [infrastructure]
 ```
 

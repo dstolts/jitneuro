@@ -205,4 +205,4 @@ would do before I commit to it."
 - [ ] Live-trial: session-state file written passes
       session-handoff-readiness "Step 1 -- Bootstrap" requirement
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `<knowledge-root>/skills/session-close/SKILL.md`
+      `<KnowledgeRoot>/skills/session-close/SKILL.md`

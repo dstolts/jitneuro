@@ -39,8 +39,8 @@ contract (a repo-pinned submodule, explicit repo config, a
 default). When no catalog is present, route by **role name** and the generic
 guidance in this rule -- never block on a catalog file that may not exist.
 
-Throughout this rule, `<knowledge-root>` denotes the resolved root of an optional
-knowledge catalog. Any reference to a `<knowledge-root>/...` path is conditional:
+Throughout this rule, `<KnowledgeRoot>` denotes the resolved root of an optional
+knowledge catalog. Any reference to a `<KnowledgeRoot>/...` path is conditional:
 load it only if the catalog defines it; otherwise fall back to the role-based
 guidance.
 

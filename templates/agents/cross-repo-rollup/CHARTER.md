@@ -135,7 +135,7 @@ PROPOSAL.md format:
 
 ### <artifact-title>
 - Source repos: <list>
-- Proposed destination: <knowledge-root>/<path>
+- Proposed destination: <KnowledgeRoot>/<path>
 - Evidence: seen in <repo1>/.jitneuro/rules/<file>, <repo2>/.jitneuro/rules/<file>
 - Draft: rollup-staging/<date>/<filename>.md
 
