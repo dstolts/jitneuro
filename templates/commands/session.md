@@ -104,7 +104,12 @@ BLOCKED: [count] items needing attention
    - If save+learn: run save flow, then suggest /learn
    - If save only: run save flow
    - If skip: proceed
-3. Create `.claude/session-state/<name>.md` with initial template:
+3. **Write the heartbeat FIRST -- the instant the new session name is known (from the `<name>` arg, or generated from the first request), before creating the state file or anything else:**
+   ```bash
+   echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"
+   ```
+   Create `heartbeats/` with `mkdir -p` if missing. Use Bash, never Write/Edit (the PostToolUse heartbeat hook races those). This is the one action the statusline reads; doing it first guarantees the session "took" even if a later step is interrupted. **Appended-text trap:** if a task or question rode along with `/session new`, write the heartbeat first, finish session creation, THEN address the task -- appended text never cancels the heartbeat write.
+4. Create `.claude/session-state/<name>.md` with initial template:
    ```markdown
    # Session: <name>
    **Checkpointed:** [current date/time]
@@ -123,8 +128,7 @@ BLOCKED: [count] items needing attention
    ## Next Steps
    - Awaiting direction
    ```
-4. **Write "my current"** (session name).
-5. Confirm: "Session '<name>' created."
+5. Confirm: "Session '<name>' created." (the heartbeat was already written in step 3.)
 6. **Spawn scheduled agents (mandatory):** Same process as `/session load` step 9. Read the project's config for `scheduledAgents`, spawn enabled agents, display confirmation or warning. New sessions need the interrupt mechanism from the start.
 
 ### session save <name>
