@@ -13,7 +13,8 @@ This is the turnkey `/jitneuro-update` -- read it and run it; it just happens.
 ## What It Does
 Re-running the installer IS the update path -- version-aware and idempotent. It backs up any
 framework file you edited, installs new/changed files, prunes ones the new version dropped
-(sha-guarded), and preserves your own files + your configured knowledgeRoot. Full contract:
+(sha-guarded), and preserves your own files + your configured knowledgeRoot (including your
+accumulated cognition/anti-patterns.md and jitneuro.json settings). Full contract:
 `skills/update/SKILL.md`.
 
 ## Instructions
@@ -31,10 +32,11 @@ When invoked as `/jitneuro-update`:
 - Note the previous version -> new version from `jitneuro.json`.
 
 ### Step 3: Re-run the installer in the SAME scope
+- The installer (`install.ps1` / `install.sh`) lives at the JitNeuro clone ROOT -- run it from there.
 - Detect the existing install scope (project / workspace / user). If unsure, run `/verify` first --
   it reports the install path.
-- Windows PowerShell: `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -Mode <scope>`
-- macOS / Linux / Git-Bash: `bash scripts/install.sh <scope>`
+- Windows PowerShell (from the clone root): `powershell -ExecutionPolicy Bypass -File install.ps1 -Mode <scope>`
+- macOS / Linux / Git-Bash (from the clone root): `bash install.sh <scope>`
 
 ### Step 4: Refresh the knowledge catalog (if configured)
 - If a shared knowledge catalog (knowledgeRoot) clone is configured, pull it too so the catalog is
@@ -50,7 +52,8 @@ When invoked as `/jitneuro-update`:
 
 ## Important
 - Idempotent + safe to re-run; never requires admin; no Python / Node dependency.
-- The installer NEVER overwrites the user's own files or a populated horizon / bundles / engrams dir.
+- The installer NEVER overwrites the user's own files or a populated horizon / bundles / engrams dir,
+  and never overwrites accumulated `cognition/anti-patterns.md` or your `jitneuro.json` settings.
 - A `(DISABLED)` first-line marker on a rule is respected (skipped, not restored).
 - Restart is mandatory -- an in-flight session will not see new commands / hooks until reopened.
 - This is the framework update only. To populate a repo's `.knowledge/` after updating, use the
