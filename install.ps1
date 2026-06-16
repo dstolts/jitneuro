@@ -453,17 +453,39 @@ if ((Get-ChildItem $horizonDir -File -ErrorAction SilentlyContinue).Count -eq 0)
 Write-Host "Installing cognition layer..." -ForegroundColor Green
 $cogDir = Join-Path $Target "cognition"
 $cogDecDir = Join-Path $cogDir "decisions"
+# User-ACCUMULATED cognition files (anti-patterns.md, written by /learn) are seeded only
+# if absent and NEVER overwritten. Framework cognition files update like rules: a user
+# edit is backed up to .jitneuro-backup\cognition\ before the new version lands.
+$CogPreserve = @("anti-patterns.md")
+function Install-CognitionFile($srcFull, $name, $rel, $destDir) {
+    $dest = Join-Path $destDir $name
+    if (Test-Path $dest) {
+        if ((Get-FileHash $srcFull).Hash -ne (Get-FileHash $dest).Hash) {
+            if ($OldManifest.ContainsKey($rel) -and $OldManifest[$rel] -ne (Get-JnSha $dest)) {
+                $bdir = Join-Path $Target ".jitneuro-backup\cognition"
+                if (-not (Test-Path $bdir)) { New-Item -ItemType Directory -Path $bdir -Force | Out-Null }
+                Copy-Item $dest (Join-Path $bdir $name) -Force
+                Write-Host "  BACKUP: $rel (your edit saved to .jitneuro-backup\cognition\)"
+            }
+            Copy-Item $srcFull $dest -Force
+        }
+    } else {
+        Copy-Item $srcFull $dest
+    }
+}
 foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDir $f.Name) -Force
+    if ($CogPreserve -contains $f.Name) {
+        $dest = Join-Path $cogDir $f.Name
+        if (Test-Path $dest) { Write-Host "  Preserved cognition\$($f.Name) (your accumulated knowledge)" -ForegroundColor Yellow }
+        else { Copy-Item $f.FullName $dest; Write-Host "  cognition\$($f.Name) (seeded -- yours to accumulate via /learn)" }
+    } else {
+        Install-CognitionFile $f.FullName $f.Name "cognition/$($f.Name)" $cogDir
+    }
 }
 foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDecDir $f.Name) -Force
+    Install-CognitionFile $f.FullName $f.Name "cognition/decisions/$($f.Name)" $cogDecDir
 }
-Write-Host "  cognition\personas.md (16 personas)"
-Write-Host "  cognition\friction-detection.md"
-Write-Host "  cognition\anti-patterns.md (seed entries)"
-$decCount = (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue).Count
-Write-Host "  cognition\decisions\ ($decCount models)"
+Write-Host "  cognition\ (framework updated; your edits backed up, accumulated knowledge preserved)"
 $ownerPersona = Join-Path $cogDir "owner-persona.md"
 if (-not (Test-Path $ownerPersona)) {
     Copy-Item (Join-Path $Templates "cognition\owner-persona.example.md") $ownerPersona
@@ -508,15 +530,22 @@ foreach ($hook in $hookFiles) {
     Write-Host "  hooks\$($hook.Name)"
 }
 
-# --- Copy jitneuro.json config ---
-# Preserve a previously configured knowledge catalog root across re-installs.
+# --- Install jitneuro.json config (preserve the user's settings on re-install) ---
+# Fresh install copies the template. A re-install PRESERVES the user's jitneuro.json in
+# full (scheduledAgents, team config, knowledgeRoot, any custom keys) and only bumps the
+# version field -- never clobbering user config with template defaults.
 $script:PrevKr = ""
 $installedJson = Join-Path $Target "jitneuro.json"
 if (Test-Path $installedJson) {
     try { $script:PrevKr = (Get-Content $installedJson -Raw | ConvertFrom-Json).knowledgeRoot } catch { }
+    $jraw = Get-Content $installedJson -Raw
+    $jraw = [regex]::Replace($jraw, '("version"\s*:\s*)"[^"]*"', "`$1`"$Version`"")
+    Set-Content $installedJson $jraw -NoNewline
+    Write-Host "Preserved your jitneuro.json (version -> v$Version; your settings kept)"
+} else {
+    Copy-Item $ConfigFile $installedJson -Force
+    Write-Host "Installed jitneuro.json (v$Version)"
 }
-Copy-Item $ConfigFile (Join-Path $Target "jitneuro.json") -Force
-Write-Host "Installed jitneuro.json (v$Version)"
 
 # --- Configure KNOWLEDGE_ROOT (always present; local store auto-created) ---
 Configure-KnowledgeRoot

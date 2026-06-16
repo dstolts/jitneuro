@@ -472,18 +472,44 @@ fi
 
 # Install cognition layer (Phase 2)
 echo "Installing cognition layer..."
+# User-ACCUMULATED cognition files (anti-patterns.md, written by /learn) are seeded only
+# if absent and NEVER overwritten. Framework cognition files update like rules: a user
+# edit is backed up to .jitneuro-backup/cognition/ before the new version lands.
+_jn_install_cog() {  # $1=src  $2=rel (e.g. cognition/foo.md)  $3=dest
+  if [ -f "$3" ]; then
+    if ! diff -q "$1" "$3" >/dev/null 2>&1; then
+      local old_sha; old_sha="$(_jn_oldsha "$2")"
+      if [ -n "$old_sha" ] && [ "$old_sha" != "$(_jn_sha "$3")" ]; then
+        mkdir -p "$TARGET/.jitneuro-backup/cognition"
+        cp "$3" "$TARGET/.jitneuro-backup/cognition/$(basename "$3")"
+        echo "  BACKUP: $2 (your edit saved to .jitneuro-backup/cognition/)"
+      fi
+      cp "$1" "$3"
+    fi
+  else
+    cp "$1" "$3"
+  fi
+}
 for cog_file in "$TEMPLATES/cognition/"*.md; do
   [ -f "$cog_file" ] || continue
-  cp "$cog_file" "$TARGET/cognition/$(basename "$cog_file")"
+  cog_name="$(basename "$cog_file")"
+  if [ "$cog_name" = "anti-patterns.md" ]; then
+    if [ -f "$TARGET/cognition/$cog_name" ]; then
+      echo "  Preserved cognition/$cog_name (your accumulated knowledge)"
+    else
+      cp "$cog_file" "$TARGET/cognition/$cog_name"
+      echo "  cognition/$cog_name (seeded -- yours to accumulate via /learn)"
+    fi
+  else
+    _jn_install_cog "$cog_file" "cognition/$cog_name" "$TARGET/cognition/$cog_name"
+  fi
 done
 for dec_file in "$TEMPLATES/cognition/decisions/"*.md; do
   [ -f "$dec_file" ] || continue
-  cp "$dec_file" "$TARGET/cognition/decisions/$(basename "$dec_file")"
+  dec_name="$(basename "$dec_file")"
+  _jn_install_cog "$dec_file" "cognition/decisions/$dec_name" "$TARGET/cognition/decisions/$dec_name"
 done
-echo "  cognition/personas.md (16 personas)"
-echo "  cognition/friction-detection.md"
-echo "  cognition/anti-patterns.md (seed entries)"
-echo "  cognition/decisions/ ($(ls -1 "$TEMPLATES/cognition/decisions/"*.md 2>/dev/null | wc -l) models)"
+echo "  cognition/ (framework updated; your edits backed up, accumulated knowledge preserved)"
 # Create owner-persona from example if it doesn't exist
 if [ ! -f "$TARGET/cognition/owner-persona.md" ]; then
   cp "$TEMPLATES/cognition/owner-persona.example.md" "$TARGET/cognition/owner-persona.md"
@@ -539,14 +565,20 @@ case "$(uname -s)" in
     ;;
 esac
 
-# --- Copy jitneuro.json config ---
-# Preserve a previously configured knowledge catalog root across re-installs.
+# --- Install jitneuro.json config (preserve the user's settings on re-install) ---
+# Fresh install copies the template. A re-install PRESERVES the user's jitneuro.json in
+# full (scheduledAgents, team config, knowledgeRoot, any custom keys) and only bumps the
+# version field -- never clobbering user config with template defaults.
 PREV_KR=""
 if [ -f "$TARGET/jitneuro.json" ]; then
   PREV_KR=$(grep -o '"knowledgeRoot"[[:space:]]*:[[:space:]]*"[^"]*"' "$TARGET/jitneuro.json" | head -1 | sed 's/.*"knowledgeRoot"[[:space:]]*:[[:space:]]*"//;s/"$//')
+  _jn_jtmp="$(mktemp 2>/dev/null || echo "$TARGET/jitneuro.json.tmp.$$")"
+  sed -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*\"/\1$VERSION\"/" "$TARGET/jitneuro.json" > "$_jn_jtmp" && mv "$_jn_jtmp" "$TARGET/jitneuro.json"
+  echo "Preserved your jitneuro.json (version -> v$VERSION; your settings kept)"
+else
+  cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
+  echo "Installed jitneuro.json (v$VERSION)"
 fi
-cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
-echo "Installed jitneuro.json (v$VERSION)"
 
 # --- Configure KNOWLEDGE_ROOT (always present; local store auto-created) ---
 configure_knowledge_root
