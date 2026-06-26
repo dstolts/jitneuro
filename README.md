@@ -140,7 +140,10 @@ This software is provided as-is, without warranty. See [LICENSE](LICENSE) for de
 
 ## License
 
-MIT -- see [LICENSE](LICENSE).
+Code (scripts, installers): [Apache-2.0](LICENSE) -- open-source, attribution required via [NOTICE](NOTICE).
+Documentation and content (*.md files, docs/, templates/): [CC BY 4.0](LICENSE-docs) -- open-source, attribution required.
+
+Both licenses require crediting "Just In Time AI (Dan Stolts)" in any derivative or redistributed work.
 
 ## Author
 
