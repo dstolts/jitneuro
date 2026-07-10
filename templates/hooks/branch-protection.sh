@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Branch Protection Hook (PreToolUse on Bash)
 # Blocks git push to main/master without explicit bypass.
 #

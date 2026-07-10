@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Pre-Agent Register -- PreToolUse hook (matcher: "Agent")
 # Directly registers agent as "running" in the dashboard runs directory.
 # Also writes agent file path to .agent-tracker/<session-id>-<stamp> so

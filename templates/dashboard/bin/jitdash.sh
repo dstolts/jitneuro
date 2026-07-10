@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Agent Dashboard launcher (bash/zsh)
 # Place in PATH. Usage: jitdash [--port=9847] [--no-open]
 set -e
