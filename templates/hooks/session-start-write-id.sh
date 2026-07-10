@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionStart -- Write Session ID + Context Injection
 # Fires on every SessionStart (new session, resume, after compact, after /clear).
 # Creates heartbeats/<session-id> with session name (or "none" for new sessions).

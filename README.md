@@ -140,10 +140,19 @@ This software is provided as-is, without warranty. See [LICENSE](LICENSE) for de
 
 ## License
 
-Code (scripts, installers): [Apache-2.0](LICENSE) -- open-source, attribution required via [NOTICE](NOTICE).
-Documentation and content (*.md files, docs/, templates/): [CC BY 4.0](LICENSE-docs) -- open-source, attribution required.
+JitNeuro is fully open-source under a split license -- both parts require
+attribution:
 
-Both licenses require crediting "Just In Time AI (Dan Stolts)" in any derivative or redistributed work.
+- **Code** (scripts, hooks, installers): [Apache-2.0](LICENSE), with
+  attribution terms detailed in [NOTICE](NOTICE).
+- **Documentation and content** (`*.md` files, `docs/`, `templates/*.md`,
+  and other non-executable content): [CC BY 4.0](LICENSE-docs).
+
+Both licenses are OSI-approved / Creative Commons and require crediting
+"Just In Time AI INC" (project homepage: [jitneuro.ai](https://jitneuro.ai))
+in any redistribution or derivative work. Prior releases of this repository
+were licensed under MIT; see [CHANGELOG.md](CHANGELOG.md) for the
+relicensing note.
 
 ## Author
 
