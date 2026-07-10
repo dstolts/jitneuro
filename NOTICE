@@ -1,14 +1,19 @@
 JitNeuro
-Copyright 2025-2026 Dan Stolts / Just In Time AI (jitai.co)
+Copyright 2025-2026 Just In Time AI INC
 
-This product is licensed under the Apache License, Version 2.0.
-See the LICENSE file for the full license text.
+This product is licensed under the Apache License, Version 2.0 (the
+"License"); you may not use this product's code except in compliance with
+the License. See the LICENSE file for the full license text.
 
-Documentation and content files (*.md, docs/, templates/*.md) are licensed
-under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
-See the LICENSE-docs file for details.
+Documentation and content files (*.md, docs/, templates/*.md, and other
+non-executable content) are licensed separately under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0). See the LICENSE-docs
+file for details.
 
-Attribution requirement: any distribution or derivative work must retain this
-NOTICE file and credit "Just In Time AI (Dan Stolts)" as the original author.
+Attribution requirement: any redistribution or derivative work of this
+product -- code or documentation -- must retain this NOTICE file (or an
+equivalent attribution notice) and credit "Just In Time AI INC" as the
+original author, per Apache License 2.0 Section 4(d) and CC BY 4.0
+Section 3(a).
 
-Project: https://github.com/dstolts/jitneuro
+Project homepage: https://jitneuro.ai

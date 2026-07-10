@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2025-2026 Dan Stolts / Just In Time AI (jitai.co)
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Installer (PowerShell)
 # Usage: .\install.ps1 [-Mode workspace|project|user]
 #
