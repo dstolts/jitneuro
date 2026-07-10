@@ -1,0 +1,35 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright 2025-2026 Just In Time AI INC
+
+This license applies to the documentation and content files in this
+repository, including but not limited to:
+  - All *.md files (README.md, docs/, templates/*.md, QUICKSTART.md,
+    FAQ-AND-TROUBLESHOOTING.md, RELEASE-NOTES-*.md, etc.)
+  - All *.txt files and other non-executable content
+
+It does NOT apply to executable code (*.sh, *.ps1, *.js, and similar),
+which is licensed separately under Apache-2.0 -- see LICENSE.
+
+You are free to:
+  Share  -- copy and redistribute the material in any medium or format
+  Adapt  -- remix, transform, and build upon the material for any
+            purpose, even commercially
+
+Under the following terms:
+  Attribution -- You must give appropriate credit to "Just In Time AI
+                 INC", provide a link to https://jitneuro.ai (or this
+                 repository), and indicate if changes were made. You may
+                 do so in any reasonable manner, but not in any way that
+                 suggests the licensor endorses you or your use.
+
+  No additional restrictions -- You may not apply legal terms or
+                 technological measures that legally restrict others
+                 from doing anything the license permits.
+
+No warranties are given. This deed is a human-readable summary of (and
+not a substitute for) the full legal code, available at:
+  https://creativecommons.org/licenses/by/4.0/legalcode
+
+Full license deed:
+  https://creativecommons.org/licenses/by/4.0/

@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionStart Hook: Scheduled Agents Launcher
 # Reads scheduledAgents config from jitneuro.json and injects launch instructions
 # into Claude's context. Claude (master) then spawns the timer agents.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025-2026 Just In Time AI INC
 // JitNeuro Agent Dashboard Server
 // Zero-dependency Node.js HTTP server for live agent monitoring.
 //

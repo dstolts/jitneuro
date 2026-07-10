@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # dashboard.sh -- Deterministic dashboard display
 # Usage: dashboard.sh [session|sessions] [--current <name>]
 #   session  -- current session dashboard (blockers for active session)

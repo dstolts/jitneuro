@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Installer
 # Usage: ./install.sh [workspace|project|user]
 #
