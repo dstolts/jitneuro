@@ -1,0 +1,24 @@
+name: knowledge-check
+on: pull_request
+jobs:
+  knowledge-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: capability index drift check
+        run: |
+          if [ -f .knowledge/capabilities.md ]; then
+            python .knowledge/tools/build-capabilities.py --check --dir .knowledge --repo-root . --no-scan
+          else
+            echo "no capabilities.md -- skipped"
+          fi
+      - name: routing index / manifest drift check
+        run: |
+          if [ -f .knowledge/index.md ]; then
+            python .knowledge/tools/build-index.py --check --dir .knowledge
+          else
+            echo "no index.md -- skipped"
+          fi
