@@ -212,6 +212,13 @@ verifies it worked. You do not need to run shell commands yourself.
 
 See [Setup Guide](docs/setup-guide.md) for other install modes and troubleshooting.
 
+### Add an AI engineering team
+
+The optional [Dev Shop Pack](templates/dev-shop-pack/README.md) provides ten
+portable engineering role contracts, AGENTS.md-based routing, and an independent
+validation chain. Copy the pack into a project and reference its router from the
+project's root `AGENTS.md`; no runtime-specific adapter is required.
+
 ---
 
 ## What's Under the Hood
@@ -258,6 +265,7 @@ before you start.
 | [Setup Guide](docs/setup-guide.md) | Installation, post-install, troubleshooting |
 | [Technical Overview](docs/technical-overview.md) | Architecture, file structure, full feature list, roadmap |
 | [Commands Reference](docs/commands-reference.md) | All 17 commands + 5 shortcuts |
+| [Dev Shop Pack](templates/dev-shop-pack/README.md) | Portable engineering roles, routing, and validation gates |
 | [Configuration Reference](docs/configuration-reference.md) | Every config file and setting |
 | [Scheduled Agents](docs/scheduled-agents.md) | Timer, enforcer, cron, batch agents + business automation |
 | [Sub-Orchestrator Pattern](docs/sub-orchestrator-pattern.md) | Managing large-scale operations with worker pools |
