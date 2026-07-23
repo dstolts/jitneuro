@@ -1,0 +1,10 @@
+# Managed line-ending normalization (Owner directive 2026-07-23).
+# LF everywhere in the repo; CRLF only for genuinely-Windows file types.
+# Overrides each machine's core.autocrlf so endings are deterministic on
+# Mac and Windows with no per-machine config.
+* text=auto eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
