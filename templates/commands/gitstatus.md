@@ -27,7 +27,7 @@ When invoked as `/gitstatus`:
 **Before dispatching**, write dashboard JSON:
 ```bash
 RUN_ID="gitstatus--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-$HOME/.sessions/dashboard}"
 mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
 echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
 echo '{"id":"git-001","name":"Cross-Repo Git Status","status":"running","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/git-001.json"

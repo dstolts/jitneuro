@@ -1,0 +1,13 @@
+{
+  "version": "jk-superset",
+  "knowledgeRoot": "",
+  "scheduledAgents": [
+    {
+      "name": "intercom-lane-poll",
+      "interval": 20,
+      "enabled": true,
+      "instruction": "Run ~/.claude/hooks/intercom-agent-poll.sh and follow its INSTRUCTION result.",
+      "description": "Keep lane presence alive and surface inbound or ready work."
+    }
+  ]
+}

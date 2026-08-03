@@ -47,8 +47,8 @@ re-run the installer with `user` mode to fix it.
 The installer:
 - Copies all commands to `.claude/commands/`
 - Installs the full rule library to `.claude/rules/` (skips any rule whose first line is marked `(DISABLED)`; updates only changed rules)
-- Copies the cognition layer (personas, decision models) to `.claude/cognition/`
-- Seeds strategic-context templates into `.claude/horizon/` (only when empty -- never overwrites a filled-in horizon)
+- Copies the cognition layer (personas, decision models) to `cognition/`
+- Seeds strategic-context templates into `horizon/` (only when empty -- never overwrites a filled-in horizon)
 - Copies hook scripts to `.claude/hooks/`, including a **SessionStart master-orchestrator identity hook** and a **PreCompact save + reload-directive hook**
 - Creates or merges hooks config into `settings.local.json` (re-install preserves your own added hooks and dedups JitNeuro's)
 - Installs `jitneuro.json` (version, hook settings, protected branches)
@@ -60,7 +60,7 @@ After install:
 1. **Close and reopen Claude Code** (commands load at session start only)
 2. Run `/verify` to confirm all components are GREEN
 3. Run `/onboard <repo>` to set up context for your projects
-4. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `.claude/horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
+4. **Populate your horizon** (optional, ~5 min): tell Claude `"populate my horizon files"` or open `horizon/POPULATE-HORIZON.md`. Claude interviews you one topic at a time and fills in vision, mission, goals, operating rhythm, and your owner profile so every session aligns to your goals.
 
 ### Install Scenarios
 
@@ -143,13 +143,13 @@ JitNeuro keeps a clean line between the **framework's files** and **yours**, so 
   - **Backs up** any framework rule you edited to `.claude/.jitneuro-backup/` before updating it -- your version is never silently lost.
   - **Never touches files that aren't in the manifest** -- your own rules, bundles, engrams, filled-in horizon, and owner-persona are yours and stay untouched.
 
-In short: put your customizations in your own files (add new rules to `.claude/rules/`, fill in `.claude/horizon/`, create bundles/engrams). Don't hand-edit a shipped framework rule unless you mean to fork it -- if you do, your edit is preserved in `.jitneuro-backup/` on the next upgrade.
+In short: put your customizations in your own files (add new rules to `.claude/rules/`, fill in `horizon/`, create bundles/engrams). Don't hand-edit a shipped framework rule unless you mean to fork it -- if you do, your edit is preserved in `.jitneuro-backup/` on the next upgrade.
 
 ## Single-User vs Team
 
 **Single user:** `install.sh user` once. Done. Everything under `~/.claude/` is yours.
 
-**Team (several developers sharing a repo):** each developer runs `install.sh user` on their own machine -- no coordination needed (each `~/.claude/` is isolated). Commit the **shared** pieces to the repo (`.claude/CLAUDE.md`, `.claude/jitneuro.json`, `.claude/rules/`) and gitignore the **per-developer** pieces so they never collide. Add the block from `templates/gitignore-additions.txt` to your repo's `.gitignore` -- it covers `.claude/settings.local.json`, `.claude/horizon/`, `.claude/cognition/`, and session state. Team-shared learning (a shared vision, shared bundles) is a manual opt-in today: commit those files deliberately.
+**Team (several developers sharing a repo):** each developer runs `install.sh user` on their own machine -- no coordination needed (each `~/.claude/` is isolated). Commit the **shared** pieces to the repo (`.claude/CLAUDE.md`, `.claude/jitneuro.json`, `.claude/rules/`) and gitignore the **per-developer** pieces so they never collide. Add the block from `templates/gitignore-additions.txt` to your repo's `.gitignore` -- it covers `.claude/settings.local.json`, `horizon/`, `cognition/`, and session state. Team-shared learning (a shared vision, shared bundles) is a manual opt-in today: commit those files deliberately.
 
 ## Manual Install
 
@@ -290,8 +290,8 @@ Claude: [reads manifest]
 | Schema naming, migration rules | `.claude/rules/schema.md` scoped to `schema/**` | Only for schema files |
 | API error format, auth patterns | `.claude/rules/api.md` scoped to `src/api/**` | Only for API code |
 | Test conventions, coverage | `.claude/rules/tests.md` scoped to `tests/**` | Only for test files |
-| Domain knowledge | `.claude/bundles/` | Loaded on demand |
-| Project architecture, key files | `.claude/engrams/` | Loaded on demand per project |
+| Domain knowledge | `.knowledge/bundles/` | Loaded on demand |
+| Project architecture, key files | `.knowledge/engrams/` | Loaded on demand per project |
 
 See [concepts.md](concepts.md) for detailed explanation with examples.
 

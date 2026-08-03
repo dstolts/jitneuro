@@ -25,7 +25,7 @@ repo: dstolts/jitneuro
 **Status:** Production
 
 This file is also a worked EXAMPLE of an engram -- per-project deep context an
-adopter would keep under `.jitneuro/engrams/` (team-shared) or `.claude/engrams/`
+adopter would keep under `.jitneuro/engrams/` (team-shared) or `.knowledge/engrams/`
 (personal). Use it as a model for your own.
 
 ## Identity
@@ -95,7 +95,7 @@ gap analysis.
 Load every session -- always active, not trigger-based. Trust zones, security
 guardrails, friction detection, verify-before-presenting, autonomous execution.
 
-### Cognition (`.claude/cognition/`)
+### Cognition (`cognition/`)
 
 - `personas.md` -- specialist personas activated per-request
 - `anti-patterns.md` -- learned mistakes to avoid (built by /learn)

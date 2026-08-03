@@ -5,7 +5,7 @@
 # Flushes active session's Hub.md ## Lessons Learned section to a durable
 # flat file so lessons are never lost on context reset or crash.
 #
-# The durable file: .claude/session-state/lessons-pending.md
+# The durable file: .sessions/lessons-pending.md
 # Format: one-per-line log, append-only.
 # /learn reads this file alongside Hub.md lessons during Agent A scan.
 #

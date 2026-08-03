@@ -28,7 +28,7 @@ if [ -z "$SID" ]; then
 fi
 
 [ -z "$SID" ] && exit 0
-d="${CLAUDE_PROJECT_DIR:-$HOME}/.claude/session-state/heartbeats"
+d="${CLAUDE_PROJECT_DIR:-$HOME}/.sessions/heartbeats"
 mkdir -p "$d" 2>/dev/null
 touch "$d/$SID" 2>/dev/null
 exit 0

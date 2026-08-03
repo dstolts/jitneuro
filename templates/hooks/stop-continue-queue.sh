@@ -19,9 +19,9 @@
 #   exit 2 + stderr   -> BLOCK the stop; stderr is fed back to the model as the next directive
 #   any other nonzero -> non-blocking error (also allows the stop)  => we FAIL-OPEN
 #
-# Enable :  echo on  > <project>/.claude/session-state/autonomous-mode.flag
+# Enable :  echo on  > <project>/.sessions/autonomous-mode.flag
 #           (optionally scope to one session: echo "on:<session_id>" > ...flag)
-# Disable:  rm <project>/.claude/session-state/autonomous-mode.flag   (or: echo off > it)
+# Disable:  rm <project>/.sessions/autonomous-mode.flag   (or: echo off > it)
 #
 # Queue source: the first existing of  <cwd>/.HUB/Hub.md , <cwd>/.hub/hub.md ,
 # <project>/.HUB/Hub.md , <project>/.hub/hub.md  -- counts unchecked "- [ ]" lines
@@ -51,7 +51,7 @@ CWD=$(norm "$CWD")
 SESSION_ID=$(printf '%s' "$INPUT" | sed -n 's/.*"session_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
 
 PROJECT_DIR=$(norm "${CLAUDE_PROJECT_DIR:-$CWD}")
-STATE_DIR="$PROJECT_DIR/.claude/session-state"
+STATE_DIR="$PROJECT_DIR/.sessions"
 FLAG="$STATE_DIR/autonomous-mode.flag"
 COUNTER="$STATE_DIR/.autonomous-stall-count"
 LOG="/tmp/jitneuro-autonomous.log"

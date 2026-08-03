@@ -18,7 +18,7 @@ Manage the current session. Default (no subcommand) shows current session status
   - `rename <new-name>` -- rename current session
   - `dashboard` -- current session's blockers and NEEDS OWNER items
 
-- **Tracking:** Active session resolved from `heartbeats/<session-id>` in `.claude/session-state/`. The session-id is injected into Claude's context by the SessionStart hook. The heartbeat file's content holds the JitNeuro session name; its mtime is the last heartbeat timestamp.
+- **Tracking:** Active session resolved from `heartbeats/<session-id>` in `.sessions/`. The session-id is injected into Claude's context by the SessionStart hook. The heartbeat file's content holds the JitNeuro session name; its mtime is the last heartbeat timestamp.
 - **Watcher agent:** Both `new` and `load` automatically spawn scheduled agents (watcher agents) configured in the project's config file. These agents run in the background and periodically interrupt master for housekeeping (autosave, hub-sync, resume-tasks). If no agents are configured, a warning is displayed. The `session-guardrail` rule provides a backstop: if a session becomes active without going through `new` or `load` (e.g., context reset), the guardrail spawns the watcher.
 - **Tag rule:** Every response ends with `[session: <name> | DIV: <MODE>]`
 
@@ -315,7 +315,7 @@ Returns a GREEN/YELLOW/RED table for each component with recommended remediation
 
 ## Shortcuts
 
-These delegate to `/session` or `/sessions` based on the `shortcut_scope` preference in `.claude/session-state/.preferences`. Default scope: `session` (current).
+These delegate to `/session` or `/sessions` based on the `shortcut_scope` preference in `.sessions/.preferences`. Default scope: `session` (current).
 
 | Shortcut | Default target (session) | Alternate target (sessions) |
 |----------|--------------------------|----------------------------|

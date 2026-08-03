@@ -46,7 +46,7 @@ remembers the cleanup so Owner doesn't have to.
 When invoked, in order:
 
 ### 1. Identify the session
-- Read heartbeat at `<CodeBasePath>/.claude/session-state/heartbeats/$CLAUDE_SESSION_ID`
+- Read heartbeat at `<CodeBasePath>/.sessions/heartbeats/$CLAUDE_SESSION_ID`
 - If no active session, refuse with: "No active session; nothing to close."
 - Otherwise, identify `<session-name>` and its session-state file.
 
@@ -84,7 +84,7 @@ When invoked, in order:
 - If Owner provides input, dispatch to /wip; otherwise continue.
 
 ### 6. Refresh session-state file
-- Update `.claude/session-state/<session-name>.md` to reflect:
+- Update `.sessions/<session-name>.md` to reflect:
   - "Step 1 -- Bootstrap" block (per handoff rule -- the reader executes this)
   - What was just done (commit list, PR list)
   - Pickup instructions for next session
@@ -134,13 +134,13 @@ state files. Explicit dependency map:
 
 | Step | Tool / file | Status |
 |---|---|---|
-| 1 (heartbeat) | `<CodeBasePath>/.claude/session-state/heartbeats/<session-id>` | reads (read-only) |
+| 1 (heartbeat) | `<CodeBasePath>/.sessions/heartbeats/<session-id>` | reads (read-only) |
 | 2 (worktree audit) | `tools/git-clone-context.sh` (PR #243) | reads |
 | 2 (worktree audit) | `tools/worktree-status.ps1` | DEFERRED -- script not yet shipped (PR #242 docs only) |
 | 3 (worktree cleanup) | `tools/worktree-remove.ps1` | DEFERRED -- script not yet shipped (PR #241 docs only) |
 | 4 (Hub.md update) | `<repo>/.HUB/Hub.md` (or workspace `.HUB/Hub.md`) | writes (appends close-out section; honors hub-guardrail no-secrets + monthly-scrub-only-prune) |
 | 5 (last-call WIP capture) | `tools/wip.ps1` (or invokes /wip skill directly) | DEFERRED -- /wip companion script not yet shipped (PR #232 docs only) |
-| 6 (session-state refresh) | `<CodeBasePath>/.claude/session-state/<name>.md` | writes (per session-handoff-readiness required sections) |
+| 6 (session-state refresh) | `<CodeBasePath>/.sessions/<name>.md` | writes (per session-handoff-readiness required sections) |
 
 Until the deferred companion scripts ship, `/session-close` invokes the
 corresponding SKILL.md procedures directly (the agent reads the skill

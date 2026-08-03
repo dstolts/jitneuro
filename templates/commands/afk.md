@@ -19,7 +19,7 @@ instruction cannot do this; the model still stops. The hook makes it mechanical.
 
 ## What Claude does when invoked
 
-Resolve the flag path: `<project>/.claude/session-state/autonomous-mode.flag`
+Resolve the flag path: `<project>/.sessions/autonomous-mode.flag`
 (`<project>` = `$CLAUDE_PROJECT_DIR`, else the repo root).
 
 - **on / (no arg):** ensure `.HUB/Hub.md` exists and its `## ACTIVE TODO` reflects the

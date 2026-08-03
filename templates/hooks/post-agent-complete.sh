@@ -16,7 +16,7 @@ fi
 SID=$(echo "$INPUT" | grep -o '"session_id"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | grep -o '"[^"]*"$' | tr -d '"')
 [ -z "$SID" ] && exit 0
 
-TRACKER="${CLAUDE_PROJECT_DIR:-$HOME}/.claude/session-state/.agent-tracker"
+TRACKER="${CLAUDE_PROJECT_DIR:-$HOME}/.sessions/.agent-tracker"
 [ -d "$TRACKER" ] || exit 0
 
 # Find the oldest tracker file for this session (FIFO for sequential agents)
