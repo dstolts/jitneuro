@@ -76,9 +76,9 @@ JitNeuro is scoped to THIS REPO only.
      Install with: ./install.sh workspace -->
 <!--
 From any repo, Claude has full read/write access to:
-- `[workspace]/.claude/bundles/` -- shared domain knowledge
-- `[workspace]/.claude/engrams/` -- shared project context
-- `[workspace]/.claude/session-state/` -- shared session checkpoints
+- `[workspace]/.knowledge/bundles/` -- shared domain knowledge
+- `[workspace]/.knowledge/engrams/` -- shared project context
+- `[workspace]/.sessions/` -- shared session checkpoints
 - MEMORY.md auto-memory (project index)
 -->
 
@@ -86,13 +86,13 @@ From any repo, Claude has full read/write access to:
 When the user expresses a need, wish, or frustration ("I wish...", "can we...", "is there a way to...", "I keep forgetting to...", "this is annoying..."), read `.claude/help.md` for matching JitNeuro capabilities before building a custom solution. JitNeuro likely already handles it. If it does, set it up. If it doesn't, build it and suggest persisting it via /learn.
 
 ## Context Loading
-- Bundles: `.claude/bundles/` (loaded on-demand by orchestrator)
-- Engrams: `.claude/engrams/` (per-project context, loaded per task)
-- Cognition: `.claude/cognition/personas.md` (16 expert personas, always active)
-- Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
-- Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
+- Bundles: `.knowledge/bundles/` (loaded on-demand by orchestrator)
+- Engrams: `.knowledge/engrams/` (per-project context, loaded per task)
+- Cognition: `cognition/personas.md` (16 expert personas, always active)
+- Cognition: `cognition/owner-persona.md` (personal overlay, if exists)
+- Decisions: `cognition/decisions/` (structured decision frameworks)
 - Routing: `.jit-knowledge/INDEX.md` (single source -- resolved via `~/.claude/url-resolver.md`)
-- Session state: `.claude/session-state/` (one file per named session)
+- Session state: `.sessions/` (one file per named session)
 - Memory: Check MEMORY.md for project facts and project index
 
 ## Compact Instructions
@@ -117,7 +117,7 @@ When conversation_log is "on" in session-state.md:
 | Path | Purpose |
 |------|---------|
 | `.jit-knowledge/INDEX.md` | Routing table (single source; resolved via url-resolver.md) |
-| `.claude/session-state/` | Session checkpoints (one per task) |
-| `.claude/bundles/` | Domain knowledge bundles |
-| `.claude/engrams/` | Per-project deep context |
+| `.sessions/` | Session checkpoints (one per task) |
+| `.knowledge/bundles/` | Domain knowledge bundles |
+| `.knowledge/engrams/` | Per-project deep context |
 | `.logs/` | Conversation logs (when enabled) |

@@ -95,7 +95,7 @@ function Add-JnManifest($rel) {
 }
 
 # Create directories
-$dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
+$dirs = @("commands", "rules", "hooks", "scripts")
 foreach ($dir in $dirs) {
     $path = Join-Path $Target $dir
     if (-not (Test-Path $path)) {
@@ -156,31 +156,10 @@ if (-not (Test-Path $UrlResolver)) {
     Write-Host "Skipped url-resolver.md (already exists)" -ForegroundColor Yellow
 }
 
-# Copy example bundle if empty
-$bundlesDir = Join-Path $Target "bundles"
-if ((Get-ChildItem $bundlesDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
-    Copy-Item (Join-Path $Templates "bundles\example.md") (Join-Path $bundlesDir "example.md")
-    Write-Host "Created bundles\example.md (template)"
-} else {
-    Write-Host "Skipped bundles\ (already has files)" -ForegroundColor Yellow
-}
-
-# Copy example engram if empty
-$engramsDir = Join-Path $Target "engrams"
-if ((Get-ChildItem $engramsDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
-    Copy-Item (Join-Path $Templates "engrams\example.md") (Join-Path $engramsDir "example.md")
-    Copy-Item (Join-Path $Templates "engrams\README.md") (Join-Path $engramsDir "README.md")
-    Write-Host "Created engrams\example.md (template)"
-} else {
-    Write-Host "Skipped engrams\ (already has files)" -ForegroundColor Yellow
-}
-
-# Copy session-state README
-$ssReadme = Join-Path $Target "session-state\README.md"
-if (-not (Test-Path $ssReadme)) {
-    Copy-Item (Join-Path $Templates "session-state\README.md") $ssReadme
-    Write-Host "Created session-state\README.md"
-}
+# NOTE: bundles, engrams, session-state, horizon, cognition, and dashboard dirs are
+# no longer created under .claude/. Canonical homes: bundles->.knowledge/bundles,
+# engrams->.knowledge/engrams, sessions->.sessions, horizon->horizon, cognition->cognition,
+# dashboard->.sessions/dashboard. See epic #5327.
 
 # Install rule templates (respect DISABLED marker) -- parity with install.sh:
 # install ALL framework rules, skip user-DISABLED, update only on diff.
@@ -218,67 +197,8 @@ foreach ($ruleFile in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md
 }
 Write-Host "  ($ruleCount rules installed, $ruleSkip disabled/skipped)"
 
-# Install horizon templates (strategic-context placeholders).
-# Seed ONLY if empty -- never overwrite an adopter's filled-in horizon on re-run.
-$horizonDir = Join-Path $Target "horizon"
-if ((Get-ChildItem $horizonDir -File -ErrorAction SilentlyContinue).Count -eq 0) {
-    Copy-Item (Join-Path $Templates "horizon\*.md") $horizonDir
-    $horizonN = (Get-ChildItem $horizonDir -Filter *.md -File).Count
-    Write-Host "Installing horizon templates..." -ForegroundColor Green
-    Write-Host "  horizon\ ($horizonN placeholders -- fill in via horizon\POPULATE-HORIZON.md)"
-} else {
-    Write-Host "Skipped horizon\ (already has files)" -ForegroundColor Yellow
-}
-
-# Install cognition layer (Phase 2)
-Write-Host "Installing cognition layer..." -ForegroundColor Green
-$cogDir = Join-Path $Target "cognition"
-$cogDecDir = Join-Path $cogDir "decisions"
-foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDir $f.Name) -Force
-}
-foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDecDir $f.Name) -Force
-}
-Write-Host "  cognition\personas.md (16 personas)"
-Write-Host "  cognition\friction-detection.md"
-Write-Host "  cognition\anti-patterns.md (seed entries)"
-$decCount = (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue).Count
-Write-Host "  cognition\decisions\ ($decCount models)"
-$ownerPersona = Join-Path $cogDir "owner-persona.md"
-if (-not (Test-Path $ownerPersona)) {
-    Copy-Item (Join-Path $Templates "cognition\owner-persona.example.md") $ownerPersona
-    Write-Host "  cognition\owner-persona.md (created from template -- customize this)"
-} else {
-    Write-Host "  Skipped owner-persona.md (already exists)" -ForegroundColor Yellow
-}
-
-# Install scripts
-Write-Host "Installing scripts..." -ForegroundColor Green
-$scriptsDir = Join-Path $Target "scripts"
-foreach ($f in (Get-ChildItem (Join-Path $Templates "scripts") -Filter "*.sh" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $scriptsDir $f.Name) -Force
-    Write-Host "  scripts\$($f.Name)"
-}
-
-# Install dashboard
-Write-Host "Installing dashboard..." -ForegroundColor Green
-$dashDir = Join-Path $Target "dashboard"
-foreach ($ext in @("*.html", "*.js")) {
-    foreach ($f in (Get-ChildItem (Join-Path $Templates "dashboard") -Filter $ext -File -ErrorAction SilentlyContinue)) {
-        Copy-Item $f.FullName (Join-Path $dashDir $f.Name) -Force
-        Write-Host "  dashboard\$($f.Name)"
-    }
-}
-$dashBinSrc = Join-Path $Templates "dashboard\bin"
-if (Test-Path $dashBinSrc) {
-    $dashBinDir = Join-Path $dashDir "bin"
-    if (-not (Test-Path $dashBinDir)) { New-Item -ItemType Directory -Path $dashBinDir -Force | Out-Null }
-    foreach ($f in (Get-ChildItem $dashBinSrc -File -ErrorAction SilentlyContinue)) {
-        Copy-Item $f.FullName (Join-Path $dashBinDir $f.Name) -Force
-    }
-    Write-Host "  dashboard\bin\ (launcher scripts)"
-}
+# NOTE: horizon, cognition, scripts, and dashboard are no longer installed under
+# .claude/. They live at canonical workspace-level paths per epic #5327.
 
 # Install hooks
 Write-Host "Installing hooks..." -ForegroundColor Green
@@ -520,7 +440,7 @@ if ($Mode -eq "workspace" -and $WorkspaceRoot) {
 
         if (Test-Path (Join-Path $repo.FullName "CLAUDE.md")) { $hasClaude = "YES" }
         if (Test-Path (Join-Path $repo.FullName ".claude\CLAUDE.md")) { $hasBrainstem = "YES" }
-        $engramPath = Join-Path $WorkspaceRoot ".claude\engrams\$($repo.Name)-context.md"
+        $engramPath = Join-Path $WorkspaceRoot ".knowledge\engrams\$($repo.Name)-context.md"
         if (Test-Path $engramPath) { $hasEngram = "YES" }
 
         if ($hasClaude -eq "--" -or $hasBrainstem -eq "--" -or $hasEngram -eq "--") {
@@ -561,16 +481,6 @@ Write-Host ""
 Write-Host "Recording framework manifest..." -ForegroundColor Green
 foreach ($t in (Get-ChildItem (Join-Path $Templates "commands") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "commands/$($t.Name)" }
 foreach ($t in (Get-ChildItem (Join-Path $Templates "rules") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "rules/$($t.Name)" }
-foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition") -Filter *.md -File -EA SilentlyContinue)) {
-    if ($t.Name -eq "owner-persona.example.md") { continue }   # owner-persona is user-owned after seeding
-    Add-JnManifest "cognition/$($t.Name)"
-}
-foreach ($t in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter *.md -File -EA SilentlyContinue)) { Add-JnManifest "cognition/decisions/$($t.Name)" }
-foreach ($t in (Get-ChildItem (Join-Path $Templates "scripts") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "scripts/$($t.Name)" }
-foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard") -File -EA SilentlyContinue | Where-Object { $_.Extension -in ".html",".js" })) { Add-JnManifest "dashboard/$($t.Name)" }
-if (Test-Path (Join-Path $Templates "dashboard\bin")) {
-    foreach ($t in (Get-ChildItem (Join-Path $Templates "dashboard\bin") -File -EA SilentlyContinue)) { Add-JnManifest "dashboard/bin/$($t.Name)" }
-}
 foreach ($t in (Get-ChildItem (Join-Path $Templates "hooks") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "hooks/$($t.Name)" }
 Add-JnManifest "jitneuro.json"
 

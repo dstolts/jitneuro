@@ -13,8 +13,8 @@ Claude Code will detect your OS, set the variables at the right scope, and verif
 
 | Variable | Purpose | Default | Example |
 |----------|---------|---------|---------|
-| JITDASH_DIR | Dashboard data directory (runs, HTML) | ~/.claude/dashboard | <workspace>\.claude\dashboard |
-| JITDASH_SESSIONS | Session state directory (heartbeats, checkpoints) | ~/.claude/session-state | <workspace>\.claude\session-state |
+| JITDASH_DIR | Dashboard data directory (runs, HTML) | ~/.sessions/dashboard | <workspace>\.claude\dashboard |
+| JITDASH_SESSIONS | Session state directory (heartbeats, checkpoints) | ~/.sessions | <workspace>\.claude\session-state |
 | JITDASH_PORT | Dashboard server port | 9847 | 9847 |
 
 ## When to Set
@@ -51,8 +51,8 @@ Note: New terminal windows pick up the change immediately. Running terminals nee
 Add to `~/.bashrc` or `~/.bash_profile`:
 
 ```bash
-export JITDASH_DIR="$HOME/.claude/dashboard"
-export JITDASH_SESSIONS="$HOME/.claude/session-state"
+export JITDASH_DIR="$HOME/.sessions/dashboard"
+export JITDASH_SESSIONS="$HOME/.sessions"
 ```
 
 Then: `source ~/.bashrc`
@@ -62,8 +62,8 @@ Then: `source ~/.bashrc`
 Add to `~/.zshrc`:
 
 ```bash
-export JITDASH_DIR="$HOME/.claude/dashboard"
-export JITDASH_SESSIONS="$HOME/.claude/session-state"
+export JITDASH_DIR="$HOME/.sessions/dashboard"
+export JITDASH_SESSIONS="$HOME/.sessions"
 ```
 
 Then: `source ~/.zshrc`
@@ -71,8 +71,8 @@ Then: `source ~/.zshrc`
 ### Permanent (fish)
 
 ```fish
-set -Ux JITDASH_DIR $HOME/.claude/dashboard
-set -Ux JITDASH_SESSIONS $HOME/.claude/session-state
+set -Ux JITDASH_DIR $HOME/.sessions/dashboard
+set -Ux JITDASH_SESSIONS $HOME/.sessions
 ```
 
 ## Verify (all platforms)
@@ -80,7 +80,7 @@ set -Ux JITDASH_SESSIONS $HOME/.claude/session-state
 Start the dashboard and check the config in the API response:
 
 ```bash
-node ~/.claude/dashboard/server.js --no-open &
+node ~/.sessions/dashboard/server.js --no-open &
 curl -s http://localhost:9847/api/status | jq '.config'
 ```
 
@@ -89,5 +89,5 @@ Should show your custom paths, not the defaults.
 ## Notes
 
 - The install script (install.sh / install.ps1) does NOT set these automatically -- they depend on your workspace layout
-- If JITDASH_DIR is not set, the dashboard defaults to ~/.claude/dashboard
+- If JITDASH_DIR is not set, the dashboard defaults to ~/.sessions/dashboard
 - The server also accepts --dir and --sessions flags as command-line overrides

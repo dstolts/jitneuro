@@ -24,7 +24,7 @@ Check if arguments were provided:
 **Before dispatching**, write dashboard JSON (run appears on dashboard immediately):
 ```bash
 RUN_ID="audit--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-$HOME/.sessions/dashboard}"
 mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
 echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
 echo '{"id":"audit-001","name":"Repo Audit","status":"running","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/audit-001.json"
@@ -59,7 +59,7 @@ For each repo, run these checks:
 **DOE Compliance:**
 - .claude/CLAUDE.md exists
 - Root CLAUDE.md exists
-- Engram exists in .claude/engrams/ for this repo name
+- Engram exists in .knowledge/engrams/ for this repo name
 
 **File Hygiene:**
 - No build artifacts tracked (.next/, dist/, build/, coverage/)

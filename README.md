@@ -80,7 +80,7 @@ cd jitneuro
 
 **Close and reopen Claude Code after installing.** Then: `/save`, `/learn`, `/load`. That's it.
 
-**Set your north star (optional, 5 minutes).** The installer drops strategic-context templates in `.claude/horizon/`. Tell Claude `"populate my horizon files"` (or open `.claude/horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a time -- to fill in your vision, mission, goals, operating rhythm, and owner profile. Every future session then aligns to your actual goals instead of guessing.
+**Set your north star (optional, 5 minutes).** The installer drops strategic-context templates in `horizon/`. Tell Claude `"populate my horizon files"` (or open `horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a time -- to fill in your vision, mission, goals, operating rhythm, and owner profile. Every future session then aligns to your actual goals instead of guessing.
 
 **Having trouble with the install?** Just tell Claude:
 

@@ -19,19 +19,19 @@ Numbers reference the last `/sessions` list output.
 
 ## Current Session Tracking
 
-Session identity is stored in `.claude/session-state/heartbeats/<session-id>` -- one file per active Claude Code instance. The `<session-id>` is Claude's native session ID, injected into context by the SessionStart hook as `[JitNeuro] session-id: <value>`. After compaction or context clear, SessionStart fires again and re-injects it.
+Session identity is stored in `.sessions/heartbeats/<session-id>` -- one file per active Claude Code instance. The `<session-id>` is Claude's native session ID, injected into context by the SessionStart hook as `[JitNeuro] session-id: <value>`. After compaction or context clear, SessionStart fires again and re-injects it.
 
 **Resolve "my current" (get active session name):**
 1. Find your session-id from the `[JitNeuro] session-id: ...` line in your context.
-2. Read `.claude/session-state/heartbeats/<session-id>`. The content (one line) is the active session name.
+2. Read `.sessions/heartbeats/<session-id>`. The content (one line) is the active session name.
 3. If the file is missing or empty: no active session.
 
 **Write "my current" (set active session name to `<name>`):**
-1. Use Bash to write the session name: `echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"` (session-id from context). Create the `heartbeats/` directory with `mkdir -p` if it does not exist.
+1. Use Bash to write the session name: `echo -n "<name>" > ".sessions/heartbeats/<session-id>"` (session-id from context). Create the `heartbeats/` directory with `mkdir -p` if it does not exist.
    **IMPORTANT:** Always use Bash for heartbeat writes, never Write/Edit tools. The PostToolUse heartbeat hook touches this file after every tool call, so Write/Edit will fail with "file modified since read." Bash echo is atomic and avoids the race.
 
 **Clear "my current" (e.g. active session was deleted/archived):**
-1. Remove `.claude/session-state/heartbeats/<session-id>` if it exists (session-id from context).
+1. Remove `.sessions/heartbeats/<session-id>` if it exists (session-id from context).
 
 Updated by: `new`, `save`, `load`, `switch`, `rename`.
 Read by: default view, `pulse`, `dashboard`, and the session tag rule.
@@ -44,7 +44,7 @@ This is non-negotiable -- it prevents context confusion across terminals and pro
 
 ## Shortcut Preference
 
-Read `.claude/session-state/.preferences` for `shortcut_scope` setting.
+Read `.sessions/.preferences` for `shortcut_scope` setting.
 - `session` (default): `/status`, `/dashboard`, `/save`, `/load`, `/pulse` -> `/session` subcommands
 - `sessions`: `/status`, `/dashboard` -> `/sessions` subcommands (save/load/pulse always stay `/session`)
 
@@ -56,8 +56,8 @@ If `.preferences` doesn't exist, default to `session` scope.
 
 1. **Resolve "my current"** (see Current Session Tracking) to get active session name.
 2. If no active session: "No active session. Run `/session new <name>` to start one."
-3. Read the session state file `.claude/session-state/<name>.md`
-4. Read `.claude/bundles/active-work.md` for sprint context
+3. Read the session state file `.sessions/<name>.md`
+4. Read `.knowledge/bundles/active-work.md` for sprint context
 5. For each repo listed in the session state:
    - Run `git -C [repo_path] status --short` for dirty files
    - Run `git -C [repo_path] branch --show-current` for current branch
@@ -98,7 +98,7 @@ BLOCKED: [count] items needing attention
    - If save+learn: run save flow, then suggest /learn
    - If save only: run save flow
    - If skip: proceed
-3. Create `.claude/session-state/<name>.md` with initial template:
+3. Create `.sessions/<name>.md` with initial template:
    ```markdown
    # Session: <name>
    **Checkpointed:** [current date/time]
@@ -139,7 +139,7 @@ BLOCKED: [count] items needing attention
    - What are the immediate next steps?
    - Any key findings or discoveries worth preserving?
 
-3. **Write state to `.claude/session-state/<name>.md`:**
+3. **Write state to `.sessions/<name>.md`:**
 
    The checkpoint must be a **"ready to resume on load"** document. A new session
    (or a post-compaction reload) reads ONLY this file to get started. If the next
@@ -248,8 +248,8 @@ BLOCKED: [count] items needing attention
 
 5. **Write "my current"** (session name).
 6. **Write save-timestamp marker** (WS5 PreCompact fix):
-   Write the current Unix timestamp (seconds since epoch) to `.claude/session-state/.last-save-timestamp`.
-   Use Bash: `date +%s > ".claude/session-state/.last-save-timestamp"`
+   Write the current Unix timestamp (seconds since epoch) to `.sessions/.last-save-timestamp`.
+   Use Bash: `date +%s > ".sessions/.last-save-timestamp"`
    This allows the PreCompact hook to allow compaction silently when a recent save exists.
 7. Confirm with Hub.md sync status:
    ```
@@ -303,8 +303,8 @@ BLOCKED: [count] items needing attention
 
 1. **Resolve "my current"** to identify active session.
 2. Read shared state files in parallel:
-   - `.claude/bundles/active-work.md`
-   - All `.claude/session-state/*.md` (exclude archive/, _autosave.md)
+   - `.knowledge/bundles/active-work.md`
+   - All `.sessions/*.md` (exclude archive/, _autosave.md)
    - Hub.md files for repos in current session
 3. Compare to what's in current context
 4. Report:
@@ -332,7 +332,7 @@ BLOCKED: [count] items needing attention
 
 1. **Resolve "my current"** to get active session name.
 2. If no active session: "No active session to rename."
-3. Rename `.claude/session-state/<old-name>.md` to `<new-name>.md`
+3. Rename `.sessions/<old-name>.md` to `<new-name>.md`
 4. **Write "my current"** (new name).
 5. Update the `# Session:` header inside the file
 6. Confirm: "Renamed '<old>' -> '<new>'."
@@ -352,7 +352,7 @@ Closed sessions appear in the "Closed" section on the dashboard (collapsed, grey
 
 1. **Resolve "my current"** to get active session.
 2. Read the session state file
-3. Read `.claude/bundles/active-work.md`
+3. Read `.knowledge/bundles/active-work.md`
 4. Read Hub.md files for repos in this session only
 5. Filter for items related to THIS session's repos/sprint
 6. Display:

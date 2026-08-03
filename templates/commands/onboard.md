@@ -21,7 +21,7 @@ Before generating anything, check what already exists:
 
 - Does `<repo>/CLAUDE.md` exist? Read it.
 - Does `<repo>/.claude/CLAUDE.md` exist? Read it.
-- Does `.claude/engrams/<repo-name>-context.md` exist? Read it.
+- Does `.knowledge/engrams/<repo-name>-context.md` exist? Read it.
 - Is the repo a git repo? Check remote, branch, last commit date.
 - Is the repo behind its remote? (`git fetch --dry-run` -- if CLAUDE.md
   exists on remote but not locally, suggest pulling first.)
@@ -43,7 +43,7 @@ last updated (new deps, new routes, renamed files, etc).
 **Before dispatching**, write dashboard JSON:
 ```bash
 RUN_ID="onboard--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-$HOME/.sessions/dashboard}"
 mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
 echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
 echo '{"id":"onboard-001","name":"Onboard: [repo-name]","status":"running","repo":"[repo-path forward slashes]","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/onboard-001.json"
@@ -110,7 +110,7 @@ Using the subagent's summary, generate only files that are missing or that the u
 Use the JitNeuro `templates/CLAUDE-brainstem.md` as the template.
 Fill in project-specific values.
 
-**Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-180 lines):
+**Engram** (`.knowledge/engrams/[repo-name]-context.md`, ~50-180 lines):
 Use the JitNeuro `templates/engrams/example.md` as the template.
 Populate with discovered tech stack, key files, architecture, integrations.
 
@@ -123,7 +123,7 @@ Generated N files:
 
 1. [repo]/CLAUDE.md (project identity, 25 lines) [NEW/REFRESH]
 2. [repo]/.claude/CLAUDE.md (brainstem, 35 lines) [NEW/REFRESH]
-3. .claude/engrams/[repo]-context.md (engram, 60 lines) [NEW/REFRESH]
+3. .knowledge/engrams/[repo]-context.md (engram, 60 lines) [NEW/REFRESH]
 
 Review and approve? (all / pick by number / edit first)
 ```
@@ -133,7 +133,7 @@ Review and approve? (all / pick by number / edit first)
 - Write approved files
 - Add repo to MEMORY.md project table (if not already there)
 - Suggest PR to `jit-knowledge/INDEX.md` if a new routing entry is needed for this repo's domain
-- Add bundle files to `.claude/bundles/` if new bundles are needed; routing goes via PR to INDEX.md
+- Add bundle files to `.knowledge/bundles/` if new bundles are needed; routing goes via PR to INDEX.md
 
 ### Step 6: Verify
 
@@ -157,7 +157,7 @@ Workspace root: [path]
 For each subdirectory that contains a .git/ folder (1 level deep, skip .claude/ and node_modules/):
 - Check if [repo]/CLAUDE.md exists
 - Check if [repo]/.claude/CLAUDE.md exists
-- Check if .claude/engrams/[repo-name]-context.md exists
+- Check if .knowledge/engrams/[repo-name]-context.md exists
 - Get last commit date: git -C [repo] log -1 --format=%ci
 
 Return format:

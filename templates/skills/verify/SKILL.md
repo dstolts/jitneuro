@@ -21,9 +21,9 @@ Post-install verification. Checks 9 components. READ-ONLY operation.
 2. **.claude/ folder** -- exists with commands/ subdirectory
 3. **Workspace commands** -- workspace .claude/commands/ has the expected command files
 4. **jitneuro.json** -- exists at `.jitneuro/jitneuro.json` with valid JSON structure
-5. **Engram** -- workspace engram exists at `.claude/engrams/<repo>-context.md`
-6. **Session state** -- `.claude/session-state/` folder exists and is writable
-7. **Heartbeats** -- `.claude/session-state/heartbeats/` folder exists
+5. **Engram** -- workspace engram exists at `.knowledge/engrams/<repo>-context.md`
+6. **Session state** -- `.sessions/` folder exists and is writable
+7. **Heartbeats** -- `.sessions/heartbeats/` folder exists
 8. **Hooks** -- `settings.json` has SessionStart and PostToolUse hooks registered
 9. **Help file** -- `.claude/help.md` exists
 

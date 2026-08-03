@@ -18,12 +18,12 @@ Manage context bundles. Bundles are domain knowledge files loaded on-demand to p
 ## Operations
 
 ### Load: `/bundle <name>`
-Read the bundle file from `.claude/bundles/<name>.md` (or workspace bundles if not found in repo).
+Read the bundle file from `.knowledge/bundles/<name>.md` (or workspace bundles if not found in repo).
 Display its contents to load the context.
 Target: bundles stay under 280 lines.
 
 ### Create: `/bundle create <name>`
-Create a new bundle file at `.claude/bundles/<name>.md`.
+Create a new bundle file at `.knowledge/bundles/<name>.md`.
 Template structure:
 - What This Covers (2-3 sentences)
 - Key Files (table: path | purpose)
@@ -47,8 +47,8 @@ Present the proposed split to the user before executing.
 
 ## Bundle location resolution
 
-1. `<repo>/.claude/bundles/<name>.md` (repo-specific)
-2. `<workspace>/.claude/bundles/<name>.md` (workspace shared)
+1. `<repo>/.knowledge/bundles/<name>.md` (repo-specific)
+2. `<workspace>/.knowledge/bundles/<name>.md` (workspace shared)
 3. Fallback: report not found
 
 ## Size thresholds

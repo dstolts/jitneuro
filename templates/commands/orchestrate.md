@@ -19,7 +19,7 @@ When a task is received:
 
 1. **Classify the task** -- determine which domain(s) it touches:
    - Read `.jit-knowledge/INDEX.md` (via `~/.claude/url-resolver.md`) for routing patterns
-   - Scan `.claude/bundles/` for available bundles on this install
+   - Scan `.knowledge/bundles/` for available bundles on this install
    - If no routing entry exists in INDEX.md, infer from the task description
 
 2. **Decide execution strategy:**

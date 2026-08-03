@@ -2,10 +2,10 @@
 
 ## What It Is
 
-A heartbeat is a file in `.claude/session-state/heartbeats/` named after the Claude session ID. Its content is the JitNeuro session name (e.g., "jitneuro"). Its modification time (mtime) is the last time Claude did anything.
+A heartbeat is a file in `.sessions/heartbeats/` named after the Claude session ID. Its content is the JitNeuro session name (e.g., "jitneuro"). Its modification time (mtime) is the last time Claude did anything.
 
 ```
-.claude/session-state/heartbeats/
+.sessions/heartbeats/
   63e31988-4cbe-4223-826d-dcf56d742774    content: "jitneuro"    mtime: 2s ago
   a1b2c3d4-e5f6-7890-abcd-ef1234567890    content: "aifs-ci-fix" mtime: 3m ago
 ```

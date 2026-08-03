@@ -6,7 +6,7 @@ Shortcut for `/session load`. Delegates to the session command.
 
 When invoked as `/load <name|#>`:
 
-1. Read `.claude/session-state/.preferences` for `shortcut_scope` setting
+1. Read `.sessions/.preferences` for `shortcut_scope` setting
    - If `session` (default): execute `/session load <name|#>`
    - If `sessions`: execute `/session load <name|#>` (load always targets current session)
 2. Follow all instructions in the `/session load` section of session.md

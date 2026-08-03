@@ -12,7 +12,7 @@ Single source of truth for all JitNeuro configuration files, settings, and envir
 | `settings.local.json` | `.claude/settings.local.json` or project root | Claude Code hooks wiring (which scripts fire on which events) | Yes (no secrets) |
 | `settings.json` | `~/.claude/settings.json` | Claude Code user settings (permissions, effort level) | No (user-level) |
 | `toggles.json` | `.claude/toggles.json` | Feature toggles (engrams, divergent thinking) | Yes (no secrets) |
-| `.preferences` | `.claude/session-state/.preferences` | Session UI preferences (shortcut scope) | Yes |
+| `.preferences` | `.sessions/.preferences` | Session UI preferences (shortcut scope) | Yes |
 
 ---
 
@@ -259,7 +259,7 @@ Manage with `/divergent` command (for divergent mode) or edit directly (for engr
 
 ## .preferences
 
-Session UI preferences. Located at `.claude/session-state/.preferences`.
+Session UI preferences. Located at `.sessions/.preferences`.
 
 ```
 shortcut_scope: session
@@ -361,7 +361,7 @@ The #1 install issue. If you installed commands at BOTH user level and workspace
 | Change divergent thinking mode | `.claude/toggles.json` | `divergent` (or use `/divergent`) |
 | Disable an engram | `.claude/toggles.json` | `engrams.<name>: false` |
 | Add a custom hook | `.claude/settings.local.json` | `hooks.<EventName>` array |
-| Change shortcut routing | `.claude/session-state/.preferences` | `shortcut_scope` |
+| Change shortcut routing | `.sessions/.preferences` | `shortcut_scope` |
 
 ---
 

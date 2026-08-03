@@ -55,7 +55,7 @@ If nothing changed, return STATUS: SKIP with message "No changes since last run.
 
 ### STEP 1 -- Discover repos
 
-Read `.claude/session-state/` for active sessions and their repo paths.
+Read `.sessions/` for active sessions and their repo paths.
 Read `MEMORY.md` for the repo index (project list).
 Build a list of repo root paths to scan. Cap at 20 repos per run to avoid
 memory exhaustion (per context-safety.md -- max 25 files per response).
@@ -81,7 +81,7 @@ Return as JSON array. No prose. Max 50 items.
 
 Also scan the WS4 changes-log:
 ```
-Read .claude/session-state/improvement-changes.log.md
+Read .sessions/improvement-changes.log.md
 Parse each line (format: <timestamp> | <type> | <summary> | <destination> | <session>)
 Collect unique summaries grouped by destination prefix.
 Return: { log_entries: N, unique_destinations: [...], recurring_summaries: [...] }
@@ -89,7 +89,7 @@ Return: { log_entries: N, unique_destinations: [...], recurring_summaries: [...]
 
 And the WS5 lessons-pending file:
 ```
-Read .claude/session-state/lessons-pending.md
+Read .sessions/lessons-pending.md
 Extract lesson lines (non-header, non-empty).
 For each lesson, produce a content hash (first 100 chars normalized).
 Return: { lesson_count: N, lessons: [{hash, text, session, timestamp}] }
@@ -101,7 +101,7 @@ Aggregate all subagent returns. Build the cross-repo knowledge inventory.
 
 For each knowledge item:
 1. Compute content hash (already in subagent output)
-2. Check against `.claude/session-state/.rollup-promoted-hashes.txt` (append-only list of hashes already promoted or proposed) -- skip if present (IDEMPOTENCY)
+2. Check against `.sessions/.rollup-promoted-hashes.txt` (append-only list of hashes already promoted or proposed) -- skip if present (IDEMPOTENCY)
 3. Group items by semantic similarity: items with near-identical title / first-line across 2+ repos are RECURRING PATTERN candidates
 4. Items that appear in the changes-log summary with 3+ occurrences are SKILL GAP candidates
 5. Items where the content is contradicted by a newer item in the same repo are STALE candidates
@@ -118,11 +118,11 @@ For PROMOTE candidates:
 
 1. Draft the artifact content (rules/patterns/playbooks format per jit-knowledge conventions)
 2. Assign a content hash to each draft
-3. Append hashes to `.claude/session-state/.rollup-promoted-hashes.txt` (prevents duplicate PRs)
+3. Append hashes to `.sessions/.rollup-promoted-hashes.txt` (prevents duplicate PRs)
 4. Write draft artifacts to a staging directory:
-   `.claude/session-state/rollup-staging/<YYYY-MM-DD>/`
+   `.sessions/rollup-staging/<YYYY-MM-DD>/`
 5. Generate a promotion proposal document:
-   `.claude/session-state/rollup-staging/<YYYY-MM-DD>/PROPOSAL.md`
+   `.sessions/rollup-staging/<YYYY-MM-DD>/PROPOSAL.md`
 
 PROPOSAL.md format:
 ```
@@ -151,7 +151,7 @@ PROPOSAL.md format:
 - <N> items below threshold (< 2 repos)
 ```
 
-6. Write a one-line entry to `.claude/session-state/improvement-changes.log.md`:
+6. Write a one-line entry to `.sessions/improvement-changes.log.md`:
    `<ISO-timestamp> | Rollup | Proposed <N> promotions, <N> skill gaps, <N> stale | rollup-staging/<date>/PROPOSAL.md | cross-repo-rollup`
 
 ### STEP 5 -- Open jit-knowledge PR (if PROMOTE candidates exist)
@@ -202,16 +202,16 @@ date +%s > "$LAST_RUN_FILE"
 STATUS: OK
 TOKENS: in=X out=X model=haiku+sonnet
 FILES_CHANGED:
-  - .claude/session-state/.rollup-promoted-hashes.txt (appended)
-  - .claude/session-state/rollup-staging/<date>/PROPOSAL.md (created)
-  - .claude/session-state/rollup-staging/<date>/<artifact>.md (created, one per promotion)
-  - .claude/session-state/improvement-changes.log.md (appended)
-  - .claude/session-state/.cross-repo-rollup-last-run (updated)
-SUMMARY_DOC: .claude/session-state/rollup-staging/<date>/PROPOSAL.md
+  - .sessions/.rollup-promoted-hashes.txt (appended)
+  - .sessions/rollup-staging/<date>/PROPOSAL.md (created)
+  - .sessions/rollup-staging/<date>/<artifact>.md (created, one per promotion)
+  - .sessions/improvement-changes.log.md (appended)
+  - .sessions/.cross-repo-rollup-last-run (updated)
+SUMMARY_DOC: .sessions/rollup-staging/<date>/PROPOSAL.md
 RESULT:
 Scanned <N> repos. Found <N> PROMOTE, <N> SKILL_GAP, <N> STALE candidates.
 <N> items skipped (already promoted).
-Proposal: .claude/session-state/rollup-staging/<date>/PROPOSAL.md
+Proposal: .sessions/rollup-staging/<date>/PROPOSAL.md
 PR: <url or "not created -- rollupAutoPR is false">
 ```
 
@@ -253,9 +253,9 @@ PR: <url or "not created -- rollupAutoPR is false">
 
 | File | Purpose |
 |---|---|
-| `.claude/session-state/improvement-changes.log.md` | WS4 changes-log (also used by WS8 dashboard) |
-| `.claude/session-state/lessons-pending.md` | WS5 durable lessons from SessionEnd flush |
-| `.claude/session-state/.rollup-promoted-hashes.txt` | idempotency registry (append-only) |
-| `.claude/session-state/.cross-repo-rollup-last-run` | Unix timestamp of last successful run |
-| `.claude/session-state/rollup-staging/<date>/PROPOSAL.md` | Promotion proposal for Owner review |
-| `.claude/session-state/rollup-staging/<date>/<artifact>.md` | Staged promotion artifacts |
+| `.sessions/improvement-changes.log.md` | WS4 changes-log (also used by WS8 dashboard) |
+| `.sessions/lessons-pending.md` | WS5 durable lessons from SessionEnd flush |
+| `.sessions/.rollup-promoted-hashes.txt` | idempotency registry (append-only) |
+| `.sessions/.cross-repo-rollup-last-run` | Unix timestamp of last successful run |
+| `.sessions/rollup-staging/<date>/PROPOSAL.md` | Promotion proposal for Owner review |
+| `.sessions/rollup-staging/<date>/<artifact>.md` | Staged promotion artifacts |

@@ -47,7 +47,7 @@ These load only when MEMORY.md references them, keeping context costs low.
 
 ### 3. JitNeuro /learn (bundles, engrams, routing)
 
-**Location:** `.claude/bundles/`, `.claude/engrams/`, `jit-knowledge/INDEX.md` (routing)
+**Location:** `.knowledge/bundles/`, `.knowledge/engrams/`, `jit-knowledge/INDEX.md` (routing)
 **Loaded:** On-demand by INDEX.md routing or manual bundle load
 **Created by:** `/learn` command evaluation
 **Updated by:** `/learn` (with owner approval); routing changes via PR to jit-knowledge
@@ -68,11 +68,11 @@ Is this a universal behavioral instruction?
   NO  -> continue
 
 Is this a fact about a specific project's architecture or tech stack?
-  YES -> .claude/engrams/<project>.md (updated by /learn)
+  YES -> .knowledge/engrams/<project>.md (updated by /learn)
   NO  -> continue
 
 Is this domain knowledge that applies across projects?
-  YES -> .claude/bundles/<domain>.md (updated by /learn)
+  YES -> .knowledge/bundles/<domain>.md (updated by /learn)
   NO  -> continue
 
 Is this a business fact, credential location, or external reference?
@@ -153,7 +153,7 @@ See `templates/memory/detail-index.md` for the template. Group entries by domain
 
 **When:** MEMORY.md has paragraphs of domain knowledge (infrastructure details, deployment procedures, API patterns). These are facts that don't need to load every session.
 
-**Fix:** Move the section to a bundle (`.claude/bundles/<domain>.md`). Add a route to `jit-knowledge/INDEX.md` so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
+**Fix:** Move the section to a bundle (`.knowledge/bundles/<domain>.md`). Add a route to `jit-knowledge/INDEX.md` so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
 
 Before (20 lines in MEMORY.md):
 ```
@@ -175,7 +175,7 @@ The bundle holds the full detail. INDEX.md routing ensures it loads when relevan
 
 **When:** MEMORY.md has paragraphs about specific projects (architecture, tech stack, key files). These should be in per-project engrams, loaded only when working on that project.
 
-**Fix:** Move project-specific detail to `.claude/engrams/<project>-context.md`. Keep only a one-line entry in the project table in MEMORY.md.
+**Fix:** Move project-specific detail to `.knowledge/engrams/<project>-context.md`. Keep only a one-line entry in the project table in MEMORY.md.
 
 Before (10 lines per project in MEMORY.md):
 ```

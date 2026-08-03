@@ -6,10 +6,10 @@ and a frontend repo, with task switching mid-session.
 ## Setup
 
 ### Bundles created:
-- `.claude/bundles/api.md` -- API conventions, routes, auth, error handling
-- `.claude/bundles/frontend.md` -- React patterns, state management, components
-- `.claude/bundles/sprint.md` -- Sprint protocol, task format, commit conventions
-- `.claude/bundles/deploy.md` -- CI/CD, containers, environment configs
+- `.knowledge/bundles/api.md` -- API conventions, routes, auth, error handling
+- `.knowledge/bundles/frontend.md` -- React patterns, state management, components
+- `.knowledge/bundles/sprint.md` -- Sprint protocol, task format, commit conventions
+- `.knowledge/bundles/deploy.md` -- CI/CD, containers, environment configs
 
 ### Routing weights in MEMORY.md:
 ```

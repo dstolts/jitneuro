@@ -1,6 +1,6 @@
 # Session Guardrail
 
-At the start of every conversation, validate `.claude/session-state/heartbeats/<session-id>` resolves to an active session name.
+At the start of every conversation, validate `.sessions/heartbeats/<session-id>` resolves to an active session name.
 If the heartbeat file is empty, missing, or points to a non-existent/archived session, auto-create a new session immediately based on the first request before doing any other work.
 Claude NEVER operates under `[session: none]`. Every response requires an active session.
 

@@ -6,7 +6,7 @@ Shortcut that delegates to `/session dashboard` or `/sessions dashboard` based o
 
 When invoked as `/dashboard`:
 
-1. Read `.claude/session-state/.preferences` for `shortcut_scope` setting
+1. Read `.sessions/.preferences` for `shortcut_scope` setting
    - If `session` (default): execute `/session dashboard` (current session blockers)
    - If `sessions`: execute `/sessions dashboard` (all sessions aggregate NEEDS OWNER)
 2. Follow all instructions in the target command

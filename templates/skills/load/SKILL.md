@@ -27,7 +27,7 @@ Delegates entirely to `/session load [name|#]`. See `/session` SKILL.md for the 
 
 ## What load does
 
-1. Read the session checkpoint file from `.claude/session-state/<name>.md`
+1. Read the session checkpoint file from `.sessions/<name>.md`
 2. Restore TodoWrite task list from the checkpoint
 3. Set active session name (write heartbeat via Bash echo -- see heartbeat-write-safety.md)
 4. Spawn scheduled agents if configured and not already running

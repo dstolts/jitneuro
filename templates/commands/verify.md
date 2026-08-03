@@ -22,8 +22,8 @@ When invoked as `/verify`:
    | 4 | Hooks config | Read settings.local.json, verify hooks section | All 9 hook events configured | Some events missing | No hooks config |
    | 5 | Hook paths | Each hook command path in settings.local.json points to existing file | All paths valid | -- | Script file not found |
    | 6 | Hook events | Event names match Claude Code events (PreCompact, SessionStart, PreToolUse, SessionEnd) | All valid | Unknown event name | -- |
-   | 7 | Bundles | Check .claude/bundles/ has files | Has bundles | Only example.md | Empty |
-   | 8 | Engrams | Check .claude/engrams/ has files | Has engrams | Only example.md | Empty |
+   | 7 | Bundles | Check .knowledge/bundles/ has files | Has bundles | Only example.md | Empty |
+   | 8 | Engrams | Check .knowledge/engrams/ has files | Has engrams | Only example.md | Empty |
    | 9 | URL resolver | Check ~/.claude/url-resolver.md exists and has a jit-knowledge entry | Entry present | File missing | No jit-knowledge entry |
 
 3. **Check config values:**

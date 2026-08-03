@@ -24,7 +24,7 @@ This document defines what must exist and be deployed in the **jitneuro** repo s
 ### 2.2 Content the Cursor rule must enforce
 
 - **Guardrails:** Override goals; never bypass; get current list by **reading** project/workspace `.claude/CLAUDE.md` (and repo `CLAUDE.md`). No cached copy.
-- **Save:** Trigger phrases → determine session name → gather state → write `.claude/session-state/<name>.md` → sync Hub if present → update `.current` → confirm. If compact/preserve rules needed, **read** CLAUDE.md.
+- **Save:** Trigger phrases → determine session name → gather state → write `.sessions/<name>.md` → sync Hub if present → update `.current` → confirm. If compact/preserve rules needed, **read** CLAUDE.md.
 - **Load:** Resolve session (name or #) → **read** session file → **read** listed bundles → **read** `.jit-knowledge/INDEX.md` (routing) and **MEMORY.md** (project facts; always read file) → update `.current` → report.
 - **Learn:** **Read MEMORY.md** (no cache) → health check (line counts, routing, sessions, bundles, engrams) → scan conversation for learnings → proposed changes table → approve then execute.
 - **Source-of-truth principle:** At top of rule and where relevant: CLAUDE.md and MEMORY.md are live; **read** when needed, never copy into the rule or rely on stale context.
@@ -38,7 +38,7 @@ This document defines what must exist and be deployed in the **jitneuro** repo s
 
 - **Install script changes:** Add a Cursor mode or flag to `install.sh` / `install.ps1` that also copies `templates/cursor/rules/jitneuro-intents.mdc` to the target’s `.cursor/rules/` (creating `.cursor/rules/` if needed). Useful for one-command Cursor setup.
 - **Verify:** A Cursor-specific verification (e.g. “does `.cursor/rules/jitneuro-intents.mdc` exist?”) could be added to a doc or a separate small script; not required for minimal enablement.
-- **Engram:** If the jitneuro engram (e.g. in the workspace `.claude/engrams/`) is used for contributor context, add a line that Cursor enablement = intent rule + read CLAUDE.md/MEMORY.md; artifacts live under `templates/cursor/` and `docs/cursor-*.md`.
+- **Engram:** If the jitneuro engram (e.g. in the workspace `.knowledge/engrams/`) is used for contributor context, add a line that Cursor enablement = intent rule + read CLAUDE.md/MEMORY.md; artifacts live under `templates/cursor/` and `docs/cursor-*.md`.
 
 ---
 

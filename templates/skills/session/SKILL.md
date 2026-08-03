@@ -21,7 +21,7 @@ Full session lifecycle management.
 Create a new session:
 1. Generate session name from task if not provided
 2. Write heartbeat: `echo -n "<name>" > heartbeats/$CLAUDE_SESSION_ID` (Bash, not Write tool)
-3. Create `.claude/session-state/<name>.md` with header
+3. Create `.sessions/<name>.md` with header
 4. Create or update Hub.md entry
 5. Spawn scheduled agents from jitneuro.json (enabled: true)
 6. Display: `[session: <name> | DIV: AUTO]`
@@ -30,7 +30,7 @@ Create a new session:
 Checkpoint current state:
 1. Write TodoWrite task list to Hub.md `## ACTIVE TODO` section (MANDATORY)
 2. Write pending questions to Hub.md `## PENDING QUESTIONS` section
-3. Write full checkpoint to `.claude/session-state/<name>.md`
+3. Write full checkpoint to `.sessions/<name>.md`
 4. Update heartbeat timestamp
 5. Display: `** Saved: <name> **`
 

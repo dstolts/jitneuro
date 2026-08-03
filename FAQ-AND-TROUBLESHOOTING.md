@@ -122,7 +122,7 @@ That's it. Your context is saved. You can now safely clear.
 
 **A:** Not yet (it's in FEATURE-REQUESTS.md for v0.4.1).
 
-**Workaround:** Sessions are just text files in `~/.claude/session-state/`. You can manually delete them if needed (but be careful!).
+**Workaround:** Sessions are just text files in `~/.sessions/`. You can manually delete them if needed (but be careful!).
 
 ---
 
@@ -167,7 +167,7 @@ Each `/learn` becomes a permanent rule Claude follows.
 
 **A:** Yes, but manually only (advanced users).
 
-Sessions live in `~/.claude/session-state/` as markdown files. You can edit them, but be careful not to break the format.
+Sessions live in `~/.sessions/` as markdown files. You can edit them, but be careful not to break the format.
 
 ---
 
@@ -247,11 +247,11 @@ Sessions live in `~/.claude/session-state/` as markdown files. You can edit them
    ```
 
 3. **Disk space issue:**
-   - Check if `~/.claude/session-state/` is full
-   - Run: `du -sh ~/.claude/session-state/`
+   - Check if `~/.sessions/` is full
+   - Run: `du -sh ~/.sessions/`
 
 4. **File permissions:**
-   - Check: `ls -la ~/.claude/session-state/`
+   - Check: `ls -la ~/.sessions/`
    - Should show files owned by your user
 
 ---
@@ -266,7 +266,7 @@ Sessions live in `~/.claude/session-state/` as markdown files. You can edit them
 
 2. **Check rule was created:**
    ```bash
-   cat ~/.claude/cognition/anti-patterns.md  # or relevant rule file
+   cat ~/cognition/anti-patterns.md  # or relevant rule file
    ```
 
 3. **Verify rule syntax:** Rules should be one per line.
@@ -338,7 +338,7 @@ Sessions live in `~/.claude/session-state/` as markdown files. You can edit them
 
 1. **Too many saved sessions:**
    - `/sessions` lists all (can be hundreds)
-   - Solution: Delete old sessions from `~/.claude/session-state/`
+   - Solution: Delete old sessions from `~/.sessions/`
 
 2. **Context files too large:**
    - Check: `du -sh ~/.claude/`
@@ -418,7 +418,7 @@ Configure with `/enterprise` and rules.
 
 ```bash
 # Export all sessions
-tar -czf jitneuro-sessions-backup.tar.gz ~/.claude/session-state/
+tar -czf jitneuro-sessions-backup.tar.gz ~/.sessions/
 
 # Restore
 tar -xzf jitneuro-sessions-backup.tar.gz -C ~

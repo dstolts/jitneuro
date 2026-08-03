@@ -148,7 +148,7 @@ Usage:
 - Should the 1-line confirmation be skippable with `--yes` for batch
   capture sessions?
 - Should `/wip` auto-link to a parent session-state file in
-  `.claude/session-state/` so the capture remembers its session origin?
+  `.sessions/` so the capture remembers its session origin?
 - How does this interact with `/save` -- does `/save` enumerate staged
   WIP files in its session-state output?
 
