@@ -4,8 +4,8 @@ Personal overlay for the generic JitNeuro personas system.
 This file is LOCAL ONLY -- never committed to version control.
 It is loaded alongside cognition/personas.md to personalize behavior.
 
-To use: copy this file to .claude/cognition/owner-persona.md and fill in your context.
-The install script creates this automatically. Add .claude/cognition/owner-persona.md
+To use: copy this file to cognition/owner-persona.md and fill in your context.
+The install script creates this automatically. Add cognition/owner-persona.md
 to your .gitignore.
 
 ---

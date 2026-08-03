@@ -1,10 +1,10 @@
 # Session Guardrail
 
-At the start of every conversation, validate `.claude/session-state/heartbeats/<session-id>` resolves to an active session name.
+At the start of every conversation, validate `.sessions/heartbeats/<session-id>` resolves to an active session name.
 If the heartbeat file is empty, missing, or points to a non-existent/archived session, auto-create a new session immediately based on the first request. **Auto-create MUST write the heartbeat with the session name as its FIRST action, before doing any other work:**
 
 ```bash
-echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"
+echo -n "<name>" > ".sessions/heartbeats/<session-id>"
 ```
 
 Generate `<name>` from the first request (lowercase, hyphenated, task-descriptive). Use Bash echo only, never Write/Edit (the PostToolUse hook races those). **Appended-task trap:** if a task or question rode in with the first message, write the heartbeat FIRST, then address the task -- the request never cancels the heartbeat write. A skipped heartbeat is the new-session form of the load bug: the statusline shows `none` and the session tag drops.

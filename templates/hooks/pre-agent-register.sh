@@ -22,13 +22,13 @@ DESC=$(echo "$INPUT" | grep -o '"description"[[:space:]]*:[[:space:]]*"[^"]*"' |
 [ -z "$DESC" ] && DESC="agent"
 
 # Parent session name from heartbeat
-HB_DIR="${CLAUDE_PROJECT_DIR:-$HOME}/.claude/session-state/heartbeats"
+HB_DIR="${CLAUDE_PROJECT_DIR:-$HOME}/.sessions/heartbeats"
 PSESS="none"
 [ -f "$HB_DIR/$SID" ] && PSESS=$(cat "$HB_DIR/$SID" 2>/dev/null | tr -d '\n\r')
 [ -z "$PSESS" ] && PSESS="none"
 
 # Find or create run directory for this session
-DASH_DIR="${JITDASH_DIR:-${CLAUDE_PROJECT_DIR:-$HOME}/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-${CLAUDE_PROJECT_DIR:-$HOME}/.sessions/dashboard}"
 RUNS="$DASH_DIR/runs"
 RUN_DIR=""
 if [ -d "$RUNS" ]; then
@@ -66,7 +66,7 @@ AGENT_FILE="$AGENTS_DIR/$AGENT_ID.json"
 echo "{\"id\":\"$AGENT_ID\",\"name\":\"$DESC\",\"status\":\"running\",\"sessionId\":\"$SID\",\"started\":\"$NOW_ISO\"}" > "$AGENT_FILE" 2>/dev/null
 
 # Store agent file path so PostToolUse(Agent) can mark it completed
-TRACKER="${CLAUDE_PROJECT_DIR:-$HOME}/.claude/session-state/.agent-tracker"
+TRACKER="${CLAUDE_PROJECT_DIR:-$HOME}/.sessions/.agent-tracker"
 mkdir -p "$TRACKER" 2>/dev/null
 echo "$AGENT_FILE" > "$TRACKER/${SID}-${STAMP}" 2>/dev/null
 

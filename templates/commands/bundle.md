@@ -14,7 +14,7 @@ When invoked as `/bundle <name>`:
 
 ### 1. Check if the bundle exists
 
-Read `.claude/bundles/<name>.md`.
+Read `.knowledge/bundles/<name>.md`.
 
 ### 2. If the bundle EXISTS: load it
 
@@ -33,7 +33,7 @@ Do NOT just list alternatives. Instead:
 a. **Look for context to build from.** Search the workspace for a repo, directory,
    or domain matching `<name>`. Check:
    - Is there a repo at `../<name>/` or nearby with a similar name?
-   - Is there an engram at `.claude/engrams/<name>-context.md`?
+   - Is there an engram at `.knowledge/engrams/<name>-context.md`?
    - Is there a CLAUDE.md in a matching repo?
    - Grep for `<name>` in existing bundles and MEMORY.md for related context.
 
@@ -52,12 +52,12 @@ c. **If no source material found:** Ask the user what this bundle should cover.
 
 d. **Present the draft** and ask for approval before writing.
 
-e. **On approval:** Write to `.claude/bundles/<name>.md` and suggest
+e. **On approval:** Write to `.knowledge/bundles/<name>.md` and suggest
    opening a PR to the shared knowledge catalog index to add the routing entry for this bundle.
 
 ### 4. Without arguments (`/bundle`):
 
-a. Scan `.claude/bundles/` for actual files. Count lines in each.
+a. Scan `.knowledge/bundles/` for actual files. Count lines in each.
 b. If a knowledge catalog is configured (via `KNOWLEDGE_ROOT` or `.knowledge/`), read its `INDEX.md` and compare -- flag bundles that exist on disk but have no routing entry in INDEX.md.
 c. Present:
 

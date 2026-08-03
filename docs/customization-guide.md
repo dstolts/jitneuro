@@ -32,7 +32,7 @@ persona activates. It ships with 10 engineering principles:
 optimize for performance over readability, etc.), change them. These are the foundation
 everything else builds on.
 
-### 2. Personas (`.claude/cognition/personas.md`)
+### 2. Personas (`cognition/personas.md`)
 
 16 expert personas evaluate every request. Each has:
 - **Primary triggers** -- when this persona drives the approach
@@ -57,7 +57,7 @@ Claude Code will read personas.md, identify irrelevant entries, suggest addition
 - **Add personas.** If your team has a specialist role (ML Engineer, Data Engineer,
   Accessibility Specialist), add a persona for it following the existing format.
 
-### 3. Owner Persona (`.claude/cognition/owner-persona.md`)
+### 3. Owner Persona (`cognition/owner-persona.md`)
 
 This is YOUR personal overlay -- business context that's too specific for the generic
 personas but shapes every decision. The install script creates a template from
@@ -73,7 +73,7 @@ personas but shapes every decision. The install script creates a template from
 
 **This file is gitignored.** It never ships with the repo. It stays on your machine.
 
-### 4. Anti-Patterns (`.claude/cognition/anti-patterns.md`)
+### 4. Anti-Patterns (`cognition/anti-patterns.md`)
 
 Ships with seed entries -- universal "never do this" patterns learned from real
 engineering mistakes:
@@ -98,7 +98,7 @@ engineering mistakes:
 - **Let /learn grow it.** Over time, when you correct Claude's behavior, `/learn`
   proposes new anti-pattern entries automatically. Review and approve them.
 
-### 5. Decision Models (`.claude/cognition/decisions/`)
+### 5. Decision Models (`cognition/decisions/`)
 
 Structured frameworks for decisions you make repeatedly. Ships with:
 - `root-cause-analysis.md` -- debugging workflow (research, evaluate, execute, test)

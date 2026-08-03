@@ -196,8 +196,8 @@ cd jitneuro
 `/load`. That is it.
 
 **Set your north star (optional, 5 minutes).** The installer drops strategic-context
-templates in `.claude/horizon/`. Tell Claude `"populate my horizon files"` (or open
-`.claude/horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a
+templates in `horizon/`. Tell Claude `"populate my horizon files"` (or open
+`horizon/POPULATE-HORIZON.md`) and Claude interviews you -- one topic at a
 time -- to fill in your vision, mission, goals, operating rhythm, and owner profile.
 Every future session then aligns to your actual goals instead of guessing.
 

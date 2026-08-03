@@ -436,7 +436,7 @@ Every agent directive should have four components:
 This schema applies to CLAUDE.md brainstems, slash command instructions,
 agent dispatch, and sprint stories. Concrete design TBD in Phase 2.
 
-A new file type: `.claude/cognition/decisions/`
+A new file type: `cognition/decisions/`
 
 Decision models are structured frameworks that Claude applies when evaluating
 choices. They encode the user's actual decision-making patterns -- not generic
@@ -466,7 +466,7 @@ when the user overrides a recommendation.
 **Priority:** Medium
 **Status:** Phase 2 Design
 
-A new section in MEMORY.md or a dedicated file: `.claude/cognition/predictions.md`
+A new section in MEMORY.md or a dedicated file: `cognition/predictions.md`
 
 Patterns that let Claude anticipate what the user will want next, based on
 observed sequences across sessions.
@@ -485,7 +485,7 @@ I anticipate this?").
 **Priority:** High
 **Status:** Phase 2 Design
 
-A new file: `.claude/cognition/anti-patterns.md`
+A new file: `cognition/anti-patterns.md`
 
 Things Claude should NEVER do, learned from corrections. Stronger than routing
 weights (which guide what to load) -- anti-patterns are hard stops.
@@ -515,7 +515,7 @@ Format:
 **Priority:** Medium
 **Status:** Phase 2 Design
 
-A new file: `.claude/cognition/personas.md`
+A new file: `cognition/personas.md`
 
 Which expert voice to use for which type of task. Currently implicit (Claude
 picks a tone), Phase 2 makes it explicit and tunable.

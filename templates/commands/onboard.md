@@ -62,7 +62,7 @@ Before generating anything, check what already exists:
 - Does `<repo>/AGENTS.md` exist? Read it. (This is the canonical standard.)
 - Does `<repo>/CLAUDE.md` exist? Read it. (Should be a thin importer of AGENTS.md.)
 - Does `<repo>/.claude/CLAUDE.md` exist? Read it.
-- Does `.claude/engrams/<repo-name>-context.md` exist? Read it.
+- Does `.knowledge/engrams/<repo-name>-context.md` exist? Read it.
 - Is the repo a git repo? Check remote, branch, last commit date.
 - Is the repo behind its remote? (`git fetch --dry-run` -- if AGENTS.md/CLAUDE.md
   exists on remote but not locally, suggest pulling first.)
@@ -84,7 +84,7 @@ last updated (new deps, new routes, renamed files, etc).
 **Before dispatching**, write dashboard JSON:
 ```bash
 RUN_ID="onboard--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-$HOME/.sessions/dashboard}"
 mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
 echo '{"session":"[current-session]","started":"[ISO-now]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
 echo '{"id":"onboard-001","name":"Onboard: [repo-name]","status":"running","repo":"[repo-path forward slashes]","started":"[ISO-now]"}' > "$DASH_DIR/runs/$RUN_ID/agents/onboard-001.json"
@@ -150,7 +150,7 @@ If the repo is used with Cursor (or the user asks), generate it from the JitNeur
 `templates/cursor/rules/jitneuro-intents.mdc`. It references the same AGENTS.md
 standard and KNOWLEDGE_ROOT -- it does not duplicate them.
 
-**Engram** (`.claude/engrams/[repo-name]-context.md`, ~50-180 lines):
+**Engram** (`.knowledge/engrams/[repo-name]-context.md`, ~50-180 lines):
 Use the JitNeuro `templates/engrams/example.md` as the template.
 Populate with discovered tech stack, key files, architecture, integrations.
 
@@ -158,7 +158,7 @@ Populate with discovered tech stack, key files, architecture, integrations.
 For each detected source in `KNOWLEDGE_ROOT/imports/onboarding-staging.md`, read it
 and route it to the RIGHT home -- surface-and-catalog, never blind-merge:
 - **Per-project context** (architecture notes, repo facts, "how this repo works")
-  -> fold into the **engram** (`.claude/engrams/[repo-name]-context.md`).
+  -> fold into the **engram** (`.knowledge/engrams/[repo-name]-context.md`).
 - **Behavioral standard / rules** (existing CLAUDE.md/AGENTS.md directives, Copilot
   instructions, Cursor intent rules) -> fold into **AGENTS.md** (the standard) and/or
   `.claude/rules/`. Keep CLAUDE.md a thin importer.
@@ -180,7 +180,7 @@ Generated N files:
 
 1. [repo]/AGENTS.md (canonical standard, 50 lines) [NEW/REFRESH]
 2. [repo]/CLAUDE.md (thin importer of AGENTS.md, 20 lines) [NEW/REFRESH]
-3. .claude/engrams/[repo]-context.md (engram, 60 lines) [NEW/REFRESH]
+3. .knowledge/engrams/[repo]-context.md (engram, 60 lines) [NEW/REFRESH]
 4. .cursor/rules/jitneuro-intents.mdc (Cursor bridge) [NEW/SKIP]   (only if Cursor in use)
 
 Onboarding import (from KNOWLEDGE_ROOT/imports/onboarding-staging.md):
@@ -197,7 +197,7 @@ Review and approve? (all / pick by number / edit first)
 - Apply the approved import routing (engram / AGENTS.md+rules / KNOWLEDGE_ROOT store)
 - Add a routing entry to `KNOWLEDGE_ROOT/INDEX.md` for any cataloged capabilities
 - Add repo to MEMORY.md project table (if not already there)
-- Add bundle files to `.claude/bundles/` if new bundles are needed
+- Add bundle files to `.knowledge/bundles/` if new bundles are needed
 - After importing, mark the staging manifest done: rename
   `KNOWLEDGE_ROOT/imports/onboarding-staging.md` to
   `KNOWLEDGE_ROOT/imports/onboarding-staging.done.md` so it is not re-imported.
@@ -231,7 +231,7 @@ Workspace root: [path]
 For each subdirectory that contains a .git/ folder (1 level deep, skip .claude/ and node_modules/):
 - Check if [repo]/AGENTS.md exists (the canonical standard)
 - Check if [repo]/CLAUDE.md exists (should be a thin importer of AGENTS.md)
-- Check if .claude/engrams/[repo-name]-context.md exists
+- Check if .knowledge/engrams/[repo-name]-context.md exists
 - Get last commit date: git -C [repo] log -1 --format=%ci
 
 Return format:

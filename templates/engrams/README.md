@@ -16,7 +16,7 @@ folders that projects may already have.
 
 ## Usage
 
-- **Path:** `.claude/engrams/` (project or workspace level)
+- **Path:** `.knowledge/engrams/` (project or workspace level)
 - **Naming:** `<project-name>.md` (one per project/repo)
 - **Size:** 50-150 lines. Trim stale content if longer.
 - **Updated by:** `/learn` command (presents changes for approval before writing)

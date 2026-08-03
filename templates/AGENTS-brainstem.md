@@ -91,9 +91,9 @@ JitNeuro is scoped to THIS REPO only.
      Install with: ./install.sh workspace -->
 <!--
 From any repo, the agent has full read/write access to:
-- `[workspace]/.claude/bundles/` -- shared domain knowledge
-- `[workspace]/.claude/engrams/` -- shared project context
-- `[workspace]/.claude/session-state/` -- shared session checkpoints
+- `[workspace]/.knowledge/bundles/` -- shared domain knowledge
+- `[workspace]/.knowledge/engrams/` -- shared project context
+- `[workspace]/.sessions/` -- shared session checkpoints
 - KNOWLEDGE_ROOT: the workspace `./.knowledge` (always present; created at install)
 - MEMORY.md auto-memory (project index)
 -->
@@ -112,14 +112,14 @@ When the user expresses a need, wish, or frustration ("I wish...", "can we...", 
 ## Context Loading
 - Standard: `AGENTS.md` (this file) -- read first, every session
 - Rules: `.claude/rules/` -- behavioral standards (vendor-neutral; all tools honor them)
-- Bundles: `.claude/bundles/` (loaded on-demand by the orchestrator)
-- Engrams: `.claude/engrams/` (per-project context, loaded per task)
-- Cognition: `.claude/cognition/personas.md` (expert personas, always active)
-- Cognition: `.claude/cognition/owner-persona.md` (personal overlay, if exists)
-- Decisions: `.claude/cognition/decisions/` (structured decision frameworks)
+- Bundles: `.knowledge/bundles/` (loaded on-demand by the orchestrator)
+- Engrams: `.knowledge/engrams/` (per-project context, loaded per task)
+- Cognition: `cognition/personas.md` (expert personas, always active)
+- Cognition: `cognition/owner-persona.md` (personal overlay, if exists)
+- Decisions: `cognition/decisions/` (structured decision frameworks)
 - Repo context: `.jitneuro/` when present (repo/team-specific context only)
 - Knowledge store: `KNOWLEDGE_ROOT/INDEX.md` (always present; resolves per the order above)
-- Session state: `.claude/session-state/` (one file per named session)
+- Session state: `.sessions/` (one file per named session)
 - Memory: Check MEMORY.md for project facts and project index
 
 ## Compact Instructions
@@ -151,7 +151,7 @@ Do not assume hooks or slash commands exist on a non-Claude tool. The standard
 | `.jitneuro/` | Repo/team-specific context only; never a full framework copy |
 | `KNOWLEDGE_ROOT/INDEX.md` | Knowledge store index (always present; resolves via env -> config -> local `.knowledge/`) |
 | `.claude/rules/` | Behavioral standards (vendor-neutral) |
-| `.claude/session-state/` | Session checkpoints (one per task) |
-| `.claude/bundles/` | Domain knowledge bundles |
-| `.claude/engrams/` | Per-project deep context |
+| `.sessions/` | Session checkpoints (one per task) |
+| `.knowledge/bundles/` | Domain knowledge bundles |
+| `.knowledge/engrams/` | Per-project deep context |
 | `.logs/` | Conversation logs (when enabled) |

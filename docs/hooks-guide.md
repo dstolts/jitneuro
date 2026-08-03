@@ -55,7 +55,7 @@ Cost is minimal -- approximately 10-20ms per invocation (stdin read + grep + tou
 - **Script:** session-start-recovery.sh
 - **Timeout:** 10s
 
-After compaction, reads the most recent session state file from `.claude/session-state/` and re-injects it into Claude's context window. Restores awareness of: active task, loaded bundles, modified files, and next steps.
+After compaction, reads the most recent session state file from `.sessions/` and re-injects it into Claude's context window. Restores awareness of: active task, loaded bundles, modified files, and next steps.
 
 stdout from this hook goes directly into Claude's context -- no user action needed.
 
@@ -98,7 +98,7 @@ Safety net for forgotten `/save`. When a session ends, this hook reads the sessi
 - The last known task and repos (extracted from the session file)
 - A `/load` command to restore the last checkpoint
 
-Written to `.claude/session-state/_autosave.md` (overwritten each time). Excluded from `/sessions` dashboard output.
+Written to `.sessions/_autosave.md` (overwritten each time). Excluded from `/sessions` dashboard output.
 
 **Why this matters:** The most common way to lose context is forgetting to `/save` before closing the terminal. This hook detects that gap and tells the next session exactly what to recover. Removing the heartbeat file on exit ensures the dashboard stops showing the session as active.
 

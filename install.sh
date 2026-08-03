@@ -710,7 +710,7 @@ if [ "$MODE" = "workspace" ] && [ -n "$WORKSPACE_ROOT" ]; then
 
     [ -f "$dir/CLAUDE.md" ] && has_claude="YES"
     [ -f "$dir/.claude/CLAUDE.md" ] && has_brainstem="YES"
-    [ -f "$WORKSPACE_ROOT/.claude/engrams/${repo_name}-context.md" ] && has_engram="YES"
+    [ -f "$WORKSPACE_ROOT/.knowledge/engrams/${repo_name}-context.md" ] && has_engram="YES"
 
     if [ "$has_claude" = "--" ] || [ "$has_brainstem" = "--" ] || [ "$has_engram" = "--" ]; then
       NEEDS_ONBOARD=$((NEEDS_ONBOARD + 1))

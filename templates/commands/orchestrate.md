@@ -19,7 +19,7 @@ When a task is received:
 
 1. **Classify the task** -- determine which domain(s) it touches:
    - If a knowledge catalog is configured, read its `INDEX.md` for routing patterns
-   - Scan `.claude/bundles/` for available bundles on this install
+   - Scan `.knowledge/bundles/` for available bundles on this install
    - If no routing entry exists in the catalog, infer from the task description
 
 2. **Decide execution strategy:**

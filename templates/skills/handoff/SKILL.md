@@ -30,7 +30,7 @@ sequence in this order, then stops with a clean handoff doc the next session
 can resume from:
 
 1. Run `/save` (or its mechanical equivalent) -- persist session state to
-   `<workspace>/.claude/session-state/<name>.md`
+   `<workspace>/.sessions/<name>.md`
 2. Run `/learn` (mechanical equivalent) -- evaluate the session for memory
    updates; persist approved facts to `~/.claude/projects/.../memory/`
 3. Reconcile TodoWrite against `<repo>/.HUB/Hub.md` -- ensure both reflect
@@ -122,7 +122,7 @@ After reading, print the Mandatory Session Preflight block.
 
 2. **Gate check** (above). If any gate fails, surface and ask Owner.
 
-3. **Step 1: Save** -- write/update `<workspace>/.claude/session-state/<name>.md` with current state. Reuse `/save` if available as a slash command; otherwise inline the save logic.
+3. **Step 1: Save** -- write/update `<workspace>/.sessions/<name>.md` with current state. Reuse `/save` if available as a slash command; otherwise inline the save logic.
 
 4. **Step 2: Learn** -- evaluate session for new lessons / new memory entries per `/learn` skill. Persist approved entries (or surface a table of candidates if user-interactive mode).
 

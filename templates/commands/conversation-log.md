@@ -10,7 +10,7 @@ Trigger on any of these patterns (case-insensitive):
 - `convlog off`
 - `convlog status`
 
-This skill is controlled by a toggle state stored in `.claude/session-state.md`
+This skill is controlled by a toggle state stored in `.sessions.md`
 under the `conversation_log` field:
 
 ```
@@ -110,7 +110,7 @@ The session name persists in `session-state.md` so it survives `/clear` + `/load
 
 When `convlog on [session-name]` is invoked:
 
-1. Update `.claude/session-state.md`:
+1. Update `.sessions.md`:
    ```
    conversation_log: on
    conversation_log_session: <session-name>
@@ -123,7 +123,7 @@ When `convlog off` is invoked:
 
 1. Write any pending response summary to the current log entry
 2. Append: `### Logging disabled at [time]`
-3. Update `.claude/session-state.md`:
+3. Update `.sessions.md`:
    ```
    conversation_log: off
    ```
@@ -131,7 +131,7 @@ When `convlog off` is invoked:
 
 When `convlog status` is invoked:
 
-1. Read `.claude/session-state.md` for toggle state
+1. Read `.sessions.md` for toggle state
 2. Report:
    - Logging: on/off
    - Session name: [name]

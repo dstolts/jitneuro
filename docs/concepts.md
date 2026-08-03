@@ -7,8 +7,8 @@ Self-contained knowledge files (50-180 lines max) covering one domain. Examples:
 - `api-design.md` -- API conventions, auth patterns, error handling
 - `sprint.md` -- sprint protocol, task format, commit conventions
 
-Bundles live in `.claude/bundles/` and are loaded **only when needed** by the
-orchestrator or manually via "Read .claude/bundles/X.md".
+Bundles live in `.knowledge/bundles/` and are loaded **only when needed** by the
+orchestrator or manually via "Read .knowledge/bundles/X.md".
 
 ## Engrams
 
@@ -18,7 +18,7 @@ In neuroscience, an engram is the physical trace a memory leaves in the brain --
 the compressed representation of an experience. Each project's engram is exactly
 that: not the codebase itself, but the compressed knowledge about it.
 
-Engrams live in `.claude/engrams/` and are updated by `/learn`:
+Engrams live in `.knowledge/engrams/` and are updated by `/learn`:
 - `my-api.md` -- tech stack, key files, architecture, integrations, gotchas
 - `my-frontend.md` -- framework setup, build config, deploy pipeline, known issues
 
@@ -96,8 +96,8 @@ CLAUDE.md (brainstem, 30-40 lines)    -- universal rules only
   .claude/rules/api.md                 -- loads only for src/api/**
   .claude/rules/tests.md               -- loads only for tests/**
   .claude/rules/deployment.md          -- loads only for deploy/**, Dockerfile, .github/workflows/**
-  .claude/bundles/deploy.md            -- loads on demand by orchestrator
-  .claude/engrams/repo.md              -- loads on demand per project
+  .knowledge/bundles/deploy.md            -- loads on demand by orchestrator
+  .knowledge/engrams/repo.md              -- loads on demand per project
   MEMORY.md                            -- project index + business facts
   .jitneuro/                           -- optional repo/team-specific context only
 ```

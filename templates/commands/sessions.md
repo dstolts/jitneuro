@@ -22,7 +22,7 @@ Anywhere a `<name>` is accepted, a `<number>` from the last list works too.
 
 ### sessions list (default)
 
-1. List all `.md` files in `.claude/session-state/` (exclude archive/, exclude _autosave.md)
+1. List all `.md` files in `.sessions/` (exclude archive/, exclude _autosave.md)
 2. Sort by checkpoint date (newest first)
 3. For each file, read the first 15 lines to extract:
    - Checkpointed date
@@ -42,7 +42,7 @@ Sessions (5 active):                              [* = current]
   5  mobile-onboarding             5d     Sprint-Mobile-001 spec            mobile-app
 ```
 
-7. Read `.claude/bundles/active-work.md` for NEEDS OWNER / BLOCKED items
+7. Read `.knowledge/bundles/active-work.md` for NEEDS OWNER / BLOCKED items
 8. Scan Hub.md files across active repos for additional blocked items
 9. Append aggregate summary:
 
@@ -69,7 +69,7 @@ The user's next message will be a number or command. Never skip this prompt.
 ### sessions show <name|number>
 
 1. Resolve name (if number, use last list assignment)
-2. Read full `.claude/session-state/<name>.md`
+2. Read full `.sessions/<name>.md`
 3. Display contents
 
 ### sessions stale
@@ -89,7 +89,7 @@ The user's next message will be a number or command. Never skip this prompt.
 
 ### sessions archive <name|number>
 
-1. Create `.claude/session-state/archive/` if needed
+1. Create `.sessions/archive/` if needed
 2. Move `<name>.md` to `archive/<name>.md`
 3. If archived session was **"my current"**, **clear "my current"** (see session.md).
 4. Confirm: "Archived <name>. Still readable at session-state/archive/<name>.md"

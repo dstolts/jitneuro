@@ -6,7 +6,7 @@ Shortcut for `/session save`. Delegates to the session command.
 
 When invoked as `/save <name>`:
 
-1. Read `.claude/session-state/.preferences` for `shortcut_scope` setting
+1. Read `.sessions/.preferences` for `shortcut_scope` setting
    - If `session` (default): execute `/session save <name>`
    - If `sessions`: execute `/session save <name>` (save always targets current session)
 2. Follow all instructions in the `/session save` section of session.md

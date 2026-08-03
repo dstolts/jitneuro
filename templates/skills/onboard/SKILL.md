@@ -22,7 +22,7 @@ Check the repo for:
 - Existing CLAUDE.md / AGENTS.md
 - Existing .claude/ folder
 - Existing .jitneuro/ folder
-- Existing engram in workspace .claude/engrams/
+- Existing engram in workspace .knowledge/engrams/
 - Git remote URL (to derive repo name)
 - Primary language and framework
 - Test setup
@@ -39,7 +39,7 @@ Dispatch a subagent to:
 Propose creating:
 - `.claude/CLAUDE.md` -- project passport (tech stack, key paths, notes)
 - `.claude/` folder with commands symlinked or copied from workspace
-- Engram at workspace `.claude/engrams/<repo>-context.md`
+- Engram at workspace `.knowledge/engrams/<repo>-context.md`
 - `.jitneuro/jitneuro.json` -- repo config (team, scheduled agents)
 
 **Step 4: Present for approval**

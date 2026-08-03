@@ -30,9 +30,9 @@ In enterprise environments:
 |---|---|---|
 | Install | `./install.sh project` | `./install.sh workspace` |
 | Scope | One repo only | All repos under workspace |
-| Bundles | Repo's `.claude/bundles/` | Workspace `.claude/bundles/` |
-| Engrams | Repo's `.claude/engrams/` | Workspace `.claude/engrams/` |
-| Session state | Repo's `.claude/session-state/` | Workspace `.claude/session-state/` |
+| Bundles | Repo's `.knowledge/bundles/` | Workspace `.knowledge/bundles/` |
+| Engrams | Repo's `.knowledge/engrams/` | Workspace `.knowledge/engrams/` |
+| Session state | Repo's `.sessions/` | Workspace `.sessions/` |
 | Cross-repo | Blocked by CLAUDE.md rule | Enabled by write access grant |
 | /save | Saves within repo | Saves at workspace level |
 | /learn | Updates repo files only | Updates shared files |
@@ -73,7 +73,7 @@ exists, the brainstem rule above prevents Claude from accessing it.
 
 ### 4. Engrams stay local
 
-Each repo has its own engram in `.claude/engrams/`. Team A's project context
+Each repo has its own engram in `.knowledge/engrams/`. Team A's project context
 never appears in Team B's session.
 
 ### 5. Session state stays local
@@ -108,8 +108,8 @@ These features require multi-repo mode.
 If a team later decides to share context:
 
 1. Run `./install.sh workspace` from the parent directory
-2. Move shared bundles to workspace `.claude/bundles/`
-3. Move engrams to workspace `.claude/engrams/`
+2. Move shared bundles to workspace `.knowledge/bundles/`
+3. Move engrams to workspace `.knowledge/engrams/`
 4. Update brainstem to Option B (multi-repo write access grant)
 5. Project-level `.claude/commands/` can be removed (workspace commands take over)
 
@@ -120,8 +120,8 @@ Claude Code merges all levels, with project-level taking priority.
 
 If a team needs to lock down:
 
-1. Copy any shared bundles into the repo's `.claude/bundles/`
-2. Copy the repo's engram into `.claude/engrams/`
+1. Copy any shared bundles into the repo's `.knowledge/bundles/`
+2. Copy the repo's engram into `.knowledge/engrams/`
 3. Update brainstem to Option A (isolated mode)
 4. Delete or ignore workspace-level `.claude/` (the brainstem rule blocks access)
 
@@ -155,7 +155,7 @@ team's directory. This gives shared commands with isolated context.
 - MEMORY.md (auto-memory) is always per-user (the agent's local project directory). It is NOT
   shared between users. Each developer has their own MEMORY.md. Routing is shared via <knowledge-root>/INDEX.md.
 - Session state files may contain summaries of code and decisions. Include
-  `.claude/session-state/` in your `.gitignore` if these should not be committed.
+  `.sessions/` in your `.gitignore` if these should not be committed.
 - Conversation logs (`.logs/`) may contain user prompts verbatim. Always gitignore.
 - Bundles and engrams are documentation, not code. They may be committed to the
   repo for team sharing, or gitignored for individual use.

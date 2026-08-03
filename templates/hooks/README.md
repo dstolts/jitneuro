@@ -51,7 +51,7 @@ Captures: timestamp, exit reason, duration, working directory.
 
 This is NOT a full /save -- it only records that a session ended and where.
 If the user forgot to /save, this file confirms a session was active.
-Written to `.claude/session-state/_autosave.md` (overwritten each time).
+Written to `.sessions/_autosave.md` (overwritten each time).
 
 ### 5. Autonomous Continuation (stop-continue-queue.sh)
 
@@ -65,7 +65,7 @@ blocks the stop (exit 2) and re-injects "continue the queue." Use it to hand the
 agent a backlog and walk away.
 
 **Safe by default:** does nothing unless armed. Arm with the `/afk` command (or
-`echo on > .claude/session-state/autonomous-mode.flag`); disarm with `/afk off`.
+`echo on > .sessions/autonomous-mode.flag`); disarm with `/afk off`.
 
 **Runaway guard:** a progress-aware stall counter (resets when the open-task count
 drops) gives up after `JITNEURO_MAX_CONTINUE` (default 50) consecutive no-progress
