@@ -1,5 +1,48 @@
 # JitNeuro
 
+<!-- jit-knowledge-managed:block:begin claude-agents-bridge-v1 -->
+<!-- jit-knowledge-managed:base sha256:c01aecfe8687a705d72fc3a618bd5a1db644eb244dd41ba9a6e2cbf309efd2dc -->
+## jit-knowledge Bootstrap
+
+This managed block is inserted by the jit-knowledge installer. Claude Code
+should use `AGENTS.md` as the canonical, tool-agnostic bootstrap surface:
+
+`C:\Users\dstolts\Code\jitneuro\AGENTS.md`
+
+Before substantive work:
+
+1. Read `C:\Users\dstolts\Code\jitneuro\AGENTS.md`.
+2. Read `C:\Users\dstolts\Code\AGENTS.md` when present.
+3. Read the active hub's `agent-inbox.md`, `agent-goals.md`, `agent-permissions.md`,
+   `questions.md`, and `Hub.md` when present.
+4. Read `.agents\context.md` when present.
+5. Follow the jit-knowledge bootstrap chain and repo-local context named by
+   `AGENTS.md`.
+
+If this file contains substantial reusable rules or durable project knowledge,
+evaluate whether that content should move to KnowledgeRoot, `.agents\context.md`,
+or repo `.knowledge` instead of remaining embedded in `CLAUDE.md`.
+
+Continuation and questions:
+
+- Apply `<KnowledgeRoot>\rules\agent-goals.md` and
+  `<KnowledgeRoot>\rules\multi-agent-repo-coordination.md` and
+  `<KnowledgeRoot>\rules\session-working-tree-context.md` and
+  `<KnowledgeRoot>\rules\autonomous-execution.md` and
+  `<KnowledgeRoot>\rules\session-guardrail.md` after bootstrap.
+- Verify the current working directory against the active hub/session state's
+  working-tree context before mutating files or dispatching workers.
+- Discover the configured Intercom surface (DB/API tracker, deterministic
+  scripts, watcher config, or file-backed `agent-inbox.md` spool).
+- Read the active hub's `agent-inbox.md`, `agent-goals.md`, and
+  `agent-permissions.md` files.
+- For approved backlog-clearing work, set a Claude `/goal` to clear the
+  executable repo or repo-group lane.
+- Use `/loop` for cadence-based polling such as PR, CI, or deploy checks.
+- Put Owner questions in the active hub's `questions.md` file
+  (`.hub\questions.md` or `.HUB\questions.md`) and open that file when a
+  question is added.
+<!-- jit-knowledge-managed:block:end claude-agents-bridge-v1 -->
 JIT memory management framework for Claude Code -- persistent context across sessions via bundles, engrams, routing weights, and slash commands.
 
 ## Status
