@@ -29,3 +29,6 @@ recorded here. Feature-level release notes live in the versioned
 - No runtime dependencies (no `package.json` or equivalent manifest) --
   dependency-compatibility check found nothing to reconcile against
   Apache-2.0.
+
+## 2026-08-26
+- Relicensed: code and docs unified under the MIT License (was Apache-2.0 + CC BY 4.0). Simpler adoption, one license for everything.
