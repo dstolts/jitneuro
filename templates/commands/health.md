@@ -17,9 +17,9 @@ Launch a background **general-purpose** Agent with this prompt:
 You are running a JitNeuro quick health check. Read these 5 things and return a table.
 
 1. Read MEMORY.md (the auto-memory file). Count lines. OK < 170, WARN 170-199, CRITICAL 200+.
-2. Count .md files in .claude/session-state/ (exclude archive/, heartbeats/, .preferences, README.md, _autosave.md). OK < 10, WARN 10+. Check file dates -- flag any >7 days as STALE.
-3. Count .md files in .claude/bundles/. Report count only.
-4. Count .md files in .claude/engrams/. Report count only.
+2. Count .md files in .sessions/ (exclude archive/, heartbeats/, .preferences, README.md, _autosave.md). OK < 10, WARN 10+. Check file dates -- flag any >7 days as STALE.
+3. Count .md files in .knowledge/bundles/. Report count only.
+4. Count .md files in .knowledge/engrams/. Report count only.
 5. Read .claude/jitneuro.json. Check it exists and has a version field.
 
 Return EXACTLY this format:
@@ -46,7 +46,7 @@ When the agent returns, display the table. If any CRITICAL or FAIL: recommend `/
 Before dispatching, write dashboard JSON:
 ```bash
 RUN_ID="health--$(date -u +%Y-%m-%dT%H-%M-%S)"
-DASH_DIR="${JITDASH_DIR:-$HOME/.claude/dashboard}"
+DASH_DIR="${JITDASH_DIR:-$HOME/.sessions/dashboard}"
 mkdir -p "$DASH_DIR/runs/$RUN_ID/agents"
 echo '{"session":"[current-session-name]","started":"[ISO-timestamp]","wave":1}' > "$DASH_DIR/runs/$RUN_ID/meta.json"
 echo '{"id":"health-001","name":"Memory System Health Check","status":"running","repo":"[workspace-path with forward slashes]","bundles":[],"started":"[ISO-timestamp]"}' > "$DASH_DIR/runs/$RUN_ID/agents/health-001.json"
@@ -69,28 +69,28 @@ You are running a JitNeuro deep health check. Read every file listed below FROM 
 - Check for stale entries (repos marked "Active" not touched in weeks).
 - Check for duplicates (same fact in MEMORY.md and a bundle).
 
-**Bundles** (.claude/bundles/)
+**Bundles** (.knowledge/bundles/)
 - List all bundles with line counts.
 - OK < 230, WARN 230-279, OVER 280+. Soft limit -- report only, do not auto-trim.
 - Flag bundles referenced in INDEX.md routing that don't exist on disk.
-- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
+- Flag bundles on disk that have no routing entry in INDEX.md (suggest PR to the shared catalog).
 
-**Engrams** (.claude/engrams/)
+**Engrams** (.knowledge/engrams/)
 - List all engrams with line counts.
 - OK < 150, WARN 150-179, OVER 180+. Soft limit -- report only, do not auto-trim.
 - Cross-reference MEMORY.md project table -- flag missing engrams for active projects.
 
-**Session State** (.claude/session-state/)
+**Session State** (.sessions/)
 - List all sessions with file modification dates.
 - Flag sessions older than 7 days as STALE.
 - Flag sessions older than 14 days as EXPIRED.
 - Count total (more than 10 = CLUTTER).
 
-**Routing** (jit-knowledge/INDEX.md via url-resolver.md)
-- Check `~/.claude/url-resolver.md` exists and has an entry for jit-knowledge.
-- Read INDEX.md (via url-resolver) and verify routing entries point to bundles that exist in `.claude/bundles/`.
-- Flag bundles in `.claude/bundles/` that have no routing entry in INDEX.md (suggest PR to jit-knowledge).
-- If url-resolver is missing or INDEX.md is unreachable, flag as WARNING with setup instructions.
+**Routing** (knowledge catalog INDEX.md, when configured)
+- If `KNOWLEDGE_ROOT` is set or `.knowledge/` exists, locate the catalog's `INDEX.md`.
+- Read INDEX.md and verify routing entries point to bundles that exist in `.knowledge/bundles/`.
+- Flag bundles in `.knowledge/bundles/` that have no routing entry in INDEX.md (suggest PR to the catalog).
+- If no catalog is configured, skip this section and note "no shared catalog configured".
 
 **Hub.md** (per-repo task durability)
 - Resolve current session from heartbeats.
@@ -154,7 +154,7 @@ Fixes run in master context (small, targeted edits).
 | Engram missing for active project | Create from template |
 | Session older than 7 days | Flag for user decision |
 | More than 10 sessions | List all, ask user to clean up |
-| Manifest out of sync | Update to match actual files |
+| Catalog routing out of sync | Update local bundles or open PR to shared catalog index |
 | Hub.md STALE | Run /save to sync |
 | Hub.md MISSING | Create on next /save |
 | Rules over 600 total | Review for duplicates, consolidate |

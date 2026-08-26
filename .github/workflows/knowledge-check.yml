@@ -1,0 +1,35 @@
+# Canonical consumer-repo CI gate for the knowledge-index skill (ticket #3397,
+# Owner requirement 2026-07-11: the manifest must update with every PR that
+# changes covered files). Copy this file to .github/workflows/knowledge-check.yml
+# in the consuming repo, and vendor build-index.py + build-capabilities.py to
+# .knowledge/tools/ with a header naming the source repo + jit-knowledge sha.
+# Contract: a missing surface file SKIPS its step; a stale manifest FAILS the job.
+# Requires PyYAML installed (ticket #3431): without it the generators fall back
+# to a quote-preserving parser that disagrees with PyYAML-authored manifests,
+# producing a false "stale manifest" failure on a correct manifest.
+name: knowledge-check
+on: pull_request
+jobs:
+  knowledge-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install manifest generator deps
+        run: pip install pyyaml
+      - name: capability index drift check
+        run: |
+          if [ -f .knowledge/capabilities.md ]; then
+            python .knowledge/tools/build-capabilities.py --check --dir .knowledge --repo-root . --no-scan
+          else
+            echo "no capabilities.md -- skipped"
+          fi
+      - name: routing index / manifest drift check
+        run: |
+          if [ -f .knowledge/index.md ]; then
+            python .knowledge/tools/build-index.py --check --dir .knowledge
+          else
+            echo "no index.md -- skipped"
+          fi

@@ -19,19 +19,19 @@ Numbers reference the last `/sessions` list output.
 
 ## Current Session Tracking
 
-Session identity is stored in `.claude/session-state/heartbeats/<session-id>` -- one file per active Claude Code instance. The `<session-id>` is Claude's native session ID, injected into context by the SessionStart hook as `[JitNeuro] session-id: <value>`. After compaction or context clear, SessionStart fires again and re-injects it.
+Session identity is stored in `.sessions/heartbeats/<session-id>` -- one file per active Claude Code instance. The `<session-id>` is Claude's native session ID, injected into context by the SessionStart hook as `[JitNeuro] session-id: <value>`. After compaction or context clear, SessionStart fires again and re-injects it.
 
 **Resolve "my current" (get active session name):**
 1. Find your session-id from the `[JitNeuro] session-id: ...` line in your context.
-2. Read `.claude/session-state/heartbeats/<session-id>`. The content (one line) is the active session name.
+2. Read `.sessions/heartbeats/<session-id>`. The content (one line) is the active session name.
 3. If the file is missing or empty: no active session.
 
 **Write "my current" (set active session name to `<name>`):**
-1. Use Bash to write the session name: `echo -n "<name>" > ".claude/session-state/heartbeats/<session-id>"` (session-id from context). Create the `heartbeats/` directory with `mkdir -p` if it does not exist.
+1. Use Bash to write the session name: `echo -n "<name>" > ".sessions/heartbeats/<session-id>"` (session-id from context). Create the `heartbeats/` directory with `mkdir -p` if it does not exist.
    **IMPORTANT:** Always use Bash for heartbeat writes, never Write/Edit tools. The PostToolUse heartbeat hook touches this file after every tool call, so Write/Edit will fail with "file modified since read." Bash echo is atomic and avoids the race.
 
 **Clear "my current" (e.g. active session was deleted/archived):**
-1. Remove `.claude/session-state/heartbeats/<session-id>` if it exists (session-id from context).
+1. Remove `.sessions/heartbeats/<session-id>` if it exists (session-id from context).
 
 Updated by: `new`, `save`, `load`, `switch`, `rename`.
 Read by: default view, `pulse`, `dashboard`, and the session tag rule.
@@ -42,9 +42,15 @@ Read by: default view, `pulse`, `dashboard`, and the session tag rule.
 If no active session: `[session: none | DIV: <MODE>]`.
 This is non-negotiable -- it prevents context confusion across terminals and provides constant visibility into the reasoning mode.
 
+**Tag location -- Stop output, NOT the statusline.** These are two distinct displays:
+- The **statusline** mechanically carries the session name (read from the heartbeat file by the statusline script). It is configured once and updates itself.
+- The **Stop tag** `[session: <name> | DIV: <MODE>]` is authored by the orchestrator at the **end of every response**. It is the per-turn confirmation that the orchestrator is actively routing -- consciously deciding, this turn, what mode applies. Dropping it means routing was skipped.
+
+**Empty heartbeat = broken load, not a missing tag.** If resolving "my current" yields an empty/absent heartbeat, the session was not loaded correctly (the heartbeat write was skipped). Fix the load (`/load` step 0 / `session load` step 1 write the heartbeat unconditionally) -- do NOT silently drop the tag or print `none` when a session was supposed to be active.
+
 ## Shortcut Preference
 
-Read `.claude/session-state/.preferences` for `shortcut_scope` setting.
+Read `.sessions/.preferences` for `shortcut_scope` setting.
 - `session` (default): `/status`, `/dashboard`, `/save`, `/load`, `/pulse` -> `/session` subcommands
 - `sessions`: `/status`, `/dashboard` -> `/sessions` subcommands (save/load/pulse always stay `/session`)
 
@@ -56,8 +62,8 @@ If `.preferences` doesn't exist, default to `session` scope.
 
 1. **Resolve "my current"** (see Current Session Tracking) to get active session name.
 2. If no active session: "No active session. Run `/session new <name>` to start one."
-3. Read the session state file `.claude/session-state/<name>.md`
-4. Read `.claude/bundles/active-work.md` for sprint context
+3. Read the session state file `.sessions/<name>.md`
+4. Read `.knowledge/bundles/active-work.md` for sprint context
 5. For each repo listed in the session state:
    - Run `git -C [repo_path] status --short` for dirty files
    - Run `git -C [repo_path] branch --show-current` for current branch
@@ -98,7 +104,12 @@ BLOCKED: [count] items needing attention
    - If save+learn: run save flow, then suggest /learn
    - If save only: run save flow
    - If skip: proceed
-3. Create `.claude/session-state/<name>.md` with initial template:
+3. **Write the heartbeat FIRST -- the instant the new session name is known (from the `<name>` arg, or generated from the first request), before creating the state file or anything else:**
+   ```bash
+   echo -n "<name>" > ".sessions/heartbeats/<session-id>"
+   ```
+   Create `heartbeats/` with `mkdir -p` if missing. Use Bash, never Write/Edit (the PostToolUse heartbeat hook races those). This is the one action the statusline reads; doing it first guarantees the session "took" even if a later step is interrupted. **Appended-text trap:** if a task or question rode along with `/session new`, write the heartbeat first, finish session creation, THEN address the task -- appended text never cancels the heartbeat write.
+4. Create `.sessions/<name>.md` with initial template:
    ```markdown
    # Session: <name>
    **Checkpointed:** [current date/time]
@@ -117,8 +128,7 @@ BLOCKED: [count] items needing attention
    ## Next Steps
    - Awaiting direction
    ```
-4. **Write "my current"** (session name).
-5. Confirm: "Session '<name>' created."
+5. Confirm: "Session '<name>' created." (the heartbeat was already written in step 3.)
 6. **Spawn scheduled agents (mandatory):** Same process as `/session load` step 9. Read the project's config for `scheduledAgents`, spawn enabled agents, display confirmation or warning. New sessions need the interrupt mechanism from the start.
 
 ### session save <name>
@@ -139,7 +149,7 @@ BLOCKED: [count] items needing attention
    - What are the immediate next steps?
    - Any key findings or discoveries worth preserving?
 
-3. **Write state to `.claude/session-state/<name>.md`:**
+3. **Write state to `.sessions/<name>.md`:**
 
    The checkpoint must be a **"ready to resume on load"** document. A new session
    (or a post-compaction reload) reads ONLY this file to get started. If the next
@@ -248,8 +258,8 @@ BLOCKED: [count] items needing attention
 
 5. **Write "my current"** (session name).
 6. **Write save-timestamp marker** (WS5 PreCompact fix):
-   Write the current Unix timestamp (seconds since epoch) to `.claude/session-state/.last-save-timestamp`.
-   Use Bash: `date +%s > ".claude/session-state/.last-save-timestamp"`
+   Write the current Unix timestamp (seconds since epoch) to `.sessions/.last-save-timestamp`.
+   Use Bash: `date +%s > ".sessions/.last-save-timestamp"`
    This allows the PreCompact hook to allow compaction silently when a recent save exists.
 7. Confirm with Hub.md sync status:
    ```
@@ -268,6 +278,11 @@ BLOCKED: [count] items needing attention
    - If no name: **resolve "my current"**. If exists, load that.
    - If no name and no current: list sessions, ask user to pick
    - If number: resolve from last `/sessions` list output
+   - **IMMEDIATELY after resolving the name, write the heartbeat** (do NOT wait for step 6):
+     ```bash
+     echo -n "<name>" > ".sessions/heartbeats/<session-id>"
+     ```
+     This is the single mechanical action the statusline depends on. Writing it first guarantees the load "took" even if a later step is interrupted or the owner appended a question to the command. (Step 6 re-affirms it; the write is idempotent.)
 
 2. **Read the session state file**
 
@@ -275,7 +290,7 @@ BLOCKED: [count] items needing attention
 
 4. **Read active bundles** listed in session state (only those listed)
 
-5. **Read `.jit-knowledge/INDEX.md`** (via `~/.claude/url-resolver.md`) for routing and bundle awareness
+5. **If a knowledge catalog is configured**, read its `INDEX.md` for routing and bundle awareness
 
 6. **Write "my current"** (session name).
 
@@ -303,8 +318,8 @@ BLOCKED: [count] items needing attention
 
 1. **Resolve "my current"** to identify active session.
 2. Read shared state files in parallel:
-   - `.claude/bundles/active-work.md`
-   - All `.claude/session-state/*.md` (exclude archive/, _autosave.md)
+   - `.knowledge/bundles/active-work.md`
+   - All `.sessions/*.md` (exclude archive/, _autosave.md)
    - Hub.md files for repos in current session
 3. Compare to what's in current context
 4. Report:
@@ -332,7 +347,7 @@ BLOCKED: [count] items needing attention
 
 1. **Resolve "my current"** to get active session name.
 2. If no active session: "No active session to rename."
-3. Rename `.claude/session-state/<old-name>.md` to `<new-name>.md`
+3. Rename `.sessions/<old-name>.md` to `<new-name>.md`
 4. **Write "my current"** (new name).
 5. Update the `# Session:` header inside the file
 6. Confirm: "Renamed '<old>' -> '<new>'."
@@ -352,7 +367,7 @@ Closed sessions appear in the "Closed" section on the dashboard (collapsed, grey
 
 1. **Resolve "my current"** to get active session.
 2. Read the session state file
-3. Read `.claude/bundles/active-work.md`
+3. Read `.knowledge/bundles/active-work.md`
 4. Read Hub.md files for repos in this session only
 5. Filter for items related to THIS session's repos/sprint
 6. Display:

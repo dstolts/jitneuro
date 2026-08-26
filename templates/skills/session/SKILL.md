@@ -6,7 +6,6 @@ tags: [session, session-management, heartbeat, hub, checkpoint, lifecycle]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/session/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
@@ -20,8 +19,8 @@ Full session lifecycle management.
 ### `/session new [name]`
 Create a new session:
 1. Generate session name from task if not provided
-2. Write heartbeat: `echo -n "<name>" > heartbeats/$CLAUDE_SESSION_ID` (Bash, not Write tool)
-3. Create `.claude/session-state/<name>.md` with header
+2. **Write heartbeat FIRST (before anything else):** `echo -n "<name>" > heartbeats/$CLAUDE_SESSION_ID` (Bash, not Write tool). If a task rode in with `/session new`, write the heartbeat first, finish creation, THEN address the task -- appended text never cancels the heartbeat write. A skipped heartbeat = statusline shows `none` and the session tag drops.
+3. Create `.sessions/<name>.md` with header
 4. Create or update Hub.md entry
 5. Spawn scheduled agents from jitneuro.json (enabled: true)
 6. Display: `[session: <name> | DIV: AUTO]`
@@ -30,16 +29,16 @@ Create a new session:
 Checkpoint current state:
 1. Write TodoWrite task list to Hub.md `## ACTIVE TODO` section (MANDATORY)
 2. Write pending questions to Hub.md `## PENDING QUESTIONS` section
-3. Write full checkpoint to `.claude/session-state/<name>.md`
+3. Write full checkpoint to `.sessions/<name>.md`
 4. Update heartbeat timestamp
 5. Display: `** Saved: <name> **`
 
 ### `/session load [name|#]`
 Restore from checkpoint:
-1. List available sessions if no name/# provided
-2. Read checkpoint file
-3. Restore TodoWrite task list
-4. Set heartbeat (Bash echo)
+1. Resolve the session name (list available sessions if no name/# provided)
+2. **Set heartbeat FIRST (Bash echo), the instant the name resolves** -- this is the action the statusline reads; do it before anything else so the load "took" even if a later step is interrupted. If the owner appended a question to the command, write the heartbeat first, finish the load, THEN answer.
+3. Read checkpoint file
+4. Restore TodoWrite task list
 5. Spawn scheduled agents if not running
 6. Display session summary + next actions
 
@@ -72,11 +71,12 @@ Show blockers and NEEDS OWNER items for current session.
 
 ## Session tag rule
 
-Every response ends with: `[session: <name> | DIV: <MODE>]`
+Every response ends with: `[session: <name> | DIV: <MODE>]` -- on the **Stop output**, NOT the statusline. The statusline mechanically shows the session name from the heartbeat; the Stop tag is the orchestrator's per-turn confirmation that it is actively routing.
 
 - Get `<name>` from your OWN heartbeat file ONLY (one read, one file)
 - Get `<MODE>` from toggles.json (AUTO / ALWAYS / NEVER)
 - Add `| STRATEGY` when strategy mode is active
+- **Empty heartbeat = broken load, not a missing tag.** If the heartbeat is empty when a session should be active, the load skipped the heartbeat write -- fix the load (`/load` step 0), do not silently drop the tag.
 
 ## Hub.md sync is MANDATORY on save
 

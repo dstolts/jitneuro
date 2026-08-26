@@ -33,7 +33,7 @@ cognitive architecture (how to decide).
 
 ## Customization
 
-Copy `owner-persona.example.md` to `.claude/cognition/owner-persona.md` and fill
+Copy `owner-persona.example.md` to `cognition/owner-persona.md` and fill
 in your business context. The install script does this automatically.
 
 Add decision models to `decisions/` for scenarios specific to your workflow.

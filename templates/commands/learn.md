@@ -26,13 +26,13 @@ Did Claude load the wrong bundle? Did the user have to manually specify context?
 - "I had to tell Claude to read the deploy bundle" -> add trigger word
 - New task pattern emerged that doesn't map to any bundle -> add routing entry
 
-### 2. Bundle Updates (.claude/bundles/)
+### 2. Bundle Updates (.knowledge/bundles/)
 Is any bundle stale, missing information, or too large?
 - New convention established this session -> add to relevant bundle
 - Bundle was loaded but didn't have what Claude needed -> update content
 - Bundle over 280 lines -> suggest split
 
-### 3. Engram Updates (.claude/engrams/)
+### 3. Engram Updates (.knowledge/engrams/)
 Did the session reveal new facts about a project's identity or architecture?
 - New key file discovered (route, config, migration)
 - Tech stack change (new dependency, version bump, new service)
@@ -135,7 +135,7 @@ For each finding, determine the destination and risk tier:
 | Repo-specific convention / architecture fact | that repo's `.jitneuro/` (engram / bundle / rule) | T1 |
 | Cross-project fact / personal preference | local `~/.claude/` or local `memory/` | T1 |
 | Session-volatile scratch | Hub.md only (no write) | T1 |
-| Universal pattern (candidate for jit-knowledge) | flag as PROMOTE -- WS6 rollup handles promotion | T2 |
+| Universal pattern (candidate for shared catalog) | flag as PROMOTE -- WS6 rollup handles promotion | T2 |
 | Security / privacy / irreversible | synchronous approval (as today) | T3 |
 
 Include the destination and tier in the Phase 2 table.
@@ -146,7 +146,7 @@ Proposed Updates:
 | # | Type | Destination | Tier | Change |
 |---|------|-------------|------|--------|
 | 1 | Learn | MEMORY.md | T1 | Add "payments" -> [integrations] routing |
-| 2 | Learn | .claude/bundles/deploy.md | T1 | Add rollback flag v2 to conventions |
+| 2 | Learn | .knowledge/bundles/deploy.md | T1 | Add rollback flag v2 to conventions |
 | 3 | Promote | (WS6 queue) | T2 | Universal instruction -- defer to rollup |
 | 4 | Fix | MEMORY.md | T1 | Port 3002 is wrong, should be 3003 |
 ```
@@ -201,9 +201,9 @@ After writing all files:
   ## Lessons Learned
   (Processed by /learn on YYYY-MM-DD)
 - For each item written, append one line to the changes-log:
-  File: .claude/session-state/improvement-changes.log.md
+  File: .sessions/improvement-changes.log.md
   Format: <ISO-timestamp> | <type> | <one-line finding summary> | <destination file> | <session name>
-  Example: 2026-05-20T14:32:00Z | Learn | Add rollback flag v2 to conventions | .claude/bundles/deploy.md | recursive-improvement-loop
+  Example: 2026-05-20T14:32:00Z | Learn | Add rollback flag v2 to conventions | .knowledge/bundles/deploy.md | recursive-improvement-loop
   Append-only -- never overwrite. Create the file if missing.
 - Return: FILES_CHANGED list + count + CHANGES_LOG_APPENDED: <N lines>
 ```
@@ -259,4 +259,4 @@ Master never reads memory/ files, Hub.md, rules/, or team files directly. Agents
 - Team features are additive: no .jitneuro/ = solo mode, identical to v0.x behavior.
 - `/learn --team` is TeamApprover-only. If user is not a TeamApprover, say so and suggest `/learn` instead.
 - Team lesson promotion requires explicit approval per item (promote T1, promote all, skip).
-- WS4 changes-log is append-only at `.claude/session-state/improvement-changes.log.md`. Agent B creates it on first write. Never truncate or overwrite.
+- WS4 changes-log is append-only at `.sessions/improvement-changes.log.md`. Agent B creates it on first write. Never truncate or overwrite.

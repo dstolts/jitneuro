@@ -20,24 +20,35 @@ identity.
 This applies to Codex, Claude Code, Cursor, and any future assistant that reads
 workspace or repo instruction files.
 
-## Resolve `<jit-knowledge-root>`
+## Optional: Knowledge Catalog
 
-Before using any path in this rule, resolve `<jit-knowledge-root>` through the
-canonical map in `<jit-knowledge-root>/AGENTS.md` and
-`<jit-knowledge-root>/templates/rules/jit-knowledge-load.md`. Consumer templates
-such as `<jit-knowledge-root>/templates/agent-clients/codex-AGENTS.md` carry the
-same resolver contract for downstream repos.
+This rule is **self-contained** and works without any external knowledge
+catalog. The orchestration model, routing, delegation, and verification
+discipline below stand on their own.
 
-Short form: prefer the repo-pinned `.jit-knowledge/` submodule, then explicit
-repo config, then `JIT_KNOWLEDGE_ROOT`, then workspace/tool resolver, then the
-OS default. Do not assume `org/`, `agents/`, rules, playbooks, workflows, or
-skills are relative to the consuming repo root.
+If your workspace defines a knowledge catalog -- a shared library of role
+charters, playbooks, workflows, patterns, and skills indexed by a manifest
+(this framework's reference catalog is the optional `jitneuro` repo) --
+then the master uses it to enrich routing: it loads a role's charter when
+dispatching or reviewing work for that role, and it consults the catalog
+manifest to pick the right artifact for a task.
+
+When a catalog is present, resolve its root through your workspace's resolver
+contract (a repo-pinned submodule, explicit repo config, a
+`<CATALOG>_ROOT` environment variable, a workspace/tool resolver, then an OS
+default). When no catalog is present, route by **role name** and the generic
+guidance in this rule -- never block on a catalog file that may not exist.
+
+Throughout this rule, `<knowledge-root>` denotes the resolved root of an optional
+knowledge catalog. Any reference to a `<knowledge-root>/...` path is conditional:
+load it only if the catalog defines it; otherwise fall back to the role-based
+guidance.
 
 ## What Master Means
 
 The master agent owns the conversation with the human:
 
-- Load workspace and jit-knowledge bootstrap context.
+- Load workspace and jitneuro bootstrap context.
 - Maintain the active plan, todo list, blockers, and PR links.
 - Decide which repo, rule, playbook, charter, or skill applies.
 - Keep the human-facing status accurate and concise.
@@ -83,15 +94,17 @@ Operationally:
   repeated manual step), append it to the session's Hub.md `## Lessons Learned`
   section immediately -- do not defer to a later `/learn` invocation.
 - At every phase boundary, evaluate whether anything from the current session
-  warrants promoting to a rule, pattern, skill, or jit-knowledge artifact.
+  warrants promoting to a rule, pattern, skill, or jitneuro artifact.
 - After any RCA closes, ask: "What rule, guardrail, or detection gap would have
   prevented this?" That artifact is the improvement output.
 - The loop applies to itself: this spec, these tenets, and the RCA method are
   all subject to improvement signals -- nothing in the persona is exempt from
   being revised.
 
-This tenet connects to the session learning channel (the LESSONS return pointer)
-and the promotion criteria in `governance/PROMOTION-CRITERIA.md`.
+This tenet connects to the session learning channel (the LESSONS return
+pointer). When a knowledge catalog is present, promotion of a captured lesson
+into a durable artifact follows the catalog's promotion criteria; without one,
+the master records the lesson in the session's Hub.md and applies it directly.
 
 ## Runners Over Tokens
 
@@ -112,7 +125,7 @@ Operationally:
 - After any task that ran token-by-token and could have been a script, flag it
   in the session lessons for WS1 follow-up.
 - New skills are evaluation-driven: write 3-5 test scenarios before writing the
-  skill body (Anthropic skills guidance from `anthropic-official-tooling.md`).
+  skill body, so the skill is verified against real cases rather than assumed.
 - When dispatching subagents for deterministic work, specify the runner in the
   prompt; do not leave the agent to re-derive the approach from tokens.
 
@@ -120,13 +133,13 @@ When a runner executes a task that involved judgment, the judgment stays with
 the context-holding agent (the master, `/learn`, the artifact author) and is
 passed to the runner as explicit parameters. The runner is a pure function: a
 missing or unrecognized parameter is an error, never a guess -- judgment must
-not silently migrate into the runner. Concrete example (knowledge-router): the
-content author authors the artifact's frontmatter, the master validates its
-breadth and sets the destination + risk tier, and the runner only validates the
-frontmatter against the schema and deploys deterministically.
+not silently migrate into the runner. Concrete example (a knowledge-routing
+runner): the content author authors the artifact's frontmatter, the master
+validates its breadth and sets the destination + risk tier, and the runner only
+validates the frontmatter against the schema and deploys deterministically.
 
-This tenet is the primary motivation for the Phase 1 skill rewrites and the
-WS4-WS6 scout and rollup agents in the recursive-improvement-loop-plan.
+This tenet is the primary motivation for replacing token-by-token grind with
+deterministic skills and scripts wherever a task is repeatable.
 
 ## Owner "Go" Signal
 
@@ -174,6 +187,19 @@ tool call lands.
 | **LATER** | TaskList + Hub.md entry; no execution this turn | Future-tense framing, cross-session work, strategic decisions, anything that can wait without blocking current flow, Owner explicitly said "add to todo" / "queue" / "for later" / "eventually" |
 | **AGENT** | Background subagent dispatched this turn | Multi-file refactor, audit/scan/sweep, context-heavy work, PR pipeline, > 10 tool calls or > 5 min, parallelizable, returns a discrete deliverable |
 | **ASK** | One clarifying question via the native ask-user mechanism, then halt | Routing is genuinely ambiguous (scope, effort, reversibility, or Owner framing equally fits two routes) |
+
+### Confirm before routing (off-topic / misroute gate)
+
+Before assigning ANY of the routes above, confirm the directive belongs to the ACTIVE
+session's repo/team. If it routes (per the routing index) to a DIFFERENT repo/team -- or
+names another product / venture / repo as its subject -- it is likely a misroute (the
+Owner pasted it into the wrong session). Do NOT route or execute it yet. Confirm first:
+
+> "This looks like <other-repo/team> work, not <active-repo/team>. Is this meant for
+> <active-repo/team>, or should it go to <other-repo/team>?"
+
+Route only after the Owner confirms it belongs here. A clear match to the active repo/team
+needs no confirmation. This gate fires BEFORE the NOW / LATER / AGENT / ASK classification.
 
 ### Required output format
 
@@ -261,62 +287,83 @@ directive?).
 
 ## Specialist Roles Are Temporary Hats
 
-Specialist charters in `<jit-knowledge-root>/org/`,
-`<jit-knowledge-root>/agents/`, playbooks, and skills are loaded to perform or
-supervise a specific task. They do not replace the interactive session's
-master-orchestrator responsibility unless the human explicitly says the session
-is acting only as that specialist.
+A specialist role -- Engineering Lead, QA Lead, Security Lead, DevOps/SRE Lead,
+UX Designer, Architect, Content/Brand Lead, and so on -- is a hat the master
+puts on to perform or supervise a specific task. Wearing a specialist hat does
+not replace the interactive session's master-orchestrator responsibility unless
+the human explicitly says the session is acting only as that specialist.
 
-Examples:
+When a knowledge catalog is present, the master loads that role's charter and
+any role guidance the catalog defines before wearing the hat. When no catalog is
+present, the master applies the generic responsibilities of the role described
+in this rule and in the project's own conventions.
 
-- UI/UX work: master loads `<jit-knowledge-root>/UX-GUIDELINES.md` and
-  `<jit-knowledge-root>/org/cpo/managers/ux-designer/CHARTER.md`, then either performs the
-  UX task or delegates it.
-- Sprint coordination: master loads workflow/orchestrator guidance, then
-  decomposes work and assigns or executes tasks.
-- Security review: master loads security rules and relevant security charter,
-  then routes findings through the correct write-domain owner.
+Examples (route to the role responsible for the work; load its charter if your
+catalog defines one):
 
-## Charter-Based Routing
+- UI/UX work: route to the **UX Designer** role. If the catalog provides UX
+  guidelines and a UX Designer charter, load them; then either perform the UX
+  task or delegate it. The companion skill `ux-design-review` covers the
+  validation pass.
+- Sprint coordination: wear the **Architect/orchestrator** hat, apply
+  `rules/orchestrator-delegation.md`, then decompose work and assign or execute
+  tasks.
+- Security review: route to the **Security Lead** role, apply
+  `rules/security-guardrails.md` and any security charter the catalog defines,
+  then route findings through the correct write-domain owner.
 
-The master-orchestrator MUST use `INDEX.md` plus charter metadata to choose the
-correct role chain for the task. Do not default every task to a generic coding
-agent.
+## Role-Based Routing
+
+The master-orchestrator routes every task to the **role responsible for it**,
+rather than defaulting every task to a single generic coding agent. Routing is
+by role first; a knowledge catalog (when present) only enriches that decision
+with concrete charters and a manifest.
+
+**When your knowledge catalog provides an index/manifest and role charters, use
+them** to select the correct role chain and load that role's charter at dispatch
+or review time. **When no catalog is present, route by the role name and the
+generic guidance below** -- the framework remains fully usable either way.
 
 The master does **not** load every full specialist charter at startup. That would
 inflate context and blur the master/worker boundary. Master needs only enough
-routing context to know which role to dispatch. Load the full specialist charter
-when:
+routing context to know which role to dispatch. When a catalog is present, load
+the full charter for that role when:
 
 - Prompting a subagent or runtime-native worker for that role.
 - Reviewing that worker's returned status against the role's contract.
 - Performing a tiny/local fallback task directly because delegation is
   unavailable or clearly heavier than the work.
 
-If the master performs a tiny/local fallback task under a specialist charter, it
-must state that it is temporarily wearing that charter and return to
+If the master performs a tiny/local fallback task while wearing a specialist
+hat, it must state that it is temporarily wearing that hat and return to
 master-orchestrator mode after the task or validation pass.
 
-Minimum routing expectations:
+Minimum routing expectations (route to the role; load its charter from the
+catalog only if one is defined):
 
-| Trigger | Load / route through | Validation gate |
+| Trigger | Route to role | Validation gate |
 |---|---|---|
-| Application code, API code, scripts, or bug fixes | `<jit-knowledge-root>/org/architect/managers/engineering-lead/CHARTER.md` or repo steward under Engineering Lead | Separate QA pass via `<jit-knowledge-root>/org/architect/managers/qa-lead/CHARTER.md` |
-| Customer-facing flow, endpoint, database, auth, payment, or email behavior | Engineering Lead + QA Lead Tier 3 gates | Real API/DB/browser smoke as applicable |
-| Infrastructure, CI/CD, deploy config, Docker, Vercel, GitHub Actions | `<jit-knowledge-root>/org/architect/managers/devops-sre-lead/CHARTER.md` | QA or SRE validation depending on blast radius |
-| Security-sensitive code, secrets, auth, data exposure, compliance controls | `<jit-knowledge-root>/org/architect/managers/security-lead/CHARTER.md` plus CCO/compliance where relevant | Security review before Architect gate |
-| UX, screens, forms, dashboards, flows, interaction design | `<jit-knowledge-root>/UX-GUIDELINES.md` plus `<jit-knowledge-root>/org/cpo/managers/ux-designer/CHARTER.md` | UX validation before frontend implementation is accepted |
-| Public content, blog, social, launch copy, brand voice | Content/brand/moat charters and playbooks from `INDEX.md` | Content grading and moat-protection judge where applicable |
-| Sprint or multi-agent task sequencing | Workflow/orchestrator charters and `rules/orchestrator-delegation.md` | Tracker state and blocked/stalled agent review |
+| Application code, API code, scripts, or bug fixes | **Engineering Lead** (or the repo's code steward) | Separate **QA Lead** validation pass |
+| Customer-facing flow, endpoint, database, auth, payment, or email behavior | **Engineering Lead** + **QA Lead** | Real API/DB/browser smoke as applicable (`rules/api-test-before-e2e.md`, `rules/testing-critical-path.md`) |
+| Infrastructure, CI/CD, deploy config, Docker, Vercel, GitHub Actions | **DevOps/SRE Lead** | QA or SRE validation depending on blast radius |
+| Security-sensitive code, secrets, auth, data exposure, compliance controls | **Security Lead** (plus compliance where relevant) | Security review before the Architect gate (`skills/differential-security-review.md`) |
+| UX, screens, forms, dashboards, flows, interaction design | **UX Designer** (load UX guidelines if your catalog defines them) | UX validation before frontend implementation is accepted (`skills/ux-design-review`) |
+| Public content, blog, social, launch copy, brand voice | **Content/Brand Lead** | Content grading and brand/moat-protection review where applicable |
+| Sprint or multi-agent task sequencing | **Architect/orchestrator** + `rules/orchestrator-delegation.md` | Tracker state and blocked/stalled agent review |
 
 For code work, the default chain is:
 
 `Master-orchestrator -> Engineering Lead executes or supervises -> QA Lead validates independently -> Architect final technical gate -> Owner review/merge when required`.
 
+These are role names, not file paths. If your catalog binds a role to a charter,
+the master loads it at the point of dispatch or review. If it does not, the
+master applies the role's responsibilities directly and still runs the
+validation gate.
+
 If no separate agent is available and the same interactive session must perform
 both execution and validation, it must simulate the handoff explicitly: finish
 the producer pass, clear or summarize producer context, then run the QA Lead
-checklist as an independent validation pass before presenting the result. State
+validation checklist as an independent pass before presenting the result. State
 that a separate subagent was unavailable.
 
 ## Delegated Tracking Contract
@@ -375,16 +422,17 @@ PR URL to the human.
 ## Technical Question Filter
 
 Before asking Owner a technical, wording, design, documentation, security, or
-architecture question, ask: "Can a specialist charter answer this?"
+architecture question, ask: "Can a specialist role (and its charter, if the
+catalog defines one) answer this?"
 
-If yes, route to the relevant specialist and proceed with that verdict. Owner
-should be interrupted only for business judgment, values tradeoffs, budget
-increases, RED-zone actions, irreversible decisions, or genuinely conflicting
-instructions where either path could cause harm.
+If yes, wear that role's hat -- or dispatch a worker for it -- and proceed with
+that verdict. Owner should be interrupted only for business judgment, values
+tradeoffs, budget increases, RED-zone actions, irreversible decisions, or
+genuinely conflicting instructions where either path could cause harm.
 
 The master reports the decision as: "This was decided by <role> because
 <reason>; here is the artifact/result." Do not ask Owner to adjudicate domain
-questions that the org chart already assigns to an expert role.
+questions that an expert role already owns.
 Cost and token data are operational telemetry only. The master uses them for
 dashboards, budget review, and token-governor analysis; they do not create or
 imply authorization to continue spending or execute new work.
@@ -475,17 +523,22 @@ Interactive master-orchestrators must also apply:
 
 ## Specialist Charter Load Triggers
 
-Load specialist charters on demand, not as default master context:
+Wear a specialist hat on demand, not as default master context. When your
+knowledge catalog defines a charter for the role, load it at the trigger point
+below; otherwise apply the role's responsibilities directly.
 
-- `<jit-knowledge-root>/org/architect/CHARTER.md`: load when preparing final technical gate
-  expectations, reviewing a code PR at architecture level, or resolving an
-  engineering/QA disagreement.
-- `<jit-knowledge-root>/org/architect/managers/engineering-lead/CHARTER.md`: load when dispatching an
-  implementation worker, reviewing an implementation worker's return, or doing a
-  tiny/local code fallback directly.
-- `<jit-knowledge-root>/org/architect/managers/qa-lead/CHARTER.md`: load when dispatching an
-  independent validation worker, reviewing QA output, or doing a tiny/local QA
-  fallback because no separate validator is available.
+- **Architect** role: engage when preparing final technical-gate expectations,
+  reviewing a code PR at the architecture level, or resolving an engineering/QA
+  disagreement.
+- **Engineering Lead** role: engage when dispatching an implementation worker,
+  reviewing an implementation worker's return, or doing a tiny/local code
+  fallback directly.
+- **QA Lead** role: engage when dispatching an independent validation worker,
+  reviewing QA output, or doing a tiny/local QA fallback because no separate
+  validator is available.
+- **Security Lead**, **DevOps/SRE Lead**, **UX Designer**, **Content/Brand
+  Lead**: engage at the corresponding trigger in the Role-Based Routing table
+  above.
 
 ## Failure Modes This Prevents
 

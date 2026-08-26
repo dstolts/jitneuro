@@ -6,7 +6,6 @@ tags: [schedule, scheduled-agents, timer-agents, smart-agents, enforcer-agents, 
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/schedule/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

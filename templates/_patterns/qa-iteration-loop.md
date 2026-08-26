@@ -208,9 +208,9 @@ For this pattern to run cleanly, the consuming repo needs:
 
 ## Promotion checklist
 
-- [ ] Live-trial on a real feature: pick the next dash GTD surface
+- [ ] Live-trial on a real feature: pick the next <your-app> surface
       that has stories + contract + mockup; run the loop end-to-end
 - [ ] Refine the QA agent prompt template based on trial findings
 - [ ] Decide max-iterations default (lean: 5; surface to Owner at 3)
 - [ ] Status -> `wip-ready` after trial done; then `/graduate` to
-      `jit-knowledge/_patterns/qa-iteration-loop.md`
+      `<knowledge-root>/_patterns/qa-iteration-loop.md`

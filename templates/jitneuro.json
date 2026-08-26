@@ -1,5 +1,7 @@
 {
   "version": "0.5.0",
+  "knowledgeRoot": "./.knowledge",
+  "_knowledgeRoot": "KNOWLEDGE_ROOT for this install -- the local knowledge store. A local store is ALWAYS present; JitNeuro is never left unconfigured. Resolution order at runtime: KNOWLEDGE_ROOT env var -> ~/.claude/url-resolver.md map (only when KNOWLEDGE_ROOT points at a separate catalog repo) -> this value (relative paths resolve from the repo/workspace root) -> the local .knowledge store. The installer auto-creates the local store and sets this to ./.knowledge (project/workspace) or the absolute ~/.claude/.knowledge path (user install). Pointing this at a SEPARATE shared catalog repo is an OPTIONAL upgrade; the local store remains the fallback. Re-run the installer with --reconfigure (PowerShell: -Reconfigure) to change it.",
   "hooks": {
     "preCompactBehavior": "block",
     "autosave": true,
@@ -115,7 +117,7 @@
       "interval": 10080,
       "enabled": false,
       "instruction": "NONE",
-      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes jit-knowledge promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
+      "description": "WS6: weekly cross-repo rollup agent. Scans all repo .jitneuro/ dirs + changes-log for recurring patterns, skill gaps, and stale knowledge. Proposes knowledge catalog promotions in batch. Disabled by default -- enable when cross-repo scanning is desired. Interval: 10080m (7 days).",
       "agent_charter": ".claude/agents/cross-repo-rollup/CHARTER.md",
       "_comment": "WS6: see CHARTER.md for full agent prompt + idempotency rules."
     }

@@ -14,7 +14,7 @@ When invoked as `/bundle <name>`:
 
 ### 1. Check if the bundle exists
 
-Read `.claude/bundles/<name>.md`.
+Read `.knowledge/bundles/<name>.md`.
 
 ### 2. If the bundle EXISTS: load it
 
@@ -33,7 +33,7 @@ Do NOT just list alternatives. Instead:
 a. **Look for context to build from.** Search the workspace for a repo, directory,
    or domain matching `<name>`. Check:
    - Is there a repo at `../<name>/` or nearby with a similar name?
-   - Is there an engram at `.claude/engrams/<name>-context.md`?
+   - Is there an engram at `.knowledge/engrams/<name>-context.md`?
    - Is there a CLAUDE.md in a matching repo?
    - Grep for `<name>` in existing bundles and MEMORY.md for related context.
 
@@ -52,14 +52,13 @@ c. **If no source material found:** Ask the user what this bundle should cover.
 
 d. **Present the draft** and ask for approval before writing.
 
-e. **On approval:** Write to `.claude/bundles/<name>.md` and suggest
-   opening a PR to `jit-knowledge/INDEX.md` to add the routing entry for this bundle.
+e. **On approval:** Write to `.knowledge/bundles/<name>.md` and suggest
+   opening a PR to the shared knowledge catalog index to add the routing entry for this bundle.
 
 ### 4. Without arguments (`/bundle`):
 
-a. Scan `.claude/bundles/` for actual files. Count lines in each.
-b. Read `.jit-knowledge/INDEX.md` (via `~/.claude/url-resolver.md`) and compare -- flag bundles that exist on disk
-   but have no routing entry in INDEX.md.
+a. Scan `.knowledge/bundles/` for actual files. Count lines in each.
+b. If a knowledge catalog is configured (via `KNOWLEDGE_ROOT` or `.knowledge/`), read its `INDEX.md` and compare -- flag bundles that exist on disk but have no routing entry in INDEX.md.
 c. Present:
 
 ```
@@ -95,11 +94,11 @@ If a bundle is over 280 lines, or the user asks to split:
 1. Identify natural subdomain boundaries in the content
 2. Propose split: `<name>-a.md` and `<name>-b.md` with clear names
 3. Show what goes where
-4. On approval: write both files, archive original, suggest PR to jit-knowledge/INDEX.md
+4. On approval: write both files, archive original, suggest PR to the shared catalog index
    to update routing to reference both split bundles
 
 ## Important
 - Always ask before writing or modifying bundle files.
 - Target: under 280 lines. Claude reads the full file regardless of length, but shorter bundles load faster and waste fewer tokens when loaded for the wrong task.
 - One bundle = one domain. If a bundle covers two unrelated things, split it.
-- Routing entries live in `jit-knowledge/INDEX.md` -- suggest a PR but do not write locally.
+- Routing entries live in the shared knowledge catalog index -- suggest a PR but do not write locally.

@@ -3,13 +3,12 @@ type: skill
 name: worktree-status
 status: canonical
 purpose: Audit worktrees for a repo (or all repos with --all). Per-worktree, surface branch, ahead/behind default, dirty state, PR status (none / open / merged / closed), age, and a one-word recommendation (ready-to-remove / in-flight / stale / needs-review / blocked). Lets Owner or master scan worktree fleet at a glance instead of running 5 git commands per worktree.
-tags: [slash-command, git, worktrees, audit, lifecycle, jit-knowledge, branch-discipline]
+tags: [slash-command, git, worktrees, audit, lifecycle, jitneuro, branch-discipline]
 scope: public
 departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-status.md
 origin_date: 2026-05-28
 origin_event: PR #241 (/worktree-remove) open questions item #3 -- "Should there be a /worktree-status <repo> skill that audits all worktrees for staleness? Lean: yes -- queue as a future skill alongside /worktree-new + /worktree-remove for full lifecycle visibility." Authored as that follow-up.
-graduation_target: jit-knowledge/skills/worktree-status/SKILL.md
 related_skills:
   - skills/worktree-new/SKILL.md (sibling: create)
   - skills/worktree-remove/SKILL.md (sibling: remove)
@@ -29,7 +28,7 @@ the worktree is in and what the next action is.
 Usage:
 
 ```
-/worktree-status <repo>            # one repo (e.g. jit-knowledge)
+/worktree-status <repo>            # one repo (e.g. jitneuro)
 /worktree-status --all             # every repo with worktrees
 /worktree-status --stale-only      # only rows recommending action
 /worktree-status --json            # machine-readable output (for piping)
@@ -38,7 +37,7 @@ Usage:
 ## Output (table)
 
 ```text
-=== jit-knowledge worktrees ===
+=== jitneuro worktrees ===
 
  #  branch                                 ahead/behind  dirty?  PR        age   recommend
  1  feat/qa-trial                          2/0           clean   #245 OPEN 2d    in-flight
@@ -49,7 +48,7 @@ Usage:
 
 Summary: 5 worktrees; 1 in-flight, 1 ready-to-remove, 1 stale, 1 needs-review, 1 foreign
 Recommendations:
-  - /worktree-remove jit-knowledge chore/path-cleanup
+  - /worktree-remove jitneuro chore/path-cleanup
   - Decide on feat/wip-draft-old (stale 9d)
   - Resolve feat/dirty-branch dirty state
 ```
@@ -175,13 +174,13 @@ distribution; this skill graduates first.
 
 ## Promotion checklist
 
-- [ ] Live-trial: run /worktree-status on current jit-knowledge worktree
+- [ ] Live-trial: run /worktree-status on current jitneuro worktree
       tree (5+ worktrees expected) and verify accuracy of each row's
       recommendation
 - [ ] Live-trial: run with --all across workspace, app-repo-API, api-repo,
-      jit-knowledge worktrees; verify cross-repo PR lookup works
+      jitneuro worktrees; verify cross-repo PR lookup works
 - [ ] Decide: --no-pr flag for offline use? (Probably yes for speed)
 - [ ] Decide: ship companion PowerShell script via install.sh? (Pair
       with /worktree-new + /worktree-remove script decisions)
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `jit-knowledge/skills/worktree-status/SKILL.md`
+      `<knowledge-root>/skills/worktree-status/SKILL.md`

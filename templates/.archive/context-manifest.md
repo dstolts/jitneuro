@@ -18,14 +18,14 @@ These load automatically at session start via CLAUDE.md:
 
 | Bundle | Path | Domain | Lines | Last Used |
 |--------|------|--------|-------|-----------|
-| example | .claude/bundles/example.md | Example template | ~30 | never |
+| example | .knowledge/bundles/example.md | Example template | ~30 | never |
 
 <!-- Add your bundles here. Keep under 180 lines each. -->
 <!-- Example entries:
-| deploy    | .claude/bundles/deploy.md    | CI/CD, containers, environments | ~60 | 2026-03-09 |
-| api       | .claude/bundles/api.md       | API design, auth, error handling | ~50 | 2026-03-09 |
-| sprint    | .claude/bundles/sprint.md    | Sprint protocol, task format     | ~70 | 2026-03-08 |
-| testing   | .claude/bundles/testing.md   | Test strategy, commands, fixtures | ~40 | 2026-03-07 |
+| deploy    | .knowledge/bundles/deploy.md    | CI/CD, containers, environments | ~60 | 2026-03-09 |
+| api       | .knowledge/bundles/api.md       | API design, auth, error handling | ~50 | 2026-03-09 |
+| sprint    | .knowledge/bundles/sprint.md    | Sprint protocol, task format     | ~70 | 2026-03-08 |
+| testing   | .knowledge/bundles/testing.md   | Test strategy, commands, fixtures | ~40 | 2026-03-07 |
 -->
 
 ## Routing Weights

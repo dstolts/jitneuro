@@ -6,7 +6,6 @@ tags: [save, session-management, shortcut, checkpoint, hub]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/save/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
@@ -27,7 +26,7 @@ Delegates entirely to `/session save [name]`. See `/session` SKILL.md for the fu
 ## What save does
 
 1. Write current TodoWrite task list to Hub.md (MANDATORY -- durable copy)
-2. Write session checkpoint to `.claude/session-state/<name>.md`
+2. Write session checkpoint to `.sessions/<name>.md`
 3. Write heartbeat via Bash echo (not Write/Edit tool -- see heartbeat-write-safety.md)
 4. Append pending questions to Hub.md
 5. Display save confirmation with checkpoint path

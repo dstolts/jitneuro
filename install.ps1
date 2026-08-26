@@ -9,7 +9,8 @@
 
 param(
     [ValidateSet("workspace", "project", "user")]
-    [string]$Mode = "project"
+    [string]$Mode = "project",
+    [switch]$Reconfigure
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,6 +95,218 @@ function Add-JnManifest($rel) {
     if (Test-Path $f) { $NewManifest.Add("$rel`t$(Get-JnSha $f)") }
 }
 
+# Patch the installed jitneuro.json "knowledgeRoot" value (preserves file formatting).
+function Set-KnowledgeRoot($v) {
+    $jf = Join-Path $Target "jitneuro.json"
+    if (-not (Test-Path $jf)) { return }
+    $raw = Get-Content $jf -Raw
+    # JSON-escape backslashes and quotes in the value.
+    $jsonVal = ($v -replace '\\', '\\') -replace '"', '\"'
+    # Escape any literal $ for the regex replacement string ($$ = literal $ in -replace).
+    $repl = '$1"' + ($jsonVal -replace '\$', '$$$$') + '"'
+    $raw = [regex]::Replace($raw, '("knowledgeRoot"\s*:\s*)"[^"]*"', $repl)
+    Set-Content -Path $jf -Value $raw -Encoding UTF8 -NoNewline
+}
+
+# Default KNOWLEDGE_ROOT for this install mode. A LOCAL store is ALWAYS present:
+#   project / workspace install -> in-repo ./.knowledge
+#   user install                -> ~\.claude\.knowledge (absolute)
+# An external shared catalog (separate repo) is an OPTIONAL upgrade layered on top.
+function Get-DefaultKnowledgeRoot {
+    if ($Mode -eq "user") { return (Join-Path $env:USERPROFILE ".claude\.knowledge") }
+    return "./.knowledge"
+}
+
+# Resolve the local KNOWLEDGE_ROOT store path on disk.
+function Get-KnowledgeStorePath {
+    if ($Mode -eq "user") { return (Join-Path $env:USERPROFILE ".claude\.knowledge") }
+    return (Join-Path (Split-Path $Target -Parent) ".knowledge")   # repo/workspace root + \.knowledge
+}
+
+# Create the local KNOWLEDGE_ROOT store and seed a minimal INDEX.md if absent.
+# Always called so a usable store exists even when KNOWLEDGE_ROOT points elsewhere.
+function Initialize-LocalKnowledgeStore {
+    $store = Get-KnowledgeStorePath
+    if (-not (Test-Path $store)) { New-Item -ItemType Directory -Path $store -Force | Out-Null }
+    $index = Join-Path $store "INDEX.md"
+    if (-not (Test-Path $index)) {
+        $krIndex = @"
+# Knowledge Store -- INDEX
+
+This is your local KNOWLEDGE_ROOT catalog. It is ALWAYS present; JitNeuro works
+standalone with nothing external. Add routing entries, skills, charters, playbooks,
+and references here as your project grows.
+
+## Routing
+<!-- map trigger phrases to bundles, e.g.:
+- deploy / server / container  -> [infrastructure]
+- api / endpoint / auth        -> [api-patterns]
+-->
+
+## Capabilities
+<!-- list skills / charters / playbooks / references this store provides -->
+
+## Upgrade (optional)
+To share one catalog across many projects, point KNOWLEDGE_ROOT at a separate
+catalog repo (env var, or jitneuro.json "knowledgeRoot"). This local store then
+acts as the fallback when the shared catalog is unavailable.
+"@
+        Set-Content -Path $index -Value $krIndex -Encoding ascii
+        Write-Host "  Created local knowledge store: $index"
+    }
+    $imports = Join-Path $store "imports"
+    if (-not (Test-Path $imports)) { New-Item -ItemType Directory -Path $imports -Force | Out-Null }
+}
+
+# Configure KNOWLEDGE_ROOT and persist the choice. NEVER unconfigured -- a local
+# store is always created. Resolution at runtime: KNOWLEDGE_ROOT env -> url-resolver
+# map (only when pointing at a separate catalog repo) -> this value -> local .knowledge.
+function Configure-KnowledgeRoot {
+    $kr = $script:PrevKr
+    if ($env:KNOWLEDGE_ROOT) { $kr = $env:KNOWLEDGE_ROOT }
+    if ($kr -and -not $Reconfigure) {
+        Write-Host "KNOWLEDGE_ROOT: $kr (re-run with -Reconfigure to change)"
+        Set-KnowledgeRoot $kr
+        Initialize-LocalKnowledgeStore
+        return
+    }
+    if (-not [Environment]::UserInteractive -and -not $Reconfigure) {
+        $kr = Get-DefaultKnowledgeRoot
+        Write-Host "KNOWLEDGE_ROOT: $kr (local store -- auto-configured). Set KNOWLEDGE_ROOT or re-run with -Reconfigure to point at a shared catalog." -ForegroundColor Yellow
+        Set-KnowledgeRoot $kr
+        Initialize-LocalKnowledgeStore
+        return
+    }
+    Write-Host ""
+    Write-Host "Where is your KNOWLEDGE_ROOT (the knowledge store for this install)?"
+    Write-Host "A local store is always created. Choose where it lives, or point at a shared catalog:"
+    if ($Mode -eq "user") {
+        Write-Host "  1) Local store: ~\.claude\.knowledge (default -- recommended)"
+    } else {
+        Write-Host "  1) Local store: ./.knowledge in this repo/workspace (default -- recommended)"
+    }
+    Write-Host "  2) A separate shared catalog repo / folder elsewhere (OPTIONAL upgrade)"
+    $choice = Read-Host "Choice [1-2, default 1]"
+    switch ($choice) {
+        "2" {
+            $kr = Read-Host "Absolute path to the shared catalog repo/folder"
+            if (-not $kr) {
+                $kr = Get-DefaultKnowledgeRoot
+                Write-Host "No path given -- using the local store instead: $kr"
+            }
+        }
+        default { $kr = Get-DefaultKnowledgeRoot }
+    }
+    Set-KnowledgeRoot $kr
+    Initialize-LocalKnowledgeStore
+    Write-Host "KNOWLEDGE_ROOT set to: $kr"
+    Write-Host "Tip: set KNOWLEDGE_ROOT=$kr to override per-machine without editing config."
+}
+
+# Resolve the onboarding scan root (where the adopter's existing repo content lives).
+function Get-ScanRoot {
+    switch ($Mode) {
+        "user"      { return $env:USERPROFILE }
+        "workspace" { return (Split-Path $Target -Parent) }   # parent of .claude = workspace root
+        default     { return (Get-Location).Path }            # project root
+    }
+}
+
+# ONBOARDING IMPORT -- detect existing AI knowledge sources in the target and, on
+# user yes, write a staging manifest into the KNOWLEDGE_ROOT store. SAFETY:
+# surface-and-catalog (never blind-merge), never ingest secrets (.env / keys).
+function Import-ExistingKnowledge {
+    $scanRoot = Get-ScanRoot
+    $store = Get-KnowledgeStorePath
+    $found = New-Object System.Collections.Generic.List[string]
+
+    foreach ($c in @("CLAUDE.md", "AGENTS.md", ".github/copilot-instructions.md", ".claude")) {
+        if (Test-Path (Join-Path $scanRoot $c)) { $found.Add($c) }
+    }
+    $cursorRules = Join-Path $scanRoot ".cursor\rules"
+    if (Test-Path $cursorRules) {
+        foreach ($f in (Get-ChildItem $cursorRules -Filter *.mdc -File -ErrorAction SilentlyContinue)) {
+            $found.Add(".cursor/rules/$($f.Name)")
+        }
+    }
+    # Existing agent / charter files (common locations), capped at 20.
+    $afn = 0
+    foreach ($pat in @(".claude\agents", "agents")) {
+        $base = Join-Path $scanRoot $pat
+        if (Test-Path $base) {
+            foreach ($ch in (Get-ChildItem $base -Recurse -Filter "CHARTER.md" -File -ErrorAction SilentlyContinue)) {
+                $rel = $ch.FullName.Substring($scanRoot.Length).TrimStart('\','/') -replace '\\','/'
+                $found.Add($rel); $afn++; if ($afn -ge 20) { break }
+            }
+        }
+        if ($afn -ge 20) { break }
+    }
+
+    if ($found.Count -eq 0) { return }
+
+    Write-Host ""
+    Write-Host "Found existing AI knowledge sources in ${scanRoot}:"
+    foreach ($line in $found) { Write-Host "  - $line" }
+
+    $ans = ""
+    if ([Environment]::UserInteractive -and -not $env:JN_IMPORT) {
+        $ans = Read-Host "Import existing knowledge into JitNeuro? (recommended) [Y/n]"
+        if (-not $ans) { $ans = "y" }
+    } else {
+        # Non-interactive: honor JN_IMPORT=yes|no; default to cataloging (safe -- no merge).
+        $ans = if ($env:JN_IMPORT) { $env:JN_IMPORT } else { "yes" }
+    }
+    if ($ans -match '^(n|no)$') {
+        Write-Host "Skipped onboarding import. Run /onboard later to import."
+        return
+    }
+
+    $imports = Join-Path $store "imports"
+    if (-not (Test-Path $imports)) { New-Item -ItemType Directory -Path $imports -Force | Out-Null }
+    $staging = Join-Path $imports "onboarding-staging.md"
+
+    $rows = New-Object System.Collections.Generic.List[string]
+    foreach ($line in $found) {
+        switch -Wildcard ($line) {
+            "AGENTS.md"                       { $rows.Add("| $line | rules / standard | canonical instruction surface -- reconcile with JitNeuro AGENTS.md |") }
+            "CLAUDE.md"                       { $rows.Add("| $line | rules / standard | tool instructions -- fold into AGENTS.md, keep CLAUDE.md thin |") }
+            ".github/copilot-instructions.md" { $rows.Add("| $line | rules / standard | Copilot rules -- map to .claude/rules/ |") }
+            ".cursor/rules/*"                 { $rows.Add("| $line | rules / standard | Cursor rule -- map intents to .claude/rules/ |") }
+            "*CHARTER.md"                     { $rows.Add("| $line | knowledge store | agent/charter -- catalog under KNOWLEDGE_ROOT |") }
+            "*agents/*"                       { $rows.Add("| $line | knowledge store | agent/charter -- catalog under KNOWLEDGE_ROOT |") }
+            ".claude"                         { $rows.Add("| $line | (review) | existing .claude content -- reconcile, do not overwrite |") }
+            default                           { $rows.Add("| $line | (review) | classify during /onboard |") }
+        }
+    }
+
+    $body = @"
+# Onboarding Import -- Staging Manifest
+
+Generated by the JitNeuro installer. SAFETY: this is a SURFACE-AND-CATALOG
+manifest, not a merge. Nothing was ingested. The /onboard flow reads this
+manifest and routes each source to its correct home (engram = per-project
+context, rules = behavioral standard, knowledge store otherwise). Secrets
+(.env, keys) are never listed or ingested.
+
+- scan_root: $scanRoot
+- store (KNOWLEDGE_ROOT local): $store
+- install_mode: $Mode
+
+## Detected sources (route via /onboard)
+
+| Source | Suggested home | Notes |
+|--------|----------------|-------|
+$($rows -join "`n")
+
+## Reconcile during /onboard
+- Conflicts (e.g., existing CLAUDE.md vs JitNeuro thin importer) are listed, not auto-resolved.
+- Run /onboard to read this manifest, import each source into the right home, and produce a summary.
+"@
+    Set-Content -Path $staging -Value $body -Encoding ascii
+    Write-Host "Staged onboarding manifest: $staging"
+    Write-Host "Run /onboard to import the detected sources into their correct homes."
+}
+
 # Create directories
 $dirs = @("commands", "bundles", "engrams", "session-state", "session-state\heartbeats", "rules", "hooks", "cognition", "cognition\decisions", "scripts", "dashboard\runs", "horizon")
 foreach ($dir in $dirs) {
@@ -136,13 +349,21 @@ foreach ($cmdFile in $cmdTemplates) {
 }
 Write-Host "  ($CmdCount commands installed)"
 
-# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# --- Install /help data file (the /help command reads $Target\help.md) ---
+# Without this copy, /help is broken: the command exists but its data file is missing.
+$helpSrc = Join-Path $Templates "help.md"
+if (Test-Path $helpSrc) {
+    Copy-Item $helpSrc (Join-Path $Target "help.md") -Force
+    Write-Host "  help.md (data for /help)"
+}
+
+# Routing lives in your configured knowledge catalog's INDEX.md (when one is configured)
+# -- do NOT seed context-manifest.md with routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.ps1
 $staleManifest = Join-Path $Target "context-manifest.md"
 if (Test-Path $staleManifest) {
     Write-Host "NOTE: Legacy context-manifest.md found at $staleManifest" -ForegroundColor Yellow
-    Write-Host "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.ps1 to retire it." -ForegroundColor Yellow
+    Write-Host "      Routing now lives in your knowledge catalog's INDEX.md. You may retire context-manifest.md." -ForegroundColor Yellow
 }
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -234,17 +455,39 @@ if ((Get-ChildItem $horizonDir -File -ErrorAction SilentlyContinue).Count -eq 0)
 Write-Host "Installing cognition layer..." -ForegroundColor Green
 $cogDir = Join-Path $Target "cognition"
 $cogDecDir = Join-Path $cogDir "decisions"
+# User-ACCUMULATED cognition files (anti-patterns.md, written by /learn) are seeded only
+# if absent and NEVER overwritten. Framework cognition files update like rules: a user
+# edit is backed up to .jitneuro-backup\cognition\ before the new version lands.
+$CogPreserve = @("anti-patterns.md")
+function Install-CognitionFile($srcFull, $name, $rel, $destDir) {
+    $dest = Join-Path $destDir $name
+    if (Test-Path $dest) {
+        if ((Get-FileHash $srcFull).Hash -ne (Get-FileHash $dest).Hash) {
+            if ($OldManifest.ContainsKey($rel) -and $OldManifest[$rel] -ne (Get-JnSha $dest)) {
+                $bdir = Join-Path $Target ".jitneuro-backup\cognition"
+                if (-not (Test-Path $bdir)) { New-Item -ItemType Directory -Path $bdir -Force | Out-Null }
+                Copy-Item $dest (Join-Path $bdir $name) -Force
+                Write-Host "  BACKUP: $rel (your edit saved to .jitneuro-backup\cognition\)"
+            }
+            Copy-Item $srcFull $dest -Force
+        }
+    } else {
+        Copy-Item $srcFull $dest
+    }
+}
 foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDir $f.Name) -Force
+    if ($CogPreserve -contains $f.Name) {
+        $dest = Join-Path $cogDir $f.Name
+        if (Test-Path $dest) { Write-Host "  Preserved cognition\$($f.Name) (your accumulated knowledge)" -ForegroundColor Yellow }
+        else { Copy-Item $f.FullName $dest; Write-Host "  cognition\$($f.Name) (seeded -- yours to accumulate via /learn)" }
+    } else {
+        Install-CognitionFile $f.FullName $f.Name "cognition/$($f.Name)" $cogDir
+    }
 }
 foreach ($f in (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue)) {
-    Copy-Item $f.FullName (Join-Path $cogDecDir $f.Name) -Force
+    Install-CognitionFile $f.FullName $f.Name "cognition/decisions/$($f.Name)" $cogDecDir
 }
-Write-Host "  cognition\personas.md (16 personas)"
-Write-Host "  cognition\friction-detection.md"
-Write-Host "  cognition\anti-patterns.md (seed entries)"
-$decCount = (Get-ChildItem (Join-Path $Templates "cognition\decisions") -Filter "*.md" -File -ErrorAction SilentlyContinue).Count
-Write-Host "  cognition\decisions\ ($decCount models)"
+Write-Host "  cognition\ (framework updated; your edits backed up, accumulated knowledge preserved)"
 $ownerPersona = Join-Path $cogDir "owner-persona.md"
 if (-not (Test-Path $ownerPersona)) {
     Copy-Item (Join-Path $Templates "cognition\owner-persona.example.md") $ownerPersona
@@ -289,9 +532,28 @@ foreach ($hook in $hookFiles) {
     Write-Host "  hooks\$($hook.Name)"
 }
 
-# --- Copy jitneuro.json config ---
-Copy-Item $ConfigFile (Join-Path $Target "jitneuro.json") -Force
-Write-Host "Installed jitneuro.json (v$Version)"
+# --- Install jitneuro.json config (preserve the user's settings on re-install) ---
+# Fresh install copies the template. A re-install PRESERVES the user's jitneuro.json in
+# full (scheduledAgents, team config, knowledgeRoot, any custom keys) and only bumps the
+# version field -- never clobbering user config with template defaults.
+$script:PrevKr = ""
+$installedJson = Join-Path $Target "jitneuro.json"
+if (Test-Path $installedJson) {
+    try { $script:PrevKr = (Get-Content $installedJson -Raw | ConvertFrom-Json).knowledgeRoot } catch { }
+    $jraw = Get-Content $installedJson -Raw
+    $jraw = [regex]::Replace($jraw, '("version"\s*:\s*)"[^"]*"', "`$1`"$Version`"")
+    Set-Content $installedJson $jraw -NoNewline
+    Write-Host "Preserved your jitneuro.json (version -> v$Version; your settings kept)"
+} else {
+    Copy-Item $ConfigFile $installedJson -Force
+    Write-Host "Installed jitneuro.json (v$Version)"
+}
+
+# --- Configure KNOWLEDGE_ROOT (always present; local store auto-created) ---
+Configure-KnowledgeRoot
+
+# --- Onboarding import: detect existing AI knowledge sources, stage for /onboard ---
+Import-ExistingKnowledge
 
 # --- Windows bash detection (US-005) ---
 Write-Host ""
@@ -366,7 +628,7 @@ $HooksPathFwd = ($hooksDir -replace '\\', '/')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each command is just a path.
-# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# Full rule: rules/claude-code-hook-deployment.md (installed with JitNeuro)
 # ============================================================================
 # Build hooks config object
 $hooksConfig = @{
@@ -573,6 +835,7 @@ if (Test-Path (Join-Path $Templates "dashboard\bin")) {
 }
 foreach ($t in (Get-ChildItem (Join-Path $Templates "hooks") -Filter *.sh -File -EA SilentlyContinue)) { Add-JnManifest "hooks/$($t.Name)" }
 Add-JnManifest "jitneuro.json"
+Add-JnManifest "help.md"
 
 # Prune framework files present at last install but no longer shipped (sha-guarded).
 $newPaths = @{}
@@ -603,13 +866,16 @@ Write-Host "---" -ForegroundColor DarkGray
 Write-Host "JitNeuro v$Version installed to: $Target" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:"
-Write-Host "  1. CLOSE AND REOPEN Claude Code (commands load at session start)" -ForegroundColor Yellow
-Write-Host "  2. Run /verify to confirm everything is working"
-Write-Host "  3. Populate your horizon: tell Claude 'populate my horizon files' (or open"
+Write-Host "  1. CLOSE AND REOPEN your AI tool (Claude Code loads commands/hooks at session start)" -ForegroundColor Yellow
+Write-Host "  2. Run /verify to confirm everything is working (Claude Code)"
+Write-Host "  3. AGENTS.md is the canonical standard for every tool (Cursor/Codex/Claude/others)."
+Write-Host "     CLAUDE.md is a thin importer of it. Run /onboard to generate them for a repo."
+Write-Host "  4. Run /onboard to import any staged knowledge sources into their correct homes"
+Write-Host "  5. Populate your horizon: tell Claude 'populate my horizon files' (or open"
 Write-Host "     $Target\horizon\POPULATE-HORIZON.md) to capture your vision, goals, and profile"
-Write-Host "  4. Run /onboard <repo> to set up context for your repos"
-Write-Host "  5. Create bundles for your domains in $Target\bundles\"
-Write-Host "  6. (optional) Edit ~/.claude/url-resolver.md to map your repo names to local paths"
+Write-Host "  6. Create bundles for your domains in $Target\bundles\"
+Write-Host "  7. (optional) Point KNOWLEDGE_ROOT at a shared catalog repo to share one catalog"
+Write-Host "     across projects; your local .knowledge store stays as the fallback"
 Write-Host ""
 Write-Host "*** You MUST restart Claude Code for slash commands to take effect. ***" -ForegroundColor Red
 Write-Host ""

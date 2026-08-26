@@ -47,18 +47,18 @@ These load only when MEMORY.md references them, keeping context costs low.
 
 ### 3. JitNeuro /learn (bundles, engrams, routing)
 
-**Location:** `.claude/bundles/`, `.claude/engrams/`, `jit-knowledge/INDEX.md` (routing)
-**Loaded:** On-demand by INDEX.md routing or manual bundle load
+**Location:** `.knowledge/bundles/`, `.knowledge/engrams/`, the knowledge catalog index (routing)
+**Loaded:** On-demand by the catalog routing index or manual bundle load
 **Created by:** `/learn` command evaluation
-**Updated by:** `/learn` (with owner approval); routing changes via PR to jit-knowledge
+**Updated by:** `/learn` (with owner approval); routing changes via PR to the shared catalog
 
 /learn captures domain knowledge and project context:
 - **Bundles** -- cross-project domain knowledge ("how to deploy", "API patterns")
 - **Engrams** -- per-project deep context ("what this repo is, how it works")
-- **Routing** -- lives exclusively in `jit-knowledge/INDEX.md`; /learn flags missing routes and prompts you to open a PR
+- **Routing** -- lives in the shared knowledge catalog index; /learn flags missing routes and prompts you to open a PR
 
 **Maintenance:** `/learn` includes a health check that flags oversized bundles (280+ lines),
-missing engrams, stale sessions, and routes that may need updating in INDEX.md. Run it at session boundaries.
+missing engrams, stale sessions, and routes that may need updating in the shared catalog index. Run it at session boundaries.
 
 ## Where Things Go (Decision Tree)
 
@@ -68,11 +68,11 @@ Is this a universal behavioral instruction?
   NO  -> continue
 
 Is this a fact about a specific project's architecture or tech stack?
-  YES -> .claude/engrams/<project>.md (updated by /learn)
+  YES -> .knowledge/engrams/<project>.md (updated by /learn)
   NO  -> continue
 
 Is this domain knowledge that applies across projects?
-  YES -> .claude/bundles/<domain>.md (updated by /learn)
+  YES -> .knowledge/bundles/<domain>.md (updated by /learn)
   NO  -> continue
 
 Is this a business fact, credential location, or external reference?
@@ -90,7 +90,7 @@ Is this a behavioral correction from the owner?
 |---------|---------|-----|
 | Same guidance in feedback_* and rules/ | Auto-memory saved what was already a rule | Delete the feedback_* file |
 | A feedback_* that says "always" or "never" | Universal instruction stored as situational memory | Promote to rules/, delete feedback_* |
-| MEMORY.md has "how to deploy" instructions | Domain knowledge in the index file | Extract to a bundle; add route to jit-knowledge/INDEX.md via PR |
+| MEMORY.md has "how to deploy" instructions | Domain knowledge in the index file | Extract to a bundle; add route to the shared catalog index via PR |
 | A bundle has owner-specific names or preferences | Project-specific content in a cross-project file | Move to the project's engram or rules/ |
 | An engram has process instructions | Behavioral rule stored as project context | Move to rules/ (global) or .claude/rules/ (project) |
 
@@ -104,13 +104,13 @@ When JitNeuro releases updates, the install script touches:
 The install script does NOT touch:
 - `~/.claude/rules/` -- owner's global rules (never overwritten)
 - `~/.claude/projects/*/memory/` -- auto-memory (never overwritten)
-- MEMORY.md -- project index and business facts (never overwritten; routing lives in jit-knowledge/INDEX.md)
+- MEMORY.md -- project index and business facts (never overwritten; routing lives in the shared catalog index)
 - `.claude/jitneuro-settings.json` -- runtime settings (never overwritten)
 
 **Safe upgrade pattern:**
 1. Run `jitneuro install` (overwrites templates only)
 2. Run `/learn` or `/health` to verify memory system health after upgrade
-3. If new commands or conventions were added, /learn will flag routes that may need updating in jit-knowledge/INDEX.md
+3. If new commands or conventions were added, /learn will flag routes that may need updating in the shared catalog index
 
 ## MEMORY.md Remediation (When It Gets Too Big)
 
@@ -153,19 +153,19 @@ See `templates/memory/detail-index.md` for the template. Group entries by domain
 
 **When:** MEMORY.md has paragraphs of domain knowledge (infrastructure details, deployment procedures, API patterns). These are facts that don't need to load every session.
 
-**Fix:** Move the section to a bundle (`.claude/bundles/<domain>.md`). Add a route to `jit-knowledge/INDEX.md` so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
+**Fix:** Move the section to a bundle (`.knowledge/bundles/<domain>.md`). Add a route to the shared catalog index so the bundle loads on-demand when the topic comes up. Remove the section from MEMORY.md entirely.
 
 Before (20 lines in MEMORY.md):
 ```
 ## Infrastructure
-- VM1 is at 10.0.0.5, runs Docker, ports 8080 and 5678...
-- Cloudflare is configured with...
+- server1 is at 10.0.0.5, runs Docker, ports 8080 and 5678...
+- CDN is configured with...
 - Deployment steps are...
 ```
 
-After (bundle created; route added to jit-knowledge/INDEX.md via PR):
+After (bundle created; route added to shared catalog index via PR):
 ```
-# jit-knowledge/INDEX.md
+# <knowledge-root>/INDEX.md
 - Deploy / server / VM / container -> [infrastructure]
 ```
 
@@ -175,7 +175,7 @@ The bundle holds the full detail. INDEX.md routing ensures it loads when relevan
 
 **When:** MEMORY.md has paragraphs about specific projects (architecture, tech stack, key files). These should be in per-project engrams, loaded only when working on that project.
 
-**Fix:** Move project-specific detail to `.claude/engrams/<project>-context.md`. Keep only a one-line entry in the project table in MEMORY.md.
+**Fix:** Move project-specific detail to `.knowledge/engrams/<project>-context.md`. Keep only a one-line entry in the project table in MEMORY.md.
 
 Before (10 lines per project in MEMORY.md):
 ```
@@ -228,7 +228,7 @@ Split into work areas:
 
 Each workspace has:
 - Its own `.claude/` with MEMORY.md, bundles, engrams
-- Routes in jit-knowledge/INDEX.md (a PR per new route -- shared single source)
+- Routes in the shared catalog index (a PR per new route -- shared single source)
 - Smaller, focused context that fits within 200 lines
 - Cross-workspace facts go in `~/.claude/rules/` (loads everywhere)
 

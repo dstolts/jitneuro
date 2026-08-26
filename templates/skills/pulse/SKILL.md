@@ -6,7 +6,6 @@ tags: [pulse, session-management, shortcut, shared-state, multi-session]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/pulse/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

@@ -6,7 +6,6 @@ tags: [sessions, session-management, archive, stale, cleanup]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/sessions/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---

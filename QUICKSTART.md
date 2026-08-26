@@ -84,10 +84,10 @@ See the [Customization Guide](docs/customization-guide.md) for a walkthrough of 
 **Quick version:**
 
 1. **Review Cognitive Identity** -- `.claude/CLAUDE-brainstem.md` has 10 engineering principles. Keep what fits, change what doesn't.
-2. **Review Personas** -- `.claude/cognition/personas.md` has 16 expert roles. Adjust biases, add domain-specific checks, remove roles that don't apply.
-3. **Create your Owner Persona** -- copy `.claude/cognition/owner-persona.example.md` to `.claude/cognition/owner-persona.md` and add your business context (revenue targets, compliance requirements, decision style).
-4. **Review Anti-Patterns** -- `.claude/cognition/anti-patterns.md` ships with seed entries. Add your own, remove any that don't apply. Over time, `/learn` proposes new entries from your corrections.
-5. **Review Decision Models** -- `.claude/cognition/decisions/` has structured frameworks. Add models for decisions you make repeatedly.
+2. **Review Personas** -- `cognition/personas.md` has 16 expert roles. Adjust biases, add domain-specific checks, remove roles that don't apply.
+3. **Create your Owner Persona** -- copy `cognition/owner-persona.example.md` to `cognition/owner-persona.md` and add your business context (revenue targets, compliance requirements, decision style).
+4. **Review Anti-Patterns** -- `cognition/anti-patterns.md` ships with seed entries. Add your own, remove any that don't apply. Over time, `/learn` proposes new entries from your corrections.
+5. **Review Decision Models** -- `cognition/decisions/` has structured frameworks. Add models for decisions you make repeatedly.
 
 ## Next Steps (Optional)
 
@@ -95,7 +95,7 @@ Once commands are working and customized, set up the full memory system:
 
 1. **Slim your CLAUDE.md** -- use `templates/CLAUDE-brainstem.md` as a starting point (30-40 lines max)
 2. **Onboard repos** -- run `/onboard <repo>` to generate context for your projects
-3. **Create bundles** -- add domain knowledge files to `.claude/bundles/`
+3. **Create bundles** -- add domain knowledge files to `.knowledge/bundles/`
 4. **Set routing weights** -- add trigger patterns to your MEMORY.md
 
 See [Setup Guide](docs/setup-guide.md) for a detailed walkthrough.

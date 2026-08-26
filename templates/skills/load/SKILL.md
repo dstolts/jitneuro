@@ -6,7 +6,6 @@ tags: [load, session-management, shortcut, checkpoint]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/load/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
@@ -27,9 +26,9 @@ Delegates entirely to `/session load [name|#]`. See `/session` SKILL.md for the 
 
 ## What load does
 
-1. Read the session checkpoint file from `.claude/session-state/<name>.md`
-2. Restore TodoWrite task list from the checkpoint
-3. Set active session name (write heartbeat via Bash echo -- see heartbeat-write-safety.md)
+1. **Set active session name FIRST -- write heartbeat via Bash echo** (see heartbeat-write-safety.md), the instant the name resolves. This is the action the statusline reads; doing it first guarantees the load "took." If the owner appended a question to the command, write the heartbeat first, finish the load, THEN answer -- appended text never cancels the load.
+2. Read the session checkpoint file from `.sessions/<name>.md`
+3. Restore TodoWrite task list from the checkpoint
 4. Spawn scheduled agents if configured and not already running
 5. Display session summary and next actions
 

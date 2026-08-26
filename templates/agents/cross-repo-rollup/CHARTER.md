@@ -17,7 +17,7 @@ memory/, the WS4 changes-log) for:
 3. **Stale knowledge** -- superseded, duplicate, or contradicted entries flagged
    for retirement. The loop prunes, not only adds.
 
-Proposes jit-knowledge promotions in BATCH (one PR with N artifacts). Applies
+Proposes shared catalog promotions in BATCH (one PR with N artifacts). Applies
 prompt caching for the stable reference context. Uses idempotency via content
 hash to skip already-promoted or already-proposed items.
 
@@ -55,7 +55,7 @@ If nothing changed, return STATUS: SKIP with message "No changes since last run.
 
 ### STEP 1 -- Discover repos
 
-Read `.claude/session-state/` for active sessions and their repo paths.
+Read `.sessions/` for active sessions and their repo paths.
 Read `MEMORY.md` for the repo index (project list).
 Build a list of repo root paths to scan. Cap at 20 repos per run to avoid
 memory exhaustion (per context-safety.md -- max 25 files per response).
@@ -81,7 +81,7 @@ Return as JSON array. No prose. Max 50 items.
 
 Also scan the WS4 changes-log:
 ```
-Read .claude/session-state/improvement-changes.log.md
+Read .sessions/improvement-changes.log.md
 Parse each line (format: <timestamp> | <type> | <summary> | <destination> | <session>)
 Collect unique summaries grouped by destination prefix.
 Return: { log_entries: N, unique_destinations: [...], recurring_summaries: [...] }
@@ -89,7 +89,7 @@ Return: { log_entries: N, unique_destinations: [...], recurring_summaries: [...]
 
 And the WS5 lessons-pending file:
 ```
-Read .claude/session-state/lessons-pending.md
+Read .sessions/lessons-pending.md
 Extract lesson lines (non-header, non-empty).
 For each lesson, produce a content hash (first 100 chars normalized).
 Return: { lesson_count: N, lessons: [{hash, text, session, timestamp}] }
@@ -101,28 +101,28 @@ Aggregate all subagent returns. Build the cross-repo knowledge inventory.
 
 For each knowledge item:
 1. Compute content hash (already in subagent output)
-2. Check against `.claude/session-state/.rollup-promoted-hashes.txt` (append-only list of hashes already promoted or proposed) -- skip if present (IDEMPOTENCY)
+2. Check against `.sessions/.rollup-promoted-hashes.txt` (append-only list of hashes already promoted or proposed) -- skip if present (IDEMPOTENCY)
 3. Group items by semantic similarity: items with near-identical title / first-line across 2+ repos are RECURRING PATTERN candidates
 4. Items that appear in the changes-log summary with 3+ occurrences are SKILL GAP candidates
 5. Items where the content is contradicted by a newer item in the same repo are STALE candidates
 
 Classify each candidate:
-- PROMOTE: recurring pattern in 2+ repos, not already in jit-knowledge
+- PROMOTE: recurring pattern in 2+ repos, not already in the shared knowledge catalog
 - SKILL_GAP: deterministic work done repeatedly that should be a runner/script
 - STALE: outdated entry that should be retired
 - SKIP: already promoted / already proposed / below threshold
 
-### STEP 4 -- Propose jit-knowledge promotions (batch PR)
+### STEP 4 -- Propose shared catalog promotions (batch PR)
 
 For PROMOTE candidates:
 
-1. Draft the artifact content (rules/patterns/playbooks format per jit-knowledge conventions)
+1. Draft the artifact content (rules/patterns/playbooks format per the shared catalog's conventions)
 2. Assign a content hash to each draft
-3. Append hashes to `.claude/session-state/.rollup-promoted-hashes.txt` (prevents duplicate PRs)
+3. Append hashes to `.sessions/.rollup-promoted-hashes.txt` (prevents duplicate PRs)
 4. Write draft artifacts to a staging directory:
-   `.claude/session-state/rollup-staging/<YYYY-MM-DD>/`
+   `.sessions/rollup-staging/<YYYY-MM-DD>/`
 5. Generate a promotion proposal document:
-   `.claude/session-state/rollup-staging/<YYYY-MM-DD>/PROPOSAL.md`
+   `.sessions/rollup-staging/<YYYY-MM-DD>/PROPOSAL.md`
 
 PROPOSAL.md format:
 ```
@@ -135,7 +135,7 @@ PROPOSAL.md format:
 
 ### <artifact-title>
 - Source repos: <list>
-- Proposed destination: jit-knowledge/<path>
+- Proposed destination: <knowledge-root>/<path>
 - Evidence: seen in <repo1>/.jitneuro/rules/<file>, <repo2>/.jitneuro/rules/<file>
 - Draft: rollup-staging/<date>/<filename>.md
 
@@ -151,35 +151,35 @@ PROPOSAL.md format:
 - <N> items below threshold (< 2 repos)
 ```
 
-6. Write a one-line entry to `.claude/session-state/improvement-changes.log.md`:
+6. Write a one-line entry to `.sessions/improvement-changes.log.md`:
    `<ISO-timestamp> | Rollup | Proposed <N> promotions, <N> skill gaps, <N> stale | rollup-staging/<date>/PROPOSAL.md | cross-repo-rollup`
 
-### STEP 5 -- Open jit-knowledge PR (if PROMOTE candidates exist)
+### STEP 5 -- Open shared catalog PR (if PROMOTE candidates exist)
 
-**Only if Owner has authorized automated PRs in jitneuro.json `rollupAutoPR: true`.**
+**Only if the owner has authorized automated PRs in jitneuro.json `rollupAutoPR: true`.**
 By default: write staging artifacts and proposal doc only. Owner opens the PR manually.
 
 If authorized:
-1. Ensure jit-knowledge local clone is up to date (`git pull origin main`)
+1. Ensure the knowledge catalog local clone is up to date (`git pull origin main`)
 2. Create branch: `chore/rollup-<YYYY-MM-DD>`
-3. Copy staging artifacts to correct jit-knowledge paths
-4. Run `scripts/rebuild-manifest.py` once for the full batch
+3. Copy staging artifacts to correct catalog paths
+4. Run the catalog's manifest rebuild script once for the full batch
 5. Commit with standard format:
    ```
    chore(rollup): cross-repo pattern promotions <YYYY-MM-DD>
 
    ## What
-   Promote <N> recurring patterns from per-repo .jitneuro/ to jit-knowledge.
+   Promote <N> recurring patterns from per-repo .jitneuro/ to the shared knowledge catalog.
 
    ## Why
    WS6 cross-repo rollup detected these patterns in 2+ repos, meeting the
-   PROMOTION-CRITERIA.md "serves 2+ systems" threshold.
+   catalog's promotion criteria "serves 2+ systems" threshold.
 
    ## Risk
    Knowledge-only changes. No code. Easily reverted if any pattern is wrong.
 
    ## Test plan
-   - [x] rebuild-manifest.py ran clean (method: direct script execution)
+   - [x] manifest rebuild ran clean (method: direct script execution)
    - [x] all promoted artifacts have valid frontmatter (method: grep type: field)
    - [ ] Owner reviews PROPOSAL.md and approves each promotion
 
@@ -187,7 +187,7 @@ If authorized:
    - Review STALE entries from PROPOSAL.md
    - Consider SKILL_GAP items as new skill candidates
    ```
-6. Open PR targeting main. Title: `chore(rollup): cross-repo pattern promotions <date>`
+6. Open PR to the knowledge catalog targeting its main branch. Title: `chore(rollup): cross-repo pattern promotions <date>`
 7. Add link to PROPOSAL.md in PR description
 
 ### STEP 6 -- Update last-run marker
@@ -202,16 +202,16 @@ date +%s > "$LAST_RUN_FILE"
 STATUS: OK
 TOKENS: in=X out=X model=haiku+sonnet
 FILES_CHANGED:
-  - .claude/session-state/.rollup-promoted-hashes.txt (appended)
-  - .claude/session-state/rollup-staging/<date>/PROPOSAL.md (created)
-  - .claude/session-state/rollup-staging/<date>/<artifact>.md (created, one per promotion)
-  - .claude/session-state/improvement-changes.log.md (appended)
-  - .claude/session-state/.cross-repo-rollup-last-run (updated)
-SUMMARY_DOC: .claude/session-state/rollup-staging/<date>/PROPOSAL.md
+  - .sessions/.rollup-promoted-hashes.txt (appended)
+  - .sessions/rollup-staging/<date>/PROPOSAL.md (created)
+  - .sessions/rollup-staging/<date>/<artifact>.md (created, one per promotion)
+  - .sessions/improvement-changes.log.md (appended)
+  - .sessions/.cross-repo-rollup-last-run (updated)
+SUMMARY_DOC: .sessions/rollup-staging/<date>/PROPOSAL.md
 RESULT:
 Scanned <N> repos. Found <N> PROMOTE, <N> SKILL_GAP, <N> STALE candidates.
 <N> items skipped (already promoted).
-Proposal: .claude/session-state/rollup-staging/<date>/PROPOSAL.md
+Proposal: .sessions/rollup-staging/<date>/PROPOSAL.md
 PR: <url or "not created -- rollupAutoPR is false">
 ```
 
@@ -219,7 +219,7 @@ PR: <url or "not created -- rollupAutoPR is false">
 
 ## Workflow Optimizations Applied (per spec)
 
-- **Prompt caching:** The current-capabilities reference list (jit-knowledge INDEX.md)
+- **Prompt caching:** The current-capabilities reference list (knowledge catalog INDEX.md)
   is passed with `ttl: "1h"` cache_control to reduce cost on repeated weekly runs.
 - **Idempotency:** Every item carries a stable content hash. The promoted-hashes file
   is checked before acting -- no duplicate PRs, no duplicate staging files.
@@ -243,19 +243,19 @@ PR: <url or "not created -- rollupAutoPR is false">
 }
 ```
 
-- `rollupAutoPR`: false = write staging + proposal only, Owner opens PR manually.
-  true = agent opens the PR automatically (requires jit-knowledge write access).
+- `rollupAutoPR`: false = write staging + proposal only, owner opens PR manually.
+  true = agent opens the PR automatically (requires write access to the knowledge catalog).
 - `maxRepos`: cap on repos scanned per run (memory safety, default 20).
 - `promoteThreshold`: minimum number of repos a pattern must appear in to qualify
-  for promotion (default 2 = "serves 2+ systems" from PROMOTION-CRITERIA.md).
+  for promotion (default 2 = "serves 2+ systems" per the catalog's promotion criteria).
 
 ## Output Locations
 
 | File | Purpose |
 |---|---|
-| `.claude/session-state/improvement-changes.log.md` | WS4 changes-log (also used by WS8 dashboard) |
-| `.claude/session-state/lessons-pending.md` | WS5 durable lessons from SessionEnd flush |
-| `.claude/session-state/.rollup-promoted-hashes.txt` | idempotency registry (append-only) |
-| `.claude/session-state/.cross-repo-rollup-last-run` | Unix timestamp of last successful run |
-| `.claude/session-state/rollup-staging/<date>/PROPOSAL.md` | Promotion proposal for Owner review |
-| `.claude/session-state/rollup-staging/<date>/<artifact>.md` | Staged promotion artifacts |
+| `.sessions/improvement-changes.log.md` | WS4 changes-log (also used by WS8 dashboard) |
+| `.sessions/lessons-pending.md` | WS5 durable lessons from SessionEnd flush |
+| `.sessions/.rollup-promoted-hashes.txt` | idempotency registry (append-only) |
+| `.sessions/.cross-repo-rollup-last-run` | Unix timestamp of last successful run |
+| `.sessions/rollup-staging/<date>/PROPOSAL.md` | Promotion proposal for Owner review |
+| `.sessions/rollup-staging/<date>/<artifact>.md` | Staged promotion artifacts |

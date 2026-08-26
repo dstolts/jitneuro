@@ -25,7 +25,17 @@ if [ -f "$TEMPLATES/jitneuro.json" ]; then
   VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$TEMPLATES/jitneuro.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"//;s/"$//')
 fi
 
-MODE="${1:-project}"
+# --- Parse args: positional mode + optional flags ---
+MODE=""
+RECONFIGURE=0
+for arg in "$@"; do
+  case "$arg" in
+    --reconfigure) RECONFIGURE=1 ;;
+    workspace|project|user) MODE="$arg" ;;
+    *) ;;
+  esac
+done
+MODE="${MODE:-project}"
 
 case "$MODE" in
   workspace)
@@ -99,6 +109,231 @@ _jn_oldsha() { [ -n "$OLD_MANIFEST" ] && awk -F'\t' -v p="$1" '$1==p{print $2; e
 # record a framework file (by target-relative path) into the new manifest (set -e safe)
 _jn_record() { local rel="$1"; if [ -f "$TARGET/$rel" ]; then printf '%s\t%s\n' "$rel" "$(_jn_sha "$TARGET/$rel")" >> "$NEW_MANIFEST"; fi; }
 
+# Patch the installed jitneuro.json "knowledgeRoot" value (portable, no jq needed).
+_jn_write_kr() {
+  local v="$1"
+  local esc; esc=$(printf '%s' "$v" | sed 's/[\\&|]/\\&/g')
+  if [ -f "$TARGET/jitneuro.json" ]; then
+    sed "s|\"knowledgeRoot\"[[:space:]]*:[[:space:]]*\"[^\"]*\"|\"knowledgeRoot\": \"$esc\"|" \
+      "$TARGET/jitneuro.json" > "$TARGET/jitneuro.json.tmp.$$" \
+      && mv "$TARGET/jitneuro.json.tmp.$$" "$TARGET/jitneuro.json"
+  fi
+}
+
+# Default KNOWLEDGE_ROOT for this install mode. A LOCAL store is ALWAYS present:
+#   project / workspace install -> in-repo ./.knowledge (relative to the .claude parent)
+#   user install                -> ~/.claude/.knowledge (absolute)
+# An external shared catalog (separate repo) is an OPTIONAL upgrade layered on top.
+_jn_default_kr() {
+  case "$MODE" in
+    user) echo "$HOME/.claude/.knowledge" ;;
+    *)    echo "./.knowledge" ;;
+  esac
+}
+
+# Create the local KNOWLEDGE_ROOT store on disk and seed a minimal INDEX.md if absent.
+# Always called so a usable store exists even when KNOWLEDGE_ROOT points elsewhere.
+_jn_ensure_local_store() {
+  local store
+  case "$MODE" in
+    user) store="$HOME/.claude/.knowledge" ;;
+    *)    store="$(dirname "$TARGET")/.knowledge" ;;   # repo/workspace root + /.knowledge
+  esac
+  mkdir -p "$store" 2>/dev/null || true
+  if [ ! -f "$store/INDEX.md" ]; then
+    cat > "$store/INDEX.md" <<'KRINDEX'
+# Knowledge Store -- INDEX
+
+This is your local KNOWLEDGE_ROOT catalog. It is ALWAYS present; JitNeuro works
+standalone with nothing external. Add routing entries, skills, charters, playbooks,
+and references here as your project grows.
+
+## Routing
+<!-- map trigger phrases to bundles, e.g.:
+- deploy / server / container  -> [infrastructure]
+- api / endpoint / auth        -> [api-patterns]
+-->
+
+## Capabilities
+<!-- list skills / charters / playbooks / references this store provides -->
+
+## Upgrade (optional)
+To share one catalog across many projects, point KNOWLEDGE_ROOT at a separate
+catalog repo (env var, or jitneuro.json "knowledgeRoot"). This local store then
+acts as the fallback when the shared catalog is unavailable.
+KRINDEX
+    echo "  Created local knowledge store: $store/INDEX.md"
+  fi
+  # staging dir for onboarding imports (see import_existing_knowledge)
+  mkdir -p "$store/imports" 2>/dev/null || true
+}
+
+# Configure KNOWLEDGE_ROOT and persist the choice. NEVER unconfigured -- a local
+# store is always created. Resolution at runtime: KNOWLEDGE_ROOT env -> url-resolver
+# map (only when pointing at a separate catalog repo) -> this value -> local .knowledge.
+configure_knowledge_root() {
+  local kr="$PREV_KR"
+  # A live env var always wins; record it as the persisted default too.
+  if [ -n "${KNOWLEDGE_ROOT:-}" ]; then
+    kr="$KNOWLEDGE_ROOT"
+  fi
+  # Already configured and not re-configuring: keep it, do not prompt.
+  if [ -n "$kr" ] && [ "$RECONFIGURE" -eq 0 ]; then
+    echo "KNOWLEDGE_ROOT: $kr (re-run with --reconfigure to change)"
+    _jn_write_kr "$kr"
+    _jn_ensure_local_store
+    return
+  fi
+  # Non-interactive with nothing configured: auto-configure the local store. No prompt.
+  if [ ! -t 0 ] && [ "$RECONFIGURE" -eq 0 ]; then
+    kr="$(_jn_default_kr)"
+    echo "KNOWLEDGE_ROOT: $kr (local store -- auto-configured). Set KNOWLEDGE_ROOT env or re-run with --reconfigure to point at a shared catalog."
+    _jn_write_kr "$kr"
+    _jn_ensure_local_store
+    return
+  fi
+  echo ""
+  echo "Where is your KNOWLEDGE_ROOT (the knowledge store for this install)?"
+  echo "A local store is always created. Choose where it lives, or point at a shared catalog:"
+  if [ "$MODE" = "user" ]; then
+    echo "  1) Local store: ~/.claude/.knowledge (default -- recommended)"
+  else
+    echo "  1) Local store: ./.knowledge in this repo/workspace (default -- recommended)"
+  fi
+  echo "  2) A separate shared catalog repo / folder elsewhere (OPTIONAL upgrade)"
+  printf "Choice [1-2, default 1]: "
+  read -r choice || choice=1
+  case "$choice" in
+    2)
+      printf "Absolute path to the shared catalog repo/folder: "; read -r kr || kr=""
+      if [ -z "$kr" ]; then
+        kr="$(_jn_default_kr)"
+        echo "No path given -- using the local store instead: $kr"
+      fi
+      ;;
+    *) kr="$(_jn_default_kr)" ;;
+  esac
+  _jn_write_kr "$kr"
+  _jn_ensure_local_store
+  echo "KNOWLEDGE_ROOT set to: $kr"
+  echo "Tip: export KNOWLEDGE_ROOT=\"$kr\" to override per-machine without editing config."
+}
+
+# Resolve the local KNOWLEDGE_ROOT store path on disk (mirrors _jn_ensure_local_store).
+_jn_store_path() {
+  case "$MODE" in
+    user) echo "$HOME/.claude/.knowledge" ;;
+    *)    echo "$(dirname "$TARGET")/.knowledge" ;;
+  esac
+}
+
+# Resolve the onboarding scan root (where the adopter's existing repo content lives).
+_jn_scan_root() {
+  case "$MODE" in
+    user)      echo "$HOME" ;;
+    workspace) echo "$(dirname "$TARGET")" ;;     # parent of .claude = workspace root
+    *)         echo "$(pwd)" ;;                    # project root
+  esac
+}
+
+# US: ONBOARDING IMPORT -- detect existing AI knowledge sources in the target and,
+# on user yes, write a staging manifest into the KNOWLEDGE_ROOT store. SAFETY:
+# surface-and-catalog (never blind-merge), never ingest secrets (.env / keys).
+import_existing_knowledge() {
+  local scan_root store staging found
+  scan_root="$(_jn_scan_root)"
+  store="$(_jn_store_path)"
+
+  # Candidate existing AI-knowledge sources (paths relative to scan_root).
+  # We catalog these; we do NOT read or copy their contents here.
+  local candidates
+  candidates="
+CLAUDE.md
+AGENTS.md
+.github/copilot-instructions.md
+.claude
+"
+  # .cursor/rules/*.mdc enumerated separately (glob).
+
+  found=""
+  local c
+  for c in $candidates; do
+    if [ -e "$scan_root/$c" ]; then
+      found="${found}${c}\n"
+    fi
+  done
+  # Cursor rule files
+  for f in "$scan_root"/.cursor/rules/*.mdc; do
+    [ -e "$f" ] || continue
+    found="${found}.cursor/rules/$(basename "$f")\n"
+  done
+  # Existing agent / charter files (common locations), 2 levels deep, capped.
+  local af afn=0
+  for af in "$scan_root"/.claude/agents/*/CHARTER.md "$scan_root"/agents/*/CHARTER.md "$scan_root"/.claude/agents/*.md; do
+    [ -e "$af" ] || continue
+    found="${found}${af#$scan_root/}\n"
+    afn=$((afn + 1)); [ "$afn" -ge 20 ] && break
+  done
+
+  if [ -z "$found" ]; then
+    return
+  fi
+
+  echo ""
+  echo "Found existing AI knowledge sources in $scan_root:"
+  printf "$found" | sed 's/^/  - /'
+  local ans=""
+  if [ -t 0 ] && [ "${JN_IMPORT:-}" = "" ]; then
+    printf "Import existing knowledge into JitNeuro? (recommended) [Y/n]: "
+    read -r ans || ans="y"
+  else
+    # Non-interactive: honor JN_IMPORT=yes|no; default to cataloging (safe -- no merge).
+    ans="${JN_IMPORT:-yes}"
+  fi
+  case "$ans" in
+    n|N|no|NO|No) echo "Skipped onboarding import. Run /onboard later to import."; return ;;
+  esac
+
+  mkdir -p "$store/imports" 2>/dev/null || true
+  staging="$store/imports/onboarding-staging.md"
+  {
+    echo "# Onboarding Import -- Staging Manifest"
+    echo ""
+    echo "Generated by the JitNeuro installer. SAFETY: this is a SURFACE-AND-CATALOG"
+    echo "manifest, not a merge. Nothing was ingested. The /onboard flow reads this"
+    echo "manifest and routes each source to its correct home (engram = per-project"
+    echo "context, rules = behavioral standard, knowledge store otherwise). Secrets"
+    echo "(.env, keys) are never listed or ingested."
+    echo ""
+    echo "- scan_root: $scan_root"
+    echo "- store (KNOWLEDGE_ROOT local): $store"
+    echo "- install_mode: $MODE"
+    echo ""
+    echo "## Detected sources (route via /onboard)"
+    echo ""
+    echo "| Source | Suggested home | Notes |"
+    echo "|--------|----------------|-------|"
+    printf "$found" | while IFS= read -r line; do
+      [ -n "$line" ] || continue
+      case "$line" in
+        AGENTS.md)                    echo "| $line | rules / standard | canonical instruction surface -- reconcile with JitNeuro AGENTS.md |" ;;
+        CLAUDE.md)                    echo "| $line | rules / standard | tool instructions -- fold into AGENTS.md, keep CLAUDE.md thin |" ;;
+        .github/copilot-instructions.md) echo "| $line | rules / standard | Copilot rules -- map to .claude/rules/ |" ;;
+        .cursor/rules/*)              echo "| $line | rules / standard | Cursor rule -- map intents to .claude/rules/ |" ;;
+        *CHARTER.md|*agents/*)        echo "| $line | knowledge store | agent/charter -- catalog under KNOWLEDGE_ROOT |" ;;
+        .claude)                      echo "| $line | (review) | existing .claude content -- reconcile, do not overwrite |" ;;
+        *)                            echo "| $line | (review) | classify during /onboard |" ;;
+      esac
+    done
+    echo ""
+    echo "## Reconcile during /onboard"
+    echo "- Conflicts (e.g., existing CLAUDE.md vs JitNeuro thin importer) are listed, not auto-resolved."
+    echo "- Run /onboard to read this manifest, import each source into the right home, and produce a summary."
+  } > "$staging"
+  echo "Staged onboarding manifest: $staging"
+  echo "Run /onboard to import the detected sources into their correct homes."
+}
+
 # Create directories
 mkdir -p "$TARGET/commands"
 mkdir -p "$TARGET/bundles"
@@ -142,12 +377,19 @@ for cmd_file in "$TEMPLATES/commands/"*.md; do
 done
 echo "  ($CMD_COUNT commands installed)"
 
-# Routing now lives in jit-knowledge/INDEX.md -- do NOT seed context-manifest.md with routing tables.
+# --- Install /help data file (the /help command reads $TARGET/help.md) ---
+# Without this copy, /help is broken: the command exists but its data file is missing.
+if [ -f "$TEMPLATES/help.md" ]; then
+  cp "$TEMPLATES/help.md" "$TARGET/help.md"
+  echo "  help.md (data for /help)"
+fi
+
+# Routing lives in your configured knowledge catalog's INDEX.md (when one is configured)
+# -- do NOT seed context-manifest.md with routing tables.
 # If a stale context-manifest.md exists from a prior install, leave it untouched (do not overwrite or delete).
-# Users can remove it by running: jit-knowledge/scripts/cleanup-old-routing.sh
 if [ -f "$TARGET/context-manifest.md" ]; then
   echo "NOTE: Legacy context-manifest.md found at $TARGET/context-manifest.md"
-  echo "      Routing now lives in jit-knowledge/INDEX.md. Run cleanup-old-routing.sh to retire it."
+  echo "      Routing now lives in your knowledge catalog's INDEX.md. You may retire context-manifest.md."
 fi
 
 # Scaffold url-resolver.md in user home .claude (machine-specific, gitignored)
@@ -232,18 +474,44 @@ fi
 
 # Install cognition layer (Phase 2)
 echo "Installing cognition layer..."
+# User-ACCUMULATED cognition files (anti-patterns.md, written by /learn) are seeded only
+# if absent and NEVER overwritten. Framework cognition files update like rules: a user
+# edit is backed up to .jitneuro-backup/cognition/ before the new version lands.
+_jn_install_cog() {  # $1=src  $2=rel (e.g. cognition/foo.md)  $3=dest
+  if [ -f "$3" ]; then
+    if ! diff -q "$1" "$3" >/dev/null 2>&1; then
+      local old_sha; old_sha="$(_jn_oldsha "$2")"
+      if [ -n "$old_sha" ] && [ "$old_sha" != "$(_jn_sha "$3")" ]; then
+        mkdir -p "$TARGET/.jitneuro-backup/cognition"
+        cp "$3" "$TARGET/.jitneuro-backup/cognition/$(basename "$3")"
+        echo "  BACKUP: $2 (your edit saved to .jitneuro-backup/cognition/)"
+      fi
+      cp "$1" "$3"
+    fi
+  else
+    cp "$1" "$3"
+  fi
+}
 for cog_file in "$TEMPLATES/cognition/"*.md; do
   [ -f "$cog_file" ] || continue
-  cp "$cog_file" "$TARGET/cognition/$(basename "$cog_file")"
+  cog_name="$(basename "$cog_file")"
+  if [ "$cog_name" = "anti-patterns.md" ]; then
+    if [ -f "$TARGET/cognition/$cog_name" ]; then
+      echo "  Preserved cognition/$cog_name (your accumulated knowledge)"
+    else
+      cp "$cog_file" "$TARGET/cognition/$cog_name"
+      echo "  cognition/$cog_name (seeded -- yours to accumulate via /learn)"
+    fi
+  else
+    _jn_install_cog "$cog_file" "cognition/$cog_name" "$TARGET/cognition/$cog_name"
+  fi
 done
 for dec_file in "$TEMPLATES/cognition/decisions/"*.md; do
   [ -f "$dec_file" ] || continue
-  cp "$dec_file" "$TARGET/cognition/decisions/$(basename "$dec_file")"
+  dec_name="$(basename "$dec_file")"
+  _jn_install_cog "$dec_file" "cognition/decisions/$dec_name" "$TARGET/cognition/decisions/$dec_name"
 done
-echo "  cognition/personas.md (16 personas)"
-echo "  cognition/friction-detection.md"
-echo "  cognition/anti-patterns.md (seed entries)"
-echo "  cognition/decisions/ ($(ls -1 "$TEMPLATES/cognition/decisions/"*.md 2>/dev/null | wc -l) models)"
+echo "  cognition/ (framework updated; your edits backed up, accumulated knowledge preserved)"
 # Create owner-persona from example if it doesn't exist
 if [ ! -f "$TARGET/cognition/owner-persona.md" ]; then
   cp "$TEMPLATES/cognition/owner-persona.example.md" "$TARGET/cognition/owner-persona.md"
@@ -299,9 +567,26 @@ case "$(uname -s)" in
     ;;
 esac
 
-# --- Copy jitneuro.json config ---
-cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
-echo "Installed jitneuro.json (v$VERSION)"
+# --- Install jitneuro.json config (preserve the user's settings on re-install) ---
+# Fresh install copies the template. A re-install PRESERVES the user's jitneuro.json in
+# full (scheduledAgents, team config, knowledgeRoot, any custom keys) and only bumps the
+# version field -- never clobbering user config with template defaults.
+PREV_KR=""
+if [ -f "$TARGET/jitneuro.json" ]; then
+  PREV_KR=$(grep -o '"knowledgeRoot"[[:space:]]*:[[:space:]]*"[^"]*"' "$TARGET/jitneuro.json" | head -1 | sed 's/.*"knowledgeRoot"[[:space:]]*:[[:space:]]*"//;s/"$//')
+  _jn_jtmp="$(mktemp 2>/dev/null || echo "$TARGET/jitneuro.json.tmp.$$")"
+  sed -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*\"/\1$VERSION\"/" "$TARGET/jitneuro.json" > "$_jn_jtmp" && mv "$_jn_jtmp" "$TARGET/jitneuro.json"
+  echo "Preserved your jitneuro.json (version -> v$VERSION; your settings kept)"
+else
+  cp "$TEMPLATES/jitneuro.json" "$TARGET/jitneuro.json"
+  echo "Installed jitneuro.json (v$VERSION)"
+fi
+
+# --- Configure KNOWLEDGE_ROOT (always present; local store auto-created) ---
+configure_knowledge_root
+
+# --- Onboarding import: detect existing AI knowledge sources, stage for /onboard ---
+import_existing_knowledge
 
 # --- Auto-configure hooks in settings.local.json (US-001) ---
 echo ""
@@ -327,7 +612,7 @@ HOOKS_PATH_FWD=$(echo "$HOOKS_PATH" | sed 's|\\|/|g')
 #
 # When adding or changing a hook below, look at the other hook entries in this
 # same block and match their format exactly -- each `command` is just a path.
-# Full rule: jit-knowledge/rules/claude-code-hook-deployment.md
+# Full rule: rules/claude-code-hook-deployment.md (installed with JitNeuro)
 # ============================================================================
 build_hooks_json() {
   cat <<HOOKJSON
@@ -425,7 +710,7 @@ if [ "$MODE" = "workspace" ] && [ -n "$WORKSPACE_ROOT" ]; then
 
     [ -f "$dir/CLAUDE.md" ] && has_claude="YES"
     [ -f "$dir/.claude/CLAUDE.md" ] && has_brainstem="YES"
-    [ -f "$WORKSPACE_ROOT/.claude/engrams/${repo_name}-context.md" ] && has_engram="YES"
+    [ -f "$WORKSPACE_ROOT/.knowledge/engrams/${repo_name}-context.md" ] && has_engram="YES"
 
     if [ "$has_claude" = "--" ] || [ "$has_brainstem" = "--" ] || [ "$has_engram" = "--" ]; then
       NEEDS_ONBOARD=$((NEEDS_ONBOARD + 1))
@@ -478,6 +763,7 @@ if [ -d "$TEMPLATES/dashboard/bin" ]; then
 fi
 for t in "$TEMPLATES/hooks/"*.sh;      do [ -f "$t" ] || continue; _jn_record "hooks/$(basename "$t")"; done
 _jn_record "jitneuro.json"
+_jn_record "help.md"
 
 # Prune framework files present at last install but no longer shipped (sha-guarded).
 if [ -n "$OLD_MANIFEST" ]; then
@@ -511,13 +797,16 @@ echo "---"
 echo "JitNeuro v$VERSION installed to: $TARGET"
 echo ""
 echo "Next steps:"
-echo "  1. CLOSE AND REOPEN Claude Code (commands load at session start)"
-echo "  2. Run /verify to confirm everything is working"
-echo "  3. Populate your horizon: tell Claude \"populate my horizon files\" (or open"
+echo "  1. CLOSE AND REOPEN your AI tool (Claude Code loads commands/hooks at session start)"
+echo "  2. Run /verify to confirm everything is working (Claude Code)"
+echo "  3. AGENTS.md is the canonical standard for every tool (Cursor/Codex/Claude/others)."
+echo "     CLAUDE.md is a thin importer of it. Run /onboard to generate them for a repo."
+echo "  4. Run /onboard to import any staged knowledge sources into their correct homes"
+echo "  5. Populate your horizon: tell Claude \"populate my horizon files\" (or open"
 echo "     $TARGET/horizon/POPULATE-HORIZON.md) to capture your vision, goals, and profile"
-echo "  4. Run /onboard <repo> to set up context for your repos"
-echo "  5. Create bundles for your domains in $TARGET/bundles/"
-echo "  6. (optional) Edit ~/.claude/url-resolver.md to map your repo names to local paths"
+echo "  6. Create bundles for your domains in $TARGET/bundles/"
+echo "  7. (optional) Point KNOWLEDGE_ROOT at a shared catalog repo to share one catalog"
+echo "     across projects; your local .knowledge store stays as the fallback"
 echo ""
 echo "*** You MUST restart Claude Code for slash commands to take effect. ***"
 echo ""

@@ -7,8 +7,8 @@ Self-contained knowledge files (50-180 lines max) covering one domain. Examples:
 - `api-design.md` -- API conventions, auth patterns, error handling
 - `sprint.md` -- sprint protocol, task format, commit conventions
 
-Bundles live in `.claude/bundles/` and are loaded **only when needed** by the
-orchestrator or manually via "Read .claude/bundles/X.md".
+Bundles live in `.knowledge/bundles/` and are loaded **only when needed** by the
+orchestrator or manually via "Read .knowledge/bundles/X.md".
 
 ## Engrams
 
@@ -18,7 +18,7 @@ In neuroscience, an engram is the physical trace a memory leaves in the brain --
 the compressed representation of an experience. Each project's engram is exactly
 that: not the codebase itself, but the compressed knowledge about it.
 
-Engrams live in `.claude/engrams/` and are updated by `/learn`:
+Engrams live in `.knowledge/engrams/` and are updated by `/learn`:
 - `my-api.md` -- tech stack, key files, architecture, integrations, gotchas
 - `my-frontend.md` -- framework setup, build config, deploy pipeline, known issues
 
@@ -30,18 +30,26 @@ Bundles and engrams are orthogonal:
 
 Routing maps task keywords to bundle combinations so the right domain knowledge loads automatically.
 
-Routing has a single source of truth: `jit-knowledge/INDEX.md`. All task-keyword to bundle mappings live there. Consuming systems (per-repo installs, Cursor, future agents) reference INDEX.md rather than maintaining their own routing tables.
+JitNeuro routing starts from the installed JitNeuro context surfaces in the active
+user, workspace, or project. A repo can add repo-specific context under
+`.jitneuro/`; that folder is for local/team knowledge only, not a copy of the
+JitNeuro framework.
 
 ```
-# jit-knowledge/INDEX.md (single source -- do not duplicate locally)
-- Deploy / server / container / VM  -> [infrastructure]
-- API / endpoint / route / auth     -> [api-patterns]
-- Sprint / story / prd / backlog    -> [sprint-workflow]
+# Repo-local .jitneuro/ example
+.jitneuro/engrams/context.md      # what this repo is
+.jitneuro/bundles/api.md          # repo-specific API context
+.jitneuro/rules/trust-local.md    # repo-specific rule
 ```
 
-The URL-resolver (`~/.claude/url-resolver.md`) maps the canonical GitHub URL to the local clone path so each machine reads the file locally at session speed.
+If your team maintains a shared knowledge catalog, JitNeuro can load it on-demand
+alongside the public framework. Public adopters do not need any external catalog
+to use the framework. Teams can optionally configure a shared catalog and import
+its routing index when they need the portfolio-wide context.
 
-For the governance rule, see `jit-knowledge/rules/routing-single-source.md`. To retire legacy routing files on an existing install, run `jit-knowledge/scripts/cleanup-old-routing.ps1` (Windows) or `cleanup-old-routing.sh` (Linux/Mac).
+The URL-resolver (`~/.claude/url-resolver.md`) maps internal or team catalog
+GitHub URLs to local clone paths when a team uses them, so each machine reads
+those files at session speed.
 
 Do NOT create a `routing-weights.md` or populate `context-manifest.md` with routing tables. Those are retired surfaces.
 
@@ -88,9 +96,10 @@ CLAUDE.md (brainstem, 30-40 lines)    -- universal rules only
   .claude/rules/api.md                 -- loads only for src/api/**
   .claude/rules/tests.md               -- loads only for tests/**
   .claude/rules/deployment.md          -- loads only for deploy/**, Dockerfile, .github/workflows/**
-  .claude/bundles/deploy.md            -- loads on demand by orchestrator
-  .claude/engrams/repo.md              -- loads on demand per project
-  MEMORY.md                            -- project index + business facts (routing is in jit-knowledge/INDEX.md)
+  .knowledge/bundles/deploy.md            -- loads on demand by orchestrator
+  .knowledge/engrams/repo.md              -- loads on demand per project
+  MEMORY.md                            -- project index + business facts
+  .jitneuro/                           -- optional repo/team-specific context only
 ```
 
 Each level only loads when relevant:
@@ -124,7 +133,7 @@ JitNeuro is designed to be lightweight. Here's what it actually costs:
 |------|-------|-------------|---------|
 | CLAUDE.md (global) | ~50-140 | ~400-1,100 | Core rules, trust zones |
 | CLAUDE.md (project) | ~30-50 | ~250-400 | Project identity, key paths |
-| MEMORY.md | ~90-200 | ~700-1,600 | Project index, business facts (routing is in jit-knowledge/INDEX.md) |
+| MEMORY.md | ~90-200 | ~700-1,600 | Project index, business facts |
 | **Total brainstem** | **~170-390** | **~1,350-3,100** | |
 
 That's roughly **1-2% of a 200K context window**. The rest is your conversation and code.

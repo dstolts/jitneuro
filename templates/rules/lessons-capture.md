@@ -30,7 +30,7 @@ Append one line to Hub.md immediately. No separate step, no user prompt.
 2. One line per lesson. If it needs more, /learn will expand when it processes.
 3. If `## Lessons Learned` section does not exist in Hub.md, create it.
 4. If no Hub.md exists for the session, create the section in the fallback
-   location: `.claude/session-state/lessons.md`.
+   location: `.sessions/lessons.md`.
 5. Do not duplicate -- grep the section before appending.
 6. /learn reads this section, deduplicates against session scan, persists to
    the correct long-term location, then clears it with a processed marker.

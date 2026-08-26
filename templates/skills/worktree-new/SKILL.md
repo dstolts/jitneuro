@@ -3,13 +3,12 @@ type: skill
 name: worktree-new
 status: canonical
 purpose: Make the worktree-discipline rule frictionless. Encodes the canonical path convention `<CodeBasePath>/_worktrees/<repo>-<branch>/` and the standard create-worktree sequence so master cannot accidentally branch the main clone. Mechanical enforcement of the rule via a single command instead of remembering the 3-step git incantation.
-tags: [slash-command, git, worktrees, jit-knowledge, branch-discipline, recursive-improvement]
+tags: [slash-command, git, worktrees, jitneuro, branch-discipline, recursive-improvement]
 scope: public
 departments: [engineering]
 authored_at: WIP-Drafts/skills/worktree-new.md
 origin_date: 2026-05-28
 origin_event: PR #234 (worktree-discipline rule) open questions item #1 -- "Should the rule include a `git worktree-add` slash command / helper script? Lean: yes -- a `/worktree-new <repo> <branch>` slash command would encode the path convention and make the right way frictionless." Knowledge session 2026-05-28 follow-up after batch graduation PR #239 merged the worktree-discipline rule as canonical.
-graduation_target: jit-knowledge/skills/worktree-new/SKILL.md
 related_skills:
   - rules/worktree-discipline.md (the rule this skill makes mechanical)
   - skills/wip/SKILL.md (sibling: capture into WIP-Drafts)
@@ -39,7 +38,7 @@ Usage:
 Examples:
 
 ```
-/worktree-new jit-knowledge feat/qa-trial-1     -> <worktrees>/jit-knowledge-feat-qa-trial-1/
+/worktree-new jitneuro feat/qa-trial-1     -> <worktrees>/jitneuro-feat-qa-trial-1/
 /worktree-new api-repo docs/api-update          -> <worktrees>/api-repo-docs-update/
 /worktree-new app-repo-app feat/x --from uat        -> <worktrees>/app-repo-feat-x/ off origin/uat
 ```
@@ -49,7 +48,7 @@ Examples:
 - **Path:** `<CodeBasePath>/_worktrees/<repo>-<branch-slug>/`
   where `<branch-slug>` is the branch name with `/` replaced by `-`
   (e.g. `feat/wip-drafts` -> `feat-wip-drafts`).
-- **Base:** the repo's default branch (`main` for jit-knowledge,
+- **Base:** the repo's default branch (`main` for jitneuro,
   `uat` for app-repo-API / app-repo-App / api-repo, etc.). `--from` overrides.
 - **Source:** always fresh from `origin/<base>` (not local).
 - **Main clone:** stays on its default branch. The slash command refuses
@@ -60,7 +59,7 @@ Examples:
 ## What Claude must do when invoked
 
 1. **Parse args:**
-   - `<repo>` -- name of the repo (e.g. `jit-knowledge`). Resolve to main
+   - `<repo>` -- name of the repo (e.g. `jitneuro`). Resolve to main
      clone path via `~/.claude/url-resolver.md` (or
      `<CodeBasePath>/<repo>/` as fallback). Refuse if not found.
    - `<branch>` -- the new branch name. Validate as a sane git ref
@@ -134,7 +133,7 @@ Examples:
 ## Edge cases
 
 - **Branch name has `/`:** slugged with `-` in the target path. E.g.
-  `feat/wip-drafts-inbox` -> `<worktrees>/jit-knowledge-feat-wip-drafts-inbox/`.
+  `feat/wip-drafts-inbox` -> `<worktrees>/jitneuro-feat-wip-drafts-inbox/`.
 - **Branch name is very long:** path is allowed but Windows path-length
   caps apply (260 chars in some configurations). Surface a warning if
   the target path exceeds ~200 chars; otherwise proceed.
@@ -150,7 +149,7 @@ Examples:
 The PowerShell helper that implements this skill lives as a real executable
 file -- NOT inlined here. Canonical path:
 
-- **In jit-knowledge:** `tools/worktree-new.ps1`
+- **In jitneuro:** `tools/worktree-new.ps1`
 - **Deployed:** `<CodeBasePath>/scripts/worktree-new.ps1` (PATH-accessible after install)
 
 The tool resolves `<CodeBasePath>` at runtime per the chain in
@@ -188,9 +187,9 @@ code blocks. The .md describes the skill; the .ps1 IS the skill.
 ## Promotion checklist
 
 - [ ] Live-trial in 2+ real worktree creations across different repos
-      (jit-knowledge + api-repo at minimum); verify the 5 main-clone-state
+      (jitneuro + api-repo at minimum); verify the 5 main-clone-state
       checks fire correctly
 - [ ] Decide if companion PowerShell script ships via install.sh
 - [ ] Sibling `/worktree-remove` skill in follow-up PR (lifecycle cleanup)
 - [ ] Status -> `wip-ready` after trial; then `/graduate` to
-      `jit-knowledge/skills/worktree-new/SKILL.md`
+      `<knowledge-root>/skills/worktree-new/SKILL.md`

@@ -1,12 +1,11 @@
 ---
 type: skill
 purpose: Post-install verification skill for any agent or Owner confirming all 9 JitNeuro components (CLAUDE.md, hooks, session-state, engram, help) are present and wired; skipping means broken installs go undetected and hooks silently fail to fire.
-read_when: After running the jit-knowledge installer or after any update to hooks, settings.json, or session-state infrastructure.
+read_when: After running the jitneuro installer or after any update to hooks, settings.json, or session-state infrastructure.
 tags: [verify, installation, post-install, diagnostic, read-only]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: skills/verify/SKILL.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
@@ -21,9 +20,9 @@ Post-install verification. Checks 9 components. READ-ONLY operation.
 2. **.claude/ folder** -- exists with commands/ subdirectory
 3. **Workspace commands** -- workspace .claude/commands/ has the expected command files
 4. **jitneuro.json** -- exists at `.jitneuro/jitneuro.json` with valid JSON structure
-5. **Engram** -- workspace engram exists at `.claude/engrams/<repo>-context.md`
-6. **Session state** -- `.claude/session-state/` folder exists and is writable
-7. **Heartbeats** -- `.claude/session-state/heartbeats/` folder exists
+5. **Engram** -- workspace engram exists at `.knowledge/engrams/<repo>-context.md`
+6. **Session state** -- `.sessions/` folder exists and is writable
+7. **Heartbeats** -- `.sessions/heartbeats/` folder exists
 8. **Hooks** -- `settings.json` has SessionStart and PostToolUse hooks registered
 9. **Help file** -- `.claude/help.md` exists
 
@@ -35,7 +34,7 @@ JITNEURO VERIFICATION
 [OK] CLAUDE.md present
 [OK] .claude/commands/ present (22 commands)
 [OK] jitneuro.json valid
-[WARN] Engram missing: jit-knowledge-context.md (run /learn to create)
+[WARN] Engram missing: <repo>-context.md (run /learn to create)
 [OK] session-state/ writable
 [OK] heartbeats/ present
 [OK] Hooks registered (SessionStart, PostToolUse)

@@ -6,7 +6,6 @@ tags: [file-references, adhd, ux, output-formatting]
 scope: public
 departments: [all]
 status: canonical
-graduation_target: rules/file-open-offer.md
 last_evaluated: 2026-06-03
 source: backport from jitneuro 2026-05-28
 ---
