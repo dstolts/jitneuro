@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Autonomous-Continuation Stop Hook (stop-continue-queue.sh)
 # Event: Stop -- fires when the agent finishes a turn and is about to yield control.

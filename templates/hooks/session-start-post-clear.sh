@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionStart Post-Clear Hook
 # Fires after /clear or new session. Shows all sessions with numbered list so user can

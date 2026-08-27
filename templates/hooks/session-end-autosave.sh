@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionEnd Auto-Save Hook
 # Safety net for forgotten /save. Detects whether a /save happened during

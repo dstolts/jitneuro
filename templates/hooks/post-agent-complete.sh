@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro Post-Agent Complete -- PostToolUse hook (matcher: "Agent")
 # Finds the most recent running agent tracker for this session and marks it completed.

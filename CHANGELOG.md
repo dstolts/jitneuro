@@ -32,3 +32,4 @@ recorded here. Feature-level release notes live in the versioned
 
 ## 2026-08-26
 - Relicensed: code and docs unified under the MIT License (was Apache-2.0 + CC BY 4.0). Simpler adoption, one license for everything.
+- Completed the MIT relicense mechanically: executable SPDX headers now identify MIT, and the obsolete split-license `LICENSE-docs` and Apache/CC attribution `NOTICE` files were removed.
