@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionEnd Lessons Flush Hook (WS5)
 # Flushes active session's Hub.md ## Lessons Learned section to a durable

@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright 2025-2026 Just In Time AI INC
 # JitNeuro SessionStart -- Master-Orchestrator Identity Anchor
 # Fires on every SessionStart. Injects the binding identity rule into Claude's
