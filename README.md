@@ -6,6 +6,8 @@
 
 **GitHub:** [github.com/dstolts/jitneuro](https://github.com/dstolts/jitneuro)
 
+**Organization and sender verification:** [Verify our official domains and email senders.](https://jitcyber.com/)
+
 ## The Problem
 
 Claude Code forgets everything every time you clear context. Every `/clear` is
