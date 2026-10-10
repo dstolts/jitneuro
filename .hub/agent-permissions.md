@@ -37,7 +37,7 @@ grant does not bypass GitHub branch protection or required reviews.
 
 | Grant ID | Branch/target | Allowed actors | Allowed action | Required gates | Owner approval needed | Expires/review |
 |---|---|---|---|---|---|---|
-| green-pr-merge | `uat`, `main` | Codex, Claude Code, or Cursor interactive master acting as merge coordinator | merge or arm auto-merge; no direct pushes | branch current with target; GitHub reports mergeable; all required CI and repo-specific validation green; review conversations resolved; no protected-path or RED blocker | only for protected/RED gates or a GitHub-required review | standing |
+| green-pr-merge | `uat`, `main` | Codex, Claude Code, or Cursor interactive master acting as merge coordinator | merge or arm auto-merge; no direct pushes | branch current with target; GitHub reports mergeable; all required CI and repo-specific validation green; review conversations resolved; required exact-head panel or visible-tier evidence recorded; no protected-path or RED blocker | only for protected/RED gates or a GitHub-required review | standing |
 
 ## JitNeuro Required Validation
 
